@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba54dc74c9074bc494f4ded8bdd260d8, type: 3}
+  m_Name: Game_Color
+  m_EditorClassIdentifier: 
+  characterAppearances:
+  - id: 1
+    color: {r: 0.22352941, g: 0.69411767, b: 0.57254905, a: 1}
+    heartPosition: {x: 150, y: -350}
+  - id: 2
+    color: {r: 0.26666668, g: 0.6666667, b: 0.54901963, a: 1}
+    heartPosition: {x: 170, y: -440}
+  - id: 3
+    color: {r: 0.050980393, g: 0.49019608, b: 0.15294118, a: 1}
+    heartPosition: {x: 95, y: -360}
+  - id: 4
+    color: {r: 0.32156864, g: 0.6784314, b: 0.6627451, a: 1}
+    heartPosition: {x: 170, y: -360}
+  - id: 5
+    color: {r: 0.34509805, g: 0.5921569, b: 0.36078432, a: 1}
+    heartPosition: {x: 115, y: -380}

@@ -1,0 +1,34 @@
+using UnityEngine;
+using System;
+using System.Collections.Generic;
+
+[CreateAssetMenu(fileName = "Game/ActivityTime", menuName = "Game/ActivityTime")]
+public class CharacterActivitySO : ScriptableObject
+{
+    public CharacterID id;
+    public Sprite sprite;
+    public ActivityInfo[] activityInfos;
+    public Vector2Int homePosition;
+    public DayInWeek dayOff;
+}
+
+[Serializable]
+public class ActivityInfo
+{
+    public int startTime;
+    public int endTime;
+    public Vector2Int appearPosition;
+    public DayInWeek dayOfWeek;
+}
+
+public enum DayInWeek  
+{
+    Monday = 2,
+    Tuesday = 3,
+    Wednesday = 4,
+    Thursday = 5,
+    Friday = 6,
+    Saturday = 7,
+    Sunday = 8,
+    None=0
+}

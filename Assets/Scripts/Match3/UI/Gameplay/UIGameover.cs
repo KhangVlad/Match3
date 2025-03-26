@@ -1,0 +1,49 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Match3
+{
+    public class UIGameover : MonoBehaviour
+    {
+        private Canvas _canvas;
+
+        [SerializeField] private Button _homeBtn;
+        [SerializeField] private Button _replayBtn;
+
+
+        private void Awake()
+        {
+            _canvas = GetComponent<Canvas>();
+        }
+
+        private void Start()
+        {
+            _homeBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+
+                Loader.Load(Loader.Scene.MenuScene);
+            });
+
+            _replayBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+
+                Loader.Load(Loader.Scene.GameplayScene);
+            });
+        }
+
+        private void OnDestroy()
+        {
+            _homeBtn.onClick.RemoveAllListeners();
+            _replayBtn.onClick.RemoveAllListeners();
+        }
+
+
+        public void DisplayCanvas(bool enable)
+        {
+            this._canvas.enabled = enable;
+        }
+
+    }
+}
