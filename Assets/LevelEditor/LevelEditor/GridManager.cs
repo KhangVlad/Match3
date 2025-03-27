@@ -8,6 +8,11 @@ namespace Match3.LevelEditor
         public event System.Action OnGridLoaded;
 
 
+        [Header("Grid")]
+        [SerializeField] private Transform _gridSlotContentParent;
+        [SerializeField] private GridSlot _gridPrefab;
+        [SerializeField] private GridSlot[] _gridSlots;
+
         [Header("~Runtime")]
         public int Width;
         public int Height;
@@ -16,6 +21,7 @@ namespace Match3.LevelEditor
 
         #region Properties
         public Tile[] Tiles => _tiles;
+        public bool IsGridLoaded { get; private set; } = false;
         #endregion
 
 
@@ -27,6 +33,8 @@ namespace Match3.LevelEditor
                 return;
             }
             Instance = this;
+
+            Application.targetFrameRate = 60;
         }
 
         private void Start()
@@ -38,6 +46,14 @@ namespace Match3.LevelEditor
           
         }
 
+        private void Update()
+        {
+            if (IsGridLoaded == false) return;
+
+            UpdateGridVisualize();
+        }
+
+
         public void LoadGridData(int width, int height)
         {
             this.Width = width;
@@ -48,13 +64,28 @@ namespace Match3.LevelEditor
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Tile newTile = AddTile(x, y, TileID.RedCandle, BlockID.None);
+                    Tile newTile = AddTile(x, y, TileID.None, BlockID.None);
                     newTile.UpdatePosition();
 
                     _tiles[x + y * Width] = newTile;
                 }
             }
 
+
+            // grid slots
+            _gridSlots = new GridSlot[width * height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = x + y * Width;
+                    GridSlot slot = Instantiate(_gridPrefab, _gridSlotContentParent);
+                    slot.transform.position = _tiles[index].transform.position;
+                    _gridSlots[index] = slot;
+                }
+            }
+
+            IsGridLoaded = true;
             OnGridLoaded?.Invoke();
         }
 
@@ -77,5 +108,41 @@ namespace Match3.LevelEditor
 
             return tileInstance;
         }
+
+
+        private void UpdateGridVisualize()
+        {
+            for (int i = 0; i < _gridSlots.Length; i++)
+            {
+                _gridSlots[i].Hover(false);
+            }
+            Vector2Int gridPosition = GetGridPositionByMouse();
+            if (IsValidGridTile(gridPosition.x, gridPosition.y))
+            {
+                _gridSlots[gridPosition.x + gridPosition.y * Width].Hover(true);
+            }
+        }
+
+        #region Utilities
+        private bool IsValidGridTile(int x, int y)
+        {
+            return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
+               _tiles[x + y * Width] != null;
+        }
+        public Vector2Int GetGridPositionByMouse()
+        {
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return GetGridPosition(worldPosition);
+        }
+
+
+        public Vector2Int GetGridPosition(Vector2 worldPosition)
+        {
+            int gridX = Mathf.FloorToInt(worldPosition.x / (TileExtension.TILE_WIDTH + TileExtension.SPACING_X));
+            int gridY = Mathf.FloorToInt(worldPosition.y / (TileExtension.TILE_HEIGHT + TileExtension.SPACING_Y));
+            return new Vector2Int(gridX, gridY);
+        }
+        #endregion
+
     }
 }

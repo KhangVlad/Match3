@@ -96,8 +96,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4179467188582395675}
+  - component: {fileID: 7882729168993184393}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: GridSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119,3 +120,18 @@ Transform:
   - {fileID: 6135586855019033716}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7882729168993184393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7721540978954734631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7ad210de86f7ca4baeb5f120be744ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sr: {fileID: 6623168330969135823}
+  _defaultColor: {r: 0, g: 0, b: 0, a: 0.5254902}
+  _hoverColor: {r: 0.23875391, g: 1, b: 0, a: 0.5254902}
