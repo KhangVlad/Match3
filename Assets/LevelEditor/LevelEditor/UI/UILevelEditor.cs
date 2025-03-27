@@ -202,7 +202,8 @@ namespace Match3.LevelEditor
 
         private void OnBlockChanged_UpdateUI(int index)
         {
-            throw new NotImplementedException();
+            Block block = LevelEditorInventory.Instance.Blocks[index];
+            BlockSlots[index].SetData(block, BlockSlots[index].SlotIndex);
         }
     }
 }

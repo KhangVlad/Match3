@@ -38,13 +38,15 @@ namespace Match3.LevelEditor
                 OnClicked?.Invoke(this);
 
                 Block noneBlock = GameDataManager.Instance.GetBlockByID(BlockID.None);
-                SetData(noneBlock, SlotIndex);
+                LevelEditorInventory.Instance.SetBlock(noneBlock, SlotIndex);
             });
 
             _addBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
                 OnClicked?.Invoke(this);
+
+                UIInventoryManager.Instance.DisplayBlockInventory(true);
             });
         }
 
@@ -74,11 +76,9 @@ namespace Match3.LevelEditor
                     break;
                 case FillBlock:
                     _iconImage.enabled = true;
-                    _iconImage.color = Color.black;
                     break;
                 default:
                     _iconImage.enabled = true;
-                    _iconImage.color = Color.white;
                     break;
             }
 

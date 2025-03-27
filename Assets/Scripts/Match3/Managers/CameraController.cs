@@ -8,8 +8,8 @@ namespace Match3
         private void Start()
         {
             LevelData levelData = LevelManager.Instance.LevelData;
-            int width = levelData.Data.GetLength(0);
-            int height = levelData.Data.GetLength(1);
+            int width = levelData.Blocks.GetLength(0);
+            int height = levelData.Blocks.GetLength(1);
 
             Debug.Log($"{width}  {height}");
 

@@ -73,6 +73,5 @@ namespace Match3.LevelEditor
         {
             _currentSelectSlotIndex = slot.SlotIndex;
         }
-
     }
 }

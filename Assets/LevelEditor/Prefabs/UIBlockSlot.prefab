@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 878758280363882921}
   - component: {fileID: 1019675579162788333}
   - component: {fileID: 7620538428512019251}
-  - component: {fileID: 8528751142191431221}
+  - component: {fileID: 4696743091103063670}
   m_Layer: 5
-  m_Name: UITileSlot
+  m_Name: UIBlockSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8528751142191431221
+--- !u!114 &4696743091103063670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,14 +131,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3808945513624111693}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e95ba9fcaa10af942a4a5cef30380632, type: 3}
+  m_Script: {fileID: 11500000, guid: 969b06a469e1a1d438c6a7d65e19f1bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _button: {fileID: 7620538428512019251}
   _iconImage: {fileID: 9143797649682899767}
   _defaultButtonSprite: {fileID: 21300000, guid: 35d944683b6f043f0a3213e697779ba8, type: 3}
   _selectButtonSprite: {fileID: 21300000, guid: e57d758667ec647ba9a894dcad8b24ef, type: 3}
-  _tile: {fileID: 0}
+  _block: {fileID: 0}
 --- !u!1 &7284724582064359490
 GameObject:
   m_ObjectHideFlags: 0
@@ -204,7 +204,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8b26495c7f255a8408f7126e93bf837f, type: 3}
+  m_Sprite: {fileID: 730801883, guid: 7c51fa8c40119844ca26740434a3f21f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

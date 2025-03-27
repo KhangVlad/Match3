@@ -37,14 +37,6 @@ namespace Match3.LevelEditor
             Application.targetFrameRate = 60;
         }
 
-        private void Start()
-        {
-            //Utilities.WaitAfterEndOfFrame(() =>
-            //{
-            //    LoadGridData(5, 6);
-            //});
-          
-        }
 
         private void Update()
         {
@@ -52,7 +44,7 @@ namespace Match3.LevelEditor
 
             UpdateGridVisualize();
 
-            if(Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0))
             {
                 Vector2Int gridPosition = GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
@@ -62,10 +54,20 @@ namespace Match3.LevelEditor
                         int index = gridPosition.x + gridPosition.y * Width;
 
                         Tile selectedTile = LevelEditorInventory.Instance.GetSelectedTile();
-                        if (_tiles[index].ID != selectedTile.ID)
+                        if (_tiles[index].CurrentBlock is NoneBlock)
                         {
-                            Debug.Log("EE");
+                            if (_tiles[index].ID != selectedTile.ID)
+                            {
+                                Destroy(_tiles[index].gameObject);
+                                _tiles[index] = null;
 
+                                TileID tileID = selectedTile.ID;
+                                Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                                tile.UpdatePosition();
+                            }
+                        }
+                        else
+                        {
                             Destroy(_tiles[index].gameObject);
                             _tiles[index] = null;
 
@@ -74,6 +76,33 @@ namespace Match3.LevelEditor
                             tile.UpdatePosition();
                         }
                     }
+                    else if (LevelEditorInventory.Instance.SelectedShortcutIndex < 9)
+                    {
+                        int index = gridPosition.x + gridPosition.y * Width;
+                        Block selectedBlock = LevelEditorInventory.Instance.GetSelectedBlock();
+                        if (_tiles[index].CurrentBlock.BlockID != selectedBlock.BlockID)
+                        {
+                            AddBlock(_tiles[index], selectedBlock);
+                        }
+                    }
+                }
+            }
+            else if (Input.GetMouseButton(1))
+            {
+
+                Vector2Int gridPosition = GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    int index = gridPosition.x + gridPosition.y * Width;
+
+                    if (_tiles[index].CurrentBlock is not NoneBlock || _tiles[index].ID != TileID.None)
+                    {
+                        Destroy(_tiles[index].gameObject);
+                        _tiles[index] = null;
+                        Tile tile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                        tile.UpdatePosition();
+                    }
+
                 }
             }
         }
@@ -134,6 +163,15 @@ namespace Match3.LevelEditor
             return tileInstance;
         }
 
+        private void AddBlock(Tile tile, Block blockPrefab)
+        {
+            Destroy(tile.CurrentBlock.gameObject);
+            Block blockInstance = Instantiate(blockPrefab, tile.transform);
+            blockInstance.transform.localPosition = Vector3.zero;
+            tile.SetBlock(blockInstance);
+            blockInstance.GetComponent<SpriteRenderer>().enabled = true;
+        }
+
 
         private void UpdateGridVisualize()
         {
@@ -167,7 +205,44 @@ namespace Match3.LevelEditor
             int gridY = Mathf.FloorToInt(worldPosition.y / (TileExtension.TILE_HEIGHT + TileExtension.SPACING_Y));
             return new Vector2Int(gridX, gridY);
         }
-        #endregion
 
+
+        public LevelData SaveAsLevelData()
+        {
+            int[,] blocks = new int[Width, Height];
+            TileID[,] tiles = new TileID[Width, Height];
+            TileID[] avaiableTiles = new TileID[] {
+                TileID.RedFlower,
+                TileID.YellowFlower,
+                TileID.BlueFlower
+            };
+            int[,] quests =
+            {
+                {1, 20},
+            };
+
+            for(int i = 0; i < _tiles.Length; i++)
+            {
+                int x = i % Width;
+                int y = i / Width;
+
+                tiles[x, y] = _tiles[i].ID;
+                blocks[x, y] = (int)_tiles[i].CurrentBlock.BlockID;
+            }
+
+            LevelData levelData = new LevelData(Width, Height)
+            {
+                MaxTurn = 30,
+                Blocks = blocks,
+                Tiles = tiles,
+                AvaiableTiles = avaiableTiles,
+                Quests = quests 
+            };
+
+            return levelData;
+        }
     }
+    #endregion
+
 }
+

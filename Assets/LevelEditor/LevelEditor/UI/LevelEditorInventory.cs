@@ -82,7 +82,7 @@ namespace Match3.LevelEditor
         {
             if (SelectedShortcutIndex > 4 && SelectedShortcutIndex < 9)
             {
-                return Blocks[SelectedShortcutIndex - 1];
+                return Blocks[(SelectedShortcutIndex - 1)%4];
             }
             else
             {

@@ -413,8 +413,8 @@ namespace Match3
             // 2: none block <-> normal tile
 
             _levelData = LevelManager.Instance.LevelData;
-            this.Width = _levelData.Data.GetLength(0);
-            this.Height = _levelData.Data.GetLength(1);
+            this.Width = _levelData.Blocks.GetLength(0);
+            this.Height = _levelData.Blocks.GetLength(1);
 
             _tiles = new Tile[Width * Height];
             _prevTileIDs = new TileID[Width * Height];
@@ -425,7 +425,7 @@ namespace Match3
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    BlockID blockID = (BlockID)System.Enum.ToObject(typeof(BlockID), _levelData.Data[x, y]);
+                    BlockID blockID = (BlockID)System.Enum.ToObject(typeof(BlockID), _levelData.Blocks[x, y]);
                     TileID tileID = _levelData.Tiles[x, y];
                     switch (blockID)
                     {
