@@ -9,7 +9,7 @@ public class CharactersDataManager : MonoBehaviour
     [Header("~Runtime")] 
     public List<CharacterActivitySO> characterActivities = new();
     public CharacterAppearanceSO characterColor;
-
+    public event Action OnCharacterDataLoaded;
     private void Awake()
     {
         if (Instance == null)
@@ -22,6 +22,7 @@ public class CharactersDataManager : MonoBehaviour
         }
     }
 
+
     private void Start()
     {
         LoadDataSO();
@@ -30,7 +31,9 @@ public class CharactersDataManager : MonoBehaviour
     private void LoadDataSO()
     {
         characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
+        OnCharacterDataLoaded?.Invoke();
     }
+
 
 
     public CharacterAppearance GetCharacterAppearanceData(CharacterID id)

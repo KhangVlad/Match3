@@ -8,10 +8,9 @@ namespace Match3
     {
         public enum Scene
         {
-            LoadScene = 0,
-            MenuScene = 1,
+            Loading=0,
+            Town=1,
             GameplayScene = 2,
-
             LevelEditor = 10,
         }
 
@@ -42,7 +41,7 @@ namespace Match3
             return asyncOperation;
         }
 
-        private static IEnumerator LoadSceneAsyncCoroutine(Scene targetScene, float waitAfterLoad,
+        public static IEnumerator LoadSceneAsyncCoroutine(Scene targetScene, float waitAfterLoad,
             System.Action onCompleted)
         {
             // Start loading the scene asynchronously in additive mode
