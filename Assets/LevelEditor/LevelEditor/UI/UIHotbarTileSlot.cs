@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 namespace Match3.LevelEditor
 {
-    public class UIBlockSlot : MonoBehaviour
+    public class UIHotbarTileSlot : MonoBehaviour
     {
-        public static event System.Action<UIBlockSlot> OnClicked;
+        public static event System.Action<UIHotbarTileSlot> OnClicked;
 
         [SerializeField] private Button _chooseBtn;
         [SerializeField] private Button _removeBtn;
@@ -15,7 +15,9 @@ namespace Match3.LevelEditor
         [SerializeField] private Sprite _defaultButtonSprite;
         [SerializeField] private Sprite _selectButtonSprite;
 
-        public Block Block { get; private set; }
+
+
+        public Tile Tile { get; private set; }
         public int SlotIndex { get; private set; }
         public int ShortcutIndex { get; private set; }
 
@@ -39,12 +41,12 @@ namespace Match3.LevelEditor
             _chooseBtn.onClick.RemoveAllListeners();
         }
 
-        public void SetData(Block block, int slotIndex)
+        public void SetData(Tile tile, int slotIndex)
         {
-            this.Block = block;
+            this.Tile = tile;
             this.SlotIndex = slotIndex;
 
-            _icon.sprite = block.GetComponent<SpriteRenderer>().sprite;
+            _icon.sprite = tile.TileSprite;
             _icon.SetNativeSize();
             _icon.rectTransform.ScaleIcon(75, 75);
         }

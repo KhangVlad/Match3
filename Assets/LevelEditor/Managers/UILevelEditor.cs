@@ -7,13 +7,13 @@ namespace Match3.LevelEditor
     {
         private Canvas _canvas;
 
-        [SerializeField] private UITileSlot _uiTileSlotPrefab;
-        [SerializeField] private UIBlockSlot _uiBlockSlotPrefab;
+        [SerializeField] private UIHotbarTileSlot _uiTileSlotPrefab;
+        [SerializeField] private UIHotbarBlockSlot _uiBlockSlotPrefab;
         [SerializeField] private Transform _tileContentsParent;
         [SerializeField] private Transform _blockContentsParent;
         [Header("~Runtime")]
-        public UITileSlot[] TileSlots;
-        public UIBlockSlot[] BlockSlots;
+        public UIHotbarTileSlot[] TileSlots;
+        public UIHotbarBlockSlot[] BlockSlots;
 
         [SerializeField] private int _currentSelectedShortcutIndex = 0;
 
@@ -30,8 +30,8 @@ namespace Match3.LevelEditor
             GridManager.Instance.OnGridLoaded += OnGridLoaded_UpdateUI;
             LevelEditorInventory.Instance.OnInventoryInitialized += OnInventoryInitialized_LoadUI;
 
-            UITileSlot.OnClicked += OnUiTileSlotClicked;
-            UIBlockSlot.OnClicked += OnUiBlockSlotClicked;
+            UIHotbarTileSlot.OnClicked += OnUiHorbarTileSlotClicked;
+            UIHotbarBlockSlot.OnClicked += OnUiHorbarBlockSlotClicked;
         }
 
         private void OnDestroy()
@@ -39,8 +39,8 @@ namespace Match3.LevelEditor
             GridManager.Instance.OnGridLoaded -= OnGridLoaded_UpdateUI;
             LevelEditorInventory.Instance.OnInventoryInitialized -= OnInventoryInitialized_LoadUI;
 
-            UITileSlot.OnClicked -= OnUiTileSlotClicked;
-            UIBlockSlot.OnClicked -= OnUiBlockSlotClicked;
+            UIHotbarTileSlot.OnClicked -= OnUiHorbarTileSlotClicked;
+            UIHotbarBlockSlot.OnClicked -= OnUiHorbarBlockSlotClicked;
         }
 
         private void Update()
@@ -100,32 +100,32 @@ namespace Match3.LevelEditor
         private void OnInventoryInitialized_LoadUI()
         {
             int shortcutIndex = 1;
-            TileSlots = new UITileSlot[LevelEditorInventory.Instance.Tiles.Length];
+            TileSlots = new UIHotbarTileSlot[LevelEditorInventory.Instance.Tiles.Length];
             for (int i = 0; i < LevelEditorInventory.Instance.Tiles.Length; i++, shortcutIndex++)
             {
-                UITileSlot uiSlot = Instantiate(_uiTileSlotPrefab, _tileContentsParent);
+                UIHotbarTileSlot uiSlot = Instantiate(_uiTileSlotPrefab, _tileContentsParent);
                 uiSlot.SetShortcutText(shortcutIndex);
                 TileSlots[i] = uiSlot;
             }
 
-            BlockSlots = new UIBlockSlot[LevelEditorInventory.Instance.Blocks.Length];
+            BlockSlots = new UIHotbarBlockSlot[LevelEditorInventory.Instance.Blocks.Length];
             for (int i = 0; i < LevelEditorInventory.Instance.Blocks.Length; i++, shortcutIndex++)
             {
-                UIBlockSlot uiSlot = Instantiate(_uiBlockSlotPrefab, _blockContentsParent);
+                UIHotbarBlockSlot uiSlot = Instantiate(_uiBlockSlotPrefab, _blockContentsParent);
                 uiSlot.SetShortcutText(shortcutIndex);
                 BlockSlots[i] = uiSlot; 
             }
         }
 
 
-        private void OnUiBlockSlotClicked(UIBlockSlot slot)
+        private void OnUiHorbarBlockSlotClicked(UIHotbarBlockSlot slot)
         {
             UnselectAll();
             slot.Select();
             _currentSelectedShortcutIndex = slot.ShortcutIndex;       
         }
 
-        private void OnUiTileSlotClicked(UITileSlot slot)
+        private void OnUiHorbarTileSlotClicked(UIHotbarTileSlot slot)
         {
             UnselectAll();
             slot.Select();
