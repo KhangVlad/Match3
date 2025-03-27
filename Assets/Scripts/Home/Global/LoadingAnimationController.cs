@@ -1,20 +1,19 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Match3;
+
 
 public class LoadingAnimationController : MonoBehaviour
 {
     public static LoadingAnimationController Instance { get; private set; }
     [SerializeField] private Animator anim;
     [SerializeField] private Canvas canvas;
-    public event Action OnLoadDone;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -22,11 +21,13 @@ public class LoadingAnimationController : MonoBehaviour
         }
     }
 
-    public void SceneSwitch()
+
+    public void SceneSwitch(Loader.Scene targetScene)
     {
         SetActive(true);
-        StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.Town, 0.5f, () => SetActive(false)));
+        StartCoroutine(Loader.LoadSceneAsyncCoroutine(targetScene, 0.5f, () => SetActive(false)));
     }
+
 
     private void Update()
     {
@@ -50,7 +51,6 @@ public class LoadingAnimationController : MonoBehaviour
         }
         else
         {
-            OnLoadDone?.Invoke();
             Utilities.WaitAfter(0.5f, () => canvas.enabled = active);
         }
 

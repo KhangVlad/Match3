@@ -31,7 +31,7 @@ namespace Match3
             {
                 AudioManager.Instance.PlayButtonSfx();
 
-                Loader.Load(Loader.Scene.MenuScene);
+                Loader.Load(Loader.Scene.Town);
             });
 
             _replayBtn.onClick.AddListener(() =>

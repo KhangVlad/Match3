@@ -10,6 +10,7 @@ public class CharacterActivitySO : ScriptableObject
     public ActivityInfo[] activityInfos;
     public Vector2Int homePosition;
     public DayInWeek dayOff;
+    public int[] sympathyRequired; //index is the level, value is the sympathy required, use to calculate the heart level
 }
 
 [Serializable]
@@ -20,6 +21,8 @@ public class ActivityInfo
     public Vector2Int appearPosition;
     public DayInWeek dayOfWeek;
 }
+
+
 
 public enum DayInWeek  
 {

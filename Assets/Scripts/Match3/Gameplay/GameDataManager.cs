@@ -19,7 +19,7 @@ namespace Match3
 
         public BoosterDataSo[] BoosterDataSos;
         private Dictionary<BoosterID, BoosterDataSo> _boosterDataDict;
-
+        public event System.Action OnDataLoaded;  
 
         // Level
         private TextAsset[] _levels;
@@ -61,13 +61,13 @@ namespace Match3
 
             // Load levels
             _levels = Resources.LoadAll<TextAsset>("Levels/");
-            Debug.Log($"level count: {_levels.Length}");
 
             // Load quest data
             LoadQuestData();
 
             // Load booster data
             LoadBoosterData();
+            OnDataLoaded?.Invoke();
         }
 
 

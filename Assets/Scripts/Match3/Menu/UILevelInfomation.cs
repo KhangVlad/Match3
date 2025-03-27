@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -17,7 +18,7 @@ namespace Match3
         [Header("Booster")] [SerializeField] private UIBooster _uiBoosterPrefab;
         [SerializeField] private Transform _boosterContentParent;
         public UIBooster[] UIBoosters;
-
+        public event Action<Loader.Scene> OnSceneSwitch;
 
         private void Awake()
         {
@@ -74,7 +75,6 @@ namespace Match3
             for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
             {
                 Booster booster = UserManager.Instance.AvaiableBoosters[i];
-
                 UIBooster uibooster = Instantiate(_uiBoosterPrefab, _boosterContentParent);
                 uibooster.SetBoosterData(booster);
             }

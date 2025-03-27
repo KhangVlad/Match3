@@ -7,6 +7,7 @@ using UnityEngine;
 public class CharacterAppearanceSO : ScriptableObject
 {
     public List<CharacterAppearance> characterAppearances;
+    public List<HeartColor> heartColors;
 }
 
 [Serializable]
@@ -15,4 +16,11 @@ public class CharacterAppearance
     public CharacterID id;
     public Color color;
     public Vector2 heartPosition;
+}
+
+[Serializable]
+public class HeartColor
+{
+    public Color color;
+    public int level;
 }
