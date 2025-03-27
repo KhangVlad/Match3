@@ -10,7 +10,6 @@ namespace Match3
         public TileID[,] Tiles;
         public TileID[] AvaiableTiles;
         public int[,] Quests;
-
         public LevelData(int width, int height)
         {
             Data = new int[width, height];

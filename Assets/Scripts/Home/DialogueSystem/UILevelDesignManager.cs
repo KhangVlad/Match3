@@ -26,6 +26,7 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Image sliderFill; //color of next level
     [SerializeField] private Slider slider; //progress for next level
     [SerializeField] private TextMeshProUGUI progressText;
+
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -129,7 +130,6 @@ public class UILevelDesignManager : MonoBehaviour
     {
         if (active)
         {
-            CharacterDisplay.Instance.OpenDialogue();
             _canvas.enabled = true;
             playButton.gameObject.SetActive(false);
             _canvas.transform.localScale = Vector3.zero;

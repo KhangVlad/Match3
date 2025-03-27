@@ -1423,6 +1423,7 @@ MonoBehaviour:
   characterActivities: []
   characterColor: {fileID: 11400000, guid: 77aec644ec524476285d9b218adfc8c8, type: 2}
   charactersData: []
+  characterDialogues: []
 --- !u!1 &397673600
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,6 +3035,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 920754850}
   m_CullTransparentMesh: 1
+--- !u!1 &1024774875
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1024774878}
+  - component: {fileID: 1024774877}
+  - component: {fileID: 1024774876}
+  m_Layer: 0
+  m_Name: CSVLoad
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1024774876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024774875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bfd84c37ca947acbf282ab60543e7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  csvFile: {fileID: 0}
+--- !u!114 &1024774877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024774875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbc8c49a70fa441ba78c655f47ced36d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1024774878
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024774875}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.2105932, y: -0.5478178, z: -0.62462884}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1041879507
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3932,3 +3991,4 @@ SceneRoots:
   - {fileID: 1637742527}
   - {fileID: 877730072}
   - {fileID: 758065096}
+  - {fileID: 1024774878}

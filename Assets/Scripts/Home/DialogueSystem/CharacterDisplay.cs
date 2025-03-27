@@ -5,10 +5,26 @@ using UnityEngine;
 public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
-
     public event Action OnCloseDialogue;
-    public event Action OnCharacterInteracted;
     public bool IsActiveCharacter = false;
+    public CharacterDialogueSO characterDialogueSO;
+
+    private void Start()
+    {
+        ScreenInteraction.Instance.OnCharacterInteracted += LoadCharacterDialogue;
+    }
+
+
+    private void OnDestroy()
+    {
+        ScreenInteraction.Instance.OnCharacterInteracted -= LoadCharacterDialogue;
+    }
+
+
+    private void LoadCharacterDialogue(CharacterID id)
+    {
+        characterDialogueSO = CharactersDataManager.Instance.GetCharacterDialogue(id);
+    }
 
     private void Awake()
     {
@@ -25,13 +41,6 @@ public class CharacterDisplay : MonoBehaviour
     private const string mockupDialogue = "Hi! How are you today? I have a small problem, can you help me?";
     private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
 
-    public Dictionary<int, string> dialogueOfLevel = new Dictionary<int, string>()
-    {
-        { 0, "I need some <sprite index=2>, could you help me to collect them?" },
-        { 1, "I need some <sprite index=4> and <sprite index=7> to make a cake." },
-        { 2, "Can you get me some butter and vanilla extract?" },
-        { 3, "I also need some baking powder and milk." }
-    };
 
     public event Action<CharacterState> OnCharacterStateChanged;
     public CharacterState state;
@@ -40,7 +49,10 @@ public class CharacterDisplay : MonoBehaviour
 
     public string GetDialogue() => mockupDialogue;
 
-    public string GetDialogue(int index) => dialogueOfLevel.ContainsKey(index) ? dialogueOfLevel[index] : string.Empty;
+    public string GetDialogue(int index)
+    {
+        return characterDialogueSO.levelDialogues[index];
+    }
 
     public string GetRejectDialogue() => rejectDialogue;
 
@@ -66,10 +78,6 @@ public class CharacterDisplay : MonoBehaviour
         OnCloseDialogue?.Invoke();
     }
 
-    public void OpenDialogue()
-    {
-        OnCharacterInteracted?.Invoke();
-    }
 
 
     private void Update()
@@ -100,5 +108,3 @@ public enum CharacterState
     Entry,
     Exit
 }
-
-

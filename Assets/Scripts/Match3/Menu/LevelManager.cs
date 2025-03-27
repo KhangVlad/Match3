@@ -13,7 +13,8 @@ namespace Match3
         private int _currentLevel = 1;
         public LevelData LevelData { get; private set; }
 
-        public int CurrentLevel => _currentLevel;   
+        public int CurrentLevel => _currentLevel;
+
 
         private void Awake()
         {

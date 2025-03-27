@@ -8,7 +8,8 @@ public class CharactersDataManager : MonoBehaviour
     public static CharactersDataManager Instance { get; private set; }
     public List<CharacterActivitySO> characterActivities = new();
     public CharacterAppearanceSO characterColor;
-    public List<CharactersData> charactersData = new List<CharactersData>();
+    public List<CharactersData> charactersData = new();
+    public List<CharacterDialogueSO> characterDialogues = new();
     public event Action OnCharacterDataLoaded;
 
     private void Awake()
@@ -37,10 +38,13 @@ public class CharactersDataManager : MonoBehaviour
             charactersData.Add(new CharactersData(characterActivity));
         }
     }
+    
+    
 
     private void LoadDataSo()
     {
         characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
+        characterDialogues = Resources.LoadAll<CharacterDialogueSO>("DataSO/CharacterDialogues").ToList();
         OnCharacterDataLoaded?.Invoke();
     }
 
@@ -50,7 +54,7 @@ public class CharactersDataManager : MonoBehaviour
         return characterColor.AppearancesInfo.Find(x => x.id == id);
     }
 
-    public Color GetHeartColor(int level,out Color nextLevelColor)
+    public Color GetHeartColor(int level, out Color nextLevelColor)
     {
         nextLevelColor = characterColor.heartColors[level + 1];
         return characterColor.heartColors[level];
@@ -59,6 +63,12 @@ public class CharactersDataManager : MonoBehaviour
     public CharactersData GetCharacterData(CharacterID id)
     {
         return charactersData.Find(x => x.characterActivity.id == id);
+    }
+    
+    
+    public CharacterDialogueSO GetCharacterDialogue(CharacterID id)
+    {
+        return characterDialogues.Find(x => x.id == id);
     }
 
 
@@ -102,7 +112,7 @@ public class CharactersData
 
         return characterActivity.sympathyRequired.Length;
     }
-    
+
     public int GetNextLevelSympathy()
     {
         for (int i = 0; i < characterActivity.sympathyRequired.Length; i++)
@@ -115,10 +125,9 @@ public class CharactersData
 
         return 0;
     }
-    
+
     public void IncreaseSympathy(int value)
     {
         currentSympathy += value;
     }
-    
 }
