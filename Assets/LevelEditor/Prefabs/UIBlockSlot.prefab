@@ -133,8 +133,9 @@ GameObject:
   - component: {fileID: 8419992078703446430}
   - component: {fileID: 784820944161652072}
   - component: {fileID: 3456597706442835220}
+  - component: {fileID: 4418853416598655263}
   m_Layer: 5
-  m_Name: UISlot
+  m_Name: UIBlockSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -221,7 +222,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -244,6 +245,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4418853416598655263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2258196469923946004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5fd129165053cb4b84c443a9e8f8879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _chooseBtn: {fileID: 3456597706442835220}
+  _removeBtn: {fileID: 5009660662801693135}
+  _shortcutIndexText: {fileID: 7486038647676956537}
+  _icon: {fileID: 870619802106010430}
+  _defaultButtonSprite: {fileID: 21300000, guid: 979896ccd64ce433ebc5d2bc1905cb08, type: 3}
+  _selectButtonSprite: {fileID: 21300000, guid: 97e185885cbb441a19ae88cc4da895e0, type: 3}
 --- !u!1 &5477400322418646371
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,7 +275,7 @@ GameObject:
   - component: {fileID: 1917297476244449616}
   - component: {fileID: 7486038647676956537}
   m_Layer: 5
-  m_Name: SlotIndexText
+  m_Name: ShortcutText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

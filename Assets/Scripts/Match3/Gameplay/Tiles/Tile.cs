@@ -28,7 +28,7 @@ namespace Match3
 
 
         #region Properties
-     
+        public Sprite TileSprite => _tileSprite;
         #endregion
 
         protected virtual void Awake()
