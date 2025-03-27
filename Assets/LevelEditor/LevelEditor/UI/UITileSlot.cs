@@ -9,14 +9,22 @@ namespace Match3.LevelEditor
     {
         public static System.Action<UITileSlot> OnClicked;
         [SerializeField] private Button _button;
+        [SerializeField] private Image _iconImage;
 
         [Header("Sprites")]
         [SerializeField] private Sprite _defaultButtonSprite;
         [SerializeField] private Sprite _selectButtonSprite;
+
+
+        [Header("Runtime")]
+        [SerializeField] private Tile _tile;
+       public int SlotIndex {get ;private set;} 
+ 
         private void Start()
         {
             _button.onClick.AddListener(() =>
             {
+                AudioManager.Instance.PlayButtonSfx();
                 OnClicked?.Invoke(this);
             });
 
@@ -42,6 +50,16 @@ namespace Match3.LevelEditor
             }
         }
             
+
+        public void SetData(Tile tile, int slotIndex)
+        {
+            this._tile = tile;
+            this.SlotIndex = slotIndex;
+
+            _iconImage.sprite = _tile.TileSprite;
+            _iconImage.SetNativeSize();
+            _iconImage.rectTransform.ScaleIcon(85, 85);
+        }
 
         private void Select()
         {

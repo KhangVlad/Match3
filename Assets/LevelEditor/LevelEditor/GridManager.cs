@@ -51,6 +51,31 @@ namespace Match3.LevelEditor
             if (IsGridLoaded == false) return;
 
             UpdateGridVisualize();
+
+            if(Input.GetMouseButton(0))
+            {
+                Vector2Int gridPosition = GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    if (LevelEditorInventory.Instance.SelectedShortcutIndex < 5)
+                    {
+                        int index = gridPosition.x + gridPosition.y * Width;
+
+                        Tile selectedTile = LevelEditorInventory.Instance.GetSelectedTile();
+                        if (_tiles[index].ID != selectedTile.ID)
+                        {
+                            Debug.Log("EE");
+
+                            Destroy(_tiles[index].gameObject);
+                            _tiles[index] = null;
+
+                            TileID tileID = selectedTile.ID;
+                            Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                            tile.UpdatePosition();
+                        }
+                    }
+                }
+            }
         }
 
 

@@ -7,10 +7,14 @@ namespace Match3.LevelEditor
     {
         public static LevelEditorInventory Instance { get; private set; }
         public event System.Action OnInventoryInitialized;
+        public event System.Action<int> OnTileChanged;
+        public event System.Action<int> OnBlockChanged;
 
         public Tile[] Tiles;
         public Block[] Blocks;
-        
+
+        public int SelectedShortcutIndex;
+
 
         private void Awake()
         {
@@ -48,6 +52,42 @@ namespace Match3.LevelEditor
             }
 
             OnInventoryInitialized?.Invoke();
+        }
+
+        public void SetTile(Tile tile, int index)
+        {
+            Tiles[index] = tile;
+            OnTileChanged?.Invoke(index);
+        }
+
+        public void SetBlock(Block block, int index)
+        {
+            Blocks[index] = block;
+            OnBlockChanged?.Invoke(index);
+        }
+
+        public Tile GetSelectedTile()
+        {
+            if(SelectedShortcutIndex > 0 && SelectedShortcutIndex < 5)
+            {
+                return Tiles[SelectedShortcutIndex - 1];
+            }
+            else
+            {
+                return Tiles[1];
+            }
+        }
+
+        public Block GetSelectedBlock()
+        {
+            if (SelectedShortcutIndex > 4 && SelectedShortcutIndex < 9)
+            {
+                return Blocks[SelectedShortcutIndex - 1];
+            }
+            else
+            {
+                return Blocks[5];
+            }
         }
     }
 }

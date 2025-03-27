@@ -1,17 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
+
 
 namespace Match3.LevelEditor
 {
-    public class UIHotbarBlockSlot : MonoBehaviour
+    public class UIHotbarBlockSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public static event System.Action<UIHotbarBlockSlot> OnClicked;
 
         [SerializeField] private Button _chooseBtn;
         [SerializeField] private Button _removeBtn;
+        [SerializeField] private Button _addBtn;
         [SerializeField] private TextMeshProUGUI _shortcutIndexText;
-        [SerializeField] private Image _icon;
+        [SerializeField] private Image _iconImage;
         [SerializeField] private Sprite _defaultButtonSprite;
         [SerializeField] private Sprite _selectButtonSprite;
 
@@ -19,6 +22,7 @@ namespace Match3.LevelEditor
         public int SlotIndex { get; private set; }
         public int ShortcutIndex { get; private set; }
 
+        private bool _isEnter = false;
 
         private void Start()
         {
@@ -30,13 +34,25 @@ namespace Match3.LevelEditor
 
             _removeBtn.onClick.AddListener(() =>
             {
+                AudioManager.Instance.PlayButtonSfx();
+                OnClicked?.Invoke(this);
 
+                Block noneBlock = GameDataManager.Instance.GetBlockByID(BlockID.None);
+                SetData(noneBlock, SlotIndex);
+            });
+
+            _addBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+                OnClicked?.Invoke(this);
             });
         }
 
         private void OnDestroy()
         {
             _chooseBtn.onClick.RemoveAllListeners();
+            _removeBtn.onClick.RemoveAllListeners();
+            _addBtn.onClick.RemoveAllListeners();
         }
 
         public void SetData(Block block, int slotIndex)
@@ -44,9 +60,38 @@ namespace Match3.LevelEditor
             this.Block = block;
             this.SlotIndex = slotIndex;
 
-            _icon.sprite = block.GetComponent<SpriteRenderer>().sprite;
-            _icon.SetNativeSize();
-            _icon.rectTransform.ScaleIcon(75, 75);
+            _iconImage.sprite = block.GetComponent<SpriteRenderer>().sprite;
+            _iconImage.SetNativeSize();
+            _iconImage.rectTransform.ScaleIcon(75, 75);
+
+            switch (block)
+            {
+                case NoneBlock:
+                    _iconImage.enabled = false;
+                    break;
+                case VoidBlock:
+                    _iconImage.enabled = true;
+                    break;
+                case FillBlock:
+                    _iconImage.enabled = true;
+                    _iconImage.color = Color.black;
+                    break;
+                default:
+                    _iconImage.enabled = true;
+                    _iconImage.color = Color.white;
+                    break;
+            }
+
+            if(block is NoneBlock)
+            {
+                _removeBtn.gameObject.SetActive(false);
+                _addBtn.gameObject.SetActive(true);
+            }
+            else
+            {
+                _removeBtn.gameObject.SetActive(true);
+                _addBtn.gameObject.SetActive(false);
+            }
         }
 
         public void SetShortcutText(int index)
@@ -67,5 +112,24 @@ namespace Match3.LevelEditor
             _chooseBtn.image.sprite = _defaultButtonSprite;
         }
 
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _isEnter = true;
+
+            Utilities.WaitAfter(0.25f, () =>
+            {
+                if (_isEnter)
+                {
+                    UIPopupManager.Instance.DisplayUINameInfoPopup(true);
+                    UIPopupManager.Instance.SetNameInfoPopupContent(Block.BlockID.ToString());
+                }
+            });
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isEnter = false;
+            UIPopupManager.Instance.DisplayUINameInfoPopup(false);
+        }
     }
 }
