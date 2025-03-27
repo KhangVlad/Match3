@@ -75,7 +75,6 @@ namespace Match3
             for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
             {
                 Booster booster = UserManager.Instance.AvaiableBoosters[i];
-
                 UIBooster uibooster = Instantiate(_uiBoosterPrefab, _boosterContentParent);
                 uibooster.SetBoosterData(booster);
             }

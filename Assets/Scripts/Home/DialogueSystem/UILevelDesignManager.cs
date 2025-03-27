@@ -60,7 +60,7 @@ public class UILevelDesignManager : MonoBehaviour
     private void OnCharacterInteracted(CharacterID id)
     {
         SetPanelColor(id);
-        CharacterDisplay.Instance.TransitionToState(CharacterState.Greeting);
+        CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
         ActiveCanvas(true);
         InitializeLevels();
         nameText.text = id.ToString();
@@ -136,6 +136,7 @@ public class UILevelDesignManager : MonoBehaviour
                 playButton.gameObject.SetActive(false);
                 _canvas.enabled = false;
             });
+            CharacterDisplay.Instance.TransitionToState(CharacterState.Exit);
             CharacterDisplay.Instance.CloseDialogue();
             typewriterEffect.ResetText();
         }

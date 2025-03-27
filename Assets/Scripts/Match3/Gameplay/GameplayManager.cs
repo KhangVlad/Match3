@@ -101,7 +101,6 @@ namespace Match3
         public void ChangeGameState(GameState state)
         {
             _currentState = state;
-            Debug.Log($"ChangeGameState: {state}");
             switch (_currentState)
             {
                 default: break;

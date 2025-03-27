@@ -14,7 +14,6 @@ public class LoadingAnimationController : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
         else
         {

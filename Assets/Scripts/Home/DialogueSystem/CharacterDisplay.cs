@@ -7,7 +7,7 @@ public class CharacterDisplay : MonoBehaviour
     public static CharacterDisplay Instance { get; private set; }
 
     public event Action OnCloseDialogue;
-    public event  Action OnCharacterInteracted;
+    public event Action OnCharacterInteracted;
     public bool IsActiveCharacter = false;
 
     private void Awake()
@@ -24,7 +24,6 @@ public class CharacterDisplay : MonoBehaviour
 
     private const string mockupDialogue = "Hi! How are you today? I have a small problem, can you help me?";
     private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
-    public Sympathy sympathy;
 
     public Dictionary<int, string> dialogueOfLevel = new Dictionary<int, string>()
     {
@@ -34,22 +33,10 @@ public class CharacterDisplay : MonoBehaviour
         { 3, "I also need some baking powder and milk." }
     };
 
-    public event Action<Sympathy, CharacterState> OnCharacterStateChanged;
-
-    private ICharacterState currentState;
-    private CharacterState state;
-    private readonly IdleState idleState = new IdleState();
-    private readonly TalkingState talkingState = new TalkingState();
-    private readonly GreetingState emotionState = new GreetingState();
-
-
+    public event Action<CharacterState> OnCharacterStateChanged;
+    public CharacterState state;
     public float Timer = 0;
     public float TimeToChangeState = 5; //random change to emotion state
-
-
-    private void Start()
-    {
-    }
 
     public string GetDialogue() => mockupDialogue;
 
@@ -60,32 +47,39 @@ public class CharacterDisplay : MonoBehaviour
 
     public void TransitionToState(CharacterState newState)
     {
-        currentState?.Exit(this);
         state = newState;
-        OnCharacterStateChanged?.Invoke(sympathy, state);
+        if (state == CharacterState.Entry)
+        {
+            IsActiveCharacter = true;
+        }
+
+        if (state == CharacterState.Exit)
+        {
+            IsActiveCharacter = false;
+        }
+
+        OnCharacterStateChanged?.Invoke(state);
     }
 
     public void CloseDialogue()
     {
         OnCloseDialogue?.Invoke();
     }
-    
+
     public void OpenDialogue()
     {
         OnCharacterInteracted?.Invoke();
     }
-    
-    
 
 
     private void Update()
     {
-        if (!IsActiveCharacter) return;
+        if (!IsActiveCharacter || state == CharacterState.Entry) return;
         Timer += Time.deltaTime;
         if (Timer >= TimeToChangeState)
         {
-            Debug.Log("Random Emotion");
-            TransitionToState(CharacterState.Talking);
+            Debug.Log("new state Change");
+            TransitionToState(CharacterState.Idle);
             Timer = 0;
         }
     }
@@ -103,50 +97,8 @@ public enum CharacterState
     Idle,
     Talking,
     Greeting,
-    AfterGreeting,
+    Entry,
+    Exit
 }
 
 
-public class IdleState : ICharacterState
-{
-    public void Enter(CharacterDisplay characterDisplay)
-    {
-    }
-
-
-    public void Exit(CharacterDisplay characterDisplay)
-    {
-    }
-}
-
-public class TalkingState : ICharacterState
-{
-    public void Enter(CharacterDisplay characterDisplay)
-    {
-    }
-
-
-    public void Exit(CharacterDisplay characterDisplay)
-    {
-    }
-}
-
-public class GreetingState : ICharacterState
-{
-    public void Enter(CharacterDisplay characterDisplay)
-    {
-    }
-
-
-    public void Exit(CharacterDisplay characterDisplay)
-    {
-    }
-}
-
-
-public enum Sympathy
-{
-    Low,
-    Medium,
-    High
-}

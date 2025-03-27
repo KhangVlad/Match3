@@ -69,9 +69,8 @@ public class CharacterVideoController : MonoBehaviour
     }
 
 
-    private void OnCharacterStateChanged(Sympathy s, CharacterState state)
+    private void OnCharacterStateChanged( CharacterState state)
     {
-        Debug.Log("OnCharacterStateChanged" + state);
         if (state == CharacterState.Idle)
         {
             Debug.Log("Idle");
@@ -98,6 +97,20 @@ public class CharacterVideoController : MonoBehaviour
                 InitializeVideoPlayer(idleInfo, null);
             });
         }
+        else if (state == CharacterState.Entry)
+        {
+            VideoClipInfo[] greetingVideos = videoClips.FindAll(x => x.videoType == VideoType.Greeting).ToArray();
+            VideoClipInfo info = greetingVideos[UnityEngine.Random.Range(0, greetingVideos.Length)];
+            InitializeVideoPlayer(info, () =>
+            {
+                VideoClipInfo[] talkVideos = videoClips.FindAll(x => x.videoType == VideoType.Talking).ToArray();
+                VideoClipInfo talkInfo = talkVideos[UnityEngine.Random.Range(0, talkVideos.Length)];
+                InitializeVideoPlayer(talkInfo, () =>
+                {
+                    CharacterDisplay.Instance.TransitionToState(CharacterState.Idle);
+                });
+            });
+        }
     }
 
 
@@ -113,6 +126,7 @@ public class CharacterVideoController : MonoBehaviour
             videoPlayer.isLooping = true;
             videoPlayer.clip = info.videoClip;
             videoPlayer.Play();
+            onEnd?.Invoke();
         }
         else if (info.videoType == VideoType.Talking || info.videoType == VideoType.Greeting)
         {

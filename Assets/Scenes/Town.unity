@@ -5916,7 +5916,7 @@ Animator:
   m_GameObject: {fileID: 1626117542}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d2102d0339c724010a55b00afc9f4955, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9132f467235e0402daabb1a04b469c81, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6124,8 +6124,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsActiveCharacter: 0
   sympathy: 0
+  state: 0
   Timer: 0
-  TimeToChangeState: 5
+  TimeToChangeState: 30
 --- !u!1 &1690385851
 GameObject:
   m_ObjectHideFlags: 0

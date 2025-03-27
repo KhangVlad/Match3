@@ -16,9 +16,7 @@ public class UILoadingMenu : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Start method called");
         homeButton.onClick.AddListener(OnHomeClick);
-        homeButton.gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -75,14 +73,13 @@ public class UILoadingMenu : MonoBehaviour
 
         if (progress >= 1f)
         {
-            homeButton.gameObject.SetActive(true);
-            goHomeText.DOFade(0f, 1.5f).SetLoops(-1, LoopType.Yoyo);
+            homeButton.interactable = true;
+            goHomeText.DOFade(0.5f, 1.5f).SetLoops(-1, LoopType.Yoyo);
         }
     }
 
     private void OnHomeClick()
     {
-        Debug.Log("Home button clicked");
         LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
     }
 }

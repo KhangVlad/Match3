@@ -6,10 +6,11 @@ using System.Linq;
 public class CharactersDataManager : MonoBehaviour
 {
     public static CharactersDataManager Instance { get; private set; }
-    [Header("~Runtime")] 
     public List<CharacterActivitySO> characterActivities = new();
     public CharacterAppearanceSO characterColor;
+    public List<CharactersData> charactersData = new List<CharactersData>();
     public event Action OnCharacterDataLoaded;
+
     private void Awake()
     {
         if (Instance == null)
@@ -26,6 +27,15 @@ public class CharactersDataManager : MonoBehaviour
     private void Start()
     {
         LoadDataSO();
+        LoadAllCharactersData();
+    }
+
+    private void LoadAllCharactersData() //get from user later
+    {
+        foreach (var characterActivity in characterActivities)
+        {
+            charactersData.Add(new CharactersData(characterActivity));
+        }
     }
 
     private void LoadDataSO()
@@ -33,7 +43,6 @@ public class CharactersDataManager : MonoBehaviour
         characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
         OnCharacterDataLoaded?.Invoke();
     }
-
 
 
     public CharacterAppearance GetCharacterAppearanceData(CharacterID id)
@@ -63,8 +72,14 @@ public class CharactersDataManager : MonoBehaviour
 }
 
 [Serializable]
-public class CharsWithIndex
+public class CharactersData
 {
+    public int currentSympathy;
     public CharacterActivitySO characterActivity;
-    public int index;
+
+    public CharactersData(CharacterActivitySO characterActivity)
+    {
+        currentSympathy = 0;
+        this.characterActivity = characterActivity;
+    }
 }
