@@ -74,8 +74,8 @@ public class ScreenInteraction : MonoBehaviour
         PreviouseMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
         RaycastHit2D hit = Physics2D.Raycast(PreviouseMousePos, Vector2.zero, 1000, characterLayerMask);
-        // GameObject a = VfxPool.Instance.GetVfxByName("flower");
-        // a.transform.position = previousMousePosition;
+        VfxGameObject a = VfxPool.Instance.GetVfxByName("Heart");
+        a.gameObject.transform.position = PreviouseMousePos;
 
         if (hit.collider is not null)
         {
@@ -107,6 +107,7 @@ public class ScreenInteraction : MonoBehaviour
             target.position = new Vector3(newPosition.x, newPosition.y, target.position.z);
             yield return null;
         }
+
         InteractAble = true;
     }
 

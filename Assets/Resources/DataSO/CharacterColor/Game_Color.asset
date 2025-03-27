@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba54dc74c9074bc494f4ded8bdd260d8, type: 3}
   m_Name: Game_Color
   m_EditorClassIdentifier: 
-  characterAppearances:
+  AppearancesInfo:
   - id: 1
-    color: {r: 0.22352941, g: 0.69411767, b: 0.57254905, a: 1}
-    heartPosition: {x: 150, y: -350}
+    panelColor: {r: 0.29803923, g: 0.7294118, b: 0.5803922, a: 1}
+    heartPosition: {x: 170, y: -350}
   - id: 2
-    color: {r: 0.26666668, g: 0.6666667, b: 0.54901963, a: 1}
-    heartPosition: {x: 170, y: -440}
-  - id: 3
-    color: {r: 0.050980393, g: 0.49019608, b: 0.15294118, a: 1}
-    heartPosition: {x: 95, y: -360}
-  - id: 4
-    color: {r: 0.32156864, g: 0.6784314, b: 0.6627451, a: 1}
-    heartPosition: {x: 170, y: -360}
-  - id: 5
-    color: {r: 0.34509805, g: 0.5921569, b: 0.36078432, a: 1}
-    heartPosition: {x: 115, y: -380}
+    panelColor: {r: 0.2627451, g: 0.654902, b: 0.5254902, a: 1}
+    heartPosition: {x: 170, y: -450}
+  heartColors:
+  - {r: 0.1509434, g: 0.13741545, b: 0.13741545, a: 1}
+  - {r: 0.09803922, g: 0.8117647, b: 0.44705883, a: 1}
+  - {r: 0.18431373, g: 0.64705884, b: 0.94509804, a: 1}
+  - {r: 0.78039217, g: 0.30980393, b: 0.8509804, a: 1}
+  - {r: 1, g: 0.92941177, b: 0, a: 1}
+  - {r: 1, g: 0.20392157, b: 0.15686275, a: 1}
+  - {r: 0.7490196, g: 0, b: 0.3897202, a: 1}
+  - {r: 0.7490196, g: 0, b: 0.3897202, a: 1}

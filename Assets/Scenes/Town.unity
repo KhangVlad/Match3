@@ -2459,7 +2459,12 @@ MonoBehaviour:
   playButton: {fileID: 1024733674}
   panel: {fileID: 1657834539}
   heart: {fileID: 1626117543}
+  heartImage: {fileID: 1559799340}
+  heartHeader: {fileID: 1762768267}
   nameText: {fileID: 1847434526}
+  sliderFill: {fileID: 1082660440}
+  slider: {fileID: 1122989317}
+  progressText: {fileID: 1354514442}
 --- !u!114 &646901785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3887,7 +3892,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5882749, g: 1, b: 0.4481132, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5548,7 +5553,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d1d1bcc7857614c02a089619529d6e3e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3b1cf619e57b54f80b8da1f11837438f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6123,7 +6128,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsActiveCharacter: 0
-  sympathy: 0
   state: 0
   Timer: 0
   TimeToChangeState: 30
@@ -6528,7 +6532,7 @@ GameObject:
   - component: {fileID: 1762768268}
   - component: {fileID: 1762768267}
   m_Layer: 5
-  m_Name: Image
+  m_Name: HeartIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

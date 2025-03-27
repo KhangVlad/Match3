@@ -3,6 +3,7 @@ using DG.Tweening;
 using Match3;
 using TMPro;
 using UnityEngine.UI;
+using System.Linq;
 
 
 public class UILevelDesignManager : MonoBehaviour
@@ -19,8 +20,12 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Image panel;
     [SerializeField] private RectTransform heart;
+    [SerializeField] private Image heartImage;
+    [SerializeField] private Image heartHeader;
     [SerializeField] private TextMeshProUGUI nameText;
-
+    [SerializeField] private Image sliderFill; //color of next level
+    [SerializeField] private Slider slider; //progress for next level
+    [SerializeField] private TextMeshProUGUI progressText;
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -43,9 +48,17 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void SetPanelColor(CharacterID id)
     {
-        CharacterAppearance data = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
-        panel.color = data.color;
-        heart.anchoredPosition = new Vector2(data.heartPosition.x, data.heartPosition.y);
+        CharactersData charData = CharactersDataManager.Instance.GetCharacterData(id);
+        Color heartColor = CharactersDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
+        CharacterAppearance appearance = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
+        heartImage.color = heartColor;
+        heartHeader.color = nextLevelColor;
+        panel.color = appearance.panelColor;
+        sliderFill.color = nextLevelColor;
+        slider.maxValue = charData.GetNextLevelSympathy();
+        slider.value = charData.currentSympathy;
+        progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
+        heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
     }
 
 
@@ -53,7 +66,7 @@ public class UILevelDesignManager : MonoBehaviour
     {
         LevelManager.Instance.LoadLevelData(currentChosenLevel.index);
         UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
-        VfxPool.Instance.GetVfxByName("Energy").transform.position = playButton.transform.position;
+        VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = playButton.transform.position;
         UILevelInfomation.Instance.DisplayCanvas(true);
     }
 

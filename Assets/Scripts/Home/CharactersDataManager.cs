@@ -26,7 +26,7 @@ public class CharactersDataManager : MonoBehaviour
 
     private void Start()
     {
-        LoadDataSO();
+        LoadDataSo();
         LoadAllCharactersData();
     }
 
@@ -38,7 +38,7 @@ public class CharactersDataManager : MonoBehaviour
         }
     }
 
-    private void LoadDataSO()
+    private void LoadDataSo()
     {
         characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
         OnCharacterDataLoaded?.Invoke();
@@ -47,7 +47,18 @@ public class CharactersDataManager : MonoBehaviour
 
     public CharacterAppearance GetCharacterAppearanceData(CharacterID id)
     {
-        return characterColor.characterAppearances.Find(x => x.id == id);
+        return characterColor.AppearancesInfo.Find(x => x.id == id);
+    }
+
+    public Color GetHeartColor(int level,out Color nextLevelColor)
+    {
+        nextLevelColor = characterColor.heartColors[level + 1];
+        return characterColor.heartColors[level];
+    }
+
+    public CharactersData GetCharacterData(CharacterID id)
+    {
+        return charactersData.Find(x => x.characterActivity.id == id);
     }
 
 
@@ -56,11 +67,7 @@ public class CharactersDataManager : MonoBehaviour
         List<CharacterActivitySO> a = new List<CharacterActivitySO>();
         foreach (var characterActivity in characterActivities)
         {
-            if (characterActivity.dayOff == day)
-            {
-                continue;
-            }
-
+            if (characterActivity.dayOff == day) continue;
             if (characterActivity.activityInfos.Any(info => info.dayOfWeek == day))
             {
                 a.Add(characterActivity);
@@ -82,4 +89,36 @@ public class CharactersData
         currentSympathy = 0;
         this.characterActivity = characterActivity;
     }
+
+    public int GetLevel()
+    {
+        for (int i = 0; i < characterActivity.sympathyRequired.Length; i++)
+        {
+            if (currentSympathy < characterActivity.sympathyRequired[i])
+            {
+                return i;
+            }
+        }
+
+        return characterActivity.sympathyRequired.Length;
+    }
+    
+    public int GetNextLevelSympathy()
+    {
+        for (int i = 0; i < characterActivity.sympathyRequired.Length; i++)
+        {
+            if (currentSympathy < characterActivity.sympathyRequired[i])
+            {
+                return characterActivity.sympathyRequired[i];
+            }
+        }
+
+        return 0;
+    }
+    
+    public void IncreaseSympathy(int value)
+    {
+        currentSympathy += value;
+    }
+    
 }

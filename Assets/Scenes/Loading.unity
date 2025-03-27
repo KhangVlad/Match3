@@ -1422,6 +1422,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterActivities: []
   characterColor: {fileID: 11400000, guid: 77aec644ec524476285d9b218adfc8c8, type: 2}
+  charactersData: []
 --- !u!1 &397673600
 GameObject:
   m_ObjectHideFlags: 0
