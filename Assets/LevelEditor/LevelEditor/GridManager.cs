@@ -6,6 +6,7 @@ namespace Match3.LevelEditor
     {
         public static GridManager Instance { get; private set; }
         public event System.Action OnGridLoaded;
+        public event System.Action OnDataHasChanged;
 
 
         [Header("Grid")]
@@ -37,7 +38,6 @@ namespace Match3.LevelEditor
             Application.targetFrameRate = 60;
         }
 
-
         private void Update()
         {
             if (IsGridLoaded == false) return;
@@ -64,6 +64,8 @@ namespace Match3.LevelEditor
                                 TileID tileID = selectedTile.ID;
                                 Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
                                 tile.UpdatePosition();
+
+                                OnDataHasChanged?.Invoke();
                             }
                         }
                         else
@@ -74,6 +76,8 @@ namespace Match3.LevelEditor
                             TileID tileID = selectedTile.ID;
                             Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
                             tile.UpdatePosition();
+
+                            OnDataHasChanged?.Invoke();
                         }
                     }
                     else if (LevelEditorInventory.Instance.SelectedShortcutIndex < 9)
@@ -83,6 +87,8 @@ namespace Match3.LevelEditor
                         if (_tiles[index].CurrentBlock.BlockID != selectedBlock.BlockID)
                         {
                             AddBlock(_tiles[index], selectedBlock);
+
+                            OnDataHasChanged?.Invoke();
                         }
                     }
                 }
@@ -101,12 +107,50 @@ namespace Match3.LevelEditor
                         _tiles[index] = null;
                         Tile tile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
                         tile.UpdatePosition();
+
+                        OnDataHasChanged?.Invoke();
                     }
 
                 }
             }
         }
 
+        public void LoadLevelData(LevelData levelData)
+        {
+            this.Width = levelData.Tiles.GetLength(0);
+            this.Height = levelData.Tiles.GetLength(1);
+            _tiles = new Tile[Width * Height];
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    TileID tileID = levelData.Tiles[x, y];
+                    BlockID blockID = (BlockID)levelData.Blocks[x, y];
+
+                    Tile newTile = AddTile(x, y, tileID, blockID);
+                    newTile.UpdatePosition();
+
+                    _tiles[x + y * Width] = newTile;
+                }
+            }
+
+            // grid slots
+            _gridSlots = new GridSlot[Width * Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = x + y * Width;
+                    GridSlot slot = Instantiate(_gridPrefab, _gridSlotContentParent);
+                    slot.transform.position = _tiles[index].transform.position;
+                    _gridSlots[index] = slot;
+                }
+            }
+
+            IsGridLoaded = true;
+            OnGridLoaded?.Invoke();
+        }
 
         public void LoadGridData(int width, int height)
         {
@@ -143,6 +187,7 @@ namespace Match3.LevelEditor
             OnGridLoaded?.Invoke();
         }
 
+
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
         {
             // Tile
@@ -156,9 +201,10 @@ namespace Match3.LevelEditor
             // Block
             Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
             Block blockInstance = Instantiate(blockPrefab, tileInstance.transform);
-            blockInstance.transform.localPosition = Vector3.zero;
-
+            blockInstance.transform.localPosition = Vector3.zero;       
             tileInstance.SetBlock(blockInstance);
+
+            blockInstance.GetComponent<SpriteRenderer>().enabled = true;
 
             return tileInstance;
         }
@@ -207,7 +253,7 @@ namespace Match3.LevelEditor
         }
 
 
-        public LevelData SaveAsLevelData()
+        public LevelData GetLevelData()
         {
             int[,] blocks = new int[Width, Height];
             TileID[,] tiles = new TileID[Width, Height];

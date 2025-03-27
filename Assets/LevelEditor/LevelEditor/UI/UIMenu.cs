@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 namespace Match3.LevelEditor
 {
@@ -43,14 +42,12 @@ namespace Match3.LevelEditor
             _filePopup.gameObject.SetActive(false);
             _uiWarningModifiedPopup.gameObject.SetActive(false);
 
-            _uiCreateNewPanel.gameObject.SetActive(true);
+            _uiCreateNewPanel.gameObject.SetActive(EditorManager.Instance.ShowCreateNewPanel);
 
             _fileBtn.onClick.AddListener(() =>
             {
                 _filePopup.gameObject.SetActive(true);
             });
-
-
 
 
 
@@ -62,8 +59,10 @@ namespace Match3.LevelEditor
             });
             _newFileBtn.onClick.AddListener(() =>
             {
+                EditorManager.Instance.ShowCreateNewPanel = true;
+
                 _filePopup.gameObject.SetActive(false);
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                Loader.Load(Loader.Scene.LevelEditor);
                 _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File*";
             });
             _saveFileBtn.onClick.AddListener(() =>
@@ -81,7 +80,7 @@ namespace Match3.LevelEditor
                     {
                         if (filePaths != null && filePaths.Length > 0)
                         {
-                            //LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
+                            LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
 
                             _filePopup.gameObject.SetActive(false);
                             _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
@@ -99,7 +98,7 @@ namespace Match3.LevelEditor
                 {
                     if (filePaths != null && filePaths.Length > 0)
                     {
-                        //LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
+                        LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
                         _projectName.text = LevelEditorSaveManager.Instance.GetProjectFileName();
 
                         _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
@@ -109,7 +108,9 @@ namespace Match3.LevelEditor
             });
             _openFileBtn.onClick.AddListener(() =>
             {
-                //Builder.Instance.ResetData();
+                EditorManager.Instance.ShowCreateNewPanel = false;
+
+                Loader.Load(Loader.Scene.LevelEditor);
                 FileBrowserManager.Instance.ShowLoadDialog((isSuccess, filePaths) =>
                 {
                     if (filePaths != null && filePaths.Length > 0)
@@ -149,7 +150,7 @@ namespace Match3.LevelEditor
                             {
                                 if (filePaths != null && filePaths.Length > 0)
                                 {
-                                    //LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
+                                    LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
                                     QuitGame();
                                 }
                             });
