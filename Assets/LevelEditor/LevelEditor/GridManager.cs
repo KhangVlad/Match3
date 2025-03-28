@@ -311,7 +311,8 @@ namespace Match3.LevelEditor
             }
             int[,] quests =
             {
-                {1, 20},
+                { 1,20},
+                {201, 20},
             };
             for (int i = 0; i < _tiles.Length; i++)
             {

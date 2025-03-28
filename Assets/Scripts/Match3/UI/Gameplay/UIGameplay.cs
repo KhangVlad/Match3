@@ -112,7 +112,7 @@ namespace Match3
                 UIQuest uiQuest = _uiQuestSlots[i];
                 Quest quest = GameplayManager.Instance.Quests[i];
 
-                uiQuest.UpdateQuest(quest.Quantity);
+                uiQuest.UpdateQuest(quest);
             }
         }
         private void OnUIGameplayBoosterManagerDisplay_UpdateUI(bool enable)

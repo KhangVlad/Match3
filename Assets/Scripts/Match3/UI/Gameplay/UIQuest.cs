@@ -16,18 +16,26 @@ namespace Match3
             this._quantityText.text = quantity.ToString();
         }
 
-        public void UpdateQuest(int quantity)
+        public void UpdateQuest(Quest quest)
         {
-            if(quantity <= 0)
+            if(quest.QuestID == QuestID.MaxTurn)
             {
-                _completeMarkObject.gameObject.SetActive(true);
-                _quantityText.text = "";
+                _quantityText.text = quest.Quantity.ToString();
             }
             else
             {
-                _completeMarkObject.gameObject.SetActive(false);
-                _quantityText.text = quantity.ToString();
+                if (quest.Quantity <= 0)
+                {
+                    _completeMarkObject.gameObject.SetActive(true);
+                    _quantityText.text = "";
+                }
+                else
+                {
+                    _completeMarkObject.gameObject.SetActive(false);
+                    _quantityText.text = quest.Quantity.ToString();
+                }
             }
+           
         }
     }
 }

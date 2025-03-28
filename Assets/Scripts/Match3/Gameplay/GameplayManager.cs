@@ -75,7 +75,7 @@ namespace Match3
             Match3Grid.OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateGameState;
 
-
+            Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch += OnLockMatchTriggered;
             Ice.OnIceUnlocked += OnIceUnlockedTriggered;
             Stone.OnStoneMatch += OnStoneMatchTriggered;
@@ -88,12 +88,15 @@ namespace Match3
         {
             Match3Grid.OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateGameState;
+
+            Match3Grid.OnEndOfTurn -= OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch -= OnLockMatchTriggered;
             Ice.OnIceUnlocked -= OnIceUnlockedTriggered;
             Stone.OnStoneMatch -= OnStoneMatchTriggered;
             Tile.OnMatched -= OnTileMatchedTriggered;
         }
 
+    
         #endregion
 
 
@@ -301,13 +304,36 @@ namespace Match3
             }
         }
 
+
+        private void OnEndOfTurnQuestTriggered()
+        {
+            for (int i = 0; i < Quests.Length; i++)
+            {
+                if (Quests[i].QuestID == QuestID.MaxTurn)
+                {
+                    Quests[i].Quantity--;
+                }
+            }
+        }
+
+
         public bool CheckCompleteAllQuests()
         {
             for (int i = 0; i < Quests.Length; i++)
             {
-                if (Quests[i].Quantity > 0)
+                if (Quests[i].QuestID == QuestID.MaxTurn)
                 {
-                    return false;
+                    if (Quests[i].Quantity < 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (Quests[i].Quantity > 0)
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -316,7 +342,14 @@ namespace Match3
 
         public bool IsQuestCompleted(int index)
         {
-            return Quests[index].Quantity <= 0;
+            if (Quests[index].QuestID == QuestID.MaxTurn)
+            {
+                return Quests[index].Quantity >= 0;
+            }
+            else
+            {
+                return Quests[index].Quantity <= 0;
+            }
         }
 
         public void AddTurnRemaingCount(int value)

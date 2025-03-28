@@ -167,7 +167,8 @@ namespace Match3
             LoadBoosters();
 
             _canPlay = false;
-            OnAfterPlayerMatchInput_ImplementGameLogic();
+
+            StartCoroutine(ImplementGameLogicCoroutine(triggerEvent: false));
         }
 
 
@@ -341,10 +342,10 @@ namespace Match3
             //    Debug.Log($"Can match: {CanMatch()}");
             //}
 
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                StartCoroutine(ImplementGameLogicCoroutine());
-            }
+            //if (Input.GetKeyDown(KeyCode.W))
+            //{
+            //    StartCoroutine(ImplementGameLogicCoroutine());
+            //}
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -620,11 +621,11 @@ namespace Match3
 
         private void OnAfterPlayerMatchInput_ImplementGameLogic()
         {
-            StartCoroutine(ImplementGameLogicCoroutine());
+            StartCoroutine(ImplementGameLogicCoroutine(triggerEvent: true));
         }
 
 
-        private IEnumerator ImplementGameLogicCoroutine()
+        private IEnumerator ImplementGameLogicCoroutine(bool triggerEvent)
         {
             //Debug.Log($"ImplementGameLogicCoroutine");
             int attempts = 0;
@@ -784,9 +785,14 @@ namespace Match3
             _canPlay = true;
 
             _triggeredMatch5Set.Clear();
-            HandleBlackMudSpreading();
-            OnEndOfTurn?.Invoke();
+
+            if(triggerEvent)
+            {
+                HandleBlackMudSpreading();
+                OnEndOfTurn?.Invoke();
+            }
         }
+
         private IEnumerator ShuffleGridUntilCanMatchCoroutine()
         {
             // shuffle grid if no match found
