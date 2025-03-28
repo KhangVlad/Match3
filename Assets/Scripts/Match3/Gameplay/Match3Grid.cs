@@ -101,7 +101,7 @@ namespace Match3
             _clearVerticalColumns = new();
             _clearHorizontalRows = new();
             _blackMudSpreaingList = new();
-            _canPlay = true;
+           
 
 
 
@@ -165,6 +165,9 @@ namespace Match3
             UserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
             LoadGridLevel();
             LoadBoosters();
+
+            _canPlay = false;
+            OnAfterPlayerMatchInput_ImplementGameLogic();
         }
 
 

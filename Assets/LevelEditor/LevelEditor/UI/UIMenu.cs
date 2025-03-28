@@ -14,6 +14,7 @@ namespace Match3.LevelEditor
 
         [Header("Tabs")]
         [SerializeField] private Button _fileBtn;
+        [SerializeField] private Button _playBtn;
 
 
         [Header("File popup")]
@@ -60,7 +61,14 @@ namespace Match3.LevelEditor
                 _filePopup.gameObject.SetActive(true);
             });
 
+            _playBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
 
+                LevelData levelData = GridManager.Instance.GetLevelData();
+                LevelManager.Instance.SetLevelData(levelData);
+                Loader.Load(Loader.Scene.GameplayScene);
+            });
 
             // File popup
             _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File*";
@@ -210,6 +218,7 @@ namespace Match3.LevelEditor
         private void OnDestroy()
         {
             _fileBtn.onClick.RemoveAllListeners();
+            _playBtn.onClick.RemoveAllListeners();
 
             // File popup
             _closeFilePopupBtn.onClick.RemoveAllListeners();

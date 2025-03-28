@@ -10,7 +10,7 @@ namespace Match3.LevelEditor
     [RequireComponent(typeof(Button))]
     public class WebGLOpenBtn : MonoBehaviour, IPointerDownHandler
     {
-#if UNITY_WEBGL && !UNITY_EDITOR || true
+#if UNITY_WEBGL && !UNITY_EDITOR
         //
         //   WEBGL
         //
