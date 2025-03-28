@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Match3;
+using System.Collections.Generic;
 
 namespace Match3.LevelEditor
 {
@@ -12,6 +13,7 @@ namespace Match3.LevelEditor
 
         public Tile[] Tiles;
         public Block[] Blocks;
+
 
         public int SelectedShortcutIndex;
 

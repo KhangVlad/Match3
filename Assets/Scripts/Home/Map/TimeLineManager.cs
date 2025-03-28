@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine.Serialization;
+using Match3.Enums;
 
 public class TimeLineManager : MonoBehaviour
 {

@@ -16,6 +16,13 @@ namespace Match3.LevelEditor
         [SerializeField] private UITileSlot[] _uiSlots;
 
         private int _currentSelectSlotIndex;
+        public enum SelectSource
+        {
+            Hotbar = 1,
+            AvaiableTiles = 2,
+        }
+        public SelectSource Source;
+
 
         private void Start()
         {
@@ -31,16 +38,21 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx();
                 this.gameObject.SetActive(false);
 
-
-                Tile tile = GameDataManager.Instance.Tiles[_currentSelectSlotIndex];
-                int index = (LevelEditorInventory.Instance.SelectedShortcutIndex-1) % 4;
-                LevelEditorInventory.Instance.SetTile(tile, index);
+                if(Source == SelectSource.Hotbar)
+                {
+                    Tile tile = GameDataManager.Instance.Tiles[_currentSelectSlotIndex];
+                    int index = (LevelEditorInventory.Instance.SelectedShortcutIndex - 1) % 4;
+                    LevelEditorInventory.Instance.SetTile(tile, index);
+                }
+                else if(Source == SelectSource.AvaiableTiles)
+                {
+                    Tile tile = GameDataManager.Instance.Tiles[_currentSelectSlotIndex];
+                    GridManager.Instance.AddAvaiableTile(tile);
+                }
             });
 
             GridManager.Instance.OnGridInitialized += LoadAllUITiles;
             UITileSlot.OnClicked += OnTileSlotClickTriggered;
-
-
 
             this.gameObject.SetActive(false);
         }

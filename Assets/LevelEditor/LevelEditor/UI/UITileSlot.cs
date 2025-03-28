@@ -81,7 +81,6 @@ namespace Match3.LevelEditor
         {
             _isEnter = true;
 
-            Debug.Log("Enter");
             Utilities.WaitAfter(0.25f, () =>
             {
                 if (_isEnter)

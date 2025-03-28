@@ -1,5 +1,7 @@
-using System;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System;
 
 namespace Match3.LevelEditor
 {
@@ -13,6 +15,14 @@ namespace Match3.LevelEditor
         [SerializeField] private UIHotbarBlockSlot _uiBlockSlotPrefab;
         [SerializeField] private Transform _tileContentsParent;
         [SerializeField] private Transform _blockContentsParent;
+
+        [Header("InputFileds")]
+        [SerializeField] private TMP_InputField _maxTurnInputField;
+        [SerializeField] private TMP_InputField _characterIDInputField;
+        [SerializeField] private TMP_InputField _unlockCharacterIDInputField;
+        [SerializeField] private TMP_InputField _heartUnlockInputField;
+
+
         [Header("~Runtime")]
         public UIHotbarTileSlot[] TileSlots;
         public UIHotbarBlockSlot[] BlockSlots;
@@ -30,7 +40,6 @@ namespace Match3.LevelEditor
                 return;
             }
             Instance = this;
-
             _canvas = GetComponent<Canvas>();
 
          
@@ -45,9 +54,27 @@ namespace Match3.LevelEditor
             UIHotbarBlockSlot.OnClicked += OnUiHorbarBlockSlotClicked;
             LevelEditorInventory.Instance.OnTileChanged += OnTileChanged_UpdateUI;
             LevelEditorInventory.Instance.OnBlockChanged += OnBlockChanged_UpdateUI;
+            GridManager.Instance.OnLoadNewLevelData += OnLoadNewLevelData_UpdateUI;
+
+            _maxTurnInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.MaxTurn = int.Parse(value);
+            });
+            _characterIDInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.UnlockData[0] = int.Parse(value);
+            });
+            _unlockCharacterIDInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.UnlockData[1] = int.Parse(value);
+            });
+            _heartUnlockInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.UnlockData[2] = int.Parse(value);
+            });
         }
 
-     
+    
 
         private void OnDestroy()
         {
@@ -58,6 +85,12 @@ namespace Match3.LevelEditor
             UIHotbarBlockSlot.OnClicked -= OnUiHorbarBlockSlotClicked;
             LevelEditorInventory.Instance.OnTileChanged -= OnTileChanged_UpdateUI;
             LevelEditorInventory.Instance.OnBlockChanged -= OnBlockChanged_UpdateUI;
+            GridManager.Instance.OnLoadNewLevelData -= OnLoadNewLevelData_UpdateUI;
+
+            _maxTurnInputField.onValueChanged.RemoveAllListeners();
+            _characterIDInputField.onValueChanged.RemoveAllListeners();
+            _unlockCharacterIDInputField.onValueChanged.RemoveAllListeners();
+            _heartUnlockInputField.onValueChanged.RemoveAllListeners();
         }
 
         private void Update()
@@ -204,6 +237,14 @@ namespace Match3.LevelEditor
         {
             Block block = LevelEditorInventory.Instance.Blocks[index];
             BlockSlots[index].SetData(block, BlockSlots[index].SlotIndex);
+        }
+
+        private void OnLoadNewLevelData_UpdateUI()
+        {
+            _maxTurnInputField.text = GridManager.Instance.MaxTurn.ToString();
+            _characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
+            _unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
+            _heartUnlockInputField.text = GridManager.Instance.UnlockData[2].ToString();
         }
     }
 }

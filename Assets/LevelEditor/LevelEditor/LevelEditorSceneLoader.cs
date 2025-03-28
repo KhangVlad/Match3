@@ -12,12 +12,11 @@ namespace Match3.LevelEditor
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (Instance == null)
             {
-                Destroy(this.gameObject);
-                return;
+                Instance = this;
             }
-            Instance = this;
+            
 
             _levelEditorScene = SceneManager.GetSceneByName(Loader.Scene.LevelEditor.ToString());
         }

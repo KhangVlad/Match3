@@ -46,7 +46,7 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx(); 
                 OnClicked?.Invoke(this);
 
-                UIInventoryManager.Instance.DisplayTileInventory(true);
+                UIInventoryManager.Instance.DisplayTileInventory(true, UITileInventory.SelectSource.Hotbar);
             });
         }
 

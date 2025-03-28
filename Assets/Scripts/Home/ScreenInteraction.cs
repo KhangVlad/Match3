@@ -3,6 +3,7 @@ using Unity.Cinemachine;
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using Match3.Enums;
 
 public class ScreenInteraction : MonoBehaviour
 {

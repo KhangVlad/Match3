@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 using System.Collections;
+using Match3.Enums;
 
 public class CharacterVideoController : MonoBehaviour
 {

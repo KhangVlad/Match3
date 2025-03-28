@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Match3.Enums;
 
 [CreateAssetMenu(fileName = "Game/Color", menuName = "Game/Color")]
 public class CharacterAppearanceSO : ScriptableObject

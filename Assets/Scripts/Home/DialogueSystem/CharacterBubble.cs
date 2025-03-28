@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Match3.Enums;
 
 public class CharacterBubble : MonoBehaviour
 {

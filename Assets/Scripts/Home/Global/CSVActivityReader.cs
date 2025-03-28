@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
-
+using Match3.Enums;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

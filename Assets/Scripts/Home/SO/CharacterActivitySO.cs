@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Match3.Enums;
 
 [CreateAssetMenu(fileName = "Game/ActivityTime", menuName = "Game/ActivityTime")]
 public class CharacterActivitySO : ScriptableObject
