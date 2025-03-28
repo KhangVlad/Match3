@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.IO;
-using SimpleFileBrowser;
 using System.Collections;
+using SFB;
 
 namespace Match3.LevelEditor
 {
@@ -22,6 +22,7 @@ namespace Match3.LevelEditor
         //Warning: paths returned by FileBrowser dialogs do not contain a trailing '\' character
         // Warning: FileBrowser can only show 1 dialog at a time
 
+#if false
         void Start()
         {
             // Set filters (optional)
@@ -136,5 +137,6 @@ namespace Match3.LevelEditor
 
             onCompleted?.Invoke(FileBrowser.Result);
         }
+#endif
     }
 }

@@ -5,7 +5,8 @@ namespace Match3.LevelEditor
     public class GridManager : MonoBehaviour
     {
         public static GridManager Instance { get; private set; }
-        public event System.Action OnGridLoaded;
+        public event System.Action OnGridInitialized;
+        public event System.Action OnLoadNewLevelData;
         public event System.Action OnDataHasChanged;
 
 
@@ -117,6 +118,15 @@ namespace Match3.LevelEditor
 
         public void LoadLevelData(LevelData levelData)
         {
+            for(int i = 0; i < _tiles.Length;  i++)
+                Destroy(_tiles[i].gameObject);
+            _tiles = null;
+
+            for (int i = 0; i < _gridSlots.Length; i++)
+                Destroy(_gridSlots[i].gameObject);
+            _gridSlots = null;
+
+
             this.Width = levelData.Tiles.GetLength(0);
             this.Height = levelData.Tiles.GetLength(1);
             _tiles = new Tile[Width * Height];
@@ -148,8 +158,12 @@ namespace Match3.LevelEditor
                 }
             }
 
-            IsGridLoaded = true;
-            OnGridLoaded?.Invoke();
+            if(IsGridLoaded == false)
+            {
+                IsGridLoaded = true;
+                OnGridInitialized?.Invoke();
+            }
+            OnLoadNewLevelData?.Invoke();
         }
 
         public void LoadGridData(int width, int height)
@@ -184,7 +198,7 @@ namespace Match3.LevelEditor
             }
 
             IsGridLoaded = true;
-            OnGridLoaded?.Invoke();
+            OnGridInitialized?.Invoke();
         }
 
 

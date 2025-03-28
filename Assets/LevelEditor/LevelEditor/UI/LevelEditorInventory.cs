@@ -28,14 +28,14 @@ namespace Match3.LevelEditor
 
         private void Start()
         {
-            GridManager.Instance.OnGridLoaded += OnGridLoaded_InitalizeInventory;
+            GridManager.Instance.OnGridInitialized += OnGridInitialized_InitalizeInventory;
         }
         private void OnDestroy()
         {
-            GridManager.Instance.OnGridLoaded -= OnGridLoaded_InitalizeInventory;
+            GridManager.Instance.OnGridInitialized -= OnGridInitialized_InitalizeInventory;
         }
 
-        private void OnGridLoaded_InitalizeInventory()
+        private void OnGridInitialized_InitalizeInventory()
         {
             Tiles = new Tile[4];
             for(int i = 0; i < 4; i++)

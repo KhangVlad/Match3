@@ -35,7 +35,7 @@ namespace Match3.LevelEditor
                 LevelEditorInventory.Instance.SetBlock(block, index);
             });
 
-            GridManager.Instance.OnGridLoaded += LoadAllUIBlocks;
+            GridManager.Instance.OnGridInitialized += LoadAllUIBlocks;
             UIBlockSlot.OnClicked += OnBlockSlotClickTriggered;
 
 
@@ -50,7 +50,7 @@ namespace Match3.LevelEditor
             _selectBtn.onClick.RemoveAllListeners();
 
 
-            GridManager.Instance.OnGridLoaded -= LoadAllUIBlocks;
+            GridManager.Instance.OnGridInitialized -= LoadAllUIBlocks;
             UIBlockSlot.OnClicked -= OnBlockSlotClickTriggered;
         }
 

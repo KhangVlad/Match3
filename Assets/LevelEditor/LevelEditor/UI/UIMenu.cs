@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
+using SFB;
 using TMPro;
 
 namespace Match3.LevelEditor
 {
     public class UIMenu : MonoBehaviour
     {
+        public static UIMenu Instance { get; private set; }
+
         private Canvas _canvas;
 
         [Header("Tabs")]
@@ -20,18 +23,26 @@ namespace Match3.LevelEditor
         [SerializeField] private Button _saveAsFileBtn;
         [SerializeField] private Button _saveFileBtn;
         [SerializeField] private Button _openFileBtn;
+        [SerializeField] private Button _exportFileBtn;
         [SerializeField] private Button _exitBtn;
 
         [Header("Header")]
         [SerializeField] private TextMeshProUGUI _projectName;
 
-  
+
         [Header("Others")]
         [SerializeField] private UIWarningModifiedPopup _uiWarningModifiedPopup;
         [SerializeField] private UICreateNewPanel _uiCreateNewPanel;
 
         private void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+            Instance = this;
+
             _canvas = GetComponent<Canvas>();
         }
 
@@ -65,6 +76,7 @@ namespace Match3.LevelEditor
                 Loader.Load(Loader.Scene.LevelEditor);
                 _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File*";
             });
+#if false
             _saveFileBtn.onClick.AddListener(() =>
             {
                 if (LevelEditorSaveManager.Instance.IsCurrentWorkingFileExist())
@@ -106,24 +118,47 @@ namespace Match3.LevelEditor
                     }
                 });
             });
+#endif
+
+#if !(UNITY_WEBGL && !UNITY_EDITOR)
+            //
+            // Standalone platforms & editor
+            //
             _openFileBtn.onClick.AddListener(() =>
             {
                 EditorManager.Instance.ShowCreateNewPanel = false;
 
-                Loader.Load(Loader.Scene.LevelEditor);
-                FileBrowserManager.Instance.ShowLoadDialog((isSuccess, filePaths) =>
+                var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", "json", false);
+                if (paths.Length > 0)
                 {
-                    if (filePaths != null && filePaths.Length > 0)
-                        LevelEditorSaveManager.Instance.Load(filePaths[0], onCompleted: () =>
-                        {
-                            _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
-                            _saveFileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Save";
-                            _projectName.text = LevelEditorSaveManager.Instance.GetProjectFileName();
-                        });
-                });
+                    LevelEditorSaveManager.Instance.Load(paths[0], onCompleted: () =>
+                    {
+                        _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
+                        _saveFileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Save";
+                        _projectName.text = LevelEditorSaveManager.Instance.GetProjectFileName();
+                    });
+                }
                 _filePopup.gameObject.SetActive(false);
+                _uiCreateNewPanel.gameObject.SetActive(EditorManager.Instance.ShowCreateNewPanel);
 
             });
+
+            _exportFileBtn.onClick.AddListener(() =>
+            {
+                var path = StandaloneFileBrowser.SaveFilePanel("Title", "", "sample", "json");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    LevelEditorSaveManager.Instance.SaveAs(path);
+                    _projectName.text = LevelEditorSaveManager.Instance.GetProjectFileName();
+
+                    _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
+                    _saveFileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Save";
+                }
+            });
+#endif
+
+
+
             _exitBtn.onClick.AddListener(() =>
             {
                 _filePopup.gameObject.SetActive(false);
@@ -146,14 +181,14 @@ namespace Match3.LevelEditor
                         }
                         else
                         {
-                            FileBrowserManager.Instance.ShowSaveDialog((filePaths) =>
-                            {
-                                if (filePaths != null && filePaths.Length > 0)
-                                {
-                                    LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
-                                    QuitGame();
-                                }
-                            });
+                            //FileBrowserManager.Instance.ShowSaveDialog((filePaths) =>
+                            //{
+                            //    if (filePaths != null && filePaths.Length > 0)
+                            //    {
+                            //        LevelEditorSaveManager.Instance.SaveAs(filePaths[0]);
+                            //        QuitGame();
+                            //    }
+                            //});
                         }
                     });
 
@@ -183,8 +218,8 @@ namespace Match3.LevelEditor
             _saveFileBtn.onClick.RemoveAllListeners();
             _openFileBtn.onClick.RemoveAllListeners();
             _exitBtn.onClick.RemoveAllListeners();
+            _exportFileBtn.onClick.RemoveAllListeners();
         }
-
 
 
         private void OnDataHasChanged_MarkUI()
@@ -200,6 +235,19 @@ namespace Match3.LevelEditor
             UnityEditor.EditorApplication.isPlaying = false;    // stop play mode in Unity Editor
 #endif
         }
+
+
+        public void DisplayFilePopup(bool enable)
+        {
+            _filePopup.gameObject.SetActive(enable);
+        }
+        public void DisplayCreateNewPanel(bool enable)
+        {
+            _uiCreateNewPanel.gameObject.SetActive(enable);
+        }
+
+
+
 
         public void DisplayCanvas(bool enable)
         {

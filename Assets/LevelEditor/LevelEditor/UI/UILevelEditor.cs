@@ -38,7 +38,7 @@ namespace Match3.LevelEditor
 
         private void Start()
         {
-            GridManager.Instance.OnGridLoaded += OnGridLoaded_UpdateUI;
+            GridManager.Instance.OnGridInitialized += OnGridInitialized_UpdateUI;
             LevelEditorInventory.Instance.OnInventoryInitialized += OnInventoryInitialized_LoadUI;
 
             UIHotbarTileSlot.OnClicked += OnUiHorbarTileSlotClicked;
@@ -51,7 +51,7 @@ namespace Match3.LevelEditor
 
         private void OnDestroy()
         {
-            GridManager.Instance.OnGridLoaded -= OnGridLoaded_UpdateUI;
+            GridManager.Instance.OnGridInitialized -= OnGridInitialized_UpdateUI;
             LevelEditorInventory.Instance.OnInventoryInitialized -= OnInventoryInitialized_LoadUI;
 
             UIHotbarTileSlot.OnClicked -= OnUiHorbarTileSlotClicked;
@@ -119,7 +119,7 @@ namespace Match3.LevelEditor
             this._canvas.enabled = enable;
         }
 
-        private void OnGridLoaded_UpdateUI()
+        private void OnGridInitialized_UpdateUI()
         {
             DisplayCanvas(true);
         }

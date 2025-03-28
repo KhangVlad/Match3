@@ -37,7 +37,7 @@ namespace Match3.LevelEditor
                 LevelEditorInventory.Instance.SetTile(tile, index);
             });
 
-            GridManager.Instance.OnGridLoaded += LoadAllUITiles;
+            GridManager.Instance.OnGridInitialized += LoadAllUITiles;
             UITileSlot.OnClicked += OnTileSlotClickTriggered;
 
 
@@ -52,7 +52,7 @@ namespace Match3.LevelEditor
             _selectBtn.onClick.RemoveAllListeners();
 
 
-            GridManager.Instance.OnGridLoaded -= LoadAllUITiles;
+            GridManager.Instance.OnGridInitialized -= LoadAllUITiles;
             UITileSlot.OnClicked -= OnTileSlotClickTriggered;
         }
 

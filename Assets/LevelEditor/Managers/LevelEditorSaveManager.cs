@@ -10,6 +10,7 @@ namespace Match3.LevelEditor
 
         [Header("~Runtime")]
         public string CurrentSaveProjectPath = "";
+        public string FileName => Path.GetFileName(CurrentSaveProjectPath);
         public bool HasBeenSaved;
 
         private void Awake()
@@ -41,7 +42,6 @@ namespace Match3.LevelEditor
 
             //string json = JsonUtility.ToJson(levelData, true);
             string json = JsonConvert.SerializeObject(levelData);
-            Debug.Log(json);
             File.WriteAllText(filePath + fileFormat, json);
         }
 
@@ -94,7 +94,6 @@ namespace Match3.LevelEditor
                 }
                 catch
                 {
-                    Debug.Log("C");
                     UILogHandler.Instance.ShowWarningText($"Cannot load file: {filePath}", 5f);
                     return;
                 }
@@ -106,6 +105,24 @@ namespace Match3.LevelEditor
 
             HasBeenSaved = true;
         }
+
+        public void LoadFromJson(string json, System.Action onCompleted)
+        {
+            try
+            {
+                LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
+                GridManager.Instance.LoadLevelData(levelData);
+                UILogHandler.Instance.ShowLogText($"Load structure successfully", 5f);
+                //onCompleted?.Invoke();
+            }
+            catch
+            {
+                UILogHandler.Instance.ShowWarningText($"Cannot load file:", 5f);
+                return;
+            }
+            HasBeenSaved = true;
+        }
+
 
         public bool IsCurrentWorkingFileExist()
         {
