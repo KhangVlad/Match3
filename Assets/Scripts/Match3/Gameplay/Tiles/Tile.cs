@@ -76,6 +76,7 @@ namespace Match3
                 case BlockID.Void:
                     SetRenderOrder(5);
                     sr.enabled = false;
+                    block.GetComponent<SpriteRenderer>().enabled = false;
                     break;
                 case BlockID.None:
                     SetRenderOrder(0);

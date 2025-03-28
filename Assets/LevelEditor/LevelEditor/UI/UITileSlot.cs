@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using UnityEngine.EventSystems;
 
 namespace Match3.LevelEditor
 {
-    public class UITileSlot : MonoBehaviour
+    public class UITileSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public static System.Action<UITileSlot> OnClicked;
         [SerializeField] private Button _button;
@@ -18,7 +19,10 @@ namespace Match3.LevelEditor
 
         [Header("Runtime")]
         [SerializeField] private Tile _tile;
-       public int SlotIndex {get ;private set;} 
+
+        private bool _isEnter = false;
+
+        public int SlotIndex {get ;private set;} 
  
         private void Start()
         {
@@ -71,6 +75,27 @@ namespace Match3.LevelEditor
         {
             _button.interactable = true;
             _button.image.sprite = _defaultButtonSprite;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _isEnter = true;
+
+            Debug.Log("Enter");
+            Utilities.WaitAfter(0.25f, () =>
+            {
+                if (_isEnter)
+                {
+                    UIPopupManager.Instance.DisplayUINameInfoPopup(true);
+                    UIPopupManager.Instance.SetNameInfoPopupContent(_tile.ID.ToString());
+                }
+            });
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isEnter = false;
+            UIPopupManager.Instance.DisplayUINameInfoPopup(false);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace Match3.LevelEditor
 {
-    public class UIBlockSlot : MonoBehaviour
+    public class UIBlockSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public static System.Action<UIBlockSlot> OnClicked;
         [SerializeField] private Button _button;
@@ -16,6 +17,8 @@ namespace Match3.LevelEditor
 
         [Header("Runtime")]
         [SerializeField] private Block _block;
+
+        private bool _isEnter = false;
         public int SlotIndex { get; private set; }
 
         private void Start()
@@ -69,6 +72,26 @@ namespace Match3.LevelEditor
         {
             _button.interactable = true;
             _button.image.sprite = _defaultButtonSprite;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            _isEnter = true;
+
+            Utilities.WaitAfter(0.25f, () =>
+            {
+                if (_isEnter)
+                {
+                    UIPopupManager.Instance.DisplayUINameInfoPopup(true);
+                    UIPopupManager.Instance.SetNameInfoPopupContent(_block.BlockID.ToString());
+                }
+            });
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            _isEnter = false;
+            UIPopupManager.Instance.DisplayUINameInfoPopup(false);
         }
     }
 }
