@@ -29,14 +29,18 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx();
                 this.gameObject.SetActive(false);
 
-
-                Block block = GameDataManager.Instance.Blocks[_currentSelectSlotIndex];
-                int index = (LevelEditorInventory.Instance.SelectedShortcutIndex - 1) % 4;
-                LevelEditorInventory.Instance.SetBlock(block, index);
+                Debug.Log(_currentSelectSlotIndex);
+                QuestDataSO questData = GameDataManager.Instance.QuestDataSos[_currentSelectSlotIndex];
+                Quest quest = new Quest()
+                {
+                    QuestID = questData.QuestID,
+                    Quantity = 1
+                };
+                GridManager.Instance.AddQuest(quest);       
             });
 
             GridManager.Instance.OnGridInitialized += LoadAllUIBlocks;
-            UIBlockSlot.OnClicked += OnBlockSlotClickTriggered;
+            UIQuestSlot.OnClicked += OnBlockSlotClickTriggered;
 
 
 
@@ -51,7 +55,7 @@ namespace Match3.LevelEditor
 
 
             GridManager.Instance.OnGridInitialized -= LoadAllUIBlocks;
-            UIBlockSlot.OnClicked -= OnBlockSlotClickTriggered;
+            UIQuestSlot.OnClicked -= OnBlockSlotClickTriggered;
         }
 
         private void LoadAllUIBlocks()
@@ -67,7 +71,7 @@ namespace Match3.LevelEditor
             }
         }
 
-        private void OnBlockSlotClickTriggered(UIBlockSlot slot)
+        private void OnBlockSlotClickTriggered(UIQuestSlot slot)
         {
             _currentSelectSlotIndex = slot.SlotIndex;
         }

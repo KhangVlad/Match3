@@ -23,6 +23,10 @@ namespace Match3.LevelEditor
 
         public void DisplaySceneObject(bool enable)
         {
+            if(_levelEditorRootSceneObjects == null)
+            {
+                _levelEditorRootSceneObjects = GameObject.Find("SceneObjects");
+            }
             this._levelEditorRootSceneObjects.SetActive(enable);
         }
     }

@@ -13,6 +13,10 @@ namespace Match3.LevelEditor
         public event System.Action<Tile, int> OnAvaiableTilesAdded;
         public event System.Action<int> OnAvaiableTilesRemoval;
 
+        public event System.Action<Quest, int> OnQuestAdded;
+        public event System.Action<int> OnQuestRemoval;
+
+
 
         [Header("Grid")]
         [SerializeField] private Transform _gridSlotContentParent;
@@ -33,6 +37,7 @@ namespace Match3.LevelEditor
         public int MaxTurn = 25;
         public int[] UnlockData = new int[3] { 1, 1, 5 };
         public List<Tile> AvaiableTiles;
+        public List<Quest> Quests;
         #endregion
 
 
@@ -138,6 +143,19 @@ namespace Match3.LevelEditor
 
             MaxTurn = levelData.MaxTurn;
             UnlockData = levelData.Unlock;
+            Quests = new();
+            Debug.Log(levelData.Quests.GetLength(0));
+            for (int i = 0; i < levelData.Quests.GetLength(0); i++)
+            {
+                Debug.Log("HAHA");
+               Quest quest = new Quest()
+                {
+                    QuestID = (QuestID)levelData.Quests[i, 0],
+                    Quantity = levelData.Quests[i, 1]
+                };
+                Quests.Add(quest);
+            }
+
             AvaiableTiles = new();
             for (int i = 0; i < levelData.AvaiableTiles.Length; i++)
             {
@@ -145,6 +163,7 @@ namespace Match3.LevelEditor
                 AvaiableTiles.Add(tile);
             }
 
+        
             this.Width = levelData.Tiles.GetLength(0);
             this.Height = levelData.Tiles.GetLength(1);
             _tiles = new Tile[Width * Height];
@@ -187,6 +206,7 @@ namespace Match3.LevelEditor
         public void LoadGridData(int width, int height)
         {
             AvaiableTiles = new();
+            Quests = new();
             this.Width = width;
             this.Height = height;
             _tiles = new Tile[width * height];
@@ -279,6 +299,21 @@ namespace Match3.LevelEditor
             OnAvaiableTilesRemoval?.Invoke(index);
         }
 
+
+
+        public void AddQuest(Quest quest)
+        {
+            Quests.Add(quest);
+            OnQuestAdded?.Invoke(quest, Quests.Count - 1);
+        }
+
+        public void RemoveQuest(int index)
+        {
+            Quests.RemoveAt(index);
+            OnQuestRemoval?.Invoke(index);
+        }
+
+
         #region Utilities
         private bool IsValidGridTile(int x, int y)
         {
@@ -309,11 +344,13 @@ namespace Match3.LevelEditor
             {
                 avaiableTiles[i] = AvaiableTiles[i].ID;
             }
-            int[,] quests =
+            int[,] quests = new int[Quests.Count, 2];
+            for(int i = 0;i < Quests.Count; i++)
             {
-                { 1,20},
-                {201, 20},
-            };
+                quests[i, 0] = (int)Quests[i].QuestID;
+                quests[i, 1] = (int)Quests[i].Quantity;
+            }
+
             for (int i = 0; i < _tiles.Length; i++)
             {
                 int x = i % Width;
