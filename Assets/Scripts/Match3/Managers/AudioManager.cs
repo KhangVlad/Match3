@@ -8,12 +8,13 @@ namespace Match3
     {
         public static AudioManager Instance { get; private set; }
 
-        //[Header("Volume")][Range(0f, 1f)] private float _masterVolume = 0.5f;
-        //[Range(0f, 1f)] private float _musicVolume = 0.5f;
-        //[Range(0f, 1f)] private float _soundVolume = 0.5f;
-        //private Bus _masterBus;
-        //private Bus _musicBus;
-        //private Bus _soundBus;
+        [Header("Volume")] [Range(0f, 1f)] private float _masterVolume = 0.5f;
+        [Range(0f, 1f)] private float _musicVolume = 0.5f;
+
+        [Range(0f, 1f)] private float _soundVolume = 0.5f;
+        private Bus _masterBus;
+        private Bus _musicBus;
+        private Bus _soundBus;
 
 
         //--------------------------------------------------------------------
@@ -23,15 +24,17 @@ namespace Match3
 
         //[Header("Music")][SerializeField] private EventReference _music;
 
-        [Header("SFX")]
-        [SerializeField] private EventReference _button;
+        [Header("SFX")] [SerializeField] private EventReference _button;
         [SerializeField] private EventReference _match3;
         [SerializeField] private EventReference _match4;
         [SerializeField] private EventReference _match5;
         [SerializeField] private EventReference _match6;
         [SerializeField] private EventReference _win;
         [SerializeField] private EventReference _gameover;
-      
+        [SerializeField] private EventReference _closeBtn;
+
+        [SerializeField] private EventReference _backgroundMusic;
+
         //--------------------------------------------------------------------
         // 2: Using the EventInstance class will allow us to manage an event
         //    over its lifetime, including starting, stopping and changing 
@@ -42,24 +45,24 @@ namespace Match3
 
         #region Properties
 
-        //public float MasterVolume
-        //{
-        //    get => _masterVolume;
-        //}
+        public float MasterVolume
+        {
+            get => _masterVolume;
+        }
 
-        //public float MusicVolume
-        //{
-        //    get => _musicVolume;
-        //}
+        public float MusicVolume
+        {
+            get => _musicVolume;
+        }
 
-        //public float SoundVolume
-        //{
-        //    get => _soundVolume;
-        //}
+        public float SoundVolume
+        {
+            get => _soundVolume;
+        }
 
         public float DefaultMasterVolume { get; } = 1.0f;
-        //public float DefaultMusicVolume { get; } = 0.5f;
-        //public float DefaultSoundVolume { get; } = 0.5f;
+        public float DefaultMusicVolume { get; } = 0.5f;
+        public float DefaultSoundVolume { get; } = 0.5f;
 
         #endregion
 
@@ -74,15 +77,15 @@ namespace Match3
                 Destroy(this.gameObject);
             }
 
+            RuntimeManager.LoadBank("Master", true);
             // DontDestroyOnLoad(this.gameObject);
-            //_masterBus = RuntimeManager.GetBus("bus:/");
-            //_musicBus = RuntimeManager.GetBus("bus:/Music");
-            //_soundBus = RuntimeManager.GetBus("bus:/SoundFX");
+            _masterBus = RuntimeManager.GetBus("bus:/");
         }
 
         private void Start()
         {
             //PlayMusic(_music);
+            PlayMusic(_backgroundMusic);
         }
 
         private void OnDestroy()
@@ -93,23 +96,23 @@ namespace Match3
 
         #region Volume
 
-        //public void SetMasterVolume(float volume)
-        //{
-        //    _masterVolume = volume;
-        //    _masterBus.setVolume(_masterVolume);
-        //}
+        public void SetMasterVolume(float volume)
+        {
+            _masterVolume = volume;
+            _masterBus.setVolume(_masterVolume);
+        }
 
-        //public void SetMusicVolume(float volume)
-        //{
-        //    _musicVolume = volume;
-        //    _musicBus.setVolume(_musicVolume);
-        //}
+        public void SetMusicVolume(float volume)
+        {
+            _musicVolume = volume;
+            _musicBus.setVolume(_musicVolume);
+        }
 
-        //public void SetSoundVolume(float volume)
-        //{
-        //    _soundVolume = volume;
-        //    _soundBus.setVolume(_soundVolume);
-        //}
+        public void SetSoundVolume(float volume)
+        {
+            _soundVolume = volume;
+            _soundBus.setVolume(_soundVolume);
+        }
 
         #endregion
 
@@ -164,6 +167,12 @@ namespace Match3
         public void PlayGameoverSfx()
         {
             RuntimeManager.PlayOneShot(_gameover);
+        }
+
+
+        public void PlayCloseBtnSfx()
+        {
+            RuntimeManager.PlayOneShot(_closeBtn);
         }
     }
 }

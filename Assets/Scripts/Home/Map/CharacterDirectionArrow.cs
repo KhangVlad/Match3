@@ -4,10 +4,12 @@ public class CharacterDirectionArrow : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
     public Vector2 Pos;
+    public CharacterID id;
 
-    public void Initialize(Sprite sprite, Vector2 position)
+    public void Initialize(Sprite sprite, Vector2 position, CharacterID chardId)
     {
         spriteRenderer.sprite = sprite;
         Pos = position;
+        id = chardId;
     }
 }

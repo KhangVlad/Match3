@@ -63,7 +63,7 @@ public class UILoadingMenu : MonoBehaviour
     {
         while (progress < targetProgress)
         {
-            progress += Time.deltaTime * 0.5f; // Adjust the speed as needed
+            progress += Time.deltaTime * 0.3f; // Adjust the speed as needed
             slider.value = progress;
             yield return null;
         }
@@ -80,6 +80,8 @@ public class UILoadingMenu : MonoBehaviour
 
     private void OnHomeClick()
     {
+        AudioManager.Instance.PlayButtonSfx();
+        homeButton.interactable = false;
         LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
     }
 }

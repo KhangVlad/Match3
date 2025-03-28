@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8571f95c24b54894b1e92e372d09f6ea, type: 3}
+  m_Name: 2_Dialogue
+  m_EditorClassIdentifier: 
+  id: 2
+  levelDialogues:
+  - "Ch\xE0o m\u1EEBng! B\u1EA1n \u0111\u1EBFn \u0111\xFAng d\u1ECBp \u0111\u1EA5y,
+    ch\xFAng t\xF4i \u0111ang t\u1ED5 ch\u1EE9c L\u1EC5 H\u1ED9i Hoa B\u1EA1n c\xF3
+    mu\u1ED1n tham gia kh\xF4ng?"
+  - "Ch\xFAng ta s\u1EBD c\u1EA7n th\xEAm m\u1ED9t s\u1ED1 lo\u1EA1i hoa"
+  - "Ch\xFAng ta s\u1EBD c\u1EA7n th\xEAm m\u1ED9t s\u1ED1 lo\u1EA1i hoa"
+  - "B\u1EA1n h\xE3y k\u1EBFt v\xF2ng hoa \u0111\u1EA7u ti\xEAn c\u1EE7a m\xECnh
+    \u0111i, n\xF3 s\u1EBD gi\xFAp mang l\u1EA1i may m\u1EAFn cho h\xE0nh tr\xECnh
+    ph\xEDa tr\u01B0\u1EDBc."
+  - "th\u1EA3 hoa v\u1EDBi n\u1EBFn"

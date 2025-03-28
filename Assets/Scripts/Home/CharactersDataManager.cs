@@ -38,8 +38,7 @@ public class CharactersDataManager : MonoBehaviour
             charactersData.Add(new CharactersData(characterActivity));
         }
     }
-    
-    
+
 
     private void LoadDataSo()
     {
@@ -64,8 +63,8 @@ public class CharactersDataManager : MonoBehaviour
     {
         return charactersData.Find(x => x.characterActivity.id == id);
     }
-    
-    
+
+
     public CharacterDialogueSO GetCharacterDialogue(CharacterID id)
     {
         return characterDialogues.Find(x => x.id == id);

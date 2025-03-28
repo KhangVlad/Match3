@@ -288,7 +288,7 @@ public class TimeLineManager : MonoBehaviour
                 iconWithPosition.bubble.transform.position,
                 Quaternion.identity);
             iconWithPosition.directionArrow = arrow;
-            arrow.Initialize(iconWithPosition.bubble.sprite, originPos);
+            arrow.Initialize(iconWithPosition.bubble.sprite, originPos, iconWithPosition.bubble.characterID);
         }
     }
 }
@@ -296,7 +296,7 @@ public class TimeLineManager : MonoBehaviour
 [Serializable]
 public class IconWithPosition
 {
-    [FormerlySerializedAs("icon")] public CharacterBubble bubble;
+    public CharacterBubble bubble;
     public Vector2 originPosition;
     public bool isOut;
     public CharacterDirectionArrow directionArrow;

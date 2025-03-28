@@ -29,7 +29,6 @@ namespace Match3
                     break;
             }
 
-            Debug.Log("AAAA"+gameObject.name);
         }
     }
 }

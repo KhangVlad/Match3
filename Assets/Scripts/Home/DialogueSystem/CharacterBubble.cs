@@ -3,12 +3,12 @@ using UnityEngine.UI;
 
 public class CharacterBubble : MonoBehaviour
 {
+    [SerializeField] private SpriteRenderer image;
     public CharacterID characterID;
     public Sprite sprite;
-    public SpriteRenderer image;
 
 
-    public void Initialize(CharacterID id, Sprite s , Vector2 position)
+    public void Initialize(CharacterID id, Sprite s, Vector2 position)
     {
         characterID = id;
         sprite = s;

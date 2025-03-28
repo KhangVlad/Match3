@@ -26,7 +26,6 @@ public class CharacterVideoController : MonoBehaviour
     private void Start()
     {
         CharacterDisplay.Instance.OnCharacterStateChanged += OnCharacterStateChanged;
-        CharacterDisplay.Instance.OnCloseDialogue += HandleCloseDialogue;
         ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
     }
 
@@ -35,7 +34,6 @@ public class CharacterVideoController : MonoBehaviour
     {
         CharacterDisplay.Instance.OnCharacterStateChanged -= OnCharacterStateChanged;
         ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
-        CharacterDisplay.Instance.OnCloseDialogue -= HandleCloseDialogue;
     }
 
     private void InitializeCharacterVideo(CharacterID id)
@@ -69,7 +67,7 @@ public class CharacterVideoController : MonoBehaviour
     }
 
 
-    private void OnCharacterStateChanged( CharacterState state)
+    private void OnCharacterStateChanged(CharacterState state)
     {
         if (state == CharacterState.Idle)
         {
@@ -105,11 +103,15 @@ public class CharacterVideoController : MonoBehaviour
             {
                 VideoClipInfo[] talkVideos = videoClips.FindAll(x => x.videoType == VideoType.Talking).ToArray();
                 VideoClipInfo talkInfo = talkVideos[UnityEngine.Random.Range(0, talkVideos.Length)];
-                InitializeVideoPlayer(talkInfo, () =>
-                {
-                    CharacterDisplay.Instance.TransitionToState(CharacterState.Idle);
-                });
+                InitializeVideoPlayer(talkInfo,
+                    () => { CharacterDisplay.Instance.TransitionToState(CharacterState.Idle); });
             });
+        }
+        else if (state == CharacterState.Exit)
+        {
+            videoPlayer.Stop();
+            videoPlayer.clip = null;
+            videoClips.Clear();
         }
     }
 
@@ -144,13 +146,6 @@ public class CharacterVideoController : MonoBehaviour
         }
     }
 
-
-    private void HandleCloseDialogue()
-    {
-        videoPlayer.Stop();
-        videoPlayer.clip = null;
-        videoClips.Clear();
-    }
 }
 
 [Serializable]

@@ -3,8 +3,6 @@ using DG.Tweening;
 using Match3;
 using TMPro;
 using UnityEngine.UI;
-using System.Linq;
-
 
 public class UILevelDesignManager : MonoBehaviour
 {
@@ -13,11 +11,10 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private UILevelDesign levelDesignDesignPrefab;
     [SerializeField] private UILevelDesign lockedLevelDesignPrefab;
     [SerializeField] private TypewriterEffect typewriterEffect;
-
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Button closeButton;
     [SerializeField] private UILevelDesign currentChosenLevel;
-    [SerializeField] private Button playButton;
+    [SerializeField] private Button selectBtn;
     [SerializeField] private Image panel;
     [SerializeField] private RectTransform heart;
     [SerializeField] private Image heartImage;
@@ -35,8 +32,14 @@ public class UILevelDesignManager : MonoBehaviour
     private void Start()
     {
         CharacterVideoController.Instance.OnLoadVideosComplete += OnCharacterInteracted;
-        closeButton.onClick.AddListener(() => ActiveCanvas(false));
-        playButton.onClick.AddListener(() => OnPlayClick());
+        closeButton.onClick.AddListener(OnCloseButtonClicked);
+        selectBtn.onClick.AddListener(SelectLevel);
+    }
+
+    private void OnCloseButtonClicked()
+    {
+        AudioManager.Instance.PlayCloseBtnSfx();
+        TownCanvasController.Instance.ActiveLevelDesign(false);
     }
 
     private void OnDestroy()
@@ -44,7 +47,7 @@ public class UILevelDesignManager : MonoBehaviour
         // ScreenInteraction.Instance.OnCharacterInteracted -= OnCharacterInteracted;
         CharacterVideoController.Instance.OnLoadVideosComplete -= OnCharacterInteracted;
         closeButton.onClick.RemoveAllListeners();
-        playButton.onClick.RemoveAllListeners();
+        selectBtn.onClick.RemoveAllListeners();
     }
 
     private void SetPanelColor(CharacterID id)
@@ -63,11 +66,12 @@ public class UILevelDesignManager : MonoBehaviour
     }
 
 
-    private void OnPlayClick()
+    private void SelectLevel()
     {
+        AudioManager.Instance.PlayButtonSfx();
         LevelManager.Instance.LoadLevelData(currentChosenLevel.index);
         UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
-        VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = playButton.transform.position;
+        VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = selectBtn.transform.position;
         UILevelInfomation.Instance.DisplayCanvas(true);
     }
 
@@ -75,7 +79,7 @@ public class UILevelDesignManager : MonoBehaviour
     {
         SetPanelColor(id);
         CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
-        ActiveCanvas(true);
+        TownCanvasController.Instance.ActiveLevelDesign(true);
         InitializeLevels();
         nameText.text = id.ToString();
     }
@@ -111,27 +115,28 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void OnLevelDesignClicked(UILevelDesign levelDesign)
     {
+        AudioManager.Instance.PlayButtonSfx();
         typewriterEffect.ResetText();
         currentChosenLevel = levelDesign;
         if (!levelDesign.Islocked)
         {
             DialogueManager.Instance.ShowDialogue(typewriterEffect,
                 CharacterDisplay.Instance.GetDialogue(levelDesign.index));
-            playButton.gameObject.SetActive(true);
+            selectBtn.gameObject.SetActive(true);
         }
         else
         {
             DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetRejectDialogue());
-            playButton.gameObject.SetActive(false);
+            selectBtn.gameObject.SetActive(false);
         }
     }
 
-    private void ActiveCanvas(bool active)
+    public void ActiveCanvas(bool active)
     {
         if (active)
         {
             _canvas.enabled = true;
-            playButton.gameObject.SetActive(false);
+            selectBtn.gameObject.SetActive(false);
             _canvas.transform.localScale = Vector3.zero;
             canvasGroup.alpha = 0;
             _canvas.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
@@ -146,11 +151,10 @@ public class UILevelDesignManager : MonoBehaviour
             canvasGroup.DOFade(0, 0.5f).OnComplete(() =>
             {
                 currentChosenLevel = null;
-                playButton.gameObject.SetActive(false);
+                selectBtn.gameObject.SetActive(false);
                 _canvas.enabled = false;
             });
             CharacterDisplay.Instance.TransitionToState(CharacterState.Exit);
-            CharacterDisplay.Instance.CloseDialogue();
             typewriterEffect.ResetText();
         }
     }

@@ -5,9 +5,24 @@ using UnityEngine;
 public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
-    public event Action OnCloseDialogue;
-    public bool IsActiveCharacter = false;
     public CharacterDialogueSO characterDialogueSO;
+    public bool IsActiveCharacter = false;
+    public event Action<CharacterState> OnCharacterStateChanged;
+    public CharacterState state;
+    public float Timer = 0;
+    public float TimeToChangeState = 5; //random change to emotion state
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
@@ -26,26 +41,10 @@ public class CharacterDisplay : MonoBehaviour
         characterDialogueSO = CharactersDataManager.Instance.GetCharacterDialogue(id);
     }
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
 
     private const string mockupDialogue = "Hi! How are you today? I have a small problem, can you help me?";
     private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
 
-
-    public event Action<CharacterState> OnCharacterStateChanged;
-    public CharacterState state;
-    public float Timer = 0;
-    public float TimeToChangeState = 5; //random change to emotion state
 
     public string GetDialogue() => mockupDialogue;
 
@@ -73,12 +72,6 @@ public class CharacterDisplay : MonoBehaviour
         OnCharacterStateChanged?.Invoke(state);
     }
 
-    public void CloseDialogue()
-    {
-        OnCloseDialogue?.Invoke();
-    }
-
-
 
     private void Update()
     {
@@ -91,13 +84,6 @@ public class CharacterDisplay : MonoBehaviour
             Timer = 0;
         }
     }
-}
-
-
-public interface ICharacterState
-{
-    void Enter(CharacterDisplay characterDisplay);
-    void Exit(CharacterDisplay characterDisplay);
 }
 
 public enum CharacterState

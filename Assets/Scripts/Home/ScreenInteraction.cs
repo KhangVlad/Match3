@@ -2,7 +2,7 @@ using System;
 using Unity.Cinemachine;
 using UnityEngine;
 using System.Collections;
-using DG.Tweening;
+using Match3;
 
 public class ScreenInteraction : MonoBehaviour
 {
@@ -52,7 +52,7 @@ public class ScreenInteraction : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !Utilities.IsPointerOverUI())
         {
             OnMouseDown();
         }
@@ -81,11 +81,13 @@ public class ScreenInteraction : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out CharacterBubble character))
             {
+                AudioManager.Instance.PlayButtonSfx();
                 OnCharacterInteracted?.Invoke(character.characterID);
             }
 
             if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
             {
+                AudioManager.Instance.PlayButtonSfx();
                 StartCoroutine(MoveCameraToCharacter(arrow));
             }
         }
@@ -107,7 +109,7 @@ public class ScreenInteraction : MonoBehaviour
             target.position = new Vector3(newPosition.x, newPosition.y, target.position.z);
             yield return null;
         }
-
+        OnCharacterInteracted?.Invoke(character.id);
         InteractAble = true;
     }
 
