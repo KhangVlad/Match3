@@ -9,6 +9,7 @@ namespace Match3.LevelEditor
 
         [SerializeField] private UITileInventory _tileInventory;
         [SerializeField] private UIBlockInventory _blockInventory;
+        [SerializeField] private UIQuestInventory _questInventory;
 
         public bool InventoryBeingDisplayed => _tileInventory.gameObject.activeInHierarchy;
 
@@ -24,6 +25,7 @@ namespace Match3.LevelEditor
             _canvas = GetComponent<Canvas>();
             _tileInventory.gameObject.SetActive(true);
             _blockInventory.gameObject.SetActive(true);
+            _questInventory.gameObject.SetActive(true);
         }
 
 
@@ -41,6 +43,11 @@ namespace Match3.LevelEditor
         public void DisplayBlockInventory(bool enable)
         {
             _blockInventory.gameObject.SetActive(enable);
+        }
+
+        public void DisplayQuestInventory(bool enable)
+        {
+            _questInventory.gameObject.SetActive(enable);
         }
     }
 }
