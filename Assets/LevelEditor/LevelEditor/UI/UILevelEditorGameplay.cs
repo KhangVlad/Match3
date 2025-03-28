@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Match3.LevelEditor
 {
@@ -11,7 +12,9 @@ namespace Match3.LevelEditor
         {
             _backToEditorBtn.onClick.AddListener(() =>
             {
-
+                AudioManager.Instance.PlayButtonSfx();
+                SceneManager.UnloadSceneAsync(LevelEditorSceneLoader.Instance.OtherScene);
+                LevelEditorSceneLoader.Instance.DisplaySceneObject(true);
             });
         }
 

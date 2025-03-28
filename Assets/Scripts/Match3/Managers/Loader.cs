@@ -24,12 +24,11 @@ namespace Match3
             SceneManager.LoadScene(Loader.TargetScene.ToString());
         }
 
-        public static void LoadAsync(Scene targetScene, float waitAfterLoad, System.Action onCompleted)
+        public static void LoadAsync(Scene targetScene, LoadSceneMode mode, float waitAfterLoad, System.Action onCompleted)
         {
             PreviousScene = TargetScene;
             TargetScene = targetScene;
-            CoroutineManager.Instance.StartStaticCoroutine(LoadSceneAsyncCoroutine(targetScene, waitAfterLoad,
-                onCompleted));
+            CoroutineManager.Instance.StartStaticCoroutine(LoadSceneAsyncCoroutine(targetScene, mode, waitAfterLoad, onCompleted));
         }
 
         public static AsyncOperation LoadAsyncDontActive(Scene targetScene)
@@ -41,11 +40,11 @@ namespace Match3
             return asyncOperation;
         }
 
-        public static IEnumerator LoadSceneAsyncCoroutine(Scene targetScene, float waitAfterLoad,
+        public static IEnumerator LoadSceneAsyncCoroutine(Scene targetScene, LoadSceneMode mode, float waitAfterLoad,
             System.Action onCompleted)
         {
             // Start loading the scene asynchronously in additive mode
-            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(targetScene.ToString(), LoadSceneMode.Single);
+            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(targetScene.ToString(), mode);
 
             // Prevent the scene from activating immediately
             asyncOperation.allowSceneActivation = false;
@@ -56,7 +55,6 @@ namespace Match3
                 // Check loading progress (from 0 to 0.9)
                 float progress = Mathf.Clamp01(asyncOperation.progress / 0.9f); // Normalize the progress to 0-1
                                                                                 // Debug.Log("Loading progress: " + progress * 100 + "%");
-
                 // When the scene is almost done loading (progress >= 0.9)
                 if (asyncOperation.progress >= 0.9f)
                 {

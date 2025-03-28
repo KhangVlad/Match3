@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using SFB;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 namespace Match3.LevelEditor
 {
@@ -34,6 +35,7 @@ namespace Match3.LevelEditor
         [Header("Others")]
         [SerializeField] private UIWarningModifiedPopup _uiWarningModifiedPopup;
         [SerializeField] private UICreateNewPanel _uiCreateNewPanel;
+
 
         private void Awake()
         {
@@ -67,7 +69,13 @@ namespace Match3.LevelEditor
 
                 LevelData levelData = GridManager.Instance.GetLevelData();
                 LevelManager.Instance.SetLevelData(levelData);
-                Loader.Load(Loader.Scene.GameplayScene);
+                //Loader.Load(Loader.Scene.GameplayScene);
+
+                StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.GameplayScene, LoadSceneMode.Additive, 0f, () =>
+                {
+                    LevelEditorSceneLoader.Instance.OtherScene = SceneManager.GetSceneByName(Loader.Scene.GameplayScene.ToString());
+                    LevelEditorSceneLoader.Instance.DisplaySceneObject(false);
+                }));
             });
 
             // File popup
