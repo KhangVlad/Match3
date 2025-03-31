@@ -1,11 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Match3.Shares;
+using Match3.Enums;
 
 namespace Match3
 {
     public class GameDataManager : MonoBehaviour
     {
-        public static GameDataManager Instance { get; private set; }   
+        public static GameDataManager Instance { get; private set; }
+        public event System.Action OnDataLoaded;
+
 
         [Header("~Runtime")]
         public Tile[] Tiles;
@@ -19,7 +23,11 @@ namespace Match3
 
         public BoosterDataSo[] BoosterDataSos;
         private Dictionary<BoosterID, BoosterDataSo> _boosterDataDict;
-        public event System.Action OnDataLoaded;  
+
+
+        // Character Data
+        public CharacterDataSO[] CharacterDataSos;
+        private Dictionary<CharacterID, CharacterDataSO> _characterDataDict;
 
         // Level
         private TextAsset[] _levels;
@@ -29,7 +37,7 @@ namespace Match3
 
         private void Awake()
         {
-            if(Instance != null && Instance != this)
+            if (Instance != null && Instance != this)
             {
                 Destroy(this.gameObject);
                 return;
@@ -38,15 +46,15 @@ namespace Match3
             LoadGameData();
         }
 
-        
-        
+
+
         private void LoadGameData()
         {
             // Load all tiles
             Tiles = Resources.LoadAll<Tile>("Tiles/");
 
             _tileDict = new();
-            for(int i = 0; i < Tiles.Length; i++)
+            for (int i = 0; i < Tiles.Length; i++)
             {
                 _tileDict.Add(Tiles[i].ID, Tiles[i]);
             }
@@ -67,6 +75,11 @@ namespace Match3
 
             // Load booster data
             LoadBoosterData();
+
+            // Character data
+            LoadCharacterData();
+
+
             OnDataLoaded?.Invoke();
         }
 
@@ -75,7 +88,7 @@ namespace Match3
         {
             QuestDataSos = Resources.LoadAll<QuestDataSO>("Data/Quests/");
             _questDataDict = new();
-            for(int i = 0; i < QuestDataSos.Length; i++)
+            for (int i = 0; i < QuestDataSos.Length; i++)
             {
                 QuestDataSO questData = QuestDataSos[i];
                 _questDataDict.Add(questData.QuestID, questData);
@@ -95,6 +108,23 @@ namespace Match3
         public BoosterDataSo GetBoosterDataByID(BoosterID id)
         {
             return _boosterDataDict[id];
+        }
+
+
+
+        private void LoadCharacterData()
+        {
+            CharacterDataSos = Resources.LoadAll<CharacterDataSO>("DataSO/Characters/");
+            _characterDataDict = new();
+            for(int i = 0; i <  CharacterDataSos.Length; i++)
+            {
+                CharacterDataSO characterData = CharacterDataSos[i];
+                _characterDataDict.Add(characterData.id, characterData);
+            }
+        }
+        public CharacterDataSO GetCharacterDataByID(CharacterID id)
+        {
+            return _characterDataDict[id];
         }
 
         #region Extensions

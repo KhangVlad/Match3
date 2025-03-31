@@ -133,13 +133,14 @@ namespace Match3.LevelEditor
 
         public void LoadLevelData(LevelData levelData)
         {
-            for (int i = 0; i < _tiles.Length; i++)
-                Destroy(_tiles[i].gameObject);
-            _tiles = null;
+            //for (int i = 0; i < _tiles.Length; i++)
+            //    Destroy(_tiles[i].gameObject);
+            //_tiles = null;
 
-            for (int i = 0; i < _gridSlots.Length; i++)
-                Destroy(_gridSlots[i].gameObject);
-            _gridSlots = null;
+            //for (int i = 0; i < _gridSlots.Length; i++)
+            //    Destroy(_gridSlots[i].gameObject);
+            //_gridSlots = null;
+            RemoveOldGridManagerData();
 
             MaxTurn = levelData.MaxTurn;
             UnlockData = levelData.Unlock;
@@ -147,8 +148,7 @@ namespace Match3.LevelEditor
             Debug.Log(levelData.Quests.GetLength(0));
             for (int i = 0; i < levelData.Quests.GetLength(0); i++)
             {
-                Debug.Log("HAHA");
-               Quest quest = new Quest()
+                Quest quest = new Quest()
                 {
                     QuestID = (QuestID)levelData.Quests[i, 0],
                     Quantity = levelData.Quests[i, 1]
@@ -163,7 +163,7 @@ namespace Match3.LevelEditor
                 AvaiableTiles.Add(tile);
             }
 
-        
+
             this.Width = levelData.Tiles.GetLength(0);
             this.Height = levelData.Tiles.GetLength(1);
             _tiles = new Tile[Width * Height];
@@ -205,6 +205,7 @@ namespace Match3.LevelEditor
 
         public void LoadGridData(int width, int height)
         {
+            RemoveOldGridManagerData();
             AvaiableTiles = new();
             Quests = new();
             this.Width = width;
@@ -236,11 +237,33 @@ namespace Match3.LevelEditor
                 }
             }
 
-            IsGridLoaded = true;
-            OnGridInitialized?.Invoke();
+            if (IsGridLoaded == false)
+            {
+                IsGridLoaded = true;
+                OnGridInitialized?.Invoke();
+            }
+
             OnLoadNewLevelData?.Invoke();
         }
 
+
+        private void RemoveOldGridManagerData()
+        {
+            if (_tiles != null)
+            {
+                for (int i = 0; i < _tiles.Length; i++)
+                    Destroy(_tiles[i].gameObject);
+                _tiles = null;
+            }
+         
+
+            if(_gridSlots != null)
+            {
+                for (int i = 0; i < _gridSlots.Length; i++)
+                    Destroy(_gridSlots[i].gameObject);
+                _gridSlots = null;
+            } 
+        }
 
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
         {
@@ -340,12 +363,12 @@ namespace Match3.LevelEditor
             int[,] blocks = new int[Width, Height];
             TileID[,] tiles = new TileID[Width, Height];
             TileID[] avaiableTiles = new TileID[AvaiableTiles.Count];
-            for(int i = 0; i < AvaiableTiles.Count; i++)
+            for (int i = 0; i < AvaiableTiles.Count; i++)
             {
                 avaiableTiles[i] = AvaiableTiles[i].ID;
             }
             int[,] quests = new int[Quests.Count, 2];
-            for(int i = 0;i < Quests.Count; i++)
+            for (int i = 0; i < Quests.Count; i++)
             {
                 quests[i, 0] = (int)Quests[i].QuestID;
                 quests[i, 1] = (int)Quests[i].Quantity;

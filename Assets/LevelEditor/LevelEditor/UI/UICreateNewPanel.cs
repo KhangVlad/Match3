@@ -8,8 +8,8 @@ namespace Match3.LevelEditor
     {
         [Header("InputFileds")]
         [SerializeField] private TMP_InputField _fileNameInputField;
-        [SerializeField] private TMP_InputField _widthInputField;
-        [SerializeField] private TMP_InputField _heightInputField;
+        //[SerializeField] private TMP_InputField _widthInputField;
+        //[SerializeField] private TMP_InputField _heightInputField;
 
 
         [Header("Buttons")]
@@ -21,16 +21,19 @@ namespace Match3.LevelEditor
             _okBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
+                LevelEditorManager.Instance.CharacterID = _fileNameInputField.text;
 
-                int width = 3;
-                int height = 3;
-                int.TryParse(_widthInputField.text, out width);
-                int.TryParse(_heightInputField.text, out height);
-                if (width == 0) width = 3;
-                if (height == 0) height = 3;
 
-                GridManager.Instance.LoadGridData(width, height);
+                //int width = 3;
+                //int height = 3;
+                //int.TryParse(_widthInputField.text, out width);
+                //int.TryParse(_heightInputField.text, out height);
+                //if (width == 0) width = 3;
+                //if (height == 0) height = 3;
+
+                //GridManager.Instance.LoadGridData(width, height);
                 this.gameObject.SetActive(false);
+                UILevelEditorManager.Instance.DisplayUILevelEditor(true);
             });
 
             _cancelBtn.onClick.AddListener(() =>
@@ -45,23 +48,7 @@ namespace Match3.LevelEditor
 
 
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Tab))
-            {
-                if(_fileNameInputField.isFocused)
-                {
-                    _widthInputField.Select();
-                    _widthInputField.ActivateInputField();
-                }
-                else if(_widthInputField.isFocused)
-                {
-                    _heightInputField.Select();
-                    _heightInputField.ActivateInputField();
-                }
-            }
-        }
-
+     
 
 
         private void OnDestroy()

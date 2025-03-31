@@ -22,6 +22,11 @@ namespace Match3.LevelEditor
         [SerializeField] private TMP_InputField _unlockCharacterIDInputField;
         [SerializeField] private TMP_InputField _heartUnlockInputField;
 
+        // gird
+        [SerializeField] private TMP_InputField _widthInputField;
+        [SerializeField] private TMP_InputField _heightInputFiled;
+        [SerializeField] private Button _resetLevelBtn;
+
 
         [Header("~Runtime")]
         public UIHotbarTileSlot[] TileSlots;
@@ -72,6 +77,20 @@ namespace Match3.LevelEditor
             {
                 GridManager.Instance.UnlockData[2] = int.Parse(value);
             });
+
+            _widthInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.Width = int.Parse(value);
+            });
+            _heightInputFiled.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.Height = int.Parse(value);
+            });
+            _resetLevelBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+                GridManager.Instance.LoadGridData(GridManager.Instance.Width, GridManager.Instance.Height);
+            });
         }
 
     
@@ -91,6 +110,11 @@ namespace Match3.LevelEditor
             _characterIDInputField.onValueChanged.RemoveAllListeners();
             _unlockCharacterIDInputField.onValueChanged.RemoveAllListeners();
             _heartUnlockInputField.onValueChanged.RemoveAllListeners();
+            _widthInputField.onValueChanged.RemoveAllListeners();
+            _heightInputFiled.onValueChanged.RemoveAllListeners();
+
+
+            _resetLevelBtn.onClick.RemoveAllListeners();
         }
 
         private void Update()

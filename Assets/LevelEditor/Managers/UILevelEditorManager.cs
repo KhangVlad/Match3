@@ -8,6 +8,7 @@ namespace Match3.LevelEditor
 
         public UIMenu UIMenu { get; private set; }
         public UILevelEditor UILevelEditor { get; private set; }
+        public UILevelSelector UILevelSelector { get; private set; }
 
         private void Awake()
         {
@@ -20,6 +21,7 @@ namespace Match3.LevelEditor
 
             UIMenu = FindFirstObjectByType<UIMenu>();
             UILevelEditor = FindFirstObjectByType<UILevelEditor>();
+            UILevelSelector = FindFirstObjectByType<UILevelSelector>();
         }
 
         private void Start()
@@ -31,6 +33,7 @@ namespace Match3.LevelEditor
         public void CloseAll()
         {
             DisplayUILevelEditor(false);
+            DisplayUILevelSelector(false);
         }
 
 
@@ -42,6 +45,11 @@ namespace Match3.LevelEditor
         public void DisplayUILevelEditor(bool enable)
         {
             UILevelEditor.DisplayCanvas(enable);
+        }
+
+        public void DisplayUILevelSelector(bool enable)
+        {
+            UILevelSelector.DisplayCanvas(enable);
         }
     }
 }

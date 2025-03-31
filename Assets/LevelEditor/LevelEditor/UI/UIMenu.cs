@@ -56,7 +56,7 @@ namespace Match3.LevelEditor
             _filePopup.gameObject.SetActive(false);
             _uiWarningModifiedPopup.gameObject.SetActive(false);
 
-            _uiCreateNewPanel.gameObject.SetActive(EditorManager.Instance.ShowCreateNewPanel);
+            _uiCreateNewPanel.gameObject.SetActive(LevelEditorManager.Instance.ShowCreateNewPanel);
 
             _fileBtn.onClick.AddListener(() =>
             {
@@ -86,7 +86,7 @@ namespace Match3.LevelEditor
             });
             _newFileBtn.onClick.AddListener(() =>
             {
-                EditorManager.Instance.ShowCreateNewPanel = true;
+                LevelEditorManager.Instance.ShowCreateNewPanel = true;
 
                 _filePopup.gameObject.SetActive(false);
                 Loader.Load(Loader.Scene.LevelEditor);
@@ -142,7 +142,7 @@ namespace Match3.LevelEditor
             //
             _openFileBtn.onClick.AddListener(() =>
             {
-                EditorManager.Instance.ShowCreateNewPanel = false;
+                LevelEditorManager.Instance.ShowCreateNewPanel = false;
 
                 var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", "json", false);
                 if (paths.Length > 0)
@@ -155,13 +155,13 @@ namespace Match3.LevelEditor
                     });
                 }
                 _filePopup.gameObject.SetActive(false);
-                _uiCreateNewPanel.gameObject.SetActive(EditorManager.Instance.ShowCreateNewPanel);
+                _uiCreateNewPanel.gameObject.SetActive(LevelEditorManager.Instance.ShowCreateNewPanel);
 
             });
 
             _exportFileBtn.onClick.AddListener(() =>
             {
-                var path = StandaloneFileBrowser.SaveFilePanel("Title", "", "sample", "json");
+                var path = StandaloneFileBrowser.SaveFilePanel("Title", "", LevelEditorManager.Instance.CharacterID, "json");
                 if (!string.IsNullOrEmpty(path))
                 {
                     LevelEditorSaveManager.Instance.SaveAs(path);
