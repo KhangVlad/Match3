@@ -59,76 +59,120 @@ namespace Match3.LevelEditor
         
             UpdateGridVisualize();
 
-            //if (Input.GetMouseButton(0))
-            //{
-            //    if (Utilities.IsPointerOverUIElement()) return;
-            //    Vector2Int gridPosition = GetGridPositionByMouse();
-            //    if (IsValidGridTile(gridPosition.x, gridPosition.y))
-            //    {
-            //        if (LevelEditorInventory.Instance.SelectedBlockIndex < 5)
-            //        {
-            //            int index = gridPosition.x + gridPosition.y * Width;
+            if (Input.GetMouseButton(0))
+            {
+                if (Utilities.IsPointerOverUIElement()) return;
+                Vector2Int gridPosition = GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    if(LevelEditorInventory.Instance.Source == LevelEditorInventory.SelectSource.Tile)
+                    {
+                        int index = gridPosition.x + gridPosition.y * Width;
 
-            //            Tile selectedTile = LevelEditorInventory.Instance.GetSelectedTile();
-            //            if (_tiles[index].CurrentBlock is NoneBlock)
-            //            {
-            //                if (_tiles[index].ID != selectedTile.ID)
-            //                {
-            //                    Destroy(_tiles[index].gameObject);
-            //                    _tiles[index] = null;
+                        Tile selectedTile = AvaiableTiles[LevelEditorInventory.Instance.SelectIndex];
+                        if (_tiles[index].CurrentBlock is NoneBlock)
+                        {
+                            if (_tiles[index].ID != selectedTile.ID)
+                            {
+                                Destroy(_tiles[index].gameObject);
+                                _tiles[index] = null;
 
-            //                    TileID tileID = selectedTile.ID;
-            //                    Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
-            //                    tile.UpdatePosition();
+                                TileID tileID = selectedTile.ID;
+                                Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                                tile.UpdatePosition();
 
-            //                    OnDataHasChanged?.Invoke();
-            //                }
-            //            }
-            //            else
-            //            {
-            //                Destroy(_tiles[index].gameObject);
-            //                _tiles[index] = null;
+                                OnDataHasChanged?.Invoke();
+                            }
+                        }
+                        else
+                        {
+                            Destroy(_tiles[index].gameObject);
+                            _tiles[index] = null;
 
-            //                TileID tileID = selectedTile.ID;
-            //                Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
-            //                tile.UpdatePosition();
+                            TileID tileID = selectedTile.ID;
+                            Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                            tile.UpdatePosition();
 
-            //                OnDataHasChanged?.Invoke();
-            //            }
-            //        }
-            //        else if (LevelEditorInventory.Instance.SelectedBlockIndex < 9)
-            //        {
-            //            int index = gridPosition.x + gridPosition.y * Width;
-            //            Block selectedBlock = LevelEditorInventory.Instance.GetSelectedBlock();
-            //            if (_tiles[index].CurrentBlock.BlockID != selectedBlock.BlockID)
-            //            {
-            //                AddBlock(_tiles[index], selectedBlock);
+                            OnDataHasChanged?.Invoke();
+                        }
+                    }
+                    else if (LevelEditorInventory.Instance.Source == LevelEditorInventory.SelectSource.Block)
+                    {
+                        int index = gridPosition.x + gridPosition.y * Width;
+                        Block selectedBlock = LevelEditorInventory.Instance.GetSelectedBlock();
+                        if (_tiles[index].CurrentBlock.BlockID != selectedBlock.BlockID)
+                        {
+                            AddBlock(_tiles[index], selectedBlock);
 
-            //                OnDataHasChanged?.Invoke();
-            //            }
-            //        }
-            //    }
-            //}
-            //else if (Input.GetMouseButton(1))
-            //{
-            //    if (Utilities.IsPointerOverUIElement()) return;
-            //    Vector2Int gridPosition = GetGridPositionByMouse();
-            //    if (IsValidGridTile(gridPosition.x, gridPosition.y))
-            //    {
-            //        int index = gridPosition.x + gridPosition.y * Width;
+                            OnDataHasChanged?.Invoke();
+                        }
+                    }
 
-            //        if (_tiles[index].CurrentBlock is not NoneBlock || _tiles[index].ID != TileID.None)
-            //        {
-            //            Destroy(_tiles[index].gameObject);
-            //            _tiles[index] = null;
-            //            Tile tile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
-            //            tile.UpdatePosition();
 
-            //            OnDataHasChanged?.Invoke();
-            //        }
+                    //if (LevelEditorInventory.Instance.SelectedBlockIndex < 5)
+                    //{
+                    //    int index = gridPosition.x + gridPosition.y * Width;
 
-            //    }
-            //}
+                    //    Tile selectedTile = LevelEditorInventory.Instance.GetSelectedTile();
+                    //    if (_tiles[index].CurrentBlock is NoneBlock)
+                    //    {
+                    //        if (_tiles[index].ID != selectedTile.ID)
+                    //        {
+                    //            Destroy(_tiles[index].gameObject);
+                    //            _tiles[index] = null;
+
+                    //            TileID tileID = selectedTile.ID;
+                    //            Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                    //            tile.UpdatePosition();
+
+                    //            OnDataHasChanged?.Invoke();
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        Destroy(_tiles[index].gameObject);
+                    //        _tiles[index] = null;
+
+                    //        TileID tileID = selectedTile.ID;
+                    //        Tile tile = AddTile(gridPosition.x, gridPosition.y, tileID, BlockID.None);
+                    //        tile.UpdatePosition();
+
+                    //        OnDataHasChanged?.Invoke();
+                    //    }
+                    //}
+                    //else if (LevelEditorInventory.Instance.SelectedBlockIndex < 9)
+                    //{
+                    //    int index = gridPosition.x + gridPosition.y * Width;
+                    //    Block selectedBlock = LevelEditorInventory.Instance.GetSelectedBlock();
+                    //    if (_tiles[index].CurrentBlock.BlockID != selectedBlock.BlockID)
+                    //    {
+                    //        AddBlock(_tiles[index], selectedBlock);
+
+                    //        OnDataHasChanged?.Invoke();
+                    //    }
+                    //}
+                }
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                if (Utilities.IsPointerOverUIElement()) return;
+                Vector2Int gridPosition = GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    int index = gridPosition.x + gridPosition.y * Width;
+
+                    if (_tiles[index].CurrentBlock is not NoneBlock || _tiles[index].ID != TileID.None)
+                    {
+                        Destroy(_tiles[index].gameObject);
+                        _tiles[index] = null;
+                        Tile tile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                        tile.UpdatePosition();
+
+                        OnDataHasChanged?.Invoke();
+                    }
+
+                }
+            }
         }
 
         public void LoadLevelData(LevelData levelData)

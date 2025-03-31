@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System;
 
 namespace Match3.LevelEditor
 {
@@ -9,6 +10,7 @@ namespace Match3.LevelEditor
     {
         public static event System.Action<UIAvaiableTileSlot> OnClicked;
 
+        [SerializeField] private Button _selectBtn;
         [SerializeField] private Button _removeBtn;
         [SerializeField] private Image _iconImage;
         [SerializeField] private Sprite _defaultButtonSprite;
@@ -17,22 +19,36 @@ namespace Match3.LevelEditor
 
         public Tile Tile { get; private set; }
         public int SlotIndex { get; private set; }
-        public int ShortcutIndex { get; private set; }
 
         private bool _isEnter = false;
 
         private void Start()
         {
-            _removeBtn.onClick.AddListener(() =>
+            _selectBtn.onClick.AddListener(() =>
             {
+                Debug.Log("Slect");
+                AudioManager.Instance.PlayButtonSfx();
+                OnClicked?.Invoke(this);
+            });
+
+            _removeBtn.onClick.AddListener(() =>
+            {         
                 AudioManager.Instance.PlayButtonSfx();
                 GridManager.Instance.RemoveAvaiableTile(SlotIndex);
             });
+
+            OnClicked += OnUITilSlotClicked;
+            LevelEditorInventory.Instance.OnSelectChanged += OnSelectChanged_UpdateUI;
         }
+
 
         private void OnDestroy()
         {
+            _selectBtn.onClick.RemoveAllListeners();
             _removeBtn.onClick.RemoveAllListeners();
+
+            OnClicked -= OnUITilSlotClicked;
+            LevelEditorInventory.Instance.OnSelectChanged -= OnSelectChanged_UpdateUI;
         }
 
         public void SetData(Tile tile, int slotIndex)
@@ -56,7 +72,35 @@ namespace Match3.LevelEditor
             }
         }
 
-  
+
+        private void Select()
+        {
+            _selectBtn.interactable = false;
+            _selectBtn.image.sprite = _selectButtonSprite;
+        }
+
+        private void Unselect()
+        {
+            _selectBtn.interactable = true;
+            _selectBtn.image.sprite = _defaultButtonSprite;
+        }
+
+
+        private void OnUITilSlotClicked(UIAvaiableTileSlot slot)
+        {
+            if (slot == this)
+            {
+                LevelEditorInventory.Instance.Select(LevelEditorInventory.SelectSource.Tile, slot.SlotIndex);
+                //Select();
+            }
+            //else
+            //{
+            //    Unselect();
+            //}
+        }
+
+
+
         public void OnPointerEnter(PointerEventData eventData)
         {
             _isEnter = true;
@@ -76,5 +120,18 @@ namespace Match3.LevelEditor
             _isEnter = false;
             UIPopupManager.Instance.DisplayUINameInfoPopup(false);
         }
+
+        private void OnSelectChanged_UpdateUI(LevelEditorInventory.SelectSource source, int index)
+        {
+            if(source == LevelEditorInventory.SelectSource.Tile && index == SlotIndex)
+            {
+                Select();
+            }
+            else
+            {
+                Unselect();
+            }
+        }
+
     }
 }

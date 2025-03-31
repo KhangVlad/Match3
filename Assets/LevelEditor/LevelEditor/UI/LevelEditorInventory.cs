@@ -22,6 +22,8 @@ namespace Match3.LevelEditor
         }
         public int SelectIndex;
 
+        public SelectSource Source => _source;
+
 
         private void Awake()
         {
@@ -76,14 +78,8 @@ namespace Match3.LevelEditor
 
         public Block GetSelectedBlock()
         {
-            if (SelectIndex > 4 && SelectIndex < 9)
-            {
-                return Blocks[(SelectIndex - 1) % 4];
-            }
-            else
-            {
-                return Blocks[5];
-            }
+
+            return Blocks[SelectIndex];
         }
     }
 }
