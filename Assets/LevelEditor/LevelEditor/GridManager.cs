@@ -56,7 +56,7 @@ namespace Match3.LevelEditor
         private void Update()
         {
             if (IsGridLoaded == false) return;
-
+        
             UpdateGridVisualize();
 
             if (Input.GetMouseButton(0))
@@ -133,36 +133,43 @@ namespace Match3.LevelEditor
 
         public void LoadLevelData(LevelData levelData)
         {
-            //for (int i = 0; i < _tiles.Length; i++)
-            //    Destroy(_tiles[i].gameObject);
-            //_tiles = null;
-
-            //for (int i = 0; i < _gridSlots.Length; i++)
-            //    Destroy(_gridSlots[i].gameObject);
-            //_gridSlots = null;
+ 
             RemoveOldGridManagerData();
 
             MaxTurn = levelData.MaxTurn;
-            UnlockData = levelData.Unlock;
-            Quests = new();
-            Debug.Log(levelData.Quests.GetLength(0));
-            for (int i = 0; i < levelData.Quests.GetLength(0); i++)
+
+            if(levelData.Unlock != null)
             {
-                Quest quest = new Quest()
-                {
-                    QuestID = (QuestID)levelData.Quests[i, 0],
-                    Quantity = levelData.Quests[i, 1]
-                };
-                Quests.Add(quest);
+                UnlockData = levelData.Unlock;
             }
+           
+
+            Quests = new();
+            if(levelData.Quests != null)
+            {
+                //Debug.Log(levelData.Quests.GetLength(0));
+                for (int i = 0; i < levelData.Quests.GetLength(0); i++)
+                {
+                    Quest quest = new Quest()
+                    {
+                        QuestID = (QuestID)levelData.Quests[i, 0],
+                        Quantity = levelData.Quests[i, 1]
+                    };
+                    Quests.Add(quest);
+                }
+            }
+           
 
             AvaiableTiles = new();
-            for (int i = 0; i < levelData.AvaiableTiles.Length; i++)
+            if(levelData.AvaiableTiles != null)
             {
-                Tile tile = GameDataManager.Instance.GetTileByID(levelData.AvaiableTiles[i]);
-                AvaiableTiles.Add(tile);
+                for (int i = 0; i < levelData.AvaiableTiles.Length; i++)
+                {
+                    Tile tile = GameDataManager.Instance.GetTileByID(levelData.AvaiableTiles[i]);
+                    AvaiableTiles.Add(tile);
+                }
             }
-
+         
 
             this.Width = levelData.Tiles.GetLength(0);
             this.Height = levelData.Tiles.GetLength(1);
@@ -298,6 +305,7 @@ namespace Match3.LevelEditor
 
         private void UpdateGridVisualize()
         {
+            if (Utilities.IsPointerOverUIElement()) return;
             for (int i = 0; i < _gridSlots.Length; i++)
             {
                 _gridSlots[i].Hover(false);

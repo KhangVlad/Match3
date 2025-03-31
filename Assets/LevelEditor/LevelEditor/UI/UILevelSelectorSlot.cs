@@ -28,6 +28,10 @@ namespace Match3.LevelEditor
             _eidtBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
+
+                LevelEditorManager.Instance.SetSelectLevel(_level);
+                GridManager.Instance.LoadLevelData(LevelEditorManager.Instance.SelectLevelData);
+
                 UILevelEditorManager.Instance.DisplayUILevelSelector(false);
                 UILevelEditorManager.Instance.DisplayUILevelEditor(true);
             });

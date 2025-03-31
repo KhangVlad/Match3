@@ -11,6 +11,9 @@ namespace Match3.LevelEditor
 
         private Canvas _canvas;
 
+        [SerializeField] private Button _selectLevelBtn;
+
+        [Space(10)]
         [SerializeField] private UIHotbarTileSlot _uiTileSlotPrefab;
         [SerializeField] private UIHotbarBlockSlot _uiBlockSlotPrefab;
         [SerializeField] private Transform _tileContentsParent;
@@ -61,6 +64,20 @@ namespace Match3.LevelEditor
             LevelEditorInventory.Instance.OnBlockChanged += OnBlockChanged_UpdateUI;
             GridManager.Instance.OnLoadNewLevelData += OnLoadNewLevelData_UpdateUI;
 
+            _selectLevelBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+             
+                LevelData levelData = GridManager.Instance.GetLevelData();
+                int index = LevelEditorManager.Instance.CurrentLevel;
+                LevelEditorManager.Instance.CharacterLevelData.Levels[index] = levelData;
+
+                Utilities.WaitAfterEndOfFrame(() =>
+                {
+                    UILevelEditorManager.Instance.DisplayUILevelSelector(true);
+                });
+            });
+
             _maxTurnInputField.onValueChanged.AddListener((value) =>
             {
                 GridManager.Instance.MaxTurn = int.Parse(value);
@@ -105,6 +122,8 @@ namespace Match3.LevelEditor
             LevelEditorInventory.Instance.OnTileChanged -= OnTileChanged_UpdateUI;
             LevelEditorInventory.Instance.OnBlockChanged -= OnBlockChanged_UpdateUI;
             GridManager.Instance.OnLoadNewLevelData -= OnLoadNewLevelData_UpdateUI;
+
+            _selectLevelBtn.onClick.RemoveAllListeners();
 
             _maxTurnInputField.onValueChanged.RemoveAllListeners();
             _characterIDInputField.onValueChanged.RemoveAllListeners();
@@ -269,6 +288,9 @@ namespace Match3.LevelEditor
             _characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
             _unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
             _heartUnlockInputField.text = GridManager.Instance.UnlockData[2].ToString();
+
+            _widthInputField.text = GridManager.Instance.Width.ToString();
+            _heightInputFiled.text = GridManager.Instance.Height.ToString();
         }
     }
 }

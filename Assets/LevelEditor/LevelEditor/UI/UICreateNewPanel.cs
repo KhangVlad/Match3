@@ -8,9 +8,7 @@ namespace Match3.LevelEditor
     {
         [Header("InputFileds")]
         [SerializeField] private TMP_InputField _fileNameInputField;
-        //[SerializeField] private TMP_InputField _widthInputField;
-        //[SerializeField] private TMP_InputField _heightInputField;
-
+  
 
         [Header("Buttons")]
         [SerializeField] private Button _cancelBtn;

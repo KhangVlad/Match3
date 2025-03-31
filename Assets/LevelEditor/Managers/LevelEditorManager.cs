@@ -18,6 +18,12 @@ namespace Match3.LevelEditor
         [SerializeField] private int _currentSelectLevel;
 
 
+        #region Properties
+        public int CurrentLevel => _currentSelectLevel;
+        public LevelData SelectLevelData => CharacterLevelData.Levels[_currentSelectLevel];
+        #endregion
+
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -32,6 +38,11 @@ namespace Match3.LevelEditor
         {
             this.FileName = name;
             OnFileNameChanged?.Invoke(name);
+        }
+
+        public void SetSelectLevel(int level)
+        {
+            this._currentSelectLevel = level;
         }
         
         public CharacterLevelData InitializeNewChartacterLevelData()
