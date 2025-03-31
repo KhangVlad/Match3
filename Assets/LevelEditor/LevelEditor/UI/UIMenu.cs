@@ -161,7 +161,7 @@ namespace Match3.LevelEditor
 
             _exportFileBtn.onClick.AddListener(() =>
             {
-                var path = StandaloneFileBrowser.SaveFilePanel("Title", "", LevelEditorManager.Instance.CharacterID, "json");
+                var path = StandaloneFileBrowser.SaveFilePanel("Title", "", LevelEditorManager.Instance.FileName, "json");
                 if (!string.IsNullOrEmpty(path))
                 {
                     LevelEditorSaveManager.Instance.SaveAs(path);

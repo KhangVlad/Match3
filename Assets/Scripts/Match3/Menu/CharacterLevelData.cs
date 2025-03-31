@@ -6,5 +6,10 @@ namespace Match3
     public class CharacterLevelData
     {
         public List<LevelData> Levels;
+
+        public CharacterLevelData()
+        {
+            Levels = new List<LevelData>();
+        }
     }
 }

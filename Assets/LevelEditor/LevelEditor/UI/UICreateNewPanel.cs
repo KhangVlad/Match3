@@ -21,19 +21,11 @@ namespace Match3.LevelEditor
             _okBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
-                LevelEditorManager.Instance.CharacterID = _fileNameInputField.text;
+                LevelEditorManager.Instance.SetFileName(_fileNameInputField.text);
+                LevelEditorManager.Instance.InitializeNewChartacterLevelData();
 
-
-                //int width = 3;
-                //int height = 3;
-                //int.TryParse(_widthInputField.text, out width);
-                //int.TryParse(_heightInputField.text, out height);
-                //if (width == 0) width = 3;
-                //if (height == 0) height = 3;
-
-                //GridManager.Instance.LoadGridData(width, height);
                 this.gameObject.SetActive(false);
-                UILevelEditorManager.Instance.DisplayUILevelEditor(true);
+                UILevelEditorManager.Instance.DisplayUILevelSelector(true);
             });
 
             _cancelBtn.onClick.AddListener(() =>
