@@ -55,7 +55,14 @@ public class CharactersDataManager : MonoBehaviour
 
     public Color GetHeartColor(int level, out Color nextLevelColor)
     {
-        nextLevelColor = characterColor.heartColors[level + 1];
+        if (level + 1 < characterColor.heartColors.Length)
+        {
+            nextLevelColor = characterColor.heartColors[level + 1];
+        }
+        else
+        {
+            nextLevelColor = characterColor.heartColors[level];
+        }
         return characterColor.heartColors[level];
     }
 

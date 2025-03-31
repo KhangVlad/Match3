@@ -65,6 +65,7 @@ public class UILevelDesignManager : MonoBehaviour
         heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
     }
 
+  
 
     private void SelectLevel()
     {

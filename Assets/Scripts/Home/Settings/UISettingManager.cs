@@ -87,6 +87,7 @@ public class UISettingManager : MonoBehaviour
     {
         if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Open"))
             _animator.Play("Close");
+        AudioManager.Instance.PlayCloseBtnSfx();
         RemoveBackground();
         StartCoroutine(RunPopupDestroy());
     }
