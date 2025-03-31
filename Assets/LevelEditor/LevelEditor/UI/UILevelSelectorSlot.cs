@@ -55,6 +55,11 @@ namespace Match3.LevelEditor
             _levelText.text = $"Level {level + 1}";
         }
 
+        public void SetIcon(Sprite srpite)
+        {
+            _iconImage.sprite = srpite;
+        }
+
 
         public void OnPointerClick(PointerEventData eventData)
         {

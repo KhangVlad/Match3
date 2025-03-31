@@ -31,8 +31,11 @@ namespace Match3.LevelEditor
 
             LevelEditorManager.Instance.OnCharacterLevelDataAdded += OnCharacterLevelDataAdded_UpdateUI;
             LevelEditorManager.Instance.OnCharacterLevelDataRemoval += OnCharacterLevelDataRemoval_UpdateUI;
+
+            LevelEditorManager.Instance.OnLevelDataSaved += OnLevelDataSaved_UpdateUI;
         }
 
+     
 
         private void OnDestroy()
         {
@@ -42,6 +45,8 @@ namespace Match3.LevelEditor
 
             LevelEditorManager.Instance.OnCharacterLevelDataAdded -= OnCharacterLevelDataAdded_UpdateUI;
             LevelEditorManager.Instance.OnCharacterLevelDataRemoval -= OnCharacterLevelDataRemoval_UpdateUI;
+
+            LevelEditorManager.Instance.OnLevelDataSaved -= OnLevelDataSaved_UpdateUI;
         }
     
         public void DisplayCanvas(bool enable)
@@ -102,6 +107,13 @@ namespace Match3.LevelEditor
             {
                 _uiSlots[i].transform.SetSiblingIndex(i);
             }
+        }
+
+        private void OnLevelDataSaved_UpdateUI(int index)
+        {
+            LevelData levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[index];
+            Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(levelData);
+            _uiSlots[index].SetIcon(Utilities.ConvertTextureToSprite(iconTexture));
         }
     }
 }

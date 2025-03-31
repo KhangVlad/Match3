@@ -120,7 +120,16 @@ namespace Match3
             }
         }
 
-
+        public static Sprite ConvertTextureToSprite(Texture2D texture)
+        {
+            if (texture == null) return null;
+            return Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f), // Pivot (centered)
+                100f // Pixels Per Unit (adjust as needed)
+            );
+        }
 
 
         /// <summary>

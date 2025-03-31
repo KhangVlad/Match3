@@ -70,7 +70,8 @@ namespace Match3.LevelEditor
              
                 LevelData levelData = GridManager.Instance.GetLevelData();
                 int index = LevelEditorManager.Instance.CurrentLevel;
-                LevelEditorManager.Instance.CharacterLevelData.Levels[index] = levelData;
+                //LevelEditorManager.Instance.CharacterLevelData.Levels[index] = levelData;
+                LevelEditorManager.Instance.SaveLevelData(index, levelData);
 
                 Utilities.WaitAfterEndOfFrame(() =>
                 {

@@ -10,6 +10,7 @@ namespace Match3.LevelEditor
         public event System.Action<CharacterLevelData> OnCharacterLevelDataInitialized;
         public event System.Action<int> OnCharacterLevelDataAdded;
         public event System.Action<int> OnCharacterLevelDataRemoval;
+        public event System.Action<int> OnLevelDataSaved;
 
         public bool ShowCreateNewPanel = true;
         public string FileName;
@@ -66,6 +67,12 @@ namespace Match3.LevelEditor
         {
             CharacterLevelData.Levels.RemoveAt(index);
             OnCharacterLevelDataRemoval?.Invoke(index);
+        }
+
+        public void SaveLevelData(int index, LevelData levelData)
+        {
+            CharacterLevelData.Levels[index] = levelData;
+            OnLevelDataSaved?.Invoke(index);
         }
     }
 }
