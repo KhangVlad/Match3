@@ -7,7 +7,7 @@ namespace Match3.LevelEditor
     {
         public static LevelEditorManager Instance { get; private set; }
         public event System.Action<string> OnFileNameChanged;
-        public event System.Action<CharacterLevelData> OnCharacterLevelDataInitialized;
+        public event System.Action<CharacterLevelData> OnCharacterLevelDataLoaded;
         public event System.Action<int> OnCharacterLevelDataAdded;
         public event System.Action<int> OnCharacterLevelDataRemoval;
         public event System.Action<int> OnLevelDataSaved;
@@ -51,9 +51,15 @@ namespace Match3.LevelEditor
             CharacterLevelData = new();
             LevelData levelData = new LevelData(0,0);
             CharacterLevelData.Levels.Add(levelData);
-            OnCharacterLevelDataInitialized?.Invoke(CharacterLevelData);        
+            OnCharacterLevelDataLoaded?.Invoke(CharacterLevelData);        
             return CharacterLevelData;
         }
+        public void SetCharacterLevelData(CharacterLevelData characterLevelData)
+        {
+            this.CharacterLevelData = characterLevelData;
+            OnCharacterLevelDataLoaded?.Invoke(CharacterLevelData);
+        }
+
 
         public void AddNewLevelDataAtIndex(int index)
         {

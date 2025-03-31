@@ -23,7 +23,6 @@ namespace Match3.LevelEditor
                 LevelEditorManager.Instance.InitializeNewChartacterLevelData();
 
                 this.gameObject.SetActive(false);
-                UILevelEditorManager.Instance.DisplayUILevelSelector(true);
             });
 
             _cancelBtn.onClick.AddListener(() =>

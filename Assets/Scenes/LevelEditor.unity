@@ -680,7 +680,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 122896584}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -11630,7 +11630,7 @@ GameObject:
   - component: {fileID: 1683557468}
   - component: {fileID: 1683557469}
   m_Layer: 0
-  m_Name: Captured
+  m_Name: LevelPreviewManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11663,9 +11663,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9bfb2ae471164a45b7b75e2fd5e74c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridSlotPrefab: {fileID: 0}
-  _gridSlots: []
-  _texture: {fileID: 0}
 --- !u!1 &1689472967
 GameObject:
   m_ObjectHideFlags: 0

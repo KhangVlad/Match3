@@ -192,7 +192,7 @@ namespace Match3.LevelEditor
                     {
                         if (LevelEditorSaveManager.Instance.IsCurrentWorkingFileExist())
                         {
-                            LevelEditorSaveManager.Instance.Save();
+                            //LevelEditorSaveManager.Instance.Save();
                             QuitGame();
                         }
                         else

@@ -29,7 +29,6 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx();
                 this.gameObject.SetActive(false);
 
-                Debug.Log(_currentSelectSlotIndex);
                 QuestDataSO questData = GameDataManager.Instance.QuestDataSos[_currentSelectSlotIndex];
                 Quest quest = new Quest()
                 {

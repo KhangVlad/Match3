@@ -35,44 +35,28 @@ namespace Match3.LevelEditor
         }
 
 
-        private void SaveLevelData(LevelData levelData, string filePath)
+        private void SaveCharacterLevelData(CharacterLevelData characterLevelData, string filePath)
         {
             string detectFileFormat = filePath.Split('.')[^1];  // last index [^1]
             string fileFormat = detectFileFormat.Equals("json") ? "" : ".json";
 
             //string json = JsonUtility.ToJson(levelData, true);
-            string json = JsonConvert.SerializeObject(levelData);
+            string json = JsonConvert.SerializeObject(characterLevelData);   
             File.WriteAllText(filePath + fileFormat, json);
+            Debug.Log(filePath);
         }
 
 
-        public void Save()
-        {
-            Debug.Log("Save");
-            if (CurrentSaveProjectPath == "")
-            {
-                Debug.LogError("File not exist yet");
-                return;
-            }
-            //Structure structure = GetStructure(Builder.Instance);
-            //SaveStructure(structure, CurrentSaveProjectPath);
-
-            LevelData levelData = GridManager.Instance.GetLevelData();
-            SaveLevelData(levelData, CurrentSaveProjectPath);
-
-            UILogHandler.Instance.ShowLogText($"Save successfully: {CurrentSaveProjectPath}", 5f);
-            HasBeenSaved = true;
-        }
 
         public void SaveAs(string filePath)
         {
             Debug.Log($"Save as: {filePath}");
-            //Structure structure = GetStructure(Builder.Instance);
-            //SaveStructure(structure, filePath);
-
+ 
             LevelData levelData = GridManager.Instance.GetLevelData();
-            SaveLevelData(levelData, filePath);
+            int index = LevelEditorManager.Instance.CurrentLevel;
+            LevelEditorManager.Instance.SaveLevelData(index, levelData);
 
+            SaveCharacterLevelData(LevelEditorManager.Instance.CharacterLevelData, filePath);
             UILogHandler.Instance.ShowLogText($"Save structure successfully: {filePath}", 5f);
 
             CurrentSaveProjectPath = filePath;
@@ -86,11 +70,11 @@ namespace Match3.LevelEditor
                 try
                 {
                     string json = File.ReadAllText(filePath);     
-                    LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
-                    GridManager.Instance.LoadLevelData(levelData);
+                    CharacterLevelData characterLevelData = JsonConvert.DeserializeObject<CharacterLevelData>(json);
+                    LevelEditorManager.Instance.SetCharacterLevelData(characterLevelData);
+
                     UILogHandler.Instance.ShowLogText($"Load structure successfully: {filePath}", 5f);
                     CurrentSaveProjectPath = filePath;
-                    //onCompleted?.Invoke();
                 }
                 catch
                 {
@@ -113,7 +97,6 @@ namespace Match3.LevelEditor
                 LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
                 GridManager.Instance.LoadLevelData(levelData);
                 UILogHandler.Instance.ShowLogText($"Load structure successfully", 5f);
-                //onCompleted?.Invoke();
             }
             catch
             {
