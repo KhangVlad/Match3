@@ -61,8 +61,6 @@ namespace Match3.LevelEditor
 
         private void OnCharacterLevelDataLoaded_InitUI(CharacterLevelData data)
         {   
-            Debug.Log("OnCharacterLevelDataInitialized_InitUI");
-            Debug.Log($"Count: {data.Levels.Count}");
             if(_uiSlots != null)
             {
                 for(int i = 0; i < _uiSlots.Count; i++)

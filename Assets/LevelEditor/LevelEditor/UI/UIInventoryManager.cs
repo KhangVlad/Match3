@@ -34,9 +34,8 @@ namespace Match3.LevelEditor
             this._canvas.enabled = enable;
         }
 
-        public void DisplayTileInventory(bool enable, UITileInventory.SelectSource selectSource)
+        public void DisplayTileInventory(bool enable)
         {
-            _tileInventory.Source = selectSource;
             _tileInventory.gameObject.SetActive(enable);
         }
 

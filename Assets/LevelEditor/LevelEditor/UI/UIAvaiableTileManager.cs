@@ -18,7 +18,7 @@ namespace Match3.LevelEditor
             _addNewBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
-                UIInventoryManager.Instance.DisplayTileInventory(true, UITileInventory.SelectSource.AvaiableTiles);
+                UIInventoryManager.Instance.DisplayTileInventory(true);
             });
 
 

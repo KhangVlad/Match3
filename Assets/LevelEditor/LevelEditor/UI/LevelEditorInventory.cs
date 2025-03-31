@@ -8,19 +8,24 @@ namespace Match3.LevelEditor
     {
         public static LevelEditorInventory Instance { get; private set; }
         public event System.Action OnInventoryInitialized;
-        public event System.Action<int> OnTileChanged;
         public event System.Action<int> OnBlockChanged;
+        public event System.Action<SelectSource, int> OnSelectChanged;
 
-        public Tile[] Tiles;
         public Block[] Blocks;
-
-
-        public int SelectedShortcutIndex;
+     
+        [SerializeField] private SelectSource _source;
+        public  enum SelectSource
+        {
+            None = 0,
+            Tile = 1,
+            Block = 2,
+        }
+        public int SelectIndex;
 
 
         private void Awake()
         {
-            if(Instance != null && Instance != this)
+            if (Instance != null && Instance != this)
             {
                 Destroy(this.gameObject);
                 return;
@@ -39,27 +44,17 @@ namespace Match3.LevelEditor
 
         private void OnGridInitialized_InitalizeInventory()
         {
-            Tiles = new Tile[4];
-            for(int i = 0; i < 4; i++)
-            {
-                Tile tile = GameDataManager.Instance.GetTileByID(TileID.None);
-                Tiles[i] = tile;    
-            }
 
-            Blocks = new Block[4];
-            for (int i = 0; i < 4; i++)
+            Blocks = new Block[System.Enum.GetValues(typeof(BlockID)).Length];
+            int index = 0;
+            foreach (BlockID blockID in System.Enum.GetValues(typeof(BlockID)))
             {
-                Block block = GameDataManager.Instance.GetBlockByID(BlockID.None);
-                Blocks[i] = block;  
+                Block block = GameDataManager.Instance.GetBlockByID(blockID);
+                Blocks[index] = block;
+                index++;
             }
-
+   
             OnInventoryInitialized?.Invoke();
-        }
-
-        public void SetTile(Tile tile, int index)
-        {
-            Tiles[index] = tile;
-            OnTileChanged?.Invoke(index);
         }
 
         public void SetBlock(Block block, int index)
@@ -68,23 +63,22 @@ namespace Match3.LevelEditor
             OnBlockChanged?.Invoke(index);
         }
 
-        public Tile GetSelectedTile()
+        public void Select(SelectSource source, int index)
         {
-            if(SelectedShortcutIndex > 0 && SelectedShortcutIndex < 5)
-            {
-                return Tiles[SelectedShortcutIndex - 1];
-            }
-            else
-            {
-                return Tiles[1];
-            }
+            //this.sele
+            this._source = source;
+            this.SelectIndex = index;
+
+            OnSelectChanged?.Invoke(source, index);
         }
+
+
 
         public Block GetSelectedBlock()
         {
-            if (SelectedShortcutIndex > 4 && SelectedShortcutIndex < 9)
+            if (SelectIndex > 4 && SelectIndex < 9)
             {
-                return Blocks[(SelectedShortcutIndex - 1)%4];
+                return Blocks[(SelectIndex - 1) % 4];
             }
             else
             {

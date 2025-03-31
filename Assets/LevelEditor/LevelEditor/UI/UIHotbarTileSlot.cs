@@ -38,7 +38,7 @@ namespace Match3.LevelEditor
                 OnClicked?.Invoke(this);
 
                 Tile noneTile = GameDataManager.Instance.GetTileByID(TileID.None);
-                LevelEditorInventory.Instance.SetTile(noneTile, SlotIndex);
+                //LevelEditorInventory.Instance.SetTile(noneTile, SlotIndex);
             });
 
             _addBtn.onClick.AddListener(() =>
@@ -46,7 +46,7 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx(); 
                 OnClicked?.Invoke(this);
 
-                UIInventoryManager.Instance.DisplayTileInventory(true, UITileInventory.SelectSource.Hotbar);
+                UIInventoryManager.Instance.DisplayTileInventory(true);
             });
         }
 

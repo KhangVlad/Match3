@@ -31,14 +31,13 @@ namespace Match3.LevelEditor
 
 
                 Block block = GameDataManager.Instance.Blocks[_currentSelectSlotIndex];
-                int index = (LevelEditorInventory.Instance.SelectedShortcutIndex - 1) % 4;
+                int index = (LevelEditorInventory.Instance.SelectIndex - 1) % 4;
                 LevelEditorInventory.Instance.SetBlock(block, index);
             });
 
             GridManager.Instance.OnGridInitialized += LoadAllUIBlocks;
             UIBlockSlot.OnClicked += OnBlockSlotClickTriggered;
-
-
+        
 
             this.gameObject.SetActive(false);
         }
