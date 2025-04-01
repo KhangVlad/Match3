@@ -29,19 +29,7 @@ namespace Match3.LevelEditor
         }
 
         private IEnumerator OutputRoutine(string url)
-        {
-            //var loader = new WWW(url);
-            //yield return loader;
-            ////output.text = loader.text;
-
-            //EditorManager.Instance.ShowCreateNewPanel = false;
-            //LevelEditorSaveManager.Instance.LoadFromJson(loader.text, onCompleted: () =>
-            //{
-
-            //});
-            //UIMenu.Instance.DisplayFilePopup(false);
-            //UIMenu.Instance.DisplayCreateNewPanel(EditorManager.Instance.ShowCreateNewPanel);
-
+        {        
             using (UnityWebRequest request = UnityWebRequest.Get(url))
             {
                 yield return request.SendWebRequest();
@@ -50,20 +38,38 @@ namespace Match3.LevelEditor
                 {
                     string json = request.downloadHandler.text;
 
-                    EditorManager.Instance.ShowCreateNewPanel = false;
+                    LevelEditorManager.Instance.ShowCreateNewPanel = false;
                     LevelEditorSaveManager.Instance.LoadFromJson(json, onCompleted: () =>
                     {
                         // Callback logic if needed
                     });
 
+                    //string fileName = System.IO.Path.GetFileNameWithoutExtension(uri.LocalPath);
+                    string fileName = GetFileNameFromHeaders(request) ?? System.IO.Path.GetFileNameWithoutExtension(new System.Uri(url).LocalPath);
+                    LevelEditorManager.Instance.SetFileName(fileName);
+                    UIMenu.Instance.ChangeProjectName(fileName);
                     UIMenu.Instance.DisplayFilePopup(false);
-                    UIMenu.Instance.DisplayCreateNewPanel(EditorManager.Instance.ShowCreateNewPanel);
+                    UIMenu.Instance.DisplayCreateNewPanel(LevelEditorManager.Instance.ShowCreateNewPanel);
+                    UILevelEditorManager.Instance.DisplayUILevelSelector(true);
                 }
                 else
                 {
                     Debug.LogError("Error loading data: " + request.error);
                 }
             }
+        }
+
+        private string GetFileNameFromHeaders(UnityWebRequest request)
+        {
+            string contentDisposition = request.GetResponseHeader("Content-Disposition");
+            if (!string.IsNullOrEmpty(contentDisposition) && contentDisposition.Contains("filename="))
+            {
+                // Extract actual file name
+                int index = contentDisposition.IndexOf("filename=") + 9;
+                string fileName = contentDisposition.Substring(index).Trim('"');
+                return System.IO.Path.GetFileNameWithoutExtension(fileName);
+            }
+            return null; // Fallback to URL-based extraction
         }
 #else
         public void OnPointerDown(PointerEventData eventData) { }

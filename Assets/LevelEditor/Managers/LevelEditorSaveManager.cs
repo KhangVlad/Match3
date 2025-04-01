@@ -39,8 +39,6 @@ namespace Match3.LevelEditor
         {
             string detectFileFormat = filePath.Split('.')[^1];  // last index [^1]
             string fileFormat = detectFileFormat.Equals("json") ? "" : ".json";
-
-            //string json = JsonUtility.ToJson(levelData, true);
             string json = JsonConvert.SerializeObject(characterLevelData);   
             File.WriteAllText(filePath + fileFormat, json);
             Debug.Log(filePath);
@@ -95,9 +93,12 @@ namespace Match3.LevelEditor
         {
             try
             {
-                LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
-                GridManager.Instance.LoadLevelData(levelData);
+                CharacterLevelData characterLevelData = JsonConvert.DeserializeObject<CharacterLevelData>(json);
+                LevelEditorManager.Instance.SetCharacterLevelData(characterLevelData);
+                //LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
+                //GridManager.Instance.LoadLevelData(levelData);
                 UILogHandler.Instance.ShowLogText($"Load structure successfully", 5f);
+
             }
             catch
             {

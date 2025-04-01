@@ -21,11 +21,16 @@ namespace Match3.LevelEditor
         // Broser plugin should be called in OnPointerDown.
         public void OnPointerDown(PointerEventData eventData)
         {
-            LevelData levelData = GridManager.Instance.GetLevelData();
-            string json = JsonConvert.SerializeObject(levelData);
-            var bytes = Encoding.UTF8.GetBytes(json);
+            //LevelData levelData = GridManager.Instance.GetLevelData();
+            //string json = JsonConvert.SerializeObject(levelData);
 
-            string fileName = LevelEditorSaveManager.Instance.FileName;
+            LevelData levelData = GridManager.Instance.GetLevelData();
+            int index = LevelEditorManager.Instance.CurrentLevel;
+            LevelEditorManager.Instance.SaveLevelData(index, levelData);
+            string json = JsonConvert.SerializeObject(LevelEditorManager.Instance.CharacterLevelData);
+
+            var bytes = Encoding.UTF8.GetBytes(json);
+            string fileName = $"{LevelEditorManager.Instance.FileName}.json";
             DownloadFile(gameObject.name, "OnFileDownload", fileName, bytes, bytes.Length);
         }
 
