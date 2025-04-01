@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -22,23 +23,54 @@ public class CSVDialogueReader : MonoBehaviour
         {
             string fileName = Path.GetFileNameWithoutExtension(file);
             string[] lines = File.ReadAllLines(file);
-            List<string> dialogues = new List<string>();
 
-            foreach (string line in lines)
+            // Create the ScriptableObject for dialogue data
+            CharacterDialogueSO dialogueSO = ScriptableObject.CreateInstance<CharacterDialogueSO>();
+            dialogueSO.id = (CharacterID)Enum.Parse(typeof(CharacterID), fileName);
+
+            // Dictionary to hold LevelDialogueData by level
+            Dictionary<int, List<string>> levelDialogues = new Dictionary<int, List<string>>();
+
+            // Skip the header row and iterate through the lines
+            for (int i = 1; i < lines.Length; i++)
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                string[] columns = lines[i].Split(',');
+
+                // Make sure the row has enough columns
+                if (columns.Length >= 3)
                 {
-                    dialogues.Add(line.Trim('"'));
+                    int level = int.Parse(columns[0].Trim());  // Level (GroupLevel)
+                    string dialog = columns[2].Trim();  // Dialogue text
+
+                    // If the level is already in the dictionary, add the dialogue to it
+                    if (!levelDialogues.ContainsKey(level))
+                    {
+                        levelDialogues[level] = new List<string>();
+                    }
+                    levelDialogues[level].Add(dialog);
                 }
             }
 
-            CharacterDialogueSO dialogueSO = ScriptableObject.CreateInstance<CharacterDialogueSO>();
-            dialogueSO.id = (CharacterID)System.Enum.Parse(typeof(CharacterID), fileName);
-            dialogueSO.levelDialogues = dialogues.ToArray();
+            // Convert the dictionary into the LevelDialogueData array
+            List<LevelDialogueData> levelDataList = new List<LevelDialogueData>();
+            foreach (var levelEntry in levelDialogues)
+            {
+                LevelDialogueData data = new LevelDialogueData
+                {
+                    level = levelEntry.Key,
+                    dialog = levelEntry.Value.ToArray()  // Convert the list of dialogues to an array
+                };
+                levelDataList.Add(data);
+            }
 
+            // Set the dialogue data in the SO
+            dialogueSO.data = levelDataList.ToArray();
+
+            // Create the asset in the directory
             AssetDatabase.CreateAsset(dialogueSO, $"{directoryPath}{fileName}_Dialogue.asset");
         }
 
+        // Save and refresh assets
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
         Debug.Log("Finished creating ScriptableObjects.");

@@ -20,6 +20,8 @@ public class ScreenInteraction : MonoBehaviour
 
     private bool InteractAble = false;
 
+    public event Action OnInteractAbleTriggered;
+
     private void Awake()
     {
         if (Instance == null)
@@ -109,6 +111,7 @@ public class ScreenInteraction : MonoBehaviour
             target.position = new Vector3(newPosition.x, newPosition.y, target.position.z);
             yield return null;
         }
+
         OnCharacterInteracted?.Invoke(character.id);
         InteractAble = true;
     }
@@ -162,5 +165,37 @@ public class ScreenInteraction : MonoBehaviour
 
         mainCamera.orthographicSize = endOrthoSize;
         InteractAble = true;
+        OnInteractAbleTriggered?.Invoke();
     }
+
+    #if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (map != null)
+            {
+                Vector2 pixelPos = Utilities.WorldPositionToImagePixel(map, PreviouseMousePos);
+                Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+                GUIStyle style = new GUIStyle();
+                style.fontSize = 16; // Set the font size
+                style.normal.textColor = Color.black; // Set the text color to black
+
+                UnityEditor.Handles.Label(mousePos, $"({pixelPos.x}, {pixelPos.y})", style);
+            }
+        }
+    #endif
+    // private void OnDrawGizmos()
+    // {
+    //     if (map != null)
+    //     {
+    //         Vector2 pixelPos = Utilities.WorldPositionToImagePixel(map, PreviouseMousePos);
+    //         Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+    //
+    //         GUIStyle style = new GUIStyle();
+    //         style.fontSize = 16; // Set the font size
+    //         style.normal.textColor = Color.black; // Set the text color to black
+    //
+    //         UnityEditor.Handles.Label(mousePos, $"({pixelPos.x}, {pixelPos.y})", style);
+    //     }
+    // }
 }

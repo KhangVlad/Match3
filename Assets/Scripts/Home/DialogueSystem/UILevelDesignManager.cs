@@ -23,7 +23,7 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Image sliderFill; //color of next level
     [SerializeField] private Slider slider; //progress for next level
     [SerializeField] private TextMeshProUGUI progressText;
-
+    public CharactersData charData;
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -52,7 +52,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void SetPanelColor(CharacterID id)
     {
-        CharactersData charData = CharactersDataManager.Instance.GetCharacterData(id);
+        charData = CharactersDataManager.Instance.GetCharacterData(id);
         Color heartColor = CharactersDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
         CharacterAppearance appearance = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
         heartImage.color = heartColor;
@@ -63,26 +63,13 @@ public class UILevelDesignManager : MonoBehaviour
         slider.value = charData.currentSympathy;
         progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
         heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
-    }
 
-  
 
-    private void SelectLevel()
-    {
-        AudioManager.Instance.PlayButtonSfx();
-        LevelManager.Instance.LoadLevelData(currentChosenLevel.index);
-        UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
-        VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = selectBtn.transform.position;
-        UILevelInfomation.Instance.DisplayCanvas(true);
-    }
-
-    private void OnCharacterInteracted(CharacterID id)
-    {
-        SetPanelColor(id);
-        CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
-        TownCanvasController.Instance.ActiveLevelDesign(true);
-        InitializeLevels();
-        nameText.text = id.ToString();
+        CleanLevels();
+        if (CharactersDataManager.Instance.TotalHeartPoints() >= charData.totalSympathyRequired)
+        {
+            InitializeLevels();
+        }
     }
 
     private void InitializeLevels()
@@ -106,6 +93,25 @@ public class UILevelDesignManager : MonoBehaviour
     }
 
 
+    private void SelectLevel()
+    {
+        AudioManager.Instance.PlayButtonSfx();
+        LevelManager.Instance.LoadLevelData(currentChosenLevel.index);
+        UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+        VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = selectBtn.transform.position;
+        UILevelInfomation.Instance.DisplayCanvas(true);
+    }
+
+    private void OnCharacterInteracted(CharacterID id)
+    {
+        SetPanelColor(id);
+        CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
+        TownCanvasController.Instance.ActiveLevelDesign(true);
+        // InitializeLevels();
+        nameText.text = id.ToString();
+    }
+
+
     private void CleanLevels()
     {
         foreach (Transform child in levelDesignParent)
@@ -122,7 +128,7 @@ public class UILevelDesignManager : MonoBehaviour
         if (!levelDesign.Islocked)
         {
             DialogueManager.Instance.ShowDialogue(typewriterEffect,
-                CharacterDisplay.Instance.GetDialogue(levelDesign.index));
+                CharacterDisplay.Instance.GetDialogue(levelDesign.index,1));
             selectBtn.gameObject.SetActive(true);
         }
         else
@@ -143,7 +149,14 @@ public class UILevelDesignManager : MonoBehaviour
             _canvas.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
             canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
             {
-                DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetDialogue());
+                if (CharactersDataManager.Instance.TotalHeartPoints() >= charData.totalSympathyRequired)
+                {
+                    DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetDialogue());
+                }
+                else
+                {
+                    DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetNotEnoughSympathyDialogue());
+                }
             });
         }
         else

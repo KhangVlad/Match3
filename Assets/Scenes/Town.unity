@@ -2530,7 +2530,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 646901782}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -5752,7 +5752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 8e8ed18aee4bb4df2961a1c5cd1c9f54, type: 2}
+  m_Material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -6338,10 +6338,9 @@ MonoBehaviour:
   IsActiveCharacter: 0
   state: 0
   angryState: 0
-  Timer: 0
-  TimeToChangeState: 30
   AngryPoint: 0
-  IsAngry: 0
+  TimeToDecreaseAngryPoint: 4
+  IsRecovering: 0
 --- !u!1 &1690385851
 GameObject:
   m_ObjectHideFlags: 0

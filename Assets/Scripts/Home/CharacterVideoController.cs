@@ -10,7 +10,6 @@ public class CharacterVideoController : MonoBehaviour
     public List<VideoClipInfo> videoClips = new List<VideoClipInfo>();
     public VideoPlayer videoPlayer;
 
-    private CharacterState currentState;
     public event Action<CharacterID> OnLoadVideosComplete;
 
     private void Awake()
@@ -28,7 +27,6 @@ public class CharacterVideoController : MonoBehaviour
     private void Start()
     {
         CharacterDisplay.Instance.OnCharacterStateChanged += OnCharacterStateChanged;
-        CharacterDisplay.Instance.OnAngryLevelChanged += OnAngryLevelChanged;
         ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
     }
 
@@ -36,37 +34,7 @@ public class CharacterVideoController : MonoBehaviour
     private void OnDestroy()
     {
         CharacterDisplay.Instance.OnCharacterStateChanged -= OnCharacterStateChanged;
-        CharacterDisplay.Instance.OnAngryLevelChanged -= OnAngryLevelChanged;
         ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
-    }
-
-    private void OnAngryLevelChanged(AngryState ang, CharacterState c)
-    {
-        // else if (c == CharacterState.EngAngry)
-        // {
-        //     if (ang == AngryState.High)
-        //     {
-        //         VideoClipInfo angry3End = videoClips.Find(x => x.videoType == VideoType.Angry3End);
-        //         InitializeVideoPlayer(angry3End,
-        //             CharacterDisplay.Instance.CheckStateAfterVideoPlay);
-        //     }
-        //     else if (ang == AngryState.Medium)
-        //     {
-        //         VideoClipInfo angry2End = videoClips.Find(x => x.videoType == VideoType.Angry2End);
-        //         InitializeVideoPlayer(angry2End,
-        //             CharacterDisplay.Instance.CheckStateAfterVideoPlay);
-        //     }
-        //     else if (ang == AngryState.Low)
-        //     {
-        //         VideoClipInfo angry1End = videoClips.Find(x => x.videoType == VideoType.Angry1End);
-        //         InitializeVideoPlayer(angry1End,
-        //             CharacterDisplay.Instance.CheckStateAfterVideoPlay);
-        //     }
-        //     else if (ang == AngryState.None)
-        //     {
-        //         CharacterDisplay.Instance.CheckStateAfterVideoPlay();
-        //     }
-        // }
     }
 
 
@@ -89,30 +57,31 @@ public class CharacterVideoController : MonoBehaviour
 
             if (clipName.StartsWith("g"))
                 type = VideoType.Greeting;
-            else if (clipName.StartsWith("t"))
+            else if (clipName.StartsWith("talk"))
                 type = VideoType.Talking;
-            else if (clipName.StartsWith("id"))
+            else if (clipName.StartsWith("idle"))
                 type = VideoType.Idle;
-            else if (clipName.StartsWith("b"))
+            else if (clipName.StartsWith("thanks"))
                 type = VideoType.Thanking;
-            else if (clipName.StartsWith("a1"))
-                type = VideoType.Angry1;
-            else if (clipName.StartsWith("a2"))
-                type = VideoType.Angry2;
-            else if (clipName.StartsWith("a3"))
-                type = VideoType.Angry3;
-            else if (clipName.StartsWith("ai1"))
-                type = VideoType.AngryIdle1;
-            else if (clipName.StartsWith("ai2"))
-                type = VideoType.AngryIdle2;
-            else if (clipName.StartsWith("ai3"))
-                type = VideoType.AngryIdle3;
-            else if (clipName.StartsWith("ae1"))
+            else if (clipName.StartsWith("angry_1_start"))
+                type = VideoType.Angry1Start;
+            else if (clipName.StartsWith("angry_2_start"))
+                type = VideoType.Angry2Start;
+            else if (clipName.StartsWith("angry_3_start"))
+                type = VideoType.Angry3Start;
+            else if (clipName.StartsWith("angry_1_end"))
                 type = VideoType.Angry1End;
-            else if (clipName.StartsWith("ae2"))
+            else if (clipName.StartsWith("angry_2_end"))
                 type = VideoType.Angry2End;
-            else if (clipName.StartsWith("ae3"))
+            else if (clipName.StartsWith("angry_3_end"))
                 type = VideoType.Angry3End;
+            else if (clipName.StartsWith("angry_1_idle"))
+                type = VideoType.Angry1Idle;
+            else if (clipName.StartsWith("angry_2_idle"))
+                type = VideoType.Angry2Idle;
+            else if (clipName.StartsWith("angry_3_idle"))
+                type = VideoType.Angry3Idle;
+
 
             videoClips.Add(new VideoClipInfo { videoType = type, videoClip = clip });
         }
@@ -123,7 +92,6 @@ public class CharacterVideoController : MonoBehaviour
 
     private void OnCharacterStateChanged(CharacterState state, AngryState ang)
     {
-        currentState = state;
         if (state == CharacterState.Idle)
         {
             Debug.Log("Idle");
@@ -156,10 +124,11 @@ public class CharacterVideoController : MonoBehaviour
             VideoClipInfo info = greetingVideos[UnityEngine.Random.Range(0, greetingVideos.Length)];
             InitializeVideoPlayer(info, () =>
             {
-                VideoClipInfo[] talkVideos = videoClips.FindAll(x => x.videoType == VideoType.Talking).ToArray();
-                VideoClipInfo talkInfo = talkVideos[UnityEngine.Random.Range(0, talkVideos.Length)];
-                InitializeVideoPlayer(talkInfo,
-                    () => { CharacterDisplay.Instance.TransitionToState(CharacterState.Idle); });
+                // VideoClipInfo[] talkVideos = videoClips.FindAll(x => x.videoType == VideoType.Talking).ToArray();
+                // VideoClipInfo talkInfo = talkVideos[UnityEngine.Random.Range(0, talkVideos.Length)];
+                // InitializeVideoPlayer(talkInfo,
+                //     () => { CharacterDisplay.Instance.TransitionToState(CharacterState.Idle); });
+                CharacterDisplay.Instance.TransitionToState(CharacterState.Idle);
             });
         }
         else if (state == CharacterState.Exit)
@@ -170,84 +139,88 @@ public class CharacterVideoController : MonoBehaviour
         }
         else if (state == CharacterState.Angry)
         {
-            if (currentState == CharacterState.Angry)
+            if (CharacterDisplay.Instance.IsRecovering)
             {
-                if (ang == AngryState.Low)
+                Debug.Log("Recovering");
+                if (ang == AngryState.High)
                 {
-                    Debug.Log("Angry1");
-                    VideoClipInfo idle = videoClips.Find(x => x.videoType == VideoType.Idle);
-                    InitializeVideoPlayer(idle, CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                    VideoClipInfo idle3 = videoClips.Find(x => x.videoType == VideoType.Angry3Idle);
+                    InitializeVideoPlayer(idle3, null);
                 }
                 else if (ang == AngryState.Medium)
                 {
-                    VideoClipInfo angryIdle2 = videoClips.Find(x => x.videoType == VideoType.AngryIdle2);
-                    InitializeVideoPlayer(angryIdle2, CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                    VideoClipInfo idle2 = videoClips.Find(x => x.videoType == VideoType.Angry2Idle);
+                    InitializeVideoPlayer(idle2, null);
                 }
-                else
+                else if (ang == AngryState.Low)
                 {
-                    VideoClipInfo angryIdle3 = videoClips.Find(x => x.videoType == VideoType.AngryIdle3);
-                    InitializeVideoPlayer(angryIdle3, CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                    VideoClipInfo idle1 = videoClips.Find(x => x.videoType == VideoType.Angry1Idle);
+                    InitializeVideoPlayer(idle1, null);
+                }
+                else if (ang == AngryState.None)
+                {
+                    CharacterDisplay.Instance.TransitionToState(CharacterState.Idle);
                 }
             }
             else
             {
-                if (ang == AngryState.Low)
+                if (ang == AngryState.High)
                 {
-                    VideoClipInfo angry1 = videoClips.Find(x => x.videoType == VideoType.Angry1);
-                    VideoClipInfo idleInfo1 = videoClips.Find(x => x.videoType == VideoType.AngryIdle1);
-                    InitializeVideoPlayer(angry1,
-                        () => { InitializeVideoPlayer(idleInfo1, null); });
+                    VideoClipInfo a3 = videoClips.Find(x => x.videoType == VideoType.Angry3Start);
+                    InitializeVideoPlayer(a3, null, true);
                 }
                 else if (ang == AngryState.Medium)
                 {
-                    VideoClipInfo angry2 = videoClips.Find(x => x.videoType == VideoType.Angry2);
-                    VideoClipInfo idleInfo = videoClips.Find(x => x.videoType == VideoType.AngryIdle2);
-                    InitializeVideoPlayer(angry2,
-                        () => { InitializeVideoPlayer(idleInfo, null); });
+                    VideoClipInfo a2 = videoClips.Find(x => x.videoType == VideoType.Angry2Start);
+                    InitializeVideoPlayer(a2, null, true);
                 }
-                else if (ang == AngryState.High)
+                else if (ang == AngryState.Low)
                 {
-                    VideoClipInfo angry3 = videoClips.Find(x => x.videoType == VideoType.Angry3);
-                    VideoClipInfo idleInfo = videoClips.Find(x => x.videoType == VideoType.AngryIdle3);
-                    InitializeVideoPlayer(angry3,
-                        () => { InitializeVideoPlayer(idleInfo, null); });
+                    VideoClipInfo a1 = videoClips.Find(x => x.videoType == VideoType.Angry1Start);
+                    InitializeVideoPlayer(a1, null, true);
                 }
             }
         }
+
         else if (state == CharacterState.EngAngry)
         {
-            if (ang == AngryState.High)
+            Debug.Log("ang" + ang);
+            AngryState previousAngryState = ang + 1;
+            Debug.Log("prev" + previousAngryState);
+            if (previousAngryState == AngryState.High)
             {
-                VideoClipInfo angry3End = videoClips.Find(x => x.videoType == VideoType.Angry3End);
-                InitializeVideoPlayer(angry3End,
-                    CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                VideoClipInfo ae3 = videoClips.Find(x => x.videoType == VideoType.Angry3End);
+                VideoClipInfo id2 = videoClips.Find(x => x.videoType == VideoType.Angry1Idle);
+                InitializeVideoPlayer(ae3,
+                    () => InitializeVideoPlayer(id2, CharacterDisplay.Instance.PlayCurrentState));
             }
-            else if (ang == AngryState.Medium)
+            else if (previousAngryState == AngryState.Medium)
             {
-                VideoClipInfo angry2End = videoClips.Find(x => x.videoType == VideoType.Angry2End);
-                InitializeVideoPlayer(angry2End,
-                    CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                VideoClipInfo ae2 = videoClips.Find(x => x.videoType == VideoType.Angry2End);
+                VideoClipInfo id1 = videoClips.Find(x => x.videoType == VideoType.Angry1Idle);
+                InitializeVideoPlayer(ae2,
+                    () => InitializeVideoPlayer(id1, CharacterDisplay.Instance.PlayCurrentState));
             }
-            else if (ang == AngryState.Low)
+            else if (previousAngryState == AngryState.Low)
             {
-                VideoClipInfo angry1End = videoClips.Find(x => x.videoType == VideoType.Angry1End);
-                InitializeVideoPlayer(angry1End,
-                    CharacterDisplay.Instance.CheckStateAfterVideoPlay);
+                VideoClipInfo ae1 = videoClips.Find(x => x.videoType == VideoType.Angry1End);
+                VideoClipInfo id = videoClips.Find(x => x.videoType == VideoType.Idle);
+                InitializeVideoPlayer(ae1, () => InitializeVideoPlayer(id, CharacterDisplay.Instance.PlayCurrentState));
             }
-            else if (ang == AngryState.None)
+            else if (previousAngryState == AngryState.None)
             {
-                CharacterDisplay.Instance.CheckStateAfterVideoPlay();
+                CharacterDisplay.Instance.TransitionToState(CharacterState.Idle);
             }
         }
     }
 
 
-    private void InitializeVideoPlayer(VideoClipInfo info, Action onEnd)
+    private void InitializeVideoPlayer(VideoClipInfo info, Action onEnd, bool skipWait = false)
     {
-        StartCoroutine(PlayVideo(info, onEnd));
+        StartCoroutine(PlayVideo(info, onEnd, skipWait));
     }
 
-    private IEnumerator PlayVideo(VideoClipInfo info, Action onEnd)
+    private IEnumerator PlayVideo(VideoClipInfo info, Action onEnd, bool skipWait)
     {
         if (info.videoType == VideoType.Idle)
         {
@@ -270,28 +243,28 @@ public class CharacterVideoController : MonoBehaviour
 
             onEnd?.Invoke();
         }
-        else if (info.videoType == VideoType.Angry1 || info.videoType == VideoType.Angry2 ||
-                 info.videoType == VideoType.Angry3)
+        else if (info.videoType == VideoType.Angry1Start || info.videoType == VideoType.Angry2Start ||
+                 info.videoType == VideoType.Angry3Start)
         {
             videoPlayer.isLooping = false;
             videoPlayer.clip = info.videoClip;
             videoPlayer.Play();
-
-            // Wait until the video finishes playing
             bool isVideoFinished = false;
             videoPlayer.loopPointReached += source => { isVideoFinished = true; };
-
+            if (skipWait) yield break;
             yield return new WaitUntil(() => isVideoFinished);
-
             onEnd?.Invoke();
         }
 
-        else if (info.videoType == VideoType.AngryIdle1 || info.videoType == VideoType.AngryIdle2 ||
-                 info.videoType == VideoType.AngryIdle3)
+        else if (info.videoType == VideoType.Angry1Idle || info.videoType == VideoType.Angry2Idle ||
+                 info.videoType == VideoType.Angry3Idle)
         {
             videoPlayer.isLooping = true;
             videoPlayer.clip = info.videoClip;
             videoPlayer.Play();
+            bool isVideoFinished = false;
+            videoPlayer.loopPointReached += source => { isVideoFinished = true; };
+            yield return new WaitUntil(() => isVideoFinished);
             onEnd?.Invoke();
         }
         else if (info.videoType == VideoType.Angry1End || info.videoType == VideoType.Angry2End ||
@@ -326,13 +299,13 @@ public enum VideoType
     Talking, //after playing, will go back to idle
     Greeting, //after playing, will go back to idle
     Thanking,
-    Angry1,
-    Angry2,
-    Angry3,
-    AngryIdle1,
-    AngryIdle2,
-    AngryIdle3,
+    Angry1Start,
+    Angry2Start,
+    Angry3Start,
+    Angry1Idle,
+    Angry2Idle,
+    Angry3Idle,
     Angry1End,
     Angry2End,
-    Angry3End
+    Angry3End,
 }

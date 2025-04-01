@@ -9,6 +9,39 @@ using UnityEditor;
 public class CSVActivityReader : MonoBehaviour
 {
     public TextAsset csvFile;
+    private string spritePath = "Sprites/CharactersAvatar/";
+
+    private Dictionary<CharacterID, Vector2Int> homePos = new Dictionary<CharacterID, Vector2Int>
+    {
+        { CharacterID.Lina, new Vector2Int(1897, 1762) },
+        { CharacterID.John, new Vector2Int(2490, 2401) },
+        { CharacterID.Mary, new Vector2Int(1508, 1448) },
+        { CharacterID.Tom, new Vector2Int(0, 0) },
+        { CharacterID.Sarah, new Vector2Int(0, 0) },
+        { CharacterID.Shiba, new Vector2Int(0, 0) }
+    };
+
+
+    private Dictionary<CharacterID, int[]> heartRequired = new Dictionary<CharacterID, int[]>
+    {
+        { CharacterID.Lina, new int[] { 30, 70, 150, 300, 450, 700 } },
+        { CharacterID.John, new int[] { 30, 70, 150, 300, 450, 700 } },
+        { CharacterID.Mary, new int[] { 30, 70, 150, 300, 450, 700 } },
+        { CharacterID.Tom, new int[] { 30, 70, 150, 300, 450, 700 } },
+        { CharacterID.Sarah, new int[] { 30, 70, 150, 300, 450, 700 } },
+        { CharacterID.Shiba, new int[] { 30, 70, 150, 300, 450, 700 } }
+    };
+
+    public Dictionary<CharacterID, DayInWeek> dayOff = new Dictionary<CharacterID, DayInWeek>
+    {
+        { CharacterID.Lina, DayInWeek.None },
+        { CharacterID.John, DayInWeek.Sunday },
+        { CharacterID.Mary, DayInWeek.None },
+        { CharacterID.Tom, DayInWeek.None },
+        { CharacterID.Sarah, DayInWeek.None },
+        { CharacterID.Shiba, DayInWeek.None }
+    };
+
 
     [ContextMenu("Read CSV And Create SO")]
     public void ReadCSVAndCreateSO()
@@ -47,7 +80,7 @@ public class CSVActivityReader : MonoBehaviour
                     startTime = startTime,
                     endTime = endTime,
                     appearPosition = appearPosition,
-                    dayOfWeek = day
+                    dayOfWeek = day,
                 };
 
                 if (!characterActivities.ContainsKey(charId))
@@ -69,7 +102,7 @@ public class CSVActivityReader : MonoBehaviour
 
         foreach (var kvp in characterActivities)
         {
-            CreateCharacterActivitySO(kvp.Key, kvp.Value);
+            CreateCharacterActivitySO(kvp.Key, kvp.Value, homePos[(CharacterID)kvp.Key]);
         }
 
         AssetDatabase.Refresh();
@@ -80,13 +113,22 @@ public class CSVActivityReader : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    private void CreateCharacterActivitySO(int charId, List<ActivityInfo> activities)
+    private void CreateCharacterActivitySO(int charId, List<ActivityInfo> activities, Vector2Int pos)
     {
         CharacterActivitySO characterActivitySO = ScriptableObject.CreateInstance<CharacterActivitySO>();
         characterActivitySO.id = (CharacterID)charId; // Ensure CharacterID enum matches charId
         characterActivitySO.activityInfos = activities.ToArray();
+        characterActivitySO.homePosition = pos;
+        characterActivitySO.sprite =
+            AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Sprites/CharactersAvatar/c_{(int)charId}.png");
+        characterActivitySO.sympathyRequired = heartRequired[(CharacterID)charId];
+        if (characterActivitySO.sprite == null)
+        {
+            Debug.LogError($"Sprite not found at path: Assets/Sprites/CharactersAvatar/c_{(int)charId}.png");
+        }
+        characterActivitySO.dayOff = dayOff[(CharacterID)charId];
 
-        string path = $"Assets/Resources/DataSO/CharacterActivities/CharacterActivity_{charId}.asset";
+        string path = $"Assets/Resources/DataSO/CharacterActivities/{charId}.asset";
         AssetDatabase.CreateAsset(characterActivitySO, path);
     }
 #endif

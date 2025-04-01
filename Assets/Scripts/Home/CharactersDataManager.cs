@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Serialization;
 
 public class CharactersDataManager : MonoBehaviour
 {
@@ -33,9 +34,20 @@ public class CharactersDataManager : MonoBehaviour
 
     private void LoadAllCharactersData() //get from user later
     {
-        foreach (var characterActivity in characterActivities)
+        // foreach (var characterActivity in characterActivities)
+        // {
+        //     charactersData.Add(new CharactersData(characterActivity));
+        // }\
+        for (int i = 0; i < characterActivities.Count; i++)
         {
-            charactersData.Add(new CharactersData(characterActivity));
+            if (i == 0)
+            {
+                charactersData.Add(new CharactersData(characterActivities[i], 0));
+            }
+            else
+            {
+                charactersData.Add(new CharactersData(characterActivities[i], 30));
+            }
         }
     }
 
@@ -47,6 +59,16 @@ public class CharactersDataManager : MonoBehaviour
         OnCharacterDataLoaded?.Invoke();
     }
 
+    public int TotalHeartPoints()
+    {
+        int total = 0;
+        foreach (var characterData in charactersData)
+        {
+            total += characterData.currentSympathy;
+        }
+
+        return total;
+    }
 
     public CharacterAppearance GetCharacterAppearanceData(CharacterID id)
     {
@@ -63,6 +85,7 @@ public class CharactersDataManager : MonoBehaviour
         {
             nextLevelColor = characterColor.heartColors[level];
         }
+
         return characterColor.heartColors[level];
     }
 
@@ -99,11 +122,13 @@ public class CharactersData
 {
     public int currentSympathy;
     public CharacterActivitySO characterActivity;
+    public int totalSympathyRequired;
 
-    public CharactersData(CharacterActivitySO characterActivity)
+    public CharactersData(CharacterActivitySO characterActivity, int t)
     {
         currentSympathy = 0;
         this.characterActivity = characterActivity;
+        totalSympathyRequired = t;
     }
 
     public int GetLevel()

@@ -23,4 +23,5 @@ public enum CharacterID
     Mary = 3,
     Tom = 4,
     Sarah = 5,
+    Shiba =11
 }

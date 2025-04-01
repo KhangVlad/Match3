@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -8,8 +7,8 @@ using DG.Tweening;
 public class UISettingManager : MonoBehaviour
 {
     public Color backgroundColor = new Color(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 0.6f);
-    private GameObject m_background;
     private Canvas _canvas;
+    public GameObject m_background;
     [SerializeField] private Animator _animator;
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _soundSlider;
@@ -51,26 +50,33 @@ public class UISettingManager : MonoBehaviour
     private void OnOpenButtonClicked()
     {
         AudioManager.Instance.PlayButtonSfx();
-        var bgTex = new Texture2D(1, 1);
-        bgTex.SetPixel(0, 0, backgroundColor);
-        bgTex.Apply();
-
-        m_background = new GameObject("PopupBackground");
-        var image = m_background.AddComponent<Image>();
-        var rect = new Rect(0, 0, bgTex.width, bgTex.height);
-        var sprite = Sprite.Create(bgTex, rect, new Vector2(0.5f, 0.5f), 1);
-        image.material.mainTexture = bgTex;
-        image.sprite = sprite;
-        var newColor = image.color;
-        image.color = newColor;
+        m_background = new GameObject("Background");
+        var image = m_background.AddComponent(typeof(Image)) as Image;
+        image.color = backgroundColor;
         image.canvasRenderer.SetAlpha(0.0f);
         image.CrossFadeAlpha(1.0f, 0.4f, false);
 
         m_background.transform.localScale = new Vector3(1, 1, 1);
         m_background.GetComponent<RectTransform>().sizeDelta = _canvas.GetComponent<RectTransform>().sizeDelta;
         m_background.transform.SetParent(_canvas.transform, false);
-        m_background.transform.SetSiblingIndex(1);
+        m_background.transform.SetSiblingIndex(0);
         settingParent.gameObject.SetActive(true);
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Close"))
+            _animator.Play("Open");
+    }
+
+    private void CreateBackground()
+    {
+        m_background = new GameObject("Background");
+        var image = m_background.AddComponent(typeof(Image)) as Image;
+        image.color = backgroundColor;
+        image.canvasRenderer.SetAlpha(0.0f);
+        image.CrossFadeAlpha(1.0f, 0.4f, false);
+
+        m_background.transform.localScale = new Vector3(1, 1, 1);
+        m_background.GetComponent<RectTransform>().sizeDelta = _canvas.GetComponent<RectTransform>().sizeDelta;
+        m_background.transform.SetParent(_canvas.transform, false);
+        m_background.transform.SetSiblingIndex(0);
     }
 
     private void OnMusicSliderValueChanged(float value)
@@ -78,7 +84,7 @@ public class UISettingManager : MonoBehaviour
         AudioManager.Instance.SetMasterVolume(value);
     }
 
-    private void OnSoundSliderValueChanged(float value) 
+    private void OnSoundSliderValueChanged(float value)
     {
         AudioManager.Instance.SetMasterVolume(value);
     }
@@ -95,8 +101,7 @@ public class UISettingManager : MonoBehaviour
     private IEnumerator RunPopupDestroy()
     {
         yield return new WaitForSeconds(0.5f);
-        Destroy(m_background);
-        settingParent.transform.DOScale(Vector3.zero, 0.5f).OnComplete(() => settingParent.gameObject.SetActive(false));
+        m_background.gameObject.SetActive(false);
     }
 
     private void RemoveBackground()
@@ -125,7 +130,7 @@ public class UISettingManager : MonoBehaviour
             _soundSlider.value = PlayerPrefs.GetFloat("SoundVolume");
         }
     }
-    
+
     public void ActiveCanvas(bool active)
     {
         _canvas.enabled = active;

@@ -73,7 +73,7 @@ public static class Utilities
 
         float worldX = Mathf.Lerp(bounds.min.x, bounds.max.x, normalizedX);
         float worldY = Mathf.Lerp(bounds.min.y, bounds.max.y, normalizedY);
-    
+        Debug.Log("worldX: " + worldX + " worldY: " + worldY + " pixel: " + pixel);
         return new Vector2(worldX, -worldY);
     }
 

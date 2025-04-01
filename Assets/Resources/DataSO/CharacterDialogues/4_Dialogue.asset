@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8571f95c24b54894b1e92e372d09f6ea, type: 3}
+  m_Name: 4_Dialogue
+  m_EditorClassIdentifier: 
+  id: 4
+  data:
+  - level: 1
+    dialog:
+    - "\"Thu th\u1EADp hoa - H\xE3y t\xECm nh\u1EEFng b\xF4ng hoa \u0111\u1EB9p \u0111\u1EC3
+      trang tr\xED cho l\u1EC5 h\u1ED9i.\""
+    - "\"Thu th\u1EADp hoa - Hoa \u0111\u1ECF s\u1EBD mang l\u1EA1i may m\u1EAFn
+      cho l\u1EC5 h\u1ED9i.\""
+    - "\"Thu th\u1EADp hoa - C\u1EA7n nhi\u1EC1u hoa \u0111\u1EC3 c\xF3 th\u1EC3
+      ho\xE0n th\xE0nh c\xE1c v\xF2ng hoa.\""
+    - "\"Thu th\u1EADp hoa - Nh\u1EEFng b\xF4ng hoa t\xEDm s\u1EBD th\xEAm ph\u1EA7n
+      l\u1ED9ng l\u1EABy cho l\u1EC5 h\u1ED9i.\""
+    - "\"Thu th\u1EADp hoa - \u0110\u1EEBng qu\xEAn t\xECm hoa tr\u1EAFng"
+  - level: 2
+    dialog:
+    - "\"Th\u1EAFt ruy b\u0103ng - H\xE3y b\u1EAFt \u0111\u1EA7u b\u1EB1ng vi\u1EC7c
+      ch\u1ECDn nh\u1EEFng ruy b\u0103ng \u0111\u1EB9p nh\u1EA5t.\""
+    - "\"Th\u1EAFt ruy b\u0103ng - Ruy b\u0103ng \u0111\u1ECF s\u1EBD t\u01B0\u1EE3ng
+      tr\u01B0ng cho s\u1EF1 may m\u1EAFn v\xE0 th\u1ECBnh v\u01B0\u1EE3ng.\""
+    - "\"Th\u1EAFt ruy b\u0103ng - K\u1EBFt c\xE1c s\u1EE3i ruy b\u0103ng n\xE0y
+      quanh nh\u1EEFng v\xF2ng hoa.\""
+    - "\"Th\u1EAFt ruy b\u0103ng - M\xE0u v\xE0ng c\u1EE7a ruy b\u0103ng s\u1EBD
+      l\xE0m n\u1ED5i b\u1EADt v\xF2ng hoa c\u1EE7a b\u1EA1n.\""
+    - "\"Th\u1EAFt ruy b\u0103ng - H\xE3y ch\u1EAFc ch\u1EAFn r\u1EB1ng ruy b\u0103ng
+      \u0111\u01B0\u1EE3c bu\u1ED9c ch\u1EB7t \u0111\u1EC3 kh\xF4ng b\u1ECB bung
+      ra.\""
+  - level: 3
+    dialog:
+    - "\"Nh\u1EB7t g\u1ED7 \u0111\u1ED1t l\u1EEDa tr\u1EA1i - H\xE3y b\u1EAFt \u0111\u1EA7u
+      thu th\u1EADp g\u1ED7 kh\xF4 \u0111\u1EC3 chu\u1EA9n b\u1ECB \u0111\u1ED1t
+      l\u1EEDa.\""
+    - "\"Nh\u1EB7t g\u1ED7 \u0111\u1ED1t l\u1EEDa tr\u1EA1i - C\u1EA7n g\u1ED7 l\u1EDBn
+      \u0111\u1EC3 t\u1EA1o ra m\u1ED9t ng\u1ECDn l\u1EEDa th\u1EADt s\u1EF1 m\u1EA1nh
+      m\u1EBD.\""
+    - "\"Nh\u1EB7t g\u1ED7 \u0111\u1ED1t l\u1EEDa tr\u1EA1i - C\u1EA9n th\u1EADn
+      khi nh\u1EB7t g\u1ED7"
+    - "\"Nh\u1EB7t g\u1ED7 \u0111\u1ED1t l\u1EEDa tr\u1EA1i - Nh\u1EEFng thanh g\u1ED7
+      n\xE0y s\u1EBD gi\xFAp ch\xFAng ta c\xF3 m\u1ED9t \u0111\xEAm l\u1EEDa tr\u1EA1i
+      \u1EA5m c\xFAng.\""
+    - "\"Nh\u1EB7t g\u1ED7 \u0111\u1ED1t l\u1EEDa tr\u1EA1i - \u0110\u1EEBng qu\xEAn
+      mang g\u1ED7 v\xE0o khu v\u1EF1c \u0111\u1ED1t l\u1EEDa \u0111\u1EC3 chu\u1EA9n
+      b\u1ECB cho bu\u1ED5i t\u1ED1i.\""
+  - level: 4
+    dialog:
+    - "\"K\u1EBFt V\xF2ng Hoa May M\u1EAFn - D\xF9ng hoa \u0111\u1ECF \u0111\u1EC3
+      k\u1EBFt th\xE0nh nh\u1EEFng v\xF2ng hoa may m\u1EAFn.\""
+    - "\"K\u1EBFt V\xF2ng Hoa May M\u1EAFn - V\xF2ng hoa c\u1EE7a b\u1EA1n c\u1EA7n
+      ph\u1EA3i \u0111\u1EC1u \u0111\u1EB7n v\xE0 ch\u1EAFc ch\u1EAFn.\""
+    - "\"K\u1EBFt V\xF2ng Hoa May M\u1EAFn - H\xE3y k\u1EBFt v\xF2ng hoa th\u1EADt
+      c\u1EA9n th\u1EADn \u0111\u1EC3 mang l\u1EA1i may m\u1EAFn cho nh\u1EEFng ng\u01B0\u1EDDi
+      tham gia.\""
+    - "\"K\u1EBFt V\xF2ng Hoa May M\u1EAFn - B\u1EA1n c\xF3 th\u1EC3 th\xEAm ch\xFAt
+      ruy b\u0103ng v\xE0o \u0111\u1EC3 trang tr\xED cho v\xF2ng hoa.\""
+    - "\"K\u1EBFt V\xF2ng Hoa May M\u1EAFn - M\u1ED7i v\xF2ng hoa s\u1EBD \u0111\u01B0\u1EE3c
+      trao cho m\u1ED9t c\u01B0 d\xE2n tham gia l\u1EC5 h\u1ED9i.\""
+  - level: 5
+    dialog:
+    - "\"K\u1EBFt Hoa \u0110\u0103ng - D\xF9ng hoa tr\u1EAFng \u0111\u1EC3 k\u1EBFt
+      th\xE0nh nh\u1EEFng hoa \u0111\u0103ng tuy\u1EC7t \u0111\u1EB9p.\""
+    - "\"K\u1EBFt Hoa \u0110\u0103ng - Hoa \u0111\u0103ng s\u1EBD \u0111\u01B0\u1EE3c
+      th\u1EA3 xu\u1ED1ng s\xF4ng v\xE0o \u0111\xEAm l\u1EC5 h\u1ED9i.\""
+    - "\"K\u1EBFt Hoa \u0110\u0103ng - H\xE3y ch\u1EAFc ch\u1EAFn r\u1EB1ng hoa \u0111\u0103ng
+      c\u1EE7a b\u1EA1n kh\xF4ng b\u1ECB ng\u1EADp n\u01B0\u1EDBc.\""
+    - "\"K\u1EBFt Hoa \u0110\u0103ng - Ch\xFAng ta s\u1EBD th\u1EA3 nh\u1EEFng hoa
+      \u0111\u0103ng n\xE0y \u0111\u1EC3 c\u1EA7u nguy\u1EC7n cho m\xF9a m\xE0ng
+      t\u1ED1t t\u01B0\u01A1i.\""
+    - "\"K\u1EBFt Hoa \u0110\u0103ng - \u0110\u1EEBng qu\xEAn th\xEAm n\u1EBFn v\xE0o
+      trong hoa \u0111\u0103ng \u0111\u1EC3 t\u1EA1o \xE1nh s\xE1ng lung linh tr\xEAn
+      d\xF2ng s\xF4ng.\""

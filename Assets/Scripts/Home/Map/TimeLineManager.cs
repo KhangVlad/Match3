@@ -56,12 +56,22 @@ public class TimeLineManager : MonoBehaviour
     private void Start()
     {
         GetCharacterActiveToday();
+        ScreenInteraction.Instance.OnInteractAbleTriggered += OnInteractAbleTriggered;
+    }
+
+    private void OnDestroy()
+    {
+        ScreenInteraction.Instance.OnInteractAbleTriggered -= OnInteractAbleTriggered;
+    }
+
+    private void OnInteractAbleTriggered()
+    {
+        GetCharactersInTime(activeInDay);
     }
 
     private void GetCharacterActiveToday()
     {
         activeInDay = CharactersDataManager.Instance.GetCharacterActive(currentDay);
-        GetCharactersInTime(activeInDay);
     }
 
     private void OnValidate()
@@ -142,24 +152,6 @@ public class TimeLineManager : MonoBehaviour
         homeIds.Add(data.id);
     }
 
-    // private void InitializeCharacterToWorld(CharacterActivitySO data)
-    // {
-    //     for (int i = 0; i < data.activityInfos.Length; i++)
-    //     {
-    //         if (data.activityInfos[i].dayOfWeek == currentDay &&
-    //             data.activityInfos[i].startTime <= currentHour &&
-    //             data.activityInfos[i].endTime > currentHour)
-    //         {
-    //             Vector2 mapPos = map.ImagePixelToWorld(new Vector2(
-    //                 data.activityInfos[i].appearPosition.x,
-    //                 data.activityInfos[i].appearPosition.y));
-    //             CharacterIcon icon = Instantiate(iconPrefab, mapPos, Quaternion.identity);
-    //             icon.Initialize(data.id, data.sprite, mapPos);
-    //             RegisterCharacterIcon(data.id, icon);
-    //             activeIds.Add(data.id);
-    //         }
-    //     }
-    // }
     private void InitializeCharacterToWorld(CharacterActivitySO data)
     {
         ActivityInfo activity = data.activityInfos.FirstOrDefault(a =>

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -5,5 +6,15 @@ using UnityEngine;
 public class CharacterDialogueSO : ScriptableObject
 {
     public CharacterID id;
-    public string[] levelDialogues;
+    public LevelDialogueData[] data;
 }
+
+
+[Serializable]
+public class LevelDialogueData
+{
+    public int level;
+    public string[] dialog;
+}
+
+
