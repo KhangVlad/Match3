@@ -10,7 +10,8 @@ namespace Match3.LevelEditor
         [SerializeField] private TextMeshProUGUI _contentText;
         [SerializeField] private RectTransform _rectTransform;
 
-    
+        private Vector2 _offset;
+
         public void SetText(string text)
         {
             _contentText.text = text;   
@@ -18,12 +19,13 @@ namespace Match3.LevelEditor
 
         private void Update()
         {
-            UpdatePosition();
+            UpdatePosition(_offset);
         }
 
-        public void UpdatePosition()
+        public void UpdatePosition(Vector2 offset = default)
         {
-            _rectTransform.position = Input.mousePosition + new Vector3(0, 100);
+            _offset = offset;
+            _rectTransform.position = Input.mousePosition + new Vector3(0, 100) + (Vector3)_offset;
         }
     }
 }

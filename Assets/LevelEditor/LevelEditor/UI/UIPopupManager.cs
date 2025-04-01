@@ -7,6 +7,12 @@ namespace Match3.LevelEditor
         public static UIPopupManager Instance { get; private set; }
 
         [SerializeField] private UINameInfoPopup _uiNameInfoPopup;
+        [SerializeField] private UICopyPaste _uiCopyPaste;
+
+
+
+        public UICopyPaste UICopyPaste => _uiCopyPaste;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -15,14 +21,16 @@ namespace Match3.LevelEditor
                 return;
             }
             Instance = this;
+
+            _uiCopyPaste.gameObject.SetActive(true);
         }
 
 
-        public void DisplayUINameInfoPopup(bool enable)
+        public void DisplayUINameInfoPopup(bool enable, Vector2 offset = default)
         {
             if(enable)
             {
-                _uiNameInfoPopup.UpdatePosition();
+                _uiNameInfoPopup.UpdatePosition(offset);
             }
             _uiNameInfoPopup.gameObject.SetActive(enable);
         }
@@ -30,5 +38,11 @@ namespace Match3.LevelEditor
         {
             _uiNameInfoPopup.SetText(content);
         }
+
+        public void DisplayUICopyPaste(bool enable)
+        {
+            _uiCopyPaste.gameObject.SetActive(enable);
+        }
+
     }
 }

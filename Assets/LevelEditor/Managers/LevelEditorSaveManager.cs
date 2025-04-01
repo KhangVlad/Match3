@@ -75,6 +75,7 @@ namespace Match3.LevelEditor
 
                     UILogHandler.Instance.ShowLogText($"Load structure successfully: {filePath}", 5f);
                     CurrentSaveProjectPath = filePath;
+                    onCompleted?.Invoke();
                 }
                 catch
                 {

@@ -23,6 +23,8 @@ namespace Match3.LevelEditor
                 LevelEditorManager.Instance.InitializeNewChartacterLevelData();
 
                 this.gameObject.SetActive(false);
+
+                UIMenu.Instance.ChangeProjectName(_fileNameInputField.text);
             });
 
             _cancelBtn.onClick.AddListener(() =>

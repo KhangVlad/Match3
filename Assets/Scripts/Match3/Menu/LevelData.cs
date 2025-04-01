@@ -11,8 +11,7 @@ namespace Match3
         public TileID[] AvaiableTiles;
         public int[,] Quests;
         public int[] Unlock;        // index 0: character id
-                                    // index 1: unlocked by character id
-                                    // index 2: hearts required to unlock
+                                    // index 1: hearts required to unlock
 
         public LevelData(int width, int height)
         {

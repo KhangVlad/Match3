@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System;
+using Match3.Shares;
+using Match3.Enums;
 
 namespace Match3.LevelEditor
 {
@@ -19,14 +20,17 @@ namespace Match3.LevelEditor
 
         [Header("InputFileds")]
         [SerializeField] private TMP_InputField _maxTurnInputField;
-        [SerializeField] private TMP_InputField _characterIDInputField;
-        [SerializeField] private TMP_InputField _unlockCharacterIDInputField;
+        //[SerializeField] private TMP_InputField _characterIDInputField;
+        //[SerializeField] private TMP_InputField _unlockCharacterIDInputField;
         [SerializeField] private TMP_InputField _heartUnlockInputField;
 
         // gird
         [SerializeField] private TMP_InputField _widthInputField;
         [SerializeField] private TMP_InputField _heightInputFiled;
         [SerializeField] private Button _resetLevelBtn;
+
+        [Header("Character Selected")]
+        [SerializeField] private UICharacterSelectedSlot _characterSelectedSlot;
 
 
         [Header("~Runtime")]
@@ -76,17 +80,17 @@ namespace Match3.LevelEditor
             {
                 GridManager.Instance.MaxTurn = int.Parse(value);
             });
-            _characterIDInputField.onValueChanged.AddListener((value) =>
-            {
-                GridManager.Instance.UnlockData[0] = int.Parse(value);
-            });
-            _unlockCharacterIDInputField.onValueChanged.AddListener((value) =>
-            {
-                GridManager.Instance.UnlockData[1] = int.Parse(value);
-            });
+            //_characterIDInputField.onValueChanged.AddListener((value) =>
+            //{
+            //    GridManager.Instance.UnlockData[0] = int.Parse(value);
+            //});
+            //_unlockCharacterIDInputField.onValueChanged.AddListener((value) =>
+            //{
+            //    GridManager.Instance.UnlockData[1] = int.Parse(value);
+            //});
             _heartUnlockInputField.onValueChanged.AddListener((value) =>
             {
-                GridManager.Instance.UnlockData[2] = int.Parse(value);
+                GridManager.Instance.UnlockData[1] = int.Parse(value);
             });
 
             _widthInputField.onValueChanged.AddListener((value) =>
@@ -118,8 +122,8 @@ namespace Match3.LevelEditor
             _selectLevelBtn.onClick.RemoveAllListeners();
 
             _maxTurnInputField.onValueChanged.RemoveAllListeners();
-            _characterIDInputField.onValueChanged.RemoveAllListeners();
-            _unlockCharacterIDInputField.onValueChanged.RemoveAllListeners();
+            //_characterIDInputField.onValueChanged.RemoveAllListeners();
+            //_unlockCharacterIDInputField.onValueChanged.RemoveAllListeners();
             _heartUnlockInputField.onValueChanged.RemoveAllListeners();
             _widthInputField.onValueChanged.RemoveAllListeners();
             _heightInputFiled.onValueChanged.RemoveAllListeners();
@@ -180,12 +184,15 @@ namespace Match3.LevelEditor
         private void OnLoadNewLevelData_UpdateUI()
         {
             _maxTurnInputField.text = GridManager.Instance.MaxTurn.ToString();
-            _characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
-            _unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
-            _heartUnlockInputField.text = GridManager.Instance.UnlockData[2].ToString();
+            //_characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
+            //_unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
+            _heartUnlockInputField.text = GridManager.Instance.UnlockData[1].ToString();
 
             _widthInputField.text = GridManager.Instance.Width.ToString();
             _heightInputFiled.text = GridManager.Instance.Height.ToString();
+
+            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID((CharacterID)GridManager.Instance.UnlockData[0]);
+            _characterSelectedSlot.SetData(characterData);
         }
 
 

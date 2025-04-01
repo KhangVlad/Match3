@@ -2,6 +2,7 @@
 {
     public enum CharacterID
     {
+        None = 0,
         id_01 = 1,
         id_02 = 2,
         id_03 = 3,

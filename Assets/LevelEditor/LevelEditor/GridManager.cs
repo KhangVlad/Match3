@@ -35,7 +35,7 @@ namespace Match3.LevelEditor
 
         // Level data cached
         public int MaxTurn = 25;
-        public int[] UnlockData = new int[3] { 1, 1, 5 };
+        public int[] UnlockData = new int[2] { 0, 5 };
         public List<Tile> AvaiableTiles;
         public List<Quest> Quests;
         #endregion

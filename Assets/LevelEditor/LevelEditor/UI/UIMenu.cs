@@ -143,15 +143,16 @@ namespace Match3.LevelEditor
             _openFileBtn.onClick.AddListener(() =>
             {
                 LevelEditorManager.Instance.ShowCreateNewPanel = false;
-
                 var paths = StandaloneFileBrowser.OpenFilePanel("Title", "", "json", false);
                 if (paths.Length > 0)
                 {
                     LevelEditorSaveManager.Instance.Load(paths[0], onCompleted: () =>
                     {
+                        string fileName = System.IO.Path.GetFileNameWithoutExtension(paths[0]);
+                        LevelEditorManager.Instance.SetFileName(fileName);
                         _fileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "File";
                         _saveFileBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Save";
-                        _projectName.text = LevelEditorSaveManager.Instance.GetProjectFileName();
+                        _projectName.text = fileName;
                     });
                 }
                 _filePopup.gameObject.SetActive(false);
@@ -254,6 +255,11 @@ namespace Match3.LevelEditor
         }
 
 
+
+        public void ChangeProjectName(string name)
+        {
+            this._projectName.text = name;
+        }
         public void DisplayFilePopup(bool enable)
         {
             _filePopup.gameObject.SetActive(enable);

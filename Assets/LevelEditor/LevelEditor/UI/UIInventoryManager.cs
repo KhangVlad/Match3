@@ -7,11 +7,12 @@ namespace Match3.LevelEditor
         public static UIInventoryManager Instance { get; private set; } 
         private Canvas _canvas;
 
-        [SerializeField] private UITileInventory _tileInventory;
-        [SerializeField] private UIBlockInventory _blockInventory;
-        [SerializeField] private UIQuestInventory _questInventory;
+        [SerializeField] private UITileInventory _uiTileInventory;
+        [SerializeField] private UIBlockInventory _uiBlockInventory;
+        [SerializeField] private UIQuestInventory _uiQuestInventory;
+        [SerializeField] private UICharacterInventory _uiCharacterInventory;
 
-        public bool InventoryBeingDisplayed => _tileInventory.gameObject.activeInHierarchy;
+        public bool InventoryBeingDisplayed => _uiTileInventory.gameObject.activeInHierarchy;
 
         private void Awake()
         {
@@ -23,9 +24,10 @@ namespace Match3.LevelEditor
             Instance = this;
 
             _canvas = GetComponent<Canvas>();
-            _tileInventory.gameObject.SetActive(true);
-            _blockInventory.gameObject.SetActive(true);
-            _questInventory.gameObject.SetActive(true);
+            _uiTileInventory.gameObject.SetActive(true);
+            _uiBlockInventory.gameObject.SetActive(true);
+            _uiQuestInventory.gameObject.SetActive(true);
+            _uiCharacterInventory.gameObject.SetActive(true);
         }
 
 
@@ -36,17 +38,22 @@ namespace Match3.LevelEditor
 
         public void DisplayTileInventory(bool enable)
         {
-            _tileInventory.gameObject.SetActive(enable);
+            _uiTileInventory.gameObject.SetActive(enable);
         }
 
         public void DisplayBlockInventory(bool enable)
         {
-            _blockInventory.gameObject.SetActive(enable);
+            _uiBlockInventory.gameObject.SetActive(enable);
         }
 
         public void DisplayQuestInventory(bool enable)
         {
-            _questInventory.gameObject.SetActive(enable);
+            _uiQuestInventory.gameObject.SetActive(enable);
+        }
+
+        public void DisplayCharacterInventory(bool enable)
+        {
+            _uiCharacterInventory.gameObject.SetActive(enable);
         }
     }
 }

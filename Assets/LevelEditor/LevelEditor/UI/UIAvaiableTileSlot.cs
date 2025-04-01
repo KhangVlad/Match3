@@ -2,11 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using System;
 
 namespace Match3.LevelEditor
 {
-    public class UIAvaiableTileSlot : MonoBehaviour
+    public class UIAvaiableTileSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         public static event System.Action<UIAvaiableTileSlot> OnClicked;
 
@@ -26,7 +25,6 @@ namespace Match3.LevelEditor
         {
             _selectBtn.onClick.AddListener(() =>
             {
-                Debug.Log("Slect");
                 AudioManager.Instance.PlayButtonSfx();
                 OnClicked?.Invoke(this);
             });
@@ -104,7 +102,6 @@ namespace Match3.LevelEditor
         public void OnPointerEnter(PointerEventData eventData)
         {
             _isEnter = true;
-
             Utilities.WaitAfter(0.25f, () =>
             {
                 if (_isEnter)
@@ -132,6 +129,5 @@ namespace Match3.LevelEditor
                 Unselect();
             }
         }
-
     }
 }

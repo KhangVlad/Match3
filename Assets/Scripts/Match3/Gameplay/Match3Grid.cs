@@ -21,7 +21,7 @@ namespace Match3
         private List<Tile> _getTileList = new();
         private Vector2 _mouseDownPosition;
         private Vector2 _mouseUpPosition;
-        private float _dragThreshold = 50f;
+        private float _dragThreshold = 25f;
 
         private MatchID[] _matchBuffer;        // 0: default
                                                // 1: normal match

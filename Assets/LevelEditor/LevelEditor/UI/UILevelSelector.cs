@@ -18,6 +18,10 @@ namespace Match3.LevelEditor
         [SerializeField] private UILevelSelectorSlot _uiLevelSelectorSlotPrefab;
         [SerializeField] private List<UILevelSelectorSlot> _uiSlots;
 
+
+        [Header("Clipboard")]
+        [SerializeField] private Image _clipboardImage;
+
         private void Awake()
         {
             _canvas = GetComponent<Canvas>();
@@ -33,9 +37,10 @@ namespace Match3.LevelEditor
             LevelEditorManager.Instance.OnCharacterLevelDataRemoval += OnCharacterLevelDataRemoval_UpdateUI;
 
             LevelEditorManager.Instance.OnLevelDataSaved += OnLevelDataSaved_UpdateUI;
+            CopyPasteManager.Instance.OnCopy += OnCopy_UpdateClipboard;
         }
 
-     
+  
 
         private void OnDestroy()
         {
@@ -47,6 +52,7 @@ namespace Match3.LevelEditor
             LevelEditorManager.Instance.OnCharacterLevelDataRemoval -= OnCharacterLevelDataRemoval_UpdateUI;
 
             LevelEditorManager.Instance.OnLevelDataSaved -= OnLevelDataSaved_UpdateUI;
+            CopyPasteManager.Instance.OnCopy -= OnCopy_UpdateClipboard;
         }
     
         public void DisplayCanvas(bool enable)
@@ -128,6 +134,12 @@ namespace Match3.LevelEditor
             LevelData levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[index];
             Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(levelData);
             _uiSlots[index].SetIcon(Utilities.ConvertTextureToSprite(iconTexture));
+        }
+
+        private void OnCopy_UpdateClipboard(LevelData data)
+        {
+            Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(data);
+            _clipboardImage.sprite = Utilities.ConvertTextureToSprite(iconTexture);
         }
     }
 }
