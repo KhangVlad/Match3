@@ -7,6 +7,7 @@ Shader "Unlit/CloudWithNoise"
         _AnimatedXY ("Animated XY", Vector) = (0, 0, 0, 0)
         _NoiseSpeed ("Noise Speed", Float) = 0.1
         _NoiseColor ("Blend Color", Color) = (1, 1, 1, 0.5)
+      
     }
     SubShader
     {
@@ -66,7 +67,6 @@ Shader "Unlit/CloudWithNoise"
                 fixed4 mapCol = tex2D(_MainTex, i.uv);
                 float noiseValue = tex2D(_PerlinNoise, i.cloudUV).r;
                 fixed4 noiseCol = lerp(mapCol, _NoiseColor, noiseValue);
-
 
                 fixed4 col = lerp(mapCol, noiseCol, _NoiseColor.a);
                 return col;

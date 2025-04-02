@@ -24,6 +24,7 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Slider slider; //progress for next level
     [SerializeField] private TextMeshProUGUI progressText;
     public CharactersData charData;
+
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -57,12 +58,17 @@ public class UILevelDesignManager : MonoBehaviour
         CharacterAppearance appearance = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
         heartImage.color = heartColor;
         heartHeader.color = nextLevelColor;
-        panel.color = appearance.panelColor;
+        if (appearance != null)
+        {
+            panel.color = appearance.panelColor;
+            heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
+        }
+
         sliderFill.color = nextLevelColor;
-        slider.maxValue = charData.GetNextLevelSympathy();
+        slider.maxValue = charData.GetNextLevelSympathy();  
         slider.value = charData.currentSympathy;
         progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
-        heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
+       ;
 
 
         CleanLevels();
@@ -128,7 +134,7 @@ public class UILevelDesignManager : MonoBehaviour
         if (!levelDesign.Islocked)
         {
             DialogueManager.Instance.ShowDialogue(typewriterEffect,
-                CharacterDisplay.Instance.GetDialogue(levelDesign.index,1));
+                CharacterDisplay.Instance.GetDialogue(levelDesign.index, 1));
             selectBtn.gameObject.SetActive(true);
         }
         else
@@ -155,7 +161,8 @@ public class UILevelDesignManager : MonoBehaviour
                 }
                 else
                 {
-                    DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetNotEnoughSympathyDialogue());
+                    DialogueManager.Instance.ShowDialogue(typewriterEffect,
+                        CharacterDisplay.Instance.GetNotEnoughSympathyDialogue());
                 }
             });
         }

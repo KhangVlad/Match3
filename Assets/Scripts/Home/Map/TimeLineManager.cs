@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
-using UnityEngine.Serialization;
+# if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class TimeLineManager : MonoBehaviour
 {
     public static TimeLineManager Instance { get; private set; }
 
-
-    [SerializeField] private DayInWeek currentDay;
+    [SerializeField] public DayInWeek currentDay;
     [SerializeField] private int currentHour = 25;
-    [SerializeField] private CharacterBubble bubblePrefab;
+    [HideInInspector] [SerializeField] private CharacterBubble bubblePrefab;
     [SerializeField] private SpriteRenderer map;
-    [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
-    [SerializeField] private BoxCollider2D cameraCollider;
-    [SerializeField] private float padding = 1f;
+    [HideInInspector] [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
+    [HideInInspector] [SerializeField] private BoxCollider2D cameraCollider;
+    [HideInInspector] [SerializeField] private float padding = 1f;
 
     private List<CharacterActivitySO> activeInDay = new();
 
@@ -38,6 +39,73 @@ public class TimeLineManager : MonoBehaviour
     private Dictionary<CharacterID, IconWithPosition> pairDict = new();
 
     private Bounds paddedBounds;
+
+
+    [Header("Create New Activity Info")] public bool IsCreatingNewActivity;
+    public CharacterID EditorCharacterID;
+
+    public CharacterBubble simulatedBubble;
+    public int StartTime;
+    public int EndTime;
+    public Vector2Int AppearPosition;
+    [SerializeField] private Sprite characterSprite;
+    [SerializeField] private Vector2Int homePos;
+
+    public Sprite CharacterSprite
+    {
+        get => characterSprite;
+        set => characterSprite = value;
+    }
+
+    public Vector2Int HomePos
+    {
+        get => homePos;
+        set => homePos = value;
+    }
+
+    private string spritePath = "Sprites/CharactersAvatar/";
+
+    private string
+        saveActivityPath = "Assets/Resources/DataSO/CharacterActivities/"; //saveas $CharacterActivities/{charId}.asset}
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && IsCreatingNewActivity)
+        {
+            AppearPosition = map.WorldPositionToImagePixel(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            Vector3 worldPosition = (Vector2)map.ImagePixelToWorld(AppearPosition); // Convert Vector2Int to Vector3
+
+            if (simulatedBubble == null)
+            {
+                CharacterBubble bubble = Instantiate(bubblePrefab, worldPosition, Quaternion.identity);
+                Sprite s = AssetDatabase.LoadAssetAtPath<Sprite>(
+                    $"Assets/Sprites/CharactersAvatar/{(int)EditorCharacterID}.png");
+                CharacterSprite = s;
+                bubble.Initialize(EditorCharacterID, s, worldPosition);
+                simulatedBubble = bubble;
+            }
+            else
+            {
+                simulatedBubble.transform.position = worldPosition;
+            }
+        }
+    }
+#endif
+
+# if UNITY_EDITOR
+    private void OnValidate()
+    {
+        //if id is changed
+        if (EditorCharacterID != simulatedBubble?.characterID && simulatedBubble != null)
+        {
+            Sprite s = AssetDatabase.LoadAssetAtPath<Sprite>(
+                $"Assets/Sprites/CharactersAvatar/{(int)EditorCharacterID}.png");
+            simulatedBubble.Initialize(EditorCharacterID, s, simulatedBubble.transform.position);
+            CharacterSprite = s;
+        }
+    }
+#endif
 
     private void Awake()
     {
@@ -74,13 +142,27 @@ public class TimeLineManager : MonoBehaviour
         activeInDay = CharactersDataManager.Instance.GetCharacterActive(currentDay);
     }
 
-    private void OnValidate()
+    // private void OnValidate()
+    // {
+    //     if (Application.isPlaying && currentHour != lastCheckedHour)
+    //     {
+    //         UpdateTimeChange();
+    //         GetCharactersInTime(activeInDay);
+    //     }
+    // }
+
+    public void PlusCurrentHour()
     {
-        if (Application.isPlaying && currentHour != lastCheckedHour)
-        {
-            UpdateTimeChange();
-            GetCharactersInTime(activeInDay);
-        }
+        currentHour++;
+        UpdateTimeChange();
+        GetCharactersInTime(activeInDay);
+    }
+
+    public void MinusCurrentHour()
+    {
+        currentHour--;
+        UpdateTimeChange();
+        GetCharactersInTime(activeInDay);
     }
 
     private void UpdateTimeChange()
@@ -89,6 +171,13 @@ public class TimeLineManager : MonoBehaviour
         {
             currentHour = 0;
             currentDay = currentDay == DayInWeek.Sunday ? DayInWeek.Monday : currentDay + 1;
+            CheckNewDay();
+        }
+
+        if (currentHour < 0)
+        {
+            currentHour = 23;
+            currentDay = currentDay == DayInWeek.Monday ? DayInWeek.Sunday : currentDay - 1;
             CheckNewDay();
         }
 
@@ -139,7 +228,6 @@ public class TimeLineManager : MonoBehaviour
         homeIds.Clear();
         activeIds.Clear();
     }
-
 
     private void InitializeCharacterAtHome(CharacterActivitySO data)
     {
@@ -216,7 +304,6 @@ public class TimeLineManager : MonoBehaviour
     {
         paddedBounds = cameraCollider.bounds;
         paddedBounds.Expand(padding * 2); // Expand bounds once per frame
-
         foreach (var entry in pairDict)
         {
             IconWithPosition iconWithPosition = entry.Value;

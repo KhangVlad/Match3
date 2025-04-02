@@ -53,7 +53,10 @@ namespace Match3
             {
                 SceneHelper.StartSceneWithSavePrompt("Assets/Scenes/Loading.unity", true);
             }
-            
+            if (GUILayout.Button(new GUIContent("Test")))
+            {
+                SceneHelper.StartSceneWithSavePrompt("Assets/Scenes/Test.unity", true);
+            }
             
         }
     }

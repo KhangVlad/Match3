@@ -25,6 +25,12 @@ MonoBehaviour:
   - id: 3
     panelColor: {r: 0.2627451, g: 0.654902, b: 0.5254902, a: 1}
     heartPosition: {x: 170, y: -450}
+  - id: 6
+    panelColor: {r: 0.2627451, g: 0.654902, b: 0.5254902, a: 1}
+    heartPosition: {x: 170, y: -450}
+  - id: 5
+    panelColor: {r: 0.2627451, g: 0.654902, b: 0.5254902, a: 1}
+    heartPosition: {x: 170, y: -450}
   - id: 5
     panelColor: {r: 0.2627451, g: 0.654902, b: 0.5254902, a: 1}
     heartPosition: {x: 170, y: -450}

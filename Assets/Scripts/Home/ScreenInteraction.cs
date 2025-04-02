@@ -75,22 +75,54 @@ public class ScreenInteraction : MonoBehaviour
         FirstMouseClick = true;
         PreviouseMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
-        RaycastHit2D hit = Physics2D.Raycast(PreviouseMousePos, Vector2.zero, 1000, characterLayerMask);
+        Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 1000, characterLayerMask);
+
+
+
         // VfxGameObject a = VfxPool.Instance.GetVfxByName("Heart");
         // a.gameObject.transform.position = PreviouseMousePos;
 
+        // if (hit.collider is not null)
+        // {
+        //     if (hit.collider.TryGetComponent(out CharacterBubble character))
+        //     {
+        //         if (TimeLineManager.Instance.IsCreatingNewActivity) return;
+        //         AudioManager.Instance.PlayButtonSfx();
+        //         OnCharacterInteracted?.Invoke(character.characterID);
+        //     }
+        //
+        //     if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
+        //     {
+        //         AudioManager.Instance.PlayButtonSfx();
+        //         StartCoroutine(MoveCameraToCharacter(arrow));
+        //     }
+        //     if (hit.collider.TryGetComponent(out LightStreet lightStreet))
+        //     {
+        //         Debug.Log("Light Street Clicked");
+        //         lightStreet.Toggle();
+        //     }
+        // }
+
         if (hit.collider is not null)
         {
+            Debug.Log("Hit Collider");
             if (hit.collider.TryGetComponent(out CharacterBubble character))
             {
+                Debug.Log("Character Bubble Clicked");
+                if (TimeLineManager.Instance.IsCreatingNewActivity) return;
                 AudioManager.Instance.PlayButtonSfx();
                 OnCharacterInteracted?.Invoke(character.characterID);
             }
-
-            if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
+            else if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
             {
+                Debug.Log("Character Arrow Clicked");
                 AudioManager.Instance.PlayButtonSfx();
                 StartCoroutine(MoveCameraToCharacter(arrow));
+            }
+            else if (hit.collider.TryGetComponent(out LightStreet lightStreet))
+            {
+                lightStreet.Toggle();
             }
         }
     }
@@ -168,22 +200,7 @@ public class ScreenInteraction : MonoBehaviour
         OnInteractAbleTriggered?.Invoke();
     }
 
-    #if UNITY_EDITOR
-        private void OnDrawGizmos()
-        {
-            if (map != null)
-            {
-                Vector2 pixelPos = Utilities.WorldPositionToImagePixel(map, PreviouseMousePos);
-                Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-
-                GUIStyle style = new GUIStyle();
-                style.fontSize = 16; // Set the font size
-                style.normal.textColor = Color.black; // Set the text color to black
-
-                UnityEditor.Handles.Label(mousePos, $"({pixelPos.x}, {pixelPos.y})", style);
-            }
-        }
-    #endif
+#if UNITY_EDITOR
     // private void OnDrawGizmos()
     // {
     //     if (map != null)
@@ -198,4 +215,6 @@ public class ScreenInteraction : MonoBehaviour
     //         UnityEditor.Handles.Label(mousePos, $"({pixelPos.x}, {pixelPos.y})", style);
     //     }
     // }
+
+#endif
 }

@@ -32,6 +32,13 @@ public class CharactersDataManager : MonoBehaviour
         LoadAllCharactersData();
     }
 
+
+
+    public void LoadDialogueData(LanguageType l)
+    {
+        characterDialogues = Resources.LoadAll<CharacterDialogueSO>($"DataSO/CharacterDialogues_{l}").ToList();
+    }
+
     private void LoadAllCharactersData() //get from user later
     {
         // foreach (var characterActivity in characterActivities)
@@ -55,7 +62,7 @@ public class CharactersDataManager : MonoBehaviour
     private void LoadDataSo()
     {
         characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
-        characterDialogues = Resources.LoadAll<CharacterDialogueSO>("DataSO/CharacterDialogues").ToList();
+        // characterDialogues = Resources.LoadAll<CharacterDialogueSO>("DataSO/CharacterDialogues").ToList();
         OnCharacterDataLoaded?.Invoke();
     }
 

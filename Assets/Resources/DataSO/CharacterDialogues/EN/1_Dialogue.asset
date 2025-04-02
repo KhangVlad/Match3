@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8571f95c24b54894b1e92e372d09f6ea, type: 3}
+  m_Name: 1_Dialogue
+  m_EditorClassIdentifier: 
+  id: 1
+  data:
+  - dialog:
+    - The festival is coming! Find the most beautiful flowers for decoration. You
+      can combine them on the flower tree to collect them more easily.
+    - Red flowers symbolize good luck! Clear obstacles to collect these precious
+      flowers.
+    - A lot of flowers are needed to complete the beautiful wreaths. Free up blocked
+      flower tiles to gather more!
+    - Purple flowers will make the festival even more splendid. Use special items
+      to break obstacles and collect them!
+    - White flowers symbolize purity. Don't forget to combine different flowers to
+      collect more!
+  - dialog:
+    - First
+    - Red ribbons bring luck and prosperity. Use support items to break obstacles
+      and collect them!
+    - These ribbons will make your wreaths stand out. Remove obstacles to tie them
+      beautifully!
+    - Golden ribbons will make your wreaths shine! Clear obstacles to collect them
+      now.
+    - "Make sure the ribbons are tightly tied so they don\u2019t come loose! Use
+      special items to clean the area and gather more ribbons."
+  - dialog:
+    - Start collecting dry wood to prepare for the bonfire! Combine wood pieces to
+      collect them quickly.
+    - Large logs are needed to create a strong fire! Clear obstacles to obtain them.
+    - Be careful when picking up wood
+    - These logs will help us have a warm bonfire night. Combine wood to gather them
+      more effectively!
+    - Don't forget to bring the wood to the fire area! You need to clear obstacles
+      to transport them easily.
+  - dialog:
+    - Use red flowers to create lucky wreaths! Clear obstacles to craft beautiful
+      wreaths.
+    - Wreaths need to be neatly and securely tied. Use support items to break obstacles
+      and complete them!
+    - Carefully tie the wreaths to bring good luck to everyone! Remove surrounding
+      obstacles to complete the task.
+    - You can decorate the wreaths with shiny ribbons. Clean the area to complete
+      the work easily!
+    - Each wreath will be given to a villager participating in the festival. Clear
+      obstacles to finish this task!
+  - dialog:
+    - Use white flowers to craft beautiful floating lanterns! Remove obstacles to
+      collect them.
+    - Floating lanterns will be released into the river on festival night. Gather
+      and arrange them perfectly!
+    - "Make sure your floating lanterns don\u2019t get submerged in water. Clear
+      obstacles to avoid damaging them."
+    - We will release floating lanterns to pray for a bountiful harvest! Clear obstacles
+      to properly set them afloat.
+    - Don't forget to place candles inside the lanterns so they shine brightly on
+      the river! Use special items to break obstacles and complete the lanterns.

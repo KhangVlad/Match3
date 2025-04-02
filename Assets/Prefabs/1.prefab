@@ -84,7 +84,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5946496740017236324
@@ -156,9 +156,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 115183d2c99c4ff78663b408e8edd339, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 4622078937418338575}
   characterID: 0
   sprite: {fileID: 0}
-  image: {fileID: 4622078937418338575}
 --- !u!61 &3779750453213448583
 BoxCollider2D:
   m_ObjectHideFlags: 0

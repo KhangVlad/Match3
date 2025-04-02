@@ -13,7 +13,6 @@ public class CharacterDialogueSO : ScriptableObject
 [Serializable]
 public class LevelDialogueData
 {
-    public int level;
     public string[] dialog;
 }
 
