@@ -13,6 +13,8 @@ public class ScreenInteraction : MonoBehaviour
     [SerializeField] private LayerMask characterLayerMask; // Add this in the Inspector
     [SerializeField] private Camera mainCamera;
     [SerializeField] private CinemachineCamera virtualCamera;
+    
+    public float CameraSpeed = 0.1f;
     private bool IsDragging;
     private bool FirstMouseClick;
     private Vector2 PreviouseMousePos;
@@ -170,9 +172,9 @@ public class ScreenInteraction : MonoBehaviour
         FirstMouseClick = false;
     }
 
-    private void MoveTargetWithinBounds(Vector2 position)
+    private void MoveTargetWithinBounds(Vector2 dir)
     {
-        Vector2 newPosition = target.position + (Vector3)position;
+        Vector2 newPosition = target.position + new Vector3(dir.x, dir.y, 0) * CameraSpeed;
         if (camLimits.bounds.Contains(newPosition))
         {
             target.position = newPosition;

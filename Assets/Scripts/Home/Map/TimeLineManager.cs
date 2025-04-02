@@ -18,7 +18,8 @@ public class TimeLineManager : MonoBehaviour
     [HideInInspector] [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
     [HideInInspector] [SerializeField] private BoxCollider2D cameraCollider;
     [HideInInspector] [SerializeField] private float padding = 1f;
-
+    public GameObject LightingManager2D;
+    public GameObject Moon;
     private List<CharacterActivitySO> activeInDay = new();
 
     private List<CharacterID> homeIds = new();
@@ -261,6 +262,16 @@ public class TimeLineManager : MonoBehaviour
     private void GetCurrentHour()
     {
         currentHour = DateTime.Now.Hour;
+        //if > 18h LightingManager2D.SetActive(true);
+        if (currentHour >= 12)
+        {
+            Moon.SetActive(true);
+            LightingManager2D.SetActive(true);
+        }else
+        {
+            Moon.SetActive(false);
+            LightingManager2D.SetActive(false);
+        }
     }
 
 
