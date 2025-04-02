@@ -1,0 +1,36 @@
+{
+    "ShopItemPacks": [
+      {
+        "PackName": "Beginner Pack",
+        "Price": 4.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 100
+          },
+          {
+            "ShopItemID": 54,
+            "Quantity": 5
+          }
+        ]
+      },
+      {
+        "PackName": "Baisc Pack",
+        "Price": 9.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 250
+          },
+          {
+            "ShopItemID": 52,
+            "Quantity": 3
+          },
+          {
+            "ShopItemID": 56,
+            "Quantity": 2
+          }
+        ]
+      }
+    ]
+  }
