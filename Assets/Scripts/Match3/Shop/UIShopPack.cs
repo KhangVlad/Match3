@@ -17,6 +17,8 @@ namespace Match3
         [SerializeField] private UIItemSlot[] _uiItemSlotPrefab;
         [SerializeField] private UIItemSlot[] _uiItemSlots;
 
+        private ShopItemPack _cachedShopItemPackage;
+
 
         private void Start()
         {
@@ -24,7 +26,37 @@ namespace Match3
             {
                 AudioManager.Instance.PlayButtonSfx();
 
-
+                for (int i = 0; i < _cachedShopItemPackage.Items.Count; i++)
+                {
+                    ShopItemSlot itemSlot = _cachedShopItemPackage.Items[i];
+                    switch (itemSlot.ShopItemID)
+                    {
+                        case ShopItemID.Gems:
+                            Debug.Log("Add gems");
+                            break;
+                        case ShopItemID.RemoveAds:
+                            Debug.Log("Add remove ads");
+                            break;
+                        case ShopItemID.ColorBurst:
+                            UserManager.Instance.AddBooster(BoosterID.ColorBurst, itemSlot.Quantity);
+                            break;
+                        case ShopItemID.BlastBomb:
+                            UserManager.Instance.AddBooster(BoosterID.BlastBomb, itemSlot.Quantity);
+                            break;
+                        case ShopItemID.AxisBomb:
+                            UserManager.Instance.AddBooster(BoosterID.AxisBomb, itemSlot.Quantity);
+                            break;
+                        case ShopItemID.ExtraMove:
+                            UserManager.Instance.AddBooster(BoosterID.ExtraMove, itemSlot.Quantity);
+                            break;
+                        case ShopItemID.FreeSwitch:
+                            UserManager.Instance.AddBooster(BoosterID.FreeSwitch, itemSlot.Quantity);
+                            break;
+                        case ShopItemID.Hammer:
+                            UserManager.Instance.AddBooster(BoosterID.Hammer, itemSlot.Quantity);
+                            break;
+                    }
+                }
             });
         }
 
@@ -34,20 +66,22 @@ namespace Match3
         }
 
 
-        public void SetPackData(ShopItemPack packData)
+        public void SetPackData(ShopItemPack packageData)
         {
-            _packageName.text = packData.PackName;
-            _priceText.text = $"{packData.Price}$";
+            _cachedShopItemPackage = packageData;
+
+            _packageName.text = packageData.PackName;
+            _priceText.text = $"{packageData.Price}$";
 
 
-            _uiItemSlots = new UIItemSlot[packData.Items.Count];
-            for (int i = 0; i < packData.Items.Count; i++)
+            _uiItemSlots = new UIItemSlot[packageData.Items.Count];
+            for (int i = 0; i < packageData.Items.Count; i++)
             {
-                ShopItemSlot shopItemSlot = packData.Items[i];
+                ShopItemSlot shopItemSlot = packageData.Items[i];
 
                 UIItemSlot prefab = _uiItemSlotPrefab[0];
 
-                if (packData.Items[i].ShopItemID == ShopItemID.RemoveAds)
+                if (packageData.Items[i].ShopItemID == ShopItemID.RemoveAds)
                 {
                     prefab = _uiItemSlotPrefab[1];
                 }

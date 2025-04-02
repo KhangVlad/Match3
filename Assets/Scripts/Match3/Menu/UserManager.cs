@@ -8,6 +8,8 @@ namespace Match3
         public static UserManager Instance { get;private set; }
         public event System.Action<Booster> OnSelectGameplayBooster;
         public event System.Action OnUnselectGameplayBooster;
+        public event System.Action<Booster> OnAvaiableBoostersQuantityChanged;
+        public event System.Action<Booster> OnGameplayBoostersQuantityChanged;
 
 
         [Header("~Runtime")]
@@ -140,6 +142,30 @@ namespace Match3
         {
             SelectedGameplayBooster = null;
             OnUnselectGameplayBooster?.Invoke();
+        }
+
+
+        public void AddBooster(BoosterID boosterID, int quantity)
+        {
+            for (int i = 0; i < GameplayBoosters.Count; i++)
+            {
+                if (GameplayBoosters[i].BoosterID == boosterID)
+                {
+                    GameplayBoosters[i].Quantity += quantity;
+                    OnGameplayBoostersQuantityChanged?.Invoke(GameplayBoosters[i]);
+                    return;
+                }
+            }
+
+            for(int i = 0; i < AvaiableBoosters.Count; i++)
+            {
+                if (AvaiableBoosters[i].BoosterID == boosterID)
+                {
+                    AvaiableBoosters[i].Quantity += quantity;
+                    OnAvaiableBoostersQuantityChanged?.Invoke(AvaiableBoosters[i]);
+                    return;
+                }
+            }
         }
     }
     

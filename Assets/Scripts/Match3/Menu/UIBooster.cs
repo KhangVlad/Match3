@@ -17,6 +17,9 @@ namespace Match3
         // Cached
         private BoosterDataSo _data;
 
+
+        public Booster CachedBooster {get; private set;}
+
         private void Start()
         {
             if (UserManager.Instance.IsBoosterEquipped(_data.ID))
@@ -51,6 +54,7 @@ namespace Match3
 
         public void SetBoosterData(Booster booster)
         {
+            CachedBooster = booster;
             BoosterDataSo boosterData = GameDataManager.Instance.GetBoosterDataByID(booster.BoosterID);
             this._data = boosterData;
             _icon.sprite = boosterData.Icon;
