@@ -29,6 +29,11 @@ namespace Match3
         public CharacterDataSO[] CharacterDataSos;
         private Dictionary<CharacterID, CharacterDataSO> _characterDataDict;
 
+
+        // Shop Data
+        public ShopItemDataSO[] ShopItemDataSos;
+        private Dictionary<ShopItemID, ShopItemDataSO> _shopItemDataDict;   
+
         // Level
         private TextAsset[] _levels;
 
@@ -79,6 +84,8 @@ namespace Match3
             // Character data
             LoadCharacterData();
 
+            // Shop data
+            LoadShopData();
 
             OnDataLoaded?.Invoke();
         }
@@ -125,6 +132,21 @@ namespace Match3
         public CharacterDataSO GetCharacterDataByID(CharacterID id)
         {
             return _characterDataDict[id];
+        }
+
+        private void LoadShopData()
+        {
+            ShopItemDataSos = Resources.LoadAll<ShopItemDataSO>("Data/ShopItem/");
+            _shopItemDataDict = new();  
+            for(int i = 0; i <  ShopItemDataSos.Length; i++)
+            {
+                ShopItemDataSO shopItemData = ShopItemDataSos[i];
+                _shopItemDataDict.Add(shopItemData.ShopItemID, shopItemData);
+            }
+        }
+        public ShopItemDataSO GetShopItemDataByID(ShopItemID shopItemID)
+        {
+            return _shopItemDataDict[shopItemID];
         }
 
         #region Extensions

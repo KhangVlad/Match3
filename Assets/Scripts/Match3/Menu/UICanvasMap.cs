@@ -11,6 +11,8 @@ namespace Match3
         [SerializeField] private Button _level4Btn;
         [SerializeField] private Button _level5Btn;
 
+        [SerializeField] private Button _shopBtn;
+
         private void Start()
         {
             //Loader.Load(Loader.Scene.GameplayScene);
@@ -59,6 +61,12 @@ namespace Match3
                 UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
                 UILevelInfomation.Instance.DisplayCanvas(true);
             });
+
+            _shopBtn.onClick.AddListener(() =>
+            {
+                AudioManager.Instance.PlayButtonSfx();
+                UIHomeManager.Instance.DisplayUIShop(true);
+            });
         }
 
         private void OnDestroy()
@@ -68,6 +76,8 @@ namespace Match3
             _level3Btn.onClick.RemoveAllListeners();
             _level4Btn.onClick.RemoveAllListeners();
             _level5Btn.onClick.RemoveAllListeners();
+
+            _shopBtn.onClick.RemoveAllListeners();
         }
 
     }
