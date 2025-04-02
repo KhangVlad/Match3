@@ -115,6 +115,7 @@ public class TimeLineManager : MonoBehaviour
             Instance = this;
             currentDay = GetCurrentDay();
             GetCurrentHour();
+            CheckDayAndNight();
         }
         else
         {
@@ -182,7 +183,27 @@ public class TimeLineManager : MonoBehaviour
             CheckNewDay();
         }
 
+        CheckDayAndNight();
         lastCheckedHour = currentHour;
+    }
+
+    private void CheckDayAndNight()
+    {
+        if (IsNight())
+        {
+            LightingManager2D.SetActive(true);
+            Moon.SetActive(true);
+        }
+        else
+        {
+            LightingManager2D.SetActive(false);
+            Moon.SetActive(false);
+        }
+    }
+
+    private bool IsNight()
+    {
+        return currentHour >= 12 || currentHour < 6;
     }
 
 
@@ -262,16 +283,6 @@ public class TimeLineManager : MonoBehaviour
     private void GetCurrentHour()
     {
         currentHour = DateTime.Now.Hour;
-        //if > 18h LightingManager2D.SetActive(true);
-        if (currentHour >= 12)
-        {
-            Moon.SetActive(true);
-            LightingManager2D.SetActive(true);
-        }else
-        {
-            Moon.SetActive(false);
-            LightingManager2D.SetActive(false);
-        }
     }
 
 
