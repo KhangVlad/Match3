@@ -388,7 +388,7 @@ namespace Match3
 
                     Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.RedFlower, BlockID.None);
                     newTile.UpdatePosition();
-                    newTile.SetSpecialTile(SpecialTileID.BlastBomb);
+                    newTile.SetSpecialTile(SpecialTileID.ColorBurst);
 
                     _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.RedFlower;
                 }
@@ -1197,29 +1197,37 @@ namespace Match3
                                     case 1: // left
                                         if (IsValidMatchTile(tile.X - 1, tile.Y))
                                         {
+                                            Debug.Log("Left");
                                             found = true;
                                             ClearAllBoardTileID(_tiles[tile.X - 1 + tile.Y * Width].ID);
+                                            PlayColorBurstVfx(tile);
                                         }
                                         break;
                                     case 2: // right
                                         if (IsValidMatchTile(tile.X + 1, tile.Y))
                                         {
+                                            Debug.Log("right");
                                             found = true;
                                             ClearAllBoardTileID(_tiles[tile.X + 1 + tile.Y * Width].ID);
+                                            PlayColorBurstVfx(tile);
                                         }
                                         break;
                                     case 3: // up
                                         if (IsValidMatchTile(tile.X, tile.Y + 1))
                                         {
+                                            Debug.Log("up");
                                             found = true;
                                             ClearAllBoardTileID(_tiles[tile.X + (tile.Y + 1) * Width].ID);
+                                            PlayColorBurstVfx(tile);
                                         }
                                         break;
                                     case 4: // down
                                         if (IsValidMatchTile(tile.X, tile.Y - 1))
                                         {
+                                            Debug.Log("Down");
                                             found = true;
                                             ClearAllBoardTileID(_tiles[tile.X + (tile.Y - 1) * Width].ID);
+                                            PlayColorBurstVfx(tile);
                                         }
                                         break;
                                 }
@@ -1746,6 +1754,8 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
                         ClearAllBoardTileID(_swappedTile.ID);
+                        PlayColorBurstVfx(_selectedTile);
+
                         _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] = MatchID.Match;
 
                         _hasMatch6 = true;
@@ -1756,6 +1766,7 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
                         ClearAllBoardTileID(_selectedTile.ID);
+                        PlayColorBurstVfx(_swappedTile);
                         _matchBuffer[_swappedTile.X + _swappedTile.Y * Width] = MatchID.Match;
 
                         _hasMatch6 = true;
@@ -2047,7 +2058,6 @@ namespace Match3
 
         private void ClearAllBoardTileID(TileID tileID)
         {
-            //Debug.Log($"ClearAllBoardTileID: {tileID}");
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -2406,6 +2416,27 @@ namespace Match3
 
             Tile tile = _tiles[(Width / 2) + (Height / 2) * Width];
             GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + new Vector2(0.5f, 0.5f), Quaternion.identity);
+        }
+
+        public void PlayColorBurstVfx(Tile tile)
+        {
+            ColorBurstLine colorBurstLinePrefab = Resources.Load<ColorBurstLine>("Effects/ColorBurstVfx");
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = x + y * Width;
+                    if (IsValidMatchTile(x, y))
+                    {
+                        if (_tiles[index].ID == tile.ID && tile.Equal(_tiles[index]) == false)
+                        {
+                            ColorBurstLine vfx = Instantiate(colorBurstLinePrefab, this.transform);
+                            vfx.transform.position = new Vector3(0.5f,0.5f,0f);
+                            vfx.SetLine(tile.transform.position, _tiles[index].transform.position, 2f);
+                        }
+                    }
+                }
+            }
         }
         #endregion
     }
