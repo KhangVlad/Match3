@@ -43,10 +43,10 @@ namespace Match3
                         Debug.Log(blockID);
                         _tileMap.SetTile(new Vector3Int(x, y, 0), _tileBase);
                     }
-                    else
-                    {
-                        Debug.Log("???");
-                    }
+                    //else
+                    //{
+                    //    Debug.Log("???");
+                    //}
                 }
             }
         }

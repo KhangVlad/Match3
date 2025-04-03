@@ -856,6 +856,7 @@ namespace Match3
                     for (int h = x + 1; h < Width; h++)
                     {
                         Tile nbTile = _tiles[h + y * Width]; // Use y instead of currTile.Y
+                        if (nbTile == null) break;
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
@@ -878,6 +879,7 @@ namespace Match3
                     for (int v = y + 1; v < Height; v++)
                     {
                         Tile nbTile = _tiles[x + v * Width]; // Correct index calculation
+                        if (nbTile is null) break;
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
@@ -1264,21 +1266,29 @@ namespace Match3
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
             //Debug.Log("AutoFillCoroutine");
-            int attempts = 0;
-            while (true)
-            {
-                if (attempts++ > 10)
-                {
-                    Debug.Log($"===== max attempts ======");
-                    break;
-                }
-                if (CanFill() == false)
-                {
-                    break;
-                }
-                //Debug.Log("AutoFillCoroutine");
-                yield return StartCoroutine(FillGridCoroutine());
-            }
+            //int attempts = 0;
+            //while (true)
+            //{
+            //    if (attempts++ > 10)
+            //    {
+            //        Debug.Log($"===== max attempts ======");
+            //        break;
+            //    }
+
+            //    //if(_tileHasMove == false)
+            //    //{
+            //    //    Debug.Log($"Break at: {attempts}");
+            //    //}
+            //    if (CanFill() == false)
+            //    {
+            //        Debug.Log($"Break at: {attempts}");
+            //        break;
+            //    }
+            //    //Debug.Log("AutoFillCoroutine");
+            //    yield return StartCoroutine(FillGridCoroutine());
+            //}
+
+            yield return StartCoroutine(FillGridCoroutine());
             onCompleted?.Invoke();
         }
         private void HandleBlackMudSpreading()
@@ -1289,6 +1299,7 @@ namespace Match3
                 for (int x = 0; x < Width; x++)
                 {
                     int index = x + y * Width;
+                    if (_tiles[index] == null) continue;
                     if (_tiles[index].CurrentBlock is BlackMud)
                     {
                         _blackMudSpreaingList.Add(index);
@@ -2185,9 +2196,11 @@ namespace Match3
 
             return false;
         }
+
+        private bool _tileHasMove;
         private IEnumerator FillGridCoroutine()
         {
-            bool tileHasMove = false;
+            _tileHasMove = false;
             int attempts = 0;
             while (true)
             {
@@ -2197,7 +2210,7 @@ namespace Match3
                     break;
                 }
 
-                tileHasMove = false;
+                _tileHasMove = false;
                 for (int y = 0; y < Height - 1; y++)
                 {
                     for (int x = 0; x < Width; x++)
@@ -2215,7 +2228,7 @@ namespace Match3
                                     _tiles[x + y * Width].SetGridPosition(x, y);
                                     _tiles[x + yy * Width] = null;
 
-                                    tileHasMove = true;
+                                    _tileHasMove = true;
                                     break;
                                 }
                             }
@@ -2223,7 +2236,7 @@ namespace Match3
                     }
                 }
 
-                if (tileHasMove == false)
+                if (_tileHasMove == false)
                 {
                     break;
                 }
