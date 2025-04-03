@@ -813,7 +813,6 @@ namespace Match3
             _canPlay = true;
 
             _triggeredMatch5Set.Clear();
-            Debug.Log("Clear");
             _colorBurstParentDictionary.Clear();
 
             if (triggerEvent)

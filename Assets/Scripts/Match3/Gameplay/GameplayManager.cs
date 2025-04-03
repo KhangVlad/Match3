@@ -32,7 +32,7 @@ namespace Match3
         [Header("~Runtime")]
         public int TurnRemainingCount { get; private set; }
         public Quest[] Quests;
-        [SerializeField] private int _currentQuestIndex = 0;
+        //[SerializeField] private int _currentQuestIndex = 0;
 
 
         [Space(15)]
@@ -154,11 +154,10 @@ namespace Match3
         {
             OnBlackMudUpdate();
 
-            if (IsQuestCompleted(_currentQuestIndex))
-            {
-                _currentQuestIndex++;
-            }
-
+            //if (IsQuestCompleted(_currentQuestIndex))
+            //{
+            //    _currentQuestIndex++;
+            //}
 
             if (CheckCompleteAllQuests(out int star))
             {
@@ -239,80 +238,80 @@ namespace Match3
 
         private void OnTileMatchedTriggered(Tile tile)
         {
-            //for (int i = 0; i < Quests.Length; i++)
-            //{
-            int i = _currentQuestIndex;
-            switch (Quests[i].QuestID)
+            for (int i = 0; i < Quests.Length; i++)
             {
-                case QuestID.RedFlower:
-                    if (tile is RedFlower)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.YellowFlower:
-                    if (tile is YellowFlower)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.PurpleFlower:
-                    if (tile is PurpleFlower)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.BlueFlower:
-                    if (tile is BlueFlower)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.WhiteFlower:
-                    if (tile is WhiteFlower)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.RedCandle:
-                    if (tile is RedCandle)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.YellowCandle:
-                    if (tile is YellowCandle)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.GreenCandle:
-                    if (tile is GreenCandle)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.BlueCandle:
-                    if (tile is BlueCandle)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.WhiteCandle:
-                    if (tile is WhiteCandle)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.RedRibbon:
-                    if (tile is RedRibbon)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.YellowRibbon:
-                    if (tile is YellowRibbon)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.GreenRibbon:
-                    if (tile is GreenRibbon)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.BlueRibbon:
-                    if (tile is BlueRibbon)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.PurpleRibbon:
-                    if (tile is PurpleRibbon)
-                        Quests[i].Quantity--;
-                    break;
-                case QuestID.MagnifyingGlass:
-                    if (tile is MagnifyingGlass)
-                        Quests[i].Quantity--;
-                    break;
-                default:
-                    Debug.Log($"Case not found !!!");
-                    break;
+                //int i = _currentQuestIndex;
+                switch (Quests[i].QuestID)
+                {
+                    case QuestID.RedFlower:
+                        if (tile is RedFlower)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowFlower:
+                        if (tile is YellowFlower)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleFlower:
+                        if (tile is PurpleFlower)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.BlueFlower:
+                        if (tile is BlueFlower)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteFlower:
+                        if (tile is WhiteFlower)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedCandle:
+                        if (tile is RedCandle)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowCandle:
+                        if (tile is YellowCandle)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenCandle:
+                        if (tile is GreenCandle)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.BlueCandle:
+                        if (tile is BlueCandle)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteCandle:
+                        if (tile is WhiteCandle)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedRibbon:
+                        if (tile is RedRibbon)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowRibbon:
+                        if (tile is YellowRibbon)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenRibbon:
+                        if (tile is GreenRibbon)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.BlueRibbon:
+                        if (tile is BlueRibbon)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleRibbon:
+                        if (tile is PurpleRibbon)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.MagnifyingGlass:
+                        if (tile is MagnifyingGlass)
+                            Quests[i].Quantity--;
+                        break;
+                    default:
+                        Debug.Log($"Case not found !!!");
+                        break;
+                }
             }
-            //}
         }
 
 
@@ -349,11 +348,15 @@ namespace Match3
                     {
                         star++;
                     }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 
 
-            if(star == requireStar)
+            if (star == requireStar)
             {
                 for (int i = 0; i < Quests.Length; i++)
                 {
