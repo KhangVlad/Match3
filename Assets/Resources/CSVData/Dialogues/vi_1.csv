@@ -1,26 +1,26 @@
-GroupLevel,subId,name
-1,1,Lễ hội đang đến gần! Hãy tìm những bông hoa rực rỡ nhất để trang trí. Bạn có thể kết hợp chúng trên cây hoa để thu thập dễ dàng hơn.
-1,2,Hoa đỏ tượng trưng cho may mắn! Hãy dọn dẹp chướng ngại vật để có thể thu thập những bông hoa quý giá này.
-1,3,Cần rất nhiều hoa để hoàn thành những vòng hoa lộng lẫy. Hãy giải phóng các ô hoa bị chặn để thu thập thêm nhé!
-1,4,Những bông hoa tím sẽ khiến lễ hội thêm rực rỡ. Hãy sử dụng các vật phẩm đặc biệt để phá vỡ vật cản và thu thập chúng!
-1,5,Hoa trắng là biểu tượng của sự thuần khiết. Đừng quên kết hợp các loại hoa để thu thập được nhiều hơn!
-2,1,Đầu tiên, hãy chọn những dải ruy băng đẹp nhất! Dọn sạch vật cản xung quanh để có thể thắt chúng một cách dễ dàng.
-2,2,Ruy băng đỏ mang lại may mắn và thịnh vượng. Hãy sử dụng vật phẩm hỗ trợ để phá vỡ các chướng ngại vật và thu thập chúng!
-2,3,Những sợi ruy băng sẽ giúp vòng hoa thêm nổi bật. Hãy loại bỏ vật cản để thắt chúng thật đẹp!
-2,4,Ruy băng vàng sẽ làm vòng hoa của bạn lung linh hơn! Dọn dẹp vật cản để thu thập chúng ngay.
-2,5,Hãy chắc chắn rằng ruy băng được buộc chặt để không bị bung ra! Sử dụng vật phẩm đặc biệt để dọn sạch khu vực và thu thập thêm ruy băng.
-3,1,Hãy bắt đầu thu thập gỗ khô để chuẩn bị cho đêm lửa trại! Kết hợp các mảnh gỗ để thu thập chúng nhanh chóng.
-3,2,Cần những thanh gỗ lớn để tạo ra một ngọn lửa mạnh mẽ! Hãy dọn dẹp vật cản để lấy được chúng.
-3,3,Cẩn thận khi nhặt gỗ, đừng để gai đâm vào tay! Hãy phá bỏ những chướng ngại vật sắc nhọn để thu thập gỗ an toàn.
-3,4,Những thanh gỗ này sẽ giúp chúng ta có một đêm lửa trại thật ấm cúng. Hãy kết hợp gỗ để thu thập hiệu quả hơn!
-3,5,Đừng quên mang gỗ vào khu vực đốt lửa! Bạn cần dọn sạch vật cản để có thể vận chuyển chúng dễ dàng.
-4,1,Hãy dùng hoa đỏ để tạo những vòng hoa may mắn! Dọn dẹp vật cản để kết thành những vòng hoa thật đẹp.
-4,2,Vòng hoa cần được thắt thật chắc chắn. Hãy sử dụng vật phẩm hỗ trợ để phá vỡ vật cản và hoàn thành chúng!
-4,3,Kết vòng hoa thật cẩn thận để mang lại may mắn cho mọi người! Hãy loại bỏ vật cản xung quanh để hoàn thành nhiệm vụ.
-4,4,Bạn có thể trang trí vòng hoa bằng những dải ruy băng lấp lánh. Hãy dọn dẹp khu vực để dễ dàng hoàn thành công việc!
-4,5,Mỗi vòng hoa sẽ được trao tặng cho một cư dân tham gia lễ hội. Dọn sạch chướng ngại vật để hoàn thành nhiệm vụ này!
-5,1,Dùng hoa trắng để kết thành những chiếc hoa đăng tuyệt đẹp! Hãy xóa bỏ vật cản để thu thập chúng.
-5,2,Hoa đăng sẽ được thả xuống sông vào đêm lễ hội. Hãy thu thập và sắp xếp chúng một cách hoàn hảo!
-5,3,Hãy chắc chắn rằng hoa đăng của bạn không bị ngập nước. Dọn sạch vật cản để tránh làm hỏng chúng.
-5,4,Chúng ta sẽ thả hoa đăng để cầu mong mùa màng bội thu! Dọn dẹp chướng ngại vật để có thể thả hoa đăng đúng cách.
-5,5,Đừng quên đặt những ngọn nến vào hoa đăng để chúng tỏa sáng rực rỡ trên dòng sông! Hãy sử dụng vật phẩm đặc biệt để phá vỡ vật cản và hoàn thành hoa đăng.
+GroupLevel,subId,name,greetings
+1,1,Lễ hội đang đến gần Hãy tìm những bông hoa rực rỡ nhất để trang trí Bạn có thể kết hợp chúng trên cây hoa để thu thập dễ dàng hơn, Chào bạn hôm nay bạn có cảm thấy vui không
+1,2,Hoa đỏ tượng trưng cho may mắn Hãy dọn dẹp chướng ngại vật để có thể thu thập những bông hoa quý giá này, Chào bạn công việc thu thập hoa đỏ thế nào rồi Có gặp khó khăn gì không
+1,3,Cần rất nhiều hoa để hoàn thành những vòng hoa lộng lẫy Hãy giải phóng các ô hoa bị chặn để thu thập thêm nhé, Chào bạn bạn đã thu thập đủ hoa để tạo vòng hoa chưa
+1,4,Những bông hoa tím sẽ khiến lễ hội thêm rực rỡ Hãy sử dụng các vật phẩm đặc biệt để phá vỡ vật cản và thu thập chúng, Chào bạn bạn có thích những bông hoa tím mới thu thập được không
+1,5,Hoa trắng là biểu tượng của sự thuần khiết Đừng quên kết hợp các loại hoa để thu thập được nhiều hơn, Chào bạn bạn đã thử kết hợp các loại hoa để thu thập nhiều hơn chưa
+2,1,Đầu tiên hãy chọn những dải ruy băng đẹp nhất Dọn sạch vật cản xung quanh để có thể thắt chúng một cách dễ dàng, Chào bạn bạn có thể thu thập ruy băng đẹp nhất chưa Có vật cản nào gây khó khăn không
+2,2,Ruy băng đỏ mang lại may mắn và thịnh vượng Hãy sử dụng vật phẩm hỗ trợ để phá vỡ các chướng ngại vật và thu thập chúng, Chào bạn bạn đã thu thập đủ ruy băng đỏ chưa Nó có mang lại may mắn cho bạn không
+2,3,Những sợi ruy băng sẽ giúp vòng hoa thêm nổi bật Hãy loại bỏ vật cản để thắt chúng thật đẹp, Chào bạn bạn có cần giúp đỡ để loại bỏ vật cản và thắt những sợi ruy băng đẹp không
+2,4,Ruy băng vàng sẽ làm vòng hoa của bạn lung linh hơn Dọn dẹp vật cản để thu thập chúng ngay, Chào bạn ruy băng vàng đã đủ chưa Bạn có gặp khó khăn gì khi thu thập không
+2,5,Hãy chắc chắn rằng ruy băng được buộc chặt để không bị bung ra Sử dụng vật phẩm đặc biệt để dọn sạch khu vực và thu thập thêm ruy băng, Chào bạn bạn đã buộc chặt ruy băng chưa Có cần thêm sự trợ giúp nào không
+3,1,Hãy bắt đầu thu thập gỗ khô để chuẩn bị cho đêm lửa trại Kết hợp các mảnh gỗ để thu thập chúng nhanh chóng, Chào bạn bạn đã thu thập đủ gỗ chưa Đêm lửa trại sắp đến rồi
+3,2,Cần những thanh gỗ lớn để tạo ra một ngọn lửa mạnh mẽ Hãy dọn dẹp vật cản để lấy được chúng, Chào bạn thanh gỗ lớn đã đủ chưa Bạn có gặp khó khăn khi dọn dẹp vật cản không
+3,3,Cẩn thận khi nhặt gỗ đừng để gai đâm vào tay Hãy phá bỏ những chướng ngại vật sắc nhọn để thu thập gỗ an toàn, Chào bạn bạn có cảm thấy an toàn khi thu thập gỗ không Hãy cẩn thận với các vật sắc nhọn nhé
+3,4,Những thanh gỗ này sẽ giúp chúng ta có một đêm lửa trại thật ấm cúng Hãy kết hợp gỗ để thu thập hiệu quả hơn, Chào bạn bạn đã chuẩn bị xong gỗ cho đêm lửa trại chưa
+3,5,Đừng quên mang gỗ vào khu vực đốt lửa Bạn cần dọn sạch vật cản để có thể vận chuyển chúng dễ dàng, Chào bạn đã mang đủ gỗ vào khu vực đốt lửa chưa Bạn có cần thêm sự trợ giúp nào không
+4,1,Hãy dùng hoa đỏ để tạo những vòng hoa may mắn Dọn dẹp vật cản để kết thành những vòng hoa thật đẹp, Chào bạn hôm nay bạn cảm thấy thế nào
+4,2,Vòng hoa cần được thắt thật chắc chắn Hãy sử dụng vật phẩm hỗ trợ để phá vỡ vật cản và hoàn thành chúng, Chào bạn tối qua bạn ngủ ngon không
+4,3,Kết vòng hoa thật cẩn thận để mang lại may mắn cho mọi người Hãy loại bỏ vật cản xung quanh để hoàn thành nhiệm vụ, Chào bạn bạn có thích không khí lễ hội không
+4,4,Bạn có thể trang trí vòng hoa bằng những dải ruy băng lấp lánh Hãy dọn dẹp khu vực để dễ dàng hoàn thành công việc, Chào bạn hôm nay có gì đặc biệt với bạn không
+4,5,Mỗi vòng hoa sẽ được trao tặng cho một cư dân tham gia lễ hội Dọn sạch chướng ngại vật để hoàn thành nhiệm vụ này, Chào bạn có điều gì bạn mong chờ hôm nay không
+5,1,Dùng hoa trắng để kết thành những chiếc hoa đăng tuyệt đẹp Hãy xóa bỏ vật cản để thu thập chúng, Chào bạn hôm nay bạn có thấy thư giãn không
+5,2,Hoa đăng sẽ được thả xuống sông vào đêm lễ hội Hãy thu thập và sắp xếp chúng một cách hoàn hảo, Chào bạn bạn có thích ngắm hoa đăng không
+5,3,Hãy chắc chắn rằng hoa đăng của bạn không bị ngập nước Dọn sạch vật cản để tránh làm hỏng chúng, Chào bạn hôm nay bạn có cảm thấy thoải mái không
+5,4,Chúng ta sẽ thả hoa đăng để cầu mong mùa màng bội thu Dọn dẹp chướng ngại vật để có thể thả hoa đăng đúng cách, Chào bạn bạn có muốn chia sẻ điều gì vui vẻ không
+5,5,Đừng quên đặt những ngọn nến vào hoa đăng để chúng tỏa sáng rực rỡ trên dòng sông Hãy sử dụng vật phẩm đặc biệt để phá vỡ vật cản và hoàn thành hoa đăng, Chào bạn bạn có thích ánh sáng lấp lánh không

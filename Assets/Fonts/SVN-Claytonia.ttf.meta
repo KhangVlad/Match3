@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 768f227c8063e48d29e00588f97d6be4
+guid: 97675609d8633456a97445ba9da5fee0
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - SVN-New Athletic M54
+  - SVN-Claytonia
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

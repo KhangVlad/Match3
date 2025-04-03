@@ -14,84 +14,135 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   data:
-  - dialog:
-    - "L\u1EC5 h\u1ED9i \u0111ang \u0111\u1EBFn g\u1EA7n! H\xE3y t\xECm nh\u1EEFng
-      b\xF4ng hoa r\u1EF1c r\u1EE1 nh\u1EA5t \u0111\u1EC3 trang tr\xED. B\u1EA1n
-      c\xF3 th\u1EC3 k\u1EBFt h\u1EE3p ch\xFAng tr\xEAn c\xE2y hoa \u0111\u1EC3 thu
-      th\u1EADp d\u1EC5 d\xE0ng h\u01A1n."
-    - "Hoa \u0111\u1ECF t\u01B0\u1EE3ng tr\u01B0ng cho may m\u1EAFn! H\xE3y d\u1ECDn
+  - levelDialogs:
+    - "L\u1EC5 h\u1ED9i \u0111ang \u0111\u1EBFn g\u1EA7n H\xE3y t\xECm nh\u1EEFng
+      b\xF4ng hoa r\u1EF1c r\u1EE1 nh\u1EA5t \u0111\u1EC3 trang tr\xED B\u1EA1n c\xF3
+      th\u1EC3 k\u1EBFt h\u1EE3p ch\xFAng tr\xEAn c\xE2y hoa \u0111\u1EC3 thu th\u1EADp
+      d\u1EC5 d\xE0ng h\u01A1n"
+    - "Hoa \u0111\u1ECF t\u01B0\u1EE3ng tr\u01B0ng cho may m\u1EAFn H\xE3y d\u1ECDn
       d\u1EB9p ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt \u0111\u1EC3 c\xF3 th\u1EC3 thu
-      th\u1EADp nh\u1EEFng b\xF4ng hoa qu\xFD gi\xE1 n\xE0y."
+      th\u1EADp nh\u1EEFng b\xF4ng hoa qu\xFD gi\xE1 n\xE0y"
     - "C\u1EA7n r\u1EA5t nhi\u1EC1u hoa \u0111\u1EC3 ho\xE0n th\xE0nh nh\u1EEFng
-      v\xF2ng hoa l\u1ED9ng l\u1EABy. H\xE3y gi\u1EA3i ph\xF3ng c\xE1c \xF4 hoa b\u1ECB
-      ch\u1EB7n \u0111\u1EC3 thu th\u1EADp th\xEAm nh\xE9!"
+      v\xF2ng hoa l\u1ED9ng l\u1EABy H\xE3y gi\u1EA3i ph\xF3ng c\xE1c \xF4 hoa b\u1ECB
+      ch\u1EB7n \u0111\u1EC3 thu th\u1EADp th\xEAm nh\xE9"
     - "Nh\u1EEFng b\xF4ng hoa t\xEDm s\u1EBD khi\u1EBFn l\u1EC5 h\u1ED9i th\xEAm
-      r\u1EF1c r\u1EE1. H\xE3y s\u1EED d\u1EE5ng c\xE1c v\u1EADt ph\u1EA9m \u0111\u1EB7c
+      r\u1EF1c r\u1EE1 H\xE3y s\u1EED d\u1EE5ng c\xE1c v\u1EADt ph\u1EA9m \u0111\u1EB7c
       bi\u1EC7t \u0111\u1EC3 ph\xE1 v\u1EE1 v\u1EADt c\u1EA3n v\xE0 thu th\u1EADp
-      ch\xFAng!"
+      ch\xFAng"
     - "Hoa tr\u1EAFng l\xE0 bi\u1EC3u t\u01B0\u1EE3ng c\u1EE7a s\u1EF1 thu\u1EA7n
-      khi\u1EBFt. \u0110\u1EEBng qu\xEAn k\u1EBFt h\u1EE3p c\xE1c lo\u1EA1i hoa \u0111\u1EC3
-      thu th\u1EADp \u0111\u01B0\u1EE3c nhi\u1EC1u h\u01A1n!"
-  - dialog:
-    - "\u0110\u1EA7u ti\xEAn"
-    - "Ruy b\u0103ng \u0111\u1ECF mang l\u1EA1i may m\u1EAFn v\xE0 th\u1ECBnh v\u01B0\u1EE3ng.
+      khi\u1EBFt \u0110\u1EEBng qu\xEAn k\u1EBFt h\u1EE3p c\xE1c lo\u1EA1i hoa \u0111\u1EC3
+      thu th\u1EADp \u0111\u01B0\u1EE3c nhi\u1EC1u h\u01A1n"
+  - levelDialogs:
+    - "\u0110\u1EA7u ti\xEAn h\xE3y ch\u1ECDn nh\u1EEFng d\u1EA3i ruy b\u0103ng \u0111\u1EB9p
+      nh\u1EA5t D\u1ECDn s\u1EA1ch v\u1EADt c\u1EA3n xung quanh \u0111\u1EC3 c\xF3
+      th\u1EC3 th\u1EAFt ch\xFAng m\u1ED9t c\xE1ch d\u1EC5 d\xE0ng"
+    - "Ruy b\u0103ng \u0111\u1ECF mang l\u1EA1i may m\u1EAFn v\xE0 th\u1ECBnh v\u01B0\u1EE3ng
       H\xE3y s\u1EED d\u1EE5ng v\u1EADt ph\u1EA9m h\u1ED7 tr\u1EE3 \u0111\u1EC3 ph\xE1
-      v\u1EE1 c\xE1c ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt v\xE0 thu th\u1EADp ch\xFAng!"
+      v\u1EE1 c\xE1c ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt v\xE0 thu th\u1EADp ch\xFAng"
     - "Nh\u1EEFng s\u1EE3i ruy b\u0103ng s\u1EBD gi\xFAp v\xF2ng hoa th\xEAm n\u1ED5i
-      b\u1EADt. H\xE3y lo\u1EA1i b\u1ECF v\u1EADt c\u1EA3n \u0111\u1EC3 th\u1EAFt
-      ch\xFAng th\u1EADt \u0111\u1EB9p!"
+      b\u1EADt H\xE3y lo\u1EA1i b\u1ECF v\u1EADt c\u1EA3n \u0111\u1EC3 th\u1EAFt
+      ch\xFAng th\u1EADt \u0111\u1EB9p"
     - "Ruy b\u0103ng v\xE0ng s\u1EBD l\xE0m v\xF2ng hoa c\u1EE7a b\u1EA1n lung linh
-      h\u01A1n! D\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n \u0111\u1EC3 thu th\u1EADp ch\xFAng
-      ngay."
+      h\u01A1n D\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n \u0111\u1EC3 thu th\u1EADp ch\xFAng
+      ngay"
     - "H\xE3y ch\u1EAFc ch\u1EAFn r\u1EB1ng ruy b\u0103ng \u0111\u01B0\u1EE3c bu\u1ED9c
-      ch\u1EB7t \u0111\u1EC3 kh\xF4ng b\u1ECB bung ra! S\u1EED d\u1EE5ng v\u1EADt
+      ch\u1EB7t \u0111\u1EC3 kh\xF4ng b\u1ECB bung ra S\u1EED d\u1EE5ng v\u1EADt
       ph\u1EA9m \u0111\u1EB7c bi\u1EC7t \u0111\u1EC3 d\u1ECDn s\u1EA1ch khu v\u1EF1c
-      v\xE0 thu th\u1EADp th\xEAm ruy b\u0103ng."
-  - dialog:
+      v\xE0 thu th\u1EADp th\xEAm ruy b\u0103ng"
+  - levelDialogs:
     - "H\xE3y b\u1EAFt \u0111\u1EA7u thu th\u1EADp g\u1ED7 kh\xF4 \u0111\u1EC3 chu\u1EA9n
-      b\u1ECB cho \u0111\xEAm l\u1EEDa tr\u1EA1i! K\u1EBFt h\u1EE3p c\xE1c m\u1EA3nh
-      g\u1ED7 \u0111\u1EC3 thu th\u1EADp ch\xFAng nhanh ch\xF3ng."
+      b\u1ECB cho \u0111\xEAm l\u1EEDa tr\u1EA1i K\u1EBFt h\u1EE3p c\xE1c m\u1EA3nh
+      g\u1ED7 \u0111\u1EC3 thu th\u1EADp ch\xFAng nhanh ch\xF3ng"
     - "C\u1EA7n nh\u1EEFng thanh g\u1ED7 l\u1EDBn \u0111\u1EC3 t\u1EA1o ra m\u1ED9t
-      ng\u1ECDn l\u1EEDa m\u1EA1nh m\u1EBD! H\xE3y d\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n
-      \u0111\u1EC3 l\u1EA5y \u0111\u01B0\u1EE3c ch\xFAng."
-    - "C\u1EA9n th\u1EADn khi nh\u1EB7t g\u1ED7"
+      ng\u1ECDn l\u1EEDa m\u1EA1nh m\u1EBD H\xE3y d\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n
+      \u0111\u1EC3 l\u1EA5y \u0111\u01B0\u1EE3c ch\xFAng"
+    - "C\u1EA9n th\u1EADn khi nh\u1EB7t g\u1ED7 \u0111\u1EEBng \u0111\u1EC3 gai \u0111\xE2m
+      v\xE0o tay H\xE3y ph\xE1 b\u1ECF nh\u1EEFng ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt
+      s\u1EAFc nh\u1ECDn \u0111\u1EC3 thu th\u1EADp g\u1ED7 an to\xE0n"
     - "Nh\u1EEFng thanh g\u1ED7 n\xE0y s\u1EBD gi\xFAp ch\xFAng ta c\xF3 m\u1ED9t
-      \u0111\xEAm l\u1EEDa tr\u1EA1i th\u1EADt \u1EA5m c\xFAng. H\xE3y k\u1EBFt h\u1EE3p
-      g\u1ED7 \u0111\u1EC3 thu th\u1EADp hi\u1EC7u qu\u1EA3 h\u01A1n!"
-    - "\u0110\u1EEBng qu\xEAn mang g\u1ED7 v\xE0o khu v\u1EF1c \u0111\u1ED1t l\u1EEDa!
+      \u0111\xEAm l\u1EEDa tr\u1EA1i th\u1EADt \u1EA5m c\xFAng H\xE3y k\u1EBFt h\u1EE3p
+      g\u1ED7 \u0111\u1EC3 thu th\u1EADp hi\u1EC7u qu\u1EA3 h\u01A1n"
+    - "\u0110\u1EEBng qu\xEAn mang g\u1ED7 v\xE0o khu v\u1EF1c \u0111\u1ED1t l\u1EEDa
       B\u1EA1n c\u1EA7n d\u1ECDn s\u1EA1ch v\u1EADt c\u1EA3n \u0111\u1EC3 c\xF3 th\u1EC3
-      v\u1EADn chuy\u1EC3n ch\xFAng d\u1EC5 d\xE0ng."
-  - dialog:
+      v\u1EADn chuy\u1EC3n ch\xFAng d\u1EC5 d\xE0ng"
+  - levelDialogs:
     - "H\xE3y d\xF9ng hoa \u0111\u1ECF \u0111\u1EC3 t\u1EA1o nh\u1EEFng v\xF2ng hoa
-      may m\u1EAFn! D\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n \u0111\u1EC3 k\u1EBFt th\xE0nh
-      nh\u1EEFng v\xF2ng hoa th\u1EADt \u0111\u1EB9p."
-    - "V\xF2ng hoa c\u1EA7n \u0111\u01B0\u1EE3c th\u1EAFt th\u1EADt ch\u1EAFc ch\u1EAFn.
+      may m\u1EAFn D\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n \u0111\u1EC3 k\u1EBFt th\xE0nh
+      nh\u1EEFng v\xF2ng hoa th\u1EADt \u0111\u1EB9p"
+    - "V\xF2ng hoa c\u1EA7n \u0111\u01B0\u1EE3c th\u1EAFt th\u1EADt ch\u1EAFc ch\u1EAFn
       H\xE3y s\u1EED d\u1EE5ng v\u1EADt ph\u1EA9m h\u1ED7 tr\u1EE3 \u0111\u1EC3 ph\xE1
-      v\u1EE1 v\u1EADt c\u1EA3n v\xE0 ho\xE0n th\xE0nh ch\xFAng!"
+      v\u1EE1 v\u1EADt c\u1EA3n v\xE0 ho\xE0n th\xE0nh ch\xFAng"
     - "K\u1EBFt v\xF2ng hoa th\u1EADt c\u1EA9n th\u1EADn \u0111\u1EC3 mang l\u1EA1i
-      may m\u1EAFn cho m\u1ECDi ng\u01B0\u1EDDi! H\xE3y lo\u1EA1i b\u1ECF v\u1EADt
-      c\u1EA3n xung quanh \u0111\u1EC3 ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5."
+      may m\u1EAFn cho m\u1ECDi ng\u01B0\u1EDDi H\xE3y lo\u1EA1i b\u1ECF v\u1EADt
+      c\u1EA3n xung quanh \u0111\u1EC3 ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5"
     - "B\u1EA1n c\xF3 th\u1EC3 trang tr\xED v\xF2ng hoa b\u1EB1ng nh\u1EEFng d\u1EA3i
-      ruy b\u0103ng l\u1EA5p l\xE1nh. H\xE3y d\u1ECDn d\u1EB9p khu v\u1EF1c \u0111\u1EC3
-      d\u1EC5 d\xE0ng ho\xE0n th\xE0nh c\xF4ng vi\u1EC7c!"
+      ruy b\u0103ng l\u1EA5p l\xE1nh H\xE3y d\u1ECDn d\u1EB9p khu v\u1EF1c \u0111\u1EC3
+      d\u1EC5 d\xE0ng ho\xE0n th\xE0nh c\xF4ng vi\u1EC7c"
     - "M\u1ED7i v\xF2ng hoa s\u1EBD \u0111\u01B0\u1EE3c trao t\u1EB7ng cho m\u1ED9t
-      c\u01B0 d\xE2n tham gia l\u1EC5 h\u1ED9i. D\u1ECDn s\u1EA1ch ch\u01B0\u1EDBng
-      ng\u1EA1i v\u1EADt \u0111\u1EC3 ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 n\xE0y!"
-  - dialog:
+      c\u01B0 d\xE2n tham gia l\u1EC5 h\u1ED9i D\u1ECDn s\u1EA1ch ch\u01B0\u1EDBng
+      ng\u1EA1i v\u1EADt \u0111\u1EC3 ho\xE0n th\xE0nh nhi\u1EC7m v\u1EE5 n\xE0y"
+  - levelDialogs:
     - "D\xF9ng hoa tr\u1EAFng \u0111\u1EC3 k\u1EBFt th\xE0nh nh\u1EEFng chi\u1EBFc
-      hoa \u0111\u0103ng tuy\u1EC7t \u0111\u1EB9p! H\xE3y x\xF3a b\u1ECF v\u1EADt
-      c\u1EA3n \u0111\u1EC3 thu th\u1EADp ch\xFAng."
+      hoa \u0111\u0103ng tuy\u1EC7t \u0111\u1EB9p H\xE3y x\xF3a b\u1ECF v\u1EADt
+      c\u1EA3n \u0111\u1EC3 thu th\u1EADp ch\xFAng"
     - "Hoa \u0111\u0103ng s\u1EBD \u0111\u01B0\u1EE3c th\u1EA3 xu\u1ED1ng s\xF4ng
-      v\xE0o \u0111\xEAm l\u1EC5 h\u1ED9i. H\xE3y thu th\u1EADp v\xE0 s\u1EAFp x\u1EBFp
-      ch\xFAng m\u1ED9t c\xE1ch ho\xE0n h\u1EA3o!"
+      v\xE0o \u0111\xEAm l\u1EC5 h\u1ED9i H\xE3y thu th\u1EADp v\xE0 s\u1EAFp x\u1EBFp
+      ch\xFAng m\u1ED9t c\xE1ch ho\xE0n h\u1EA3o"
     - "H\xE3y ch\u1EAFc ch\u1EAFn r\u1EB1ng hoa \u0111\u0103ng c\u1EE7a b\u1EA1n
-      kh\xF4ng b\u1ECB ng\u1EADp n\u01B0\u1EDBc. D\u1ECDn s\u1EA1ch v\u1EADt c\u1EA3n
-      \u0111\u1EC3 tr\xE1nh l\xE0m h\u1ECFng ch\xFAng."
+      kh\xF4ng b\u1ECB ng\u1EADp n\u01B0\u1EDBc D\u1ECDn s\u1EA1ch v\u1EADt c\u1EA3n
+      \u0111\u1EC3 tr\xE1nh l\xE0m h\u1ECFng ch\xFAng"
     - "Ch\xFAng ta s\u1EBD th\u1EA3 hoa \u0111\u0103ng \u0111\u1EC3 c\u1EA7u mong
-      m\xF9a m\xE0ng b\u1ED9i thu! D\u1ECDn d\u1EB9p ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt
-      \u0111\u1EC3 c\xF3 th\u1EC3 th\u1EA3 hoa \u0111\u0103ng \u0111\xFAng c\xE1ch."
+      m\xF9a m\xE0ng b\u1ED9i thu D\u1ECDn d\u1EB9p ch\u01B0\u1EDBng ng\u1EA1i v\u1EADt
+      \u0111\u1EC3 c\xF3 th\u1EC3 th\u1EA3 hoa \u0111\u0103ng \u0111\xFAng c\xE1ch"
     - "\u0110\u1EEBng qu\xEAn \u0111\u1EB7t nh\u1EEFng ng\u1ECDn n\u1EBFn v\xE0o
       hoa \u0111\u0103ng \u0111\u1EC3 ch\xFAng t\u1ECFa s\xE1ng r\u1EF1c r\u1EE1
-      tr\xEAn d\xF2ng s\xF4ng! H\xE3y s\u1EED d\u1EE5ng v\u1EADt ph\u1EA9m \u0111\u1EB7c
+      tr\xEAn d\xF2ng s\xF4ng H\xE3y s\u1EED d\u1EE5ng v\u1EADt ph\u1EA9m \u0111\u1EB7c
       bi\u1EC7t \u0111\u1EC3 ph\xE1 v\u1EE1 v\u1EADt c\u1EA3n v\xE0 ho\xE0n th\xE0nh
-      hoa \u0111\u0103ng."
+      hoa \u0111\u0103ng"
+  greetingDialogs:
+  - "Ch\xE0o b\u1EA1n h\xF4m nay b\u1EA1n c\xF3 c\u1EA3m th\u1EA5y vui kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n c\xF4ng vi\u1EC7c thu th\u1EADp hoa \u0111\u1ECF th\u1EBF n\xE0o
+    r\u1ED3i C\xF3 g\u1EB7p kh\xF3 kh\u0103n g\xEC kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 thu th\u1EADp \u0111\u1EE7 hoa \u0111\u1EC3
+    t\u1EA1o v\xF2ng hoa ch\u01B0a"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\xEDch nh\u1EEFng b\xF4ng hoa t\xEDm m\u1EDBi
+    thu th\u1EADp \u0111\u01B0\u1EE3c kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 th\u1EED k\u1EBFt h\u1EE3p c\xE1c lo\u1EA1i
+    hoa \u0111\u1EC3 thu th\u1EADp nhi\u1EC1u h\u01A1n ch\u01B0a"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\u1EC3 thu th\u1EADp ruy b\u0103ng \u0111\u1EB9p
+    nh\u1EA5t ch\u01B0a C\xF3 v\u1EADt c\u1EA3n n\xE0o g\xE2y kh\xF3 kh\u0103n kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 thu th\u1EADp \u0111\u1EE7 ruy b\u0103ng
+    \u0111\u1ECF ch\u01B0a N\xF3 c\xF3 mang l\u1EA1i may m\u1EAFn cho b\u1EA1n kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 c\u1EA7n gi\xFAp \u0111\u1EE1 \u0111\u1EC3 lo\u1EA1i
+    b\u1ECF v\u1EADt c\u1EA3n v\xE0 th\u1EAFt nh\u1EEFng s\u1EE3i ruy b\u0103ng \u0111\u1EB9p
+    kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n ruy b\u0103ng v\xE0ng \u0111\xE3 \u0111\u1EE7 ch\u01B0a B\u1EA1n
+    c\xF3 g\u1EB7p kh\xF3 kh\u0103n g\xEC khi thu th\u1EADp kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 bu\u1ED9c ch\u1EB7t ruy b\u0103ng ch\u01B0a
+    C\xF3 c\u1EA7n th\xEAm s\u1EF1 tr\u1EE3 gi\xFAp n\xE0o kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 thu th\u1EADp \u0111\u1EE7 g\u1ED7 ch\u01B0a
+    \u0110\xEAm l\u1EEDa tr\u1EA1i s\u1EAFp \u0111\u1EBFn r\u1ED3i"
+  - "Ch\xE0o b\u1EA1n thanh g\u1ED7 l\u1EDBn \u0111\xE3 \u0111\u1EE7 ch\u01B0a B\u1EA1n
+    c\xF3 g\u1EB7p kh\xF3 kh\u0103n khi d\u1ECDn d\u1EB9p v\u1EADt c\u1EA3n kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 c\u1EA3m th\u1EA5y an to\xE0n khi thu th\u1EADp
+    g\u1ED7 kh\xF4ng H\xE3y c\u1EA9n th\u1EADn v\u1EDBi c\xE1c v\u1EADt s\u1EAFc
+    nh\u1ECDn nh\xE9"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n \u0111\xE3 chu\u1EA9n b\u1ECB xong g\u1ED7 cho \u0111\xEAm
+    l\u1EEDa tr\u1EA1i ch\u01B0a"
+  - "Ch\xE0o b\u1EA1n \u0111\xE3 mang \u0111\u1EE7 g\u1ED7 v\xE0o khu v\u1EF1c \u0111\u1ED1t
+    l\u1EEDa ch\u01B0a B\u1EA1n c\xF3 c\u1EA7n th\xEAm s\u1EF1 tr\u1EE3 gi\xFAp n\xE0o
+    kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n h\xF4m nay b\u1EA1n c\u1EA3m th\u1EA5y th\u1EBF n\xE0o"
+  - "Ch\xE0o b\u1EA1n t\u1ED1i qua b\u1EA1n ng\u1EE7 ngon kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\xEDch kh\xF4ng kh\xED l\u1EC5 h\u1ED9i kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n h\xF4m nay c\xF3 g\xEC \u0111\u1EB7c bi\u1EC7t v\u1EDBi b\u1EA1n
+    kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n c\xF3 \u0111i\u1EC1u g\xEC b\u1EA1n mong ch\u1EDD h\xF4m nay
+    kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n h\xF4m nay b\u1EA1n c\xF3 th\u1EA5y th\u01B0 gi\xE3n kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\xEDch ng\u1EAFm hoa \u0111\u0103ng kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n h\xF4m nay b\u1EA1n c\xF3 c\u1EA3m th\u1EA5y tho\u1EA3i m\xE1i
+    kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 mu\u1ED1n chia s\u1EBB \u0111i\u1EC1u g\xEC
+    vui v\u1EBB kh\xF4ng"
+  - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\xEDch \xE1nh s\xE1ng l\u1EA5p l\xE1nh kh\xF4ng"

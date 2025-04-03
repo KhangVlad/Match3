@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 9cb740c8363ef411f8470df242895c43
+guid: 7bac2ddf820234023a2f6326cbd3198f
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - MJ Glamour Coquette
+  - UVN Banh Mi
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

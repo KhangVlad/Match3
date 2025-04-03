@@ -27,6 +27,10 @@ MonoBehaviour:
     endTime: 20
     appearPosition: {x: 2609, y: 1098}
     dayOfWeek: 3
+  - startTime: 7
+    endTime: 10
+    appearPosition: {x: 2609, y: 1098}
+    dayOfWeek: 5
   homePosition: {x: 1040, y: 1318}
   dayOff: 0
   sympathyRequired: 

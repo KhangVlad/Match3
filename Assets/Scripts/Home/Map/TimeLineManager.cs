@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
+using UnityEngine.Serialization;
 # if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,11 +18,10 @@ public class TimeLineManager : MonoBehaviour
     [SerializeField] private SpriteRenderer map;
     [HideInInspector] [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
     [HideInInspector] [SerializeField] private BoxCollider2D cameraCollider;
-    [HideInInspector] [SerializeField] private float padding = 1f;
-    public GameObject LightingManager2D;
-    public GameObject Moon;
+    [SerializeField] private float padding = 1f;
+    [SerializeField] private GameObject _lightingManager2D;
+    [SerializeField] private GameObject _nightGameobjects;
     private List<CharacterActivitySO> activeInDay = new();
-
     private List<CharacterID> homeIds = new();
     private List<CharacterID> activeIds = new();
     private int lastCheckedHour = -1;
@@ -51,6 +51,7 @@ public class TimeLineManager : MonoBehaviour
     public Vector2Int AppearPosition;
     [SerializeField] private Sprite characterSprite;
     [SerializeField] private Vector2Int homePos;
+
 
     public Sprite CharacterSprite
     {
@@ -137,6 +138,7 @@ public class TimeLineManager : MonoBehaviour
     private void OnInteractAbleTriggered()
     {
         GetCharactersInTime(activeInDay);
+        AdjustColliderBounds();
     }
 
     private void GetCharacterActiveToday()
@@ -167,6 +169,20 @@ public class TimeLineManager : MonoBehaviour
         GetCharactersInTime(activeInDay);
     }
 
+    public void ChangeTimeOfDay(TimeOfDay t)
+    {
+        if (t == TimeOfDay.Day)
+        {
+            _lightingManager2D.SetActive(false);
+            _nightGameobjects.SetActive(false);
+        }
+        else if (t == TimeOfDay.Night)
+        {
+            _lightingManager2D.SetActive(true);
+            _nightGameobjects.SetActive(true);
+        }
+    }
+
     private void UpdateTimeChange()
     {
         if (currentHour >= 24)
@@ -191,13 +207,13 @@ public class TimeLineManager : MonoBehaviour
     {
         if (IsNight())
         {
-            LightingManager2D.SetActive(true);
-            Moon.SetActive(true);
+            _lightingManager2D.SetActive(true);
+            _nightGameobjects.SetActive(true);
         }
         else
         {
-            LightingManager2D.SetActive(false);
-            Moon.SetActive(false);
+            _lightingManager2D.SetActive(false);
+            _nightGameobjects.SetActive(false);
         }
     }
 
@@ -322,10 +338,46 @@ public class TimeLineManager : MonoBehaviour
     }
 
 
+    // private void CheckCharacterOutOfBound()
+    // {
+    //     paddedBounds = cameraCollider.bounds;
+    //     paddedBounds.Expand(padding * 2); // Expand bounds once per frame
+    //     foreach (var entry in pairDict)
+    //     {
+    //         IconWithPosition iconWithPosition = entry.Value;
+    //         bool isOut = !paddedBounds.Contains(iconWithPosition.bubble.transform.position);
+    //
+    //         if (isOut != iconWithPosition.isOut)
+    //         {
+    //             iconWithPosition.isOut = isOut;
+    //             if (isOut)
+    //             {
+    //                 if (iconWithPosition.directionArrow != null)
+    //                 {
+    //                     iconWithPosition.directionArrow.transform.DOScale(Vector3.one, 0.2f);
+    //                 }
+    //                 else
+    //                 {
+    //                     InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 if (iconWithPosition.directionArrow != null)
+    //                 {
+    //                     iconWithPosition.directionArrow.transform.DOScale(Vector3.zero, 0.2f).OnComplete(() => { });
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
     private void CheckCharacterOutOfBound()
     {
+        // Cập nhật lại bounds của collider mỗi khi màn hình thay đổi
         paddedBounds = cameraCollider.bounds;
         paddedBounds.Expand(padding * 2); // Expand bounds once per frame
+
         foreach (var entry in pairDict)
         {
             IconWithPosition iconWithPosition = entry.Value;
@@ -336,6 +388,7 @@ public class TimeLineManager : MonoBehaviour
                 iconWithPosition.isOut = isOut;
                 if (isOut)
                 {
+                    // Đặt lại vị trí của các biểu tượng ngoài bounds
                     if (iconWithPosition.directionArrow != null)
                     {
                         iconWithPosition.directionArrow.transform.DOScale(Vector3.one, 0.2f);
@@ -349,7 +402,7 @@ public class TimeLineManager : MonoBehaviour
                 {
                     if (iconWithPosition.directionArrow != null)
                     {
-                        iconWithPosition.directionArrow.transform.DOScale(Vector3.zero, 0.2f).OnComplete(() => { });
+                        iconWithPosition.directionArrow.transform.DOScale(Vector3.zero, 0.2f);
                     }
                 }
             }
@@ -392,6 +445,15 @@ public class TimeLineManager : MonoBehaviour
             arrow.Initialize(iconWithPosition.bubble.sprite, originPos, iconWithPosition.bubble.characterID);
         }
     }
+
+    private void AdjustColliderBounds()
+    {
+        float screenRatio = (float)Screen.width / (float)Screen.height;
+
+        float newWidth = cameraCollider.size.x - (padding * screenRatio);
+        float newHeight = cameraCollider.size.y - (padding * screenRatio);
+        cameraCollider.size = new Vector2(newWidth, newHeight);
+    }
 }
 
 [Serializable]
@@ -401,4 +463,12 @@ public class IconWithPosition
     public Vector2 originPosition;
     public bool isOut;
     public CharacterDirectionArrow directionArrow;
+}
+
+public enum TimeOfDay
+{
+    Day,
+    Afternoon,
+    Evening,
+    Night
 }

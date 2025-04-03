@@ -23,6 +23,8 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Image sliderFill; //color of next level
     [SerializeField] private Slider slider; //progress for next level
     [SerializeField] private TextMeshProUGUI progressText;
+    [SerializeField] private Transform warningPanel; // for not enough sympathy
+    [SerializeField] private TextMeshProUGUI warningText; // for not enough sympathy
     public CharactersData charData;
 
     private void Awake()
@@ -32,7 +34,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void Start()
     {
-        CharacterVideoController.Instance.OnLoadVideosComplete += OnCharacterInteracted;
+        CharacterDisplay.Instance.OnLoadVideosComplete += OnCharacterInteracted;
         closeButton.onClick.AddListener(OnCloseButtonClicked);
         selectBtn.onClick.AddListener(SelectLevel);
     }
@@ -46,7 +48,7 @@ public class UILevelDesignManager : MonoBehaviour
     private void OnDestroy()
     {
         // ScreenInteraction.Instance.OnCharacterInteracted -= OnCharacterInteracted;
-        CharacterVideoController.Instance.OnLoadVideosComplete -= OnCharacterInteracted;
+        CharacterDisplay.Instance.OnLoadVideosComplete -= OnCharacterInteracted;
         closeButton.onClick.RemoveAllListeners();
         selectBtn.onClick.RemoveAllListeners();
     }
@@ -65,10 +67,10 @@ public class UILevelDesignManager : MonoBehaviour
         }
 
         sliderFill.color = nextLevelColor;
-        slider.maxValue = charData.GetNextLevelSympathy();  
+        slider.maxValue = charData.GetNextLevelSympathy();
         slider.value = charData.currentSympathy;
         progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
-       ;
+        ;
 
 
         CleanLevels();
@@ -146,8 +148,19 @@ public class UILevelDesignManager : MonoBehaviour
 
     public void ActiveCanvas(bool active)
     {
+        int totalHeartPoints = CharactersDataManager.Instance.TotalHeartPoints();
         if (active)
         {
+            if (totalHeartPoints < charData.totalSympathyRequired)
+            {
+                warningPanel.gameObject.SetActive(true);
+                warningText.text =
+                    $"Just {charData.totalSympathyRequired - totalHeartPoints} more <sprite index=1/> to unlock";
+            }
+            else
+            {
+                warningPanel.gameObject.SetActive(false);
+            }
             _canvas.enabled = true;
             selectBtn.gameObject.SetActive(false);
             _canvas.transform.localScale = Vector3.zero;
@@ -155,7 +168,7 @@ public class UILevelDesignManager : MonoBehaviour
             _canvas.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
             canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
             {
-                if (CharactersDataManager.Instance.TotalHeartPoints() >= charData.totalSympathyRequired)
+                if (totalHeartPoints >= charData.totalSympathyRequired)
                 {
                     DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetDialogue());
                 }
@@ -163,6 +176,7 @@ public class UILevelDesignManager : MonoBehaviour
                 {
                     DialogueManager.Instance.ShowDialogue(typewriterEffect,
                         CharacterDisplay.Instance.GetNotEnoughSympathyDialogue());
+                    warningPanel.gameObject.SetActive(true);
                 }
             });
         }

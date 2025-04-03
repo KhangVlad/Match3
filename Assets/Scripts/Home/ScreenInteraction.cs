@@ -13,7 +13,7 @@ public class ScreenInteraction : MonoBehaviour
     [SerializeField] private LayerMask characterLayerMask; // Add this in the Inspector
     [SerializeField] private Camera mainCamera;
     [SerializeField] private CinemachineCamera virtualCamera;
-    
+
     public float CameraSpeed = 0.1f;
     private bool IsDragging;
     private bool FirstMouseClick;
@@ -80,35 +80,10 @@ public class ScreenInteraction : MonoBehaviour
         Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 1000, characterLayerMask);
 
-
-
-        // VfxGameObject a = VfxPool.Instance.GetVfxByName("Heart");
-        // a.gameObject.transform.position = PreviouseMousePos;
-
-        // if (hit.collider is not null)
-        // {
-        //     if (hit.collider.TryGetComponent(out CharacterBubble character))
-        //     {
-        //         if (TimeLineManager.Instance.IsCreatingNewActivity) return;
-        //         AudioManager.Instance.PlayButtonSfx();
-        //         OnCharacterInteracted?.Invoke(character.characterID);
-        //     }
-        //
-        //     if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
-        //     {
-        //         AudioManager.Instance.PlayButtonSfx();
-        //         StartCoroutine(MoveCameraToCharacter(arrow));
-        //     }
-        //     if (hit.collider.TryGetComponent(out LightStreet lightStreet))
-        //     {
-        //         Debug.Log("Light Street Clicked");
-        //         lightStreet.Toggle();
-        //     }
-        // }
-
+        VfxGameObject a = VfxPool.Instance.GetVfxByName("Heart");
+        a.gameObject.transform.position = PreviouseMousePos;
         if (hit.collider is not null)
         {
-            Debug.Log("Hit Collider");
             if (hit.collider.TryGetComponent(out CharacterBubble character))
             {
                 Debug.Log("Character Bubble Clicked");
