@@ -133,7 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ID>k__BackingField: 5
-  _tileSprite: {fileID: 835904539, guid: 804182e9e3ef50b449471ecef6f56ce1, type: 3}
+  _tileSprite: {fileID: 21300000, guid: 60d343f0d4cda0546ac91265cd1a7c88, type: 3}
   _match4Vertical: {fileID: -949317967, guid: f37acec232a676d448efcfdced2ced79, type: 3}
   _match4Horizontal: {fileID: -11547284, guid: bea4ce718374bf849aa50d3230bf42f7, type: 3}
   _match5: {fileID: 21300000, guid: 42e07a801324844acbd0f74adace83ad, type: 3}

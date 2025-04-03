@@ -28,7 +28,7 @@ namespace Match3
 
 
         #region Properties
-     
+        public Sprite TileSprite => _tileSprite;
         #endregion
 
         protected virtual void Awake()
@@ -68,13 +68,15 @@ namespace Match3
             switch (CurrentBlock.BlockID)
             {
                 case BlockID.Fill:
-                    //sr.enabled = false;
-                    sr.enabled = true;
+                    sr.enabled = false;
+                    //sr.enabled = true;
+                    block.GetComponent<SpriteRenderer>().enabled = false;
                     sr.color = Color.black;
                     break;
                 case BlockID.Void:
                     SetRenderOrder(5);
                     sr.enabled = false;
+                    block.GetComponent<SpriteRenderer>().enabled = false;
                     break;
                 case BlockID.None:
                     SetRenderOrder(0);

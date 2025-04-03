@@ -50,12 +50,17 @@ namespace Match3
             });
 
             LoadUIBoosters();
+
+            UserManager.Instance.OnAvaiableBoostersQuantityChanged += OnAvaiableBoostersQuantityChanged_UpdateUI;
         }
+   
 
         private void OnDestroy()
         {
             _closeBtn.onClick.RemoveAllListeners();
             _playBtn.onClick.RemoveAllListeners();
+
+            UserManager.Instance.OnAvaiableBoostersQuantityChanged -= OnAvaiableBoostersQuantityChanged_UpdateUI;
         }
 
 
@@ -72,11 +77,25 @@ namespace Match3
 
         private void LoadUIBoosters()
         {
+            UIBoosters = new UIBooster[UserManager.Instance.AvaiableBoosters.Count];
             for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
             {
                 Booster booster = UserManager.Instance.AvaiableBoosters[i];
                 UIBooster uibooster = Instantiate(_uiBoosterPrefab, _boosterContentParent);
                 uibooster.SetBoosterData(booster);
+
+                UIBoosters[i] = uibooster;
+            }
+        }
+
+        private void OnAvaiableBoostersQuantityChanged_UpdateUI(Booster booster)
+        {
+            for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
+            {
+                if (UIBoosters[i].CachedBooster.BoosterID == booster.BoosterID)
+                {
+                    UIBoosters[i].SetBoosterData(booster);
+                }         
             }
         }
     }

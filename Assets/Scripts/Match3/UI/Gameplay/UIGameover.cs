@@ -31,6 +31,11 @@ namespace Match3
 
                 Loader.Load(Loader.Scene.GameplayScene);
             });
+
+#if WEBGL_BUILD
+            _homeBtn.gameObject.SetActive(false);
+            _replayBtn.gameObject.SetActive(false);
+#endif
         }
 
         private void OnDestroy()

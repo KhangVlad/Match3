@@ -7,6 +7,8 @@ using UnityEngine.Serialization;
 # if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Match3.Enums;
+
 
 public class TimeLineManager : MonoBehaviour
 {

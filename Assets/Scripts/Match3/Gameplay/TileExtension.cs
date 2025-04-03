@@ -6,8 +6,8 @@ namespace Match3
     {
         public const float TILE_WIDTH = 1f;
         public const float TILE_HEIGHT = 1f;
-        public const float SPACING_X = 0.1f;
-        public const float SPACING_Y = 0.1f;
+        public const float SPACING_X = 0.0f;
+        public const float SPACING_Y = 0.0f;
 
 
         public static Vector2 GetWorldPosition(this Tile tile, int offsetX = 0, int offsetY = 0)

@@ -36,6 +36,11 @@ namespace Match3
             return LevelData;
         }
 
+        public void SetLevelData(LevelData levelData)
+        {
+            this.LevelData = levelData;
+        }
+
 
 
         public int NextLevel()

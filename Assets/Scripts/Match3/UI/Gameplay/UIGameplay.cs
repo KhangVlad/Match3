@@ -56,6 +56,10 @@ namespace Match3
                 UIGameplayManager.Instance.DisplayUISettings(true);
             });
 
+#if WEBGL_BUILD
+            _settingsBtn.gameObject.SetActive(false);
+#endif
+
             GameplayManager.Instance.OnTurnRemaingChanged += OnTurnRemaingChanged_UpdateUI;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateQuestUI;
             UIGameplayBoosterManager.OnUIGameplayBoosterManagerDisplay += OnUIGameplayBoosterManagerDisplay_UpdateUI;
@@ -108,7 +112,7 @@ namespace Match3
                 UIQuest uiQuest = _uiQuestSlots[i];
                 Quest quest = GameplayManager.Instance.Quests[i];
 
-                uiQuest.UpdateQuest(quest.Quantity);
+                uiQuest.UpdateQuest(quest);
             }
         }
         private void OnUIGameplayBoosterManagerDisplay_UpdateUI(bool enable)

@@ -1,0 +1,85 @@
+{
+    "ShopItemPacks": [
+      {
+        "PackName": "Beginner Pack",
+        "Price": 1.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 3000
+          },
+          {
+            "ShopItemID": 51,
+            "Quantity": 1
+          }
+          ,
+          {
+            "ShopItemID": 52,
+            "Quantity": 1
+          }
+          ,
+          {
+            "ShopItemID": 53,
+            "Quantity": 1
+          }
+        ]
+      },
+      {
+        "PackName": "Baisc Pack",
+        "Price": 1.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 3000
+          },
+          {
+            "ShopItemID": 54,
+            "Quantity": 1
+          },
+          {
+            "ShopItemID": 55,
+            "Quantity": 1
+          }
+          ,
+          {
+            "ShopItemID": 56,
+            "Quantity": 1
+          }
+        ]
+      },
+      {
+        "PackName": "Tiny Golds",
+        "Price": 4.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 1000
+          }
+        ]
+      },
+      {
+        "PackName": "Golds & Remove Ads",
+        "Price": 4.99,
+        "Items": [
+          {
+            "ShopItemID": 1,
+            "Quantity": 3000
+          },
+          {
+            "ShopItemID": 2,
+            "Quantity": 1
+          }
+        ]
+      },
+      {
+        "PackName": "Remove ADS",
+        "Price": 12.99,
+        "Items": [
+          {
+            "ShopItemID": 2,
+            "Quantity": 1
+          }
+        ]
+      }
+    ]
+  }

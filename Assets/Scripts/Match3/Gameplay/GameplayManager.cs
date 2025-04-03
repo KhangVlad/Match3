@@ -32,6 +32,7 @@ namespace Match3
         [Header("~Runtime")]
         public int TurnRemainingCount { get; private set; }
         public Quest[] Quests;
+        //[SerializeField] private int _currentQuestIndex = 0;
 
 
         [Space(15)]
@@ -75,7 +76,7 @@ namespace Match3
             Match3Grid.OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateGameState;
 
-
+            Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch += OnLockMatchTriggered;
             Ice.OnIceUnlocked += OnIceUnlockedTriggered;
             Stone.OnStoneMatch += OnStoneMatchTriggered;
@@ -88,11 +89,14 @@ namespace Match3
         {
             Match3Grid.OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateGameState;
+
+            Match3Grid.OnEndOfTurn -= OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch -= OnLockMatchTriggered;
             Ice.OnIceUnlocked -= OnIceUnlockedTriggered;
             Stone.OnStoneMatch -= OnStoneMatchTriggered;
             Tile.OnMatched -= OnTileMatchedTriggered;
         }
+
 
         #endregion
 
@@ -150,14 +154,22 @@ namespace Match3
         {
             OnBlackMudUpdate();
 
-            if (CheckCompleteAllQuests())
+            //if (IsQuestCompleted(_currentQuestIndex))
+            //{
+            //    _currentQuestIndex++;
+            //}
+
+            if (CheckCompleteAllQuests(out int star))
             {
+                Debug.Log($"win star: {star}");
                 ChangeGameState(GameState.WIN);
             }
             else
             {
+                //Debug.Log($"not win: {star}");
                 if (TurnRemainingCount == 0)
                 {
+                    Debug.Log($"Game over: {star}");
                     ChangeGameState(GameState.GAMEOVER);
                 }
             }
@@ -228,6 +240,7 @@ namespace Match3
         {
             for (int i = 0; i < Quests.Length; i++)
             {
+                //int i = _currentQuestIndex;
                 switch (Quests[i].QuestID)
                 {
                     case QuestID.RedFlower:
@@ -301,22 +314,100 @@ namespace Match3
             }
         }
 
-        public bool CheckCompleteAllQuests()
+
+        private void OnEndOfTurnQuestTriggered()
         {
             for (int i = 0; i < Quests.Length; i++)
             {
-                if (Quests[i].Quantity > 0)
+                if (Quests[i].QuestID == QuestID.MaxTurn)
                 {
-                    return false;
+                    Quests[i].Quantity--;
+                }
+            }
+        }
+
+
+        public bool CheckCompleteAllQuests(out int star)
+        {
+            star = 0;
+            int requireStar = 0;
+            for (int i = 0; i < Quests.Length; i++)
+            {
+                if (Quests[i].QuestID != QuestID.MaxTurn)
+                {
+                    requireStar++;
                 }
             }
 
-            return true;
+
+            for (int i = 0; i < Quests.Length; i++)
+            {
+                if (Quests[i].QuestID != QuestID.MaxTurn)
+                {
+                    if (Quests[i].Quantity <= 0)
+                    {
+                        star++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+
+            if (star == requireStar)
+            {
+                for (int i = 0; i < Quests.Length; i++)
+                {
+                    if (Quests[i].QuestID == QuestID.MaxTurn)
+                    {
+                        if (Quests[i].Quantity >= 0)
+                        {
+                            star++;
+                            break;
+                        }
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+            //for (int i = 0; i < Quests.Length; i++)
+            //{
+            //    if (Quests[i].QuestID == QuestID.MaxTurn)
+            //    {
+            //        if (Quests[i].Quantity < 0)
+            //        {
+            //            return false;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (Quests[i].Quantity > 0)
+            //        {
+            //            return false;
+            //        }
+            //    }
+            //}
+            //return true;
         }
 
         public bool IsQuestCompleted(int index)
         {
-            return Quests[index].Quantity <= 0;
+            if (Quests[index].QuestID == QuestID.MaxTurn)
+            {
+                return Quests[index].Quantity >= 0;
+            }
+            else
+            {
+                return Quests[index].Quantity <= 0;
+            }
         }
 
         public void AddTurnRemaingCount(int value)
@@ -325,38 +416,5 @@ namespace Match3
             OnTurnRemaingChanged?.Invoke(TurnRemainingCount);
         }
         #endregion
-    }
-
-    public enum QuestID
-    {
-        None = 0,
-        RedFlower = 1,
-        YellowFlower = 2,
-        PurpleFlower = 3,
-        BlueFlower = 4,
-        WhiteFlower = 5,
-        RedCandle = 6,
-        YellowCandle = 7,
-        GreenCandle = 8,
-        BlueCandle = 9,      
-        WhiteCandle = 10,
-        RedRibbon = 11,
-        YellowRibbon = 12,
-        GreenRibbon = 13,
-        BlueRibbon = 14,
-        PurpleRibbon = 15,
-        MagnifyingGlass = 16,
-
-        Lock = 101,
-        Ice = 102,
-        Stone = 103,
-        BlackMud = 104,
-    }
-
-    [System.Serializable]
-    public struct Quest
-    {
-        public QuestID QuestID;
-        public int Quantity;
     }
 }

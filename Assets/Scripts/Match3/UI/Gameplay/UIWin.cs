@@ -40,6 +40,12 @@ namespace Match3
                 LevelManager.Instance.LoadLevelData(nextLevel);
                 Loader.Load(Loader.Scene.GameplayScene);
             });
+
+#if WEBGL_BUILD
+            _homeBtn.gameObject.SetActive(false);
+            _replayBtn.gameObject.SetActive(false);
+            _nextBtn.gameObject.SetActive(false);
+#endif
         }
 
         private void OnDestroy()

@@ -3,6 +3,7 @@ using DG.Tweening;
 using Match3;
 using TMPro;
 using UnityEngine.UI;
+using Match3.Enums;
 
 public class UILevelDesignManager : MonoBehaviour
 {

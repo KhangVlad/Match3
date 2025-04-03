@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Serialization;
+using Match3.Enums;
+
 
 public class CharactersDataManager : MonoBehaviour
 {
