@@ -31,6 +31,7 @@ namespace Match3
 
         // Character level data
         public CharacterLevelDataV2[] CharacterLevelDatas;
+        private Dictionary<CharacterID, CharacterLevelDataV2> _characterLevelDataDict;
 
 
         // Shop Data
@@ -164,6 +165,26 @@ namespace Match3
                 {
                     Debug.LogError("Version not found!!!");
                 }
+            }
+
+            _characterLevelDataDict = new();
+            for(int i = 0; i < CharacterLevelDatas.Length; i++)
+            {
+                _characterLevelDataDict.Add(CharacterLevelDatas[i].CharacterID, CharacterLevelDatas[i]);
+            }
+        }
+
+        public bool TryGetCharacterLevelDataByID(CharacterID id, out CharacterLevelDataV2 characterLevelData)
+        {
+            if(_characterLevelDataDict.ContainsKey(id))
+            {
+                characterLevelData = _characterLevelDataDict[id];
+                return true;
+            }
+           else
+            {
+                characterLevelData = null;
+                return false;
             }
         }
 

@@ -14,7 +14,7 @@ namespace Match3
         [Header("~Runtime")]
         public int Width;
         public int Height;
-        [SerializeField] private LevelDataV1 _levelData;
+        [SerializeField] private LevelDataV2 _levelData;
         [SerializeField] private Tile[] _tiles;
         [SerializeField] private Tile _selectedTile;
         [SerializeField] private Tile _swappedTile;
@@ -503,7 +503,7 @@ namespace Match3
             _matchBuffer = new MatchID[_tiles.Length];
             for (int i = 0; i < _matchBuffer.Length; i++)
             {
-                SetMatchBuffer(i,MatchID.None);
+                SetMatchBuffer(i, MatchID.None);
             }
         }
 
@@ -679,7 +679,7 @@ namespace Match3
                     else if (matchID == MatchID.ColorBurst)
                     {
                         // vfx
-                        if(_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
+                        if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
                         {
                             Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
                             PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, 0.4f);
@@ -689,7 +689,7 @@ namespace Match3
                             }
                             colorBurstCount++;
                         }
-                   
+
 
 
                         tile.Match(_tiles, Width);
@@ -1387,7 +1387,7 @@ namespace Match3
                 _matchBuffer[index] = matchID;
                 return;
             }
-            if(matchID == MatchID.None)
+            if (matchID == MatchID.None)
             {
                 _matchBuffer[index] = matchID;
                 return;
@@ -1397,7 +1397,7 @@ namespace Match3
                 (matchID == MatchID.SpecialMatch && _matchBuffer[index] != MatchID.ColorBurst))
             {
                 _matchBuffer[index] = matchID;
-            }       
+            }
         }
 
 
@@ -2132,7 +2132,8 @@ namespace Match3
 
                             if (index != tile.X + tile.Y * Width)
                             {
-                                _colorBurstParentDictionary.Add(index, tile.transform.position);
+                                if (_colorBurstParentDictionary.ContainsKey(index) == false)
+                                    _colorBurstParentDictionary.Add(index, tile.transform.position);
                             }
                         }
                     }
@@ -2140,7 +2141,7 @@ namespace Match3
             }
         }
 
- 
+
         private void CheckDifferent()
         {
             for (int i = 0; i < _tiles.Length; i++)

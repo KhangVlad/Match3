@@ -51,7 +51,7 @@ namespace Match3.LevelEditor
                 this.gameObject.SetActive(false);
 
  
-                GridManager.Instance.UnlockData[0] = (int)GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex].id;
+                GridManager.Instance.Heart = (int)GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex].id;
                 _uiCharacterSelectedSlotCached.SetData(GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex]);
             });
 

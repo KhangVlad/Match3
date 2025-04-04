@@ -66,7 +66,7 @@ namespace Match3.LevelEditor
             {
                 AudioManager.Instance.PlayButtonSfx();
              
-                LevelDataV1 levelData = GridManager.Instance.GetLevelData();
+                LevelDataV2 levelData = GridManager.Instance.GetLevelData();
                 int index = LevelEditorManager.Instance.CurrentLevel;
                 LevelEditorManager.Instance.SaveLevelData(index, levelData);
 
@@ -90,7 +90,7 @@ namespace Match3.LevelEditor
             //});
             _heartUnlockInputField.onValueChanged.AddListener((value) =>
             {
-                GridManager.Instance.UnlockData[1] = int.Parse(value);
+                GridManager.Instance.Heart = int.Parse(value);
             });
 
             _widthInputField.onValueChanged.AddListener((value) =>
@@ -186,12 +186,12 @@ namespace Match3.LevelEditor
             _maxTurnInputField.text = GridManager.Instance.MaxTurn.ToString();
             //_characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
             //_unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
-            _heartUnlockInputField.text = GridManager.Instance.UnlockData[1].ToString();
+            _heartUnlockInputField.text = GridManager.Instance.Heart.ToString();
 
             _widthInputField.text = GridManager.Instance.Width.ToString();
             _heightInputFiled.text = GridManager.Instance.Height.ToString();
 
-            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID((CharacterID)GridManager.Instance.UnlockData[0]);
+            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID((CharacterID)GridManager.Instance.Heart);
             _characterSelectedSlot.SetData(characterData);
         }
 

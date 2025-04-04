@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
-
+using Match3.Enums;
 
 [CreateAssetMenu(fileName = "Game/Dialogue", menuName = "Game/Dialogue")]
 public class CharacterDialogueSO : ScriptableObject

@@ -1,4 +1,5 @@
 using UnityEngine;
+using Match3.Enums;
 
 public class CharacterDirectionArrow : MonoBehaviour
 {

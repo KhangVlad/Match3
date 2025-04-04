@@ -37,7 +37,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
 
                 int nextLevel = LevelManager.Instance.NextLevel();
-                LevelManager.Instance.LoadLevelData(nextLevel);
+                LevelManager.Instance.LoadLevelData(LevelManager.Instance.CharacterLevelData.CharacterID, nextLevel);
                 Loader.Load(Loader.Scene.GameplayScene);
             });
 

@@ -65,7 +65,7 @@ namespace Match3.LevelEditor
             _idText.text = fileName;
         }
 
-        private void OnCharacterLevelDataLoaded_InitUI(CharacterLevelDataV1 data)
+        private void OnCharacterLevelDataLoaded_InitUI(CharacterLevelDataV2 data)
         {   
             if(_uiSlots != null)
             {
@@ -82,7 +82,7 @@ namespace Match3.LevelEditor
             {
                 UILevelSelectorSlot newSlot = Instantiate(_uiLevelSelectorSlotPrefab, _contentParent);
 
-                LevelDataV1 levelData = data.Levels[i];
+                LevelDataV2 levelData = data.Levels[i];
                 newSlot.SetData(levelData, i);
                 Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(levelData);
                 newSlot.SetIcon(Utilities.ConvertTextureToSprite(iconTexture));
@@ -101,7 +101,7 @@ namespace Match3.LevelEditor
             _uiSlots.Insert(index, newSlot);
             for (int i = index + 1; i < LevelEditorManager.Instance.CharacterLevelData.Levels.Count; i++)
             {
-                LevelDataV1 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[i];
+                LevelDataV2 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[i];
                 _uiSlots[i].SetData(levelData, i);
             }
 
@@ -114,7 +114,7 @@ namespace Match3.LevelEditor
             _uiSlots.RemoveAt(index);
             for(int i = index; i < LevelEditorManager.Instance.CharacterLevelData.Levels.Count; i++)
             {
-                LevelDataV1 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[i];
+                LevelDataV2 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[i];
                 _uiSlots[i].SetData(levelData, i);
             }
 
@@ -131,12 +131,12 @@ namespace Match3.LevelEditor
 
         private void OnLevelDataSaved_UpdateUI(int index)
         {
-            LevelDataV1 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[index];
+            LevelDataV2 levelData = LevelEditorManager.Instance.CharacterLevelData.Levels[index];
             Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(levelData);
             _uiSlots[index].SetIcon(Utilities.ConvertTextureToSprite(iconTexture));
         }
 
-        private void OnCopy_UpdateClipboard(LevelDataV1 data)
+        private void OnCopy_UpdateClipboard(LevelDataV2 data)
         {
             Texture2D iconTexture = LevelPreviewManager.Instance.GetLevelTexture(data);
             _clipboardImage.sprite = Utilities.ConvertTextureToSprite(iconTexture);

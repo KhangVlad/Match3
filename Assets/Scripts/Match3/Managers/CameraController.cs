@@ -36,7 +36,7 @@ namespace Match3
 
         private void UpdateCameraPosition()
         {
-            LevelDataV1 levelData = LevelManager.Instance.LevelData;
+            LevelDataV2 levelData = LevelManager.Instance.LevelData;
             int width = levelData.Blocks.GetLength(0);
             int height = levelData.Blocks.GetLength(1);
 

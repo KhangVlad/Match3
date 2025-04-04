@@ -64,9 +64,9 @@ namespace Match3
         }
 
 
-        public void LoadLevelData(LevelDataV1 levelData, int level)
+        public void LoadLevelData(LevelDataV2 levelData, int level)
         {
-            _levelText.text = $"Level {level}";
+            _levelText.text = $"Level {level + 1}";
         }
 
 
