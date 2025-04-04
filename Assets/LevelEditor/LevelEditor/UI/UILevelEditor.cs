@@ -66,7 +66,7 @@ namespace Match3.LevelEditor
             {
                 AudioManager.Instance.PlayButtonSfx();
              
-                LevelData levelData = GridManager.Instance.GetLevelData();
+                LevelDataV1 levelData = GridManager.Instance.GetLevelData();
                 int index = LevelEditorManager.Instance.CurrentLevel;
                 LevelEditorManager.Instance.SaveLevelData(index, levelData);
 

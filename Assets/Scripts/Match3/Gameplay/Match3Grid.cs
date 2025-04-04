@@ -14,7 +14,7 @@ namespace Match3
         [Header("~Runtime")]
         public int Width;
         public int Height;
-        [SerializeField] private LevelData _levelData;
+        [SerializeField] private LevelDataV1 _levelData;
         [SerializeField] private Tile[] _tiles;
         [SerializeField] private Tile _selectedTile;
         [SerializeField] private Tile _swappedTile;
@@ -163,7 +163,7 @@ namespace Match3
 
 
             OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_ImplementGameLogic;
-            UserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
+            GameplayUserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
             LoadGridLevel();
             LoadBoosters();
 
@@ -175,7 +175,7 @@ namespace Match3
 
         private void OnDestroy()
         {
-            UserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateLogic;
+            GameplayUserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateLogic;
             OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_ImplementGameLogic;
         }
 
@@ -191,7 +191,7 @@ namespace Match3
                 if (Input.GetMouseButtonDown(0))
                 {
                     Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
-                    if (UserManager.Instance.SelectedGameplayBooster is HammerBooster)
+                    if (GameplayUserManager.Instance.SelectedGameplayBooster is HammerBooster)
                     {
                         Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
                         switch (tile.CurrentBlock)
@@ -208,8 +208,8 @@ namespace Match3
                                 _canPlay = false;
                                 _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
                                 OnAfterPlayerMatchInput?.Invoke();
-                                UserManager.Instance.SelectedGameplayBooster.Use();
-                                UserManager.Instance.UnselectGameplayBooster();
+                                GameplayUserManager.Instance.SelectedGameplayBooster.Use();
+                                GameplayUserManager.Instance.UnselectGameplayBooster();
                                 break;
                             default:
                                 Debug.Log("Case not found!!!!!!");
@@ -306,14 +306,14 @@ namespace Match3
                             Utilities.WaitAfter(AnimationExtensions.TILE_MOVE_TIME + 0.2f, () =>
                             {
                                 // Handle in-game booster
-                                if (UserManager.Instance.SelectedGameplayBooster != null)
+                                if (GameplayUserManager.Instance.SelectedGameplayBooster != null)
                                 {
-                                    Booster booster = UserManager.Instance.SelectedGameplayBooster;
+                                    Booster booster = GameplayUserManager.Instance.SelectedGameplayBooster;
                                     if (booster is FreeSwitchBooster ||
                                         booster is ExtraMoveBooster)
                                     {
                                         booster.Use();
-                                        UserManager.Instance.UnselectGameplayBooster();
+                                        GameplayUserManager.Instance.UnselectGameplayBooster();
                                         OnAfterPlayerMatchInput?.Invoke();
                                     }
                                     else
@@ -509,10 +509,10 @@ namespace Match3
 
         private void LoadBoosters()
         {
-            for (int i = 0; i < UserManager.Instance.EquipBoosters.Count; i++)
+            for (int i = 0; i < GameplayUserManager.Instance.EquipBoosters.Count; i++)
             {
                 int attempts = 0;
-                Booster booster = UserManager.Instance.EquipBoosters[i];
+                Booster booster = GameplayUserManager.Instance.EquipBoosters[i];
                 if (booster.Quantity == 0) continue;
                 while (true)
                 {

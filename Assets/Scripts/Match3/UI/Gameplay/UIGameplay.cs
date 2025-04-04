@@ -92,9 +92,9 @@ namespace Match3
 
         private void LoadUIBoosters()
         {
-            for (int i = 0; i < UserManager.Instance.GameplayBoosters.Count; i++)
+            for (int i = 0; i < GameplayUserManager.Instance.GameplayBoosters.Count; i++)
             {
-                Booster booster = UserManager.Instance.GameplayBoosters[i];
+                Booster booster = GameplayUserManager.Instance.GameplayBoosters[i];
 
                 UIGameplayBooster uiBooster = Instantiate(_uiGameplayBoosterPrefab, _boosterContentParent);
                 uiBooster.SetBoosterData(booster);

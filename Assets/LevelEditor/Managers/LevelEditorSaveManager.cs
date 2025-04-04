@@ -35,7 +35,7 @@ namespace Match3.LevelEditor
         }
 
 
-        private void SaveCharacterLevelData(CharacterLevelData characterLevelData, string filePath)
+        private void SaveCharacterLevelData(CharacterLevelDataV1 characterLevelData, string filePath)
         {
             string detectFileFormat = filePath.Split('.')[^1];  // last index [^1]
             string fileFormat = detectFileFormat.Equals("json") ? "" : ".json";
@@ -50,7 +50,7 @@ namespace Match3.LevelEditor
         {
             Debug.Log($"Save as: {filePath}");
  
-            LevelData levelData = GridManager.Instance.GetLevelData();
+            LevelDataV1 levelData = GridManager.Instance.GetLevelData();
             int index = LevelEditorManager.Instance.CurrentLevel;
             LevelEditorManager.Instance.SaveLevelData(index, levelData);
 
@@ -68,7 +68,7 @@ namespace Match3.LevelEditor
                 try
                 {
                     string json = File.ReadAllText(filePath);     
-                    CharacterLevelData characterLevelData = JsonConvert.DeserializeObject<CharacterLevelData>(json);
+                    CharacterLevelDataV1 characterLevelData = JsonConvert.DeserializeObject<CharacterLevelDataV1>(json);
                     LevelEditorManager.Instance.SetCharacterLevelData(characterLevelData);
 
                     UILogHandler.Instance.ShowLogText($"Load structure successfully: {filePath}", 5f);
@@ -93,7 +93,7 @@ namespace Match3.LevelEditor
         {
             try
             {
-                CharacterLevelData characterLevelData = JsonConvert.DeserializeObject<CharacterLevelData>(json);
+                CharacterLevelDataV1 characterLevelData = JsonConvert.DeserializeObject<CharacterLevelDataV1>(json);
                 LevelEditorManager.Instance.SetCharacterLevelData(characterLevelData);
                 //LevelData levelData = JsonConvert.DeserializeObject<LevelData>(json);
                 //GridManager.Instance.LoadLevelData(levelData);

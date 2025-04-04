@@ -175,7 +175,7 @@ namespace Match3.LevelEditor
             }
         }
 
-        public void LoadLevelData(LevelData levelData)
+        public void LoadLevelData(LevelDataV1 levelData)
         {
  
             RemoveOldGridManagerData();
@@ -410,7 +410,7 @@ namespace Match3.LevelEditor
         }
 
 
-        public LevelData GetLevelData()
+        public LevelDataV1 GetLevelData()
         {
             int[,] blocks = new int[Width, Height];
             TileID[,] tiles = new TileID[Width, Height];
@@ -435,7 +435,7 @@ namespace Match3.LevelEditor
                 blocks[x, y] = (int)_tiles[i].CurrentBlock.BlockID;
             }
 
-            LevelData levelData = new LevelData(Width, Height)
+            LevelDataV1 levelData = new LevelDataV1(Width, Height)
             {
                 MaxTurn = this.MaxTurn,
                 Blocks = blocks,

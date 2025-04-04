@@ -11,7 +11,7 @@ namespace Match3
         public static LevelManager Instance { get; private set; }
 
         private int _currentLevel = 1;
-        public LevelData LevelData { get; private set; }
+        public LevelDataV1 LevelData { get; private set; }
 
         public int CurrentLevel => _currentLevel;
 
@@ -27,16 +27,16 @@ namespace Match3
         }
 
 
-        public LevelData LoadLevelData(int level)
+        public LevelDataV1 LoadLevelData(int level)
         {
             _currentLevel = level;
             string levelJson = GameDataManager.Instance.GetLevel(level).text;
-            LevelData = JsonConvert.DeserializeObject<LevelData>(levelJson);
+            LevelData = JsonConvert.DeserializeObject<LevelDataV1>(levelJson);
             LevelData.ApplyRotateMatrix();
             return LevelData;
         }
 
-        public void SetLevelData(LevelData levelData)
+        public void SetLevelData(LevelDataV1 levelData)
         {
             this.LevelData = levelData;
         }

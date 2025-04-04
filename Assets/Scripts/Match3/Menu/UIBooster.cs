@@ -22,7 +22,7 @@ namespace Match3
 
         private void Start()
         {
-            if (UserManager.Instance.IsBoosterEquipped(_data.ID))
+            if (GameplayUserManager.Instance.IsBoosterEquipped(_data.ID))
             {
                 _button.image.sprite = _selectSprite;
             }
@@ -35,7 +35,7 @@ namespace Match3
             {
                 AudioManager.Instance.PlayButtonSfx();
 
-                if(UserManager.Instance.IsBoosterEquipped(_data.ID))
+                if(GameplayUserManager.Instance.IsBoosterEquipped(_data.ID))
                 {
                     Unequip();
                 }
@@ -63,13 +63,13 @@ namespace Match3
 
         public void Equip()
         {
-            UserManager.Instance.EquipBoosterByID(_data.ID);
+            GameplayUserManager.Instance.EquipBoosterByID(_data.ID);
             _button.image.sprite = _selectSprite;
         }
 
         public void Unequip()
         {
-            UserManager.Instance.UnequipBoosterByID(_data.ID);
+            GameplayUserManager.Instance.UnequipBoosterByID(_data.ID);
             _button.image.sprite = _unselectSprite;
         }
     }

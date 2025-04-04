@@ -65,7 +65,7 @@ namespace Match3.LevelEditor
             OnClicked -= OnClickedTriggered;
         }
 
-        public void SetData(LevelData levelData, int level)
+        public void SetData(LevelDataV1 levelData, int level)
         {
             _level = level;
             _levelText.text = $"Level {level + 1}";

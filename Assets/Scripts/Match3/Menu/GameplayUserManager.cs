@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Match3
 {
-    public class UserManager : MonoBehaviour
+    public class GameplayUserManager : MonoBehaviour
     {
-        public static UserManager Instance { get;private set; }
+        public static GameplayUserManager Instance { get;private set; }
         public event System.Action<Booster> OnSelectGameplayBooster;
         public event System.Action OnUnselectGameplayBooster;
         public event System.Action<Booster> OnAvaiableBoostersQuantityChanged;

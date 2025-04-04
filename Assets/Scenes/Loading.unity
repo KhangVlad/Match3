@@ -784,7 +784,7 @@ GameObject:
   - component: {fileID: 191244693}
   - component: {fileID: 191244694}
   m_Layer: 0
-  m_Name: UserManager
+  m_Name: GameplayUserManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1459,6 +1459,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 703680319}
   m_CullTransparentMesh: 1
+--- !u!1 &741877340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741877341}
+  - component: {fileID: 741877342}
+  m_Layer: 0
+  m_Name: VersionManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &741877341
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741877340}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 877730072}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &741877342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741877340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb0aca2b2dd22f0448c50258599d7115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &765768233
 GameObject:
   m_ObjectHideFlags: 0
@@ -1553,6 +1597,8 @@ Transform:
   - {fileID: 191244693}
   - {fileID: 395861374}
   - {fileID: 1723017780}
+  - {fileID: 1380516932}
+  - {fileID: 741877341}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &914131394
@@ -1812,67 +1858,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button:
     Guid:
-      Data1: -1006153111
-      Data2: 1085597468
-      Data3: -1365038185
-      Data4: -1035004792
+      Data1: 785846939
+      Data2: 1333723963
+      Data3: -390048101
+      Data4: 1546261908
     Path: event:/Button
   _match3:
     Guid:
-      Data1: -1006153111
-      Data2: 1085597468
-      Data3: -1365038185
-      Data4: -1035004792
+      Data1: 785846939
+      Data2: 1333723963
+      Data3: -390048101
+      Data4: 1546261908
     Path: event:/Button
   _match4:
     Guid:
-      Data1: -1006153111
-      Data2: 1085597468
-      Data3: -1365038185
-      Data4: -1035004792
+      Data1: 785846939
+      Data2: 1333723963
+      Data3: -390048101
+      Data4: 1546261908
     Path: event:/Button
   _match5:
     Guid:
-      Data1: -1006153111
-      Data2: 1085597468
-      Data3: -1365038185
-      Data4: -1035004792
+      Data1: 785846939
+      Data2: 1333723963
+      Data3: -390048101
+      Data4: 1546261908
     Path: event:/Button
   _match6:
     Guid:
-      Data1: -1006153111
-      Data2: 1085597468
-      Data3: -1365038185
-      Data4: -1035004792
+      Data1: 785846939
+      Data2: 1333723963
+      Data3: -390048101
+      Data4: 1546261908
     Path: event:/Button
   _win:
     Guid:
-      Data1: -1407889360
-      Data2: 1257474257
-      Data3: 2086814851
-      Data4: -773168414
+      Data1: 1393185840
+      Data2: 1112258418
+      Data3: 1387880857
+      Data4: -135619405
     Path: event:/Win
   _gameover:
     Guid:
-      Data1: 929327902
-      Data2: 1165098217
-      Data3: 1055814073
-      Data4: 1997139393
-    Path: event:/Lose
+      Data1: 1647162326
+      Data2: 1139357176
+      Data3: 1322064018
+      Data4: -507620824
+    Path: event:/Gameover
   _closeBtn:
     Guid:
-      Data1: 1700376784
-      Data2: 1134783529
-      Data3: -517883516
-      Data4: 1074080125
-    Path: event:/CloseButton
+      Data1: -1258431321
+      Data2: 1237825056
+      Data3: -394380390
+      Data4: 1105115172
+    Path: event:/Match3
   _backgroundMusic:
     Guid:
-      Data1: 1778602820
-      Data2: 1232438007
-      Data3: -652049474
-      Data4: -1553129330
-    Path: event:/BackGroundMusic
+      Data1: -1258431321
+      Data2: 1237825056
+      Data3: -394380390
+      Data4: 1105115172
+    Path: event:/Match3
 --- !u!1 &1359850191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1948,6 +1994,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1359850191}
   m_CullTransparentMesh: 1
+--- !u!1 &1380516931
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1380516932}
+  - component: {fileID: 1380516933}
+  m_Layer: 0
+  m_Name: UserManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1380516932
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1380516931}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 877730072}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1380516933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1380516931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e75fe30f966f4e84fb771f88bce1423d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _userData:
+    AvaiableBoosters: []
+    EquipBooster: []
 --- !u!1 &1410381400
 GameObject:
   m_ObjectHideFlags: 0
@@ -2383,6 +2476,9 @@ MonoBehaviour:
   Blocks: []
   QuestDataSos: []
   BoosterDataSos: []
+  CharacterDataSos: []
+  CharacterLevelDatas: []
+  ShopItemDataSos: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

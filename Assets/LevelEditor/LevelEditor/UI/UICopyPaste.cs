@@ -17,7 +17,7 @@ namespace Match3.LevelEditor
         [SerializeField] private Button _pasteBtn;
 
         // Cached
-        public LevelData CachedLevelData;
+        public LevelDataV1 CachedLevelData;
         public int CachedIndex;
 
         private void Awake()

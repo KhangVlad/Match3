@@ -51,7 +51,7 @@ namespace Match3
 
             LoadUIBoosters();
 
-            UserManager.Instance.OnAvaiableBoostersQuantityChanged += OnAvaiableBoostersQuantityChanged_UpdateUI;
+            GameplayUserManager.Instance.OnAvaiableBoostersQuantityChanged += OnAvaiableBoostersQuantityChanged_UpdateUI;
         }
    
 
@@ -60,11 +60,11 @@ namespace Match3
             _closeBtn.onClick.RemoveAllListeners();
             _playBtn.onClick.RemoveAllListeners();
 
-            UserManager.Instance.OnAvaiableBoostersQuantityChanged -= OnAvaiableBoostersQuantityChanged_UpdateUI;
+            GameplayUserManager.Instance.OnAvaiableBoostersQuantityChanged -= OnAvaiableBoostersQuantityChanged_UpdateUI;
         }
 
 
-        public void LoadLevelData(LevelData levelData, int level)
+        public void LoadLevelData(LevelDataV1 levelData, int level)
         {
             _levelText.text = $"Level {level}";
         }
@@ -77,10 +77,10 @@ namespace Match3
 
         private void LoadUIBoosters()
         {
-            UIBoosters = new UIBooster[UserManager.Instance.AvaiableBoosters.Count];
-            for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
+            UIBoosters = new UIBooster[GameplayUserManager.Instance.AvaiableBoosters.Count];
+            for (int i = 0; i < GameplayUserManager.Instance.AvaiableBoosters.Count; i++)
             {
-                Booster booster = UserManager.Instance.AvaiableBoosters[i];
+                Booster booster = GameplayUserManager.Instance.AvaiableBoosters[i];
                 UIBooster uibooster = Instantiate(_uiBoosterPrefab, _boosterContentParent);
                 uibooster.SetBoosterData(booster);
 
@@ -90,7 +90,7 @@ namespace Match3
 
         private void OnAvaiableBoostersQuantityChanged_UpdateUI(Booster booster)
         {
-            for (int i = 0; i < UserManager.Instance.AvaiableBoosters.Count; i++)
+            for (int i = 0; i < GameplayUserManager.Instance.AvaiableBoosters.Count; i++)
             {
                 if (UIBoosters[i].CachedBooster.BoosterID == booster.BoosterID)
                 {

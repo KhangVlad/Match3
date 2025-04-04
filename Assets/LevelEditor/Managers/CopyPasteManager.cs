@@ -5,10 +5,10 @@ namespace Match3.LevelEditor
     public class CopyPasteManager : MonoBehaviour
     {
         public static CopyPasteManager Instance { get; private set; }
-        public event System.Action<LevelData> OnCopy;
+        public event System.Action<LevelDataV1> OnCopy;
 
 
-        [field: SerializeField] public LevelData LevelData { get; private set; }
+        [field: SerializeField] public LevelDataV1 LevelData { get; private set; }
 
         private void Awake()
         {
@@ -20,7 +20,7 @@ namespace Match3.LevelEditor
             Instance = this;
         }
 
-        public void Copy(LevelData levelData)
+        public void Copy(LevelDataV1 levelData)
         {
             this.LevelData = levelData;
             OnCopy?.Invoke(levelData);
