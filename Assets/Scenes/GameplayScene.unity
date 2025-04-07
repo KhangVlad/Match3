@@ -4761,6 +4761,7 @@ MonoBehaviour:
   _unactiveSprite: {fileID: 21300000, guid: 77f356499436245caab55dafd6a3006b, type: 3}
   _uiGameplayBoosterPrefab: {fileID: 4726057803351993924, guid: 760a13e5702b8ab4b929f47abe167c99, type: 3}
   _boosterContentParent: {fileID: 851907168}
+  _characterAvatar: {fileID: 717340042}
   _uiQuestSlots: []
 --- !u!1 &1457405109
 GameObject:
@@ -5287,7 +5288,7 @@ MonoBehaviour:
   _levelData:
     MaxTurn: 0
     AvaiableTiles: 
-    Unlock: 
+    Heart: 0
   _tiles: []
   _selectedTile: {fileID: 0}
   _swappedTile: {fileID: 0}

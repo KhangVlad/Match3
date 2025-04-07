@@ -9,18 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-<<<<<<<< HEAD:Assets/ProjectSettings/UIParticleProjectSettings.asset
-  m_Script: {fileID: 11500000, guid: f22a23b9d98e440478697f4adf30e61c, type: 3}
-  m_Name: UIParticleProjectSettings
-  m_EditorClassIdentifier: 
-  m_EnableLinearToGamma: 1
-  m_HideGeneratedObjects: 1
-========
   m_Script: {fileID: 11500000, guid: d038192c89fd4a669773d99582ad22f4, type: 3}
   m_Name: id_01
   m_EditorClassIdentifier: 
   id: 1
-  sprite: {fileID: 21300000, guid: a27c1fc5a8934e446ba7dfbe26973948, type: 3}
+  sprite: {fileID: 21300000, guid: 654530aff4ac74013ae4da356f75ba7d, type: 3}
   displayName: 01
   age: 10
->>>>>>>> origin/Lap:Assets/Resources/DataSO/Characters/id_01.asset

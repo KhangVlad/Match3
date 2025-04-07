@@ -307,7 +307,7 @@ MonoBehaviour:
   Height: 0
   _tiles: []
   MaxTurn: 25
-  UnlockData: 0000000005000000
+  Heart: 0
   AvaiableTiles: []
   Quests: []
 --- !u!1 &41394013
@@ -747,6 +747,8 @@ MonoBehaviour:
   ShowCreateNewPanel: 1
   FileName: 
   CharacterLevelData:
+    Version: 2
+    CharacterID: 0
     Levels: []
   _currentSelectLevel: 0
 --- !u!4 &127890679
@@ -1158,7 +1160,7 @@ MonoBehaviour:
   CachedLevelData:
     MaxTurn: 0
     AvaiableTiles: 
-    Unlock: 
+    Heart: 0
   CachedIndex: 0
 --- !u!1001 &201148152
 PrefabInstance:
@@ -4634,7 +4636,7 @@ MonoBehaviour:
   <LevelData>k__BackingField:
     MaxTurn: 0
     AvaiableTiles: 
-    Unlock: 
+    Heart: 0
 --- !u!1 &707988897
 GameObject:
   m_ObjectHideFlags: 0
@@ -5184,6 +5186,8 @@ MonoBehaviour:
   QuestDataSos: []
   BoosterDataSos: []
   CharacterDataSos: []
+  CharacterLevelDatas: []
+  ShopItemDataSos: []
 --- !u!4 &806581278
 Transform:
   m_ObjectHideFlags: 0
@@ -10728,18 +10732,18 @@ MonoBehaviour:
     Path: event:/Gameover
   _closeBtn:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 1393185840
+      Data2: 1112258418
+      Data3: 1387880857
+      Data4: -135619405
+    Path: event:/Win
   _backgroundMusic:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 1393185840
+      Data2: 1112258418
+      Data3: 1387880857
+      Data4: -135619405
+    Path: event:/Win
 --- !u!4 &1310305417
 Transform:
   m_ObjectHideFlags: 0
@@ -12729,7 +12733,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 7300.4805}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1577166308
@@ -15232,8 +15236,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 826000139}
   m_HandleRect: {fileID: 826000138}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0
+  m_Value: 1
+  m_Size: 0.53125
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

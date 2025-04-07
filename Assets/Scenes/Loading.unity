@@ -2041,6 +2041,7 @@ MonoBehaviour:
   _userData:
     AvaiableBoosters: []
     EquipBooster: []
+    AllCharacterData: []
 --- !u!1 &1410381400
 GameObject:
   m_ObjectHideFlags: 0
