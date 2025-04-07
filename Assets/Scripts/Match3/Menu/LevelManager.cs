@@ -61,5 +61,11 @@ namespace Match3
             _currentLevel = (_currentLevel + 1) % (CharacterLevelData.Levels.Count + 1);
             return _currentLevel;
         }
+
+
+        public void SetCharacterLevelData(CharacterLevelDataV2 characterLevelData)
+        {
+            this.CharacterLevelData = characterLevelData;
+        }
     }
 }

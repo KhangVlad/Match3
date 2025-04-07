@@ -36,6 +36,7 @@ namespace Match3.LevelEditor
         // Level data cached
         public int MaxTurn = 25;
         public int Heart = 0;
+        public int Energy = 0;
         public List<Tile> AvaiableTiles;
         public List<Quest> Quests;
         #endregion
@@ -177,11 +178,11 @@ namespace Match3.LevelEditor
 
         public void LoadLevelData(LevelDataV2 levelData)
         {
- 
             RemoveOldGridManagerData();
 
             MaxTurn = levelData.MaxTurn;
             Heart = levelData.Heart;
+            Energy = levelData.Energy;
 
 
             Quests = new();
@@ -476,7 +477,8 @@ namespace Match3.LevelEditor
                 Tiles = tiles,
                 AvaiableTiles = avaiableTiles,
                 Quests = quests,
-                Heart = this.Heart
+                Heart = this.Heart,
+                Energy = this.Energy
             };
 
             return levelData;

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using Match3.Shares;
 using Match3.Enums;
+using System;
 
 namespace Match3.LevelEditor
 {
@@ -23,6 +24,7 @@ namespace Match3.LevelEditor
         //[SerializeField] private TMP_InputField _characterIDInputField;
         //[SerializeField] private TMP_InputField _unlockCharacterIDInputField;
         [SerializeField] private TMP_InputField _heartUnlockInputField;
+        [SerializeField] private TMP_InputField _energyUnlockInputField;
 
         // gird
         [SerializeField] private TMP_InputField _widthInputField;
@@ -60,7 +62,7 @@ namespace Match3.LevelEditor
             LevelEditorInventory.Instance.OnBlockChanged += OnBlockChanged_UpdateUI;
             GridManager.Instance.OnLoadNewLevelData += OnLoadNewLevelData_UpdateUI;
             LevelEditorInventory.Instance.OnSelectChanged += OnSelectChanged_UpdateUI;
-
+            LevelEditorManager.Instance.OnCharacterLevelDataLoaded += OnCharacterLevelDataLoaded_UpdateUI;
 
             _selectLevelBtn.onClick.AddListener(() =>
             {
@@ -93,6 +95,11 @@ namespace Match3.LevelEditor
                 GridManager.Instance.Heart = int.Parse(value);
             });
 
+            _energyUnlockInputField.onValueChanged.AddListener((value) =>
+            {
+                GridManager.Instance.Energy = int.Parse(value);
+            });
+
             _widthInputField.onValueChanged.AddListener((value) =>
             {
                 GridManager.Instance.Width = int.Parse(value);
@@ -108,6 +115,7 @@ namespace Match3.LevelEditor
             });
         }
 
+      
 
         private void OnDestroy()
         {
@@ -119,6 +127,8 @@ namespace Match3.LevelEditor
             GridManager.Instance.OnLoadNewLevelData -= OnLoadNewLevelData_UpdateUI;
             LevelEditorInventory.Instance.OnSelectChanged -= OnSelectChanged_UpdateUI;
 
+            LevelEditorManager.Instance.OnCharacterLevelDataLoaded -= OnCharacterLevelDataLoaded_UpdateUI;
+
             _selectLevelBtn.onClick.RemoveAllListeners();
 
             _maxTurnInputField.onValueChanged.RemoveAllListeners();
@@ -127,7 +137,7 @@ namespace Match3.LevelEditor
             _heartUnlockInputField.onValueChanged.RemoveAllListeners();
             _widthInputField.onValueChanged.RemoveAllListeners();
             _heightInputFiled.onValueChanged.RemoveAllListeners();
-
+            _energyUnlockInputField.onValueChanged.RemoveAllListeners();
 
             _resetLevelBtn.onClick.RemoveAllListeners();
         }
@@ -187,14 +197,18 @@ namespace Match3.LevelEditor
             //_characterIDInputField.text = GridManager.Instance.UnlockData[0].ToString();
             //_unlockCharacterIDInputField.text = GridManager.Instance.UnlockData[1].ToString();
             _heartUnlockInputField.text = GridManager.Instance.Heart.ToString();
+            _energyUnlockInputField.text = GridManager.Instance.Energy.ToString();
 
             _widthInputField.text = GridManager.Instance.Width.ToString();
             _heightInputFiled.text = GridManager.Instance.Height.ToString();
+        }
 
+
+        private void OnCharacterLevelDataLoaded_UpdateUI(CharacterLevelDataV2 dataV2)
+        {
             CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID((CharacterID)GridManager.Instance.Heart);
             _characterSelectedSlot.SetData(characterData);
         }
-
 
         private void OnSelectChanged_UpdateUI(LevelEditorInventory.SelectSource source, int index)
         {

@@ -24,7 +24,7 @@ namespace Match3.LevelEditor
             //LevelData levelData = GridManager.Instance.GetLevelData();
             //string json = JsonConvert.SerializeObject(levelData);
 
-            LevelData levelData = GridManager.Instance.GetLevelData();
+            LevelDataV2 levelData = GridManager.Instance.GetLevelData();
             int index = LevelEditorManager.Instance.CurrentLevel;
             LevelEditorManager.Instance.SaveLevelData(index, levelData);
             string json = JsonConvert.SerializeObject(LevelEditorManager.Instance.CharacterLevelData);

@@ -49,7 +49,8 @@ namespace Match3
         public TileID[,] Tiles;
         public TileID[] AvaiableTiles;
         public int[,] Quests;
-        public int Heart;       
+        public int Heart;
+        public int Energy;
 
         public LevelDataV2(int width, int height)
         {

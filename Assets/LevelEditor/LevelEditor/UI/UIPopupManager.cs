@@ -5,6 +5,8 @@ namespace Match3.LevelEditor
     public class UIPopupManager : MonoBehaviour
     {
         public static UIPopupManager Instance { get; private set; }
+        private Canvas _canvas;
+
 
         [SerializeField] private UINameInfoPopup _uiNameInfoPopup;
         [SerializeField] private UICopyPaste _uiCopyPaste;
@@ -21,14 +23,14 @@ namespace Match3.LevelEditor
                 return;
             }
             Instance = this;
-
+            _canvas = GetComponent<Canvas>();
             _uiCopyPaste.gameObject.SetActive(true);
         }
 
 
         public void DisplayUINameInfoPopup(bool enable, Vector2 offset = default)
         {
-            if(enable)
+            if (enable)
             {
                 _uiNameInfoPopup.UpdatePosition(offset);
             }
@@ -44,5 +46,10 @@ namespace Match3.LevelEditor
             _uiCopyPaste.gameObject.SetActive(enable);
         }
 
+
+        public void DisplayCanvas(bool enable)
+        {
+            this._canvas.enabled = enable;
+        }
     }
 }

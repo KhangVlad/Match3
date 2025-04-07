@@ -67,10 +67,25 @@ namespace Match3.LevelEditor
             {
                 try
                 {
-                    string json = File.ReadAllText(filePath);     
-                    CharacterLevelDataV2 characterLevelData = JsonConvert.DeserializeObject<CharacterLevelDataV2>(json);
-                    LevelEditorManager.Instance.SetCharacterLevelData(characterLevelData);
-
+                    string json = File.ReadAllText(filePath);
+                    //Debug.Log("version: " + CharacterLevelDataExtensions.DetectVersion(json));
+                    int version = CharacterLevelDataExtensions.DetectVersion(json);
+                    Debug.Log($"version: {version}");
+                    switch(version)
+                    {
+                        case 1:
+                            CharacterLevelDataV1 characterLevelDataV1 = JsonConvert.DeserializeObject<CharacterLevelDataV1>(json);
+                            CharacterLevelDataV2 characterDataInVersion2 = characterLevelDataV1.UpgradeV1ToV2();
+                            LevelEditorManager.Instance.SetCharacterLevelData(characterDataInVersion2);
+                            break;
+                        case 2:
+                            CharacterLevelDataV2 characterLevelDataV2 = JsonConvert.DeserializeObject<CharacterLevelDataV2>(json);
+                            LevelEditorManager.Instance.SetCharacterLevelData(characterLevelDataV2);
+                            break;
+                        default:
+                            Debug.LogError("Version not found");
+                            break;
+                    }
                     UILogHandler.Instance.ShowLogText($"Load structure successfully: {filePath}", 5f);
                     CurrentSaveProjectPath = filePath;
                     onCompleted?.Invoke();

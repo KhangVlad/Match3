@@ -50,8 +50,9 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx();
                 this.gameObject.SetActive(false);
 
- 
-                GridManager.Instance.Heart = (int)GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex].id;
+
+                LevelEditorManager.Instance.CharacterLevelData.CharacterID = GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex].id;
+                //GridManager.Instance.Heart = (int)GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex].id;
                 _uiCharacterSelectedSlotCached.SetData(GameDataManager.Instance.CharacterDataSos[_currentSelectSlotIndex]);
             });
 
