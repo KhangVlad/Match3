@@ -40,7 +40,6 @@ namespace Match3
 
                     if(blockID != BlockID.Void && blockID != BlockID.Fill)
                     {
-                        Debug.Log(blockID);
                         _tileMap.SetTile(new Vector3Int(x, y, 0), _tileBase);
                     }
                     //else

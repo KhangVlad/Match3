@@ -35,6 +35,8 @@ namespace Match3
 
             CloseAll();
             DisplayUIGameplay(true);
+
+
         }
 
         public void CloseAll()
