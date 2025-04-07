@@ -10,7 +10,7 @@ namespace Match3
     {
         public static int DetectVersion(string json)
         {
-            Debug.Log($"DetectVersion: ");
+            //Debug.Log($"DetectVersion: ");
             try
             {
                 var jsonObject = JObject.Parse(json);

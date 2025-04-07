@@ -194,6 +194,7 @@ public class CharacterDisplay : MonoBehaviour
 
     private void InitializeCharacterVideo(CharacterID id)
     {
+        Debug.Log($"InitializeCharacterVideo: {id}");
         videoClips.Clear(); // Clear previous clips
         VideoClip[] clips = Resources.LoadAll<VideoClip>($"Characters/{(int)id}");
         if (clips.Length == 0)

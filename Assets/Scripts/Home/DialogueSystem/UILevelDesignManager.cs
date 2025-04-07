@@ -85,6 +85,7 @@ public class UILevelDesignManager : MonoBehaviour
     {
         CleanLevels();
 
+        Debug.Log($"InitializeLevels: {id}");
         if(GameDataManager.Instance.TryGetCharacterLevelDataByID(id, out CharacterLevelDataV2 characterLevelData))
         {
             for (int i = 0; i < characterLevelData.Levels.Count; i++)
@@ -123,6 +124,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void OnCharacterInteracted(CharacterID id)
     {
+        Debug.Log($"OnCharacterInteracted: {id}");
         SetPanelColor(id);
         CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
         TownCanvasController.Instance.ActiveLevelDesign(true);

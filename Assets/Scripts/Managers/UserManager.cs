@@ -35,7 +35,7 @@ public class UserManager : MonoBehaviour
         {
             if (GameDataManager.Instance.TryGetCharacterLevelDataByID(id, out CharacterLevelDataV2 characterLevelData))
             {
-                Debug.Log($"id: {id}");
+                //Debug.Log($"id: {id}");
                 List<int> stars = new List<int>();
 
                 for (int i = 0; i < characterLevelData.Levels.Count; i++)
