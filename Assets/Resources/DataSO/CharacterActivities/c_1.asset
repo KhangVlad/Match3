@@ -18,7 +18,7 @@ MonoBehaviour:
   - startTime: 16
     endTime: 20
     appearPosition: {x: 1740, y: 2340}
-    dayOfWeek: 3
+    dayOfWeek: 2
   - startTime: 21
     endTime: 24
     appearPosition: {x: 2121, y: 2119}

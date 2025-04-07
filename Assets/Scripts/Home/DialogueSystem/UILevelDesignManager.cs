@@ -124,7 +124,6 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void OnCharacterInteracted(CharacterID id)
     {
-        Debug.Log($"OnCharacterInteracted: {id}");
         SetPanelColor(id);
         CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
         TownCanvasController.Instance.ActiveLevelDesign(true);

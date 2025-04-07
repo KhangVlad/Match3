@@ -115,9 +115,11 @@ public class CharactersDataManager : MonoBehaviour
         List<CharacterActivitySO> a = new List<CharacterActivitySO>();
         foreach (var characterActivity in characterActivities)
         {
+            //Debug.Log(characterActivity.id);
             if (characterActivity.dayOff == day) continue;
             if (characterActivity.activityInfos.Any(info => info.dayOfWeek == day))
             {
+                Debug.Log($"ADD: {characterActivity.id}");
                 a.Add(characterActivity);
             }
         }
