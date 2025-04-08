@@ -92,16 +92,7 @@ public class UserManager : MonoBehaviour
         return _userData.AllCharacterData.Find(x => x.CharacterID == id);
     }
     
-    public int GetTotalHeartCharsOfChar( CharacterID id)
-    {
-        CharacterData characterData = GetCharacterData(id);
-        if (characterData == null)
-        {
-            Debug.LogError($"Character data not found for ID: {id}");
-            return 0;
-        }
-        return characterData.TotalHeartPoints();
-    }
+
 
 
     

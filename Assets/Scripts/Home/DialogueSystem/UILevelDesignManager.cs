@@ -66,7 +66,7 @@ public class UILevelDesignManager : MonoBehaviour
         charDataSO = GameDataManager.Instance.GetCharacterDataByID(id);
         appearanceData = GameDataManager.Instance.GetCharacterAppearanceData(id);
         heartText.text = charData.TotalHeartPoints().ToString();
-        // // Color heartColor = GameDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
+        // Color heartColor = GameDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
         // // heartImage.color = heartColor;
         // // heartHeader.color = nextLevelColor;
         // if (appearanceData != null)
