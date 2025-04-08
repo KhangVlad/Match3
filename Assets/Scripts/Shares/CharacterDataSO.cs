@@ -9,12 +9,11 @@ namespace Match3.Shares
     [CreateAssetMenu(fileName = "Game/Character", menuName = "Game/Character")]
     public class CharacterDataSO : ScriptableObject
     {
-        [SearchableEnum]
-        public CharacterID id;
+        [SearchableEnum] public CharacterID id;
         public Sprite sprite;
         public string displayName;
         public int age;
+        public int[] heartLevelRequired; // index is the level, value is the heart level required, use to calculate the sympathy required
+        public int TotalHeartToUnlock; // total heart to unlock the character
     }
-
 }
-

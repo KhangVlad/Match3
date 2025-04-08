@@ -18,6 +18,9 @@ public class UILoadingMenu : MonoBehaviour
     {
         homeButton.onClick.AddListener(OnHomeClick);
         SetBgByTime();
+        GameDataManager.Instance.OnDataLoaded += OnDataLoaded;
+        Invoke("OnDataLoaded", 0.5f);
+   
     }
 
     private void SetBgByTime()
@@ -44,19 +47,19 @@ public class UILoadingMenu : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        if (GameDataManager.Instance != null)
-        {
-            GameDataManager.Instance.OnDataLoaded += OnDataLoaded;
-        }
-
-
-        if (CharactersDataManager.Instance != null)
-        {
-            CharactersDataManager.Instance.OnCharacterDataLoaded += OnCharacterDataLoaded;
-        }
-    }
+    // private void OnEnable()
+    // {
+    //     if (GameDataManager.Instance != null)
+    //     {
+    //         GameDataManager.Instance.OnDataLoaded += OnDataLoaded;
+    //     }
+    //
+    //
+    //     if (GameDataManager.Instance != null)
+    //     {
+    //         GameDataManager.Instance.OnCharacterDataLoaded += OnCharacterDataLoaded;
+    //     }
+    // }
 
     private void OnDestroy()
     {
@@ -65,30 +68,21 @@ public class UILoadingMenu : MonoBehaviour
         {
             GameDataManager.Instance.OnDataLoaded -= OnDataLoaded;
         }
-
-        if (CharactersDataManager.Instance != null)
-        {
-            CharactersDataManager.Instance.OnCharacterDataLoaded -= OnCharacterDataLoaded;
-        }
     }
 
     private void OnDataLoaded()
     {
-        targetProgress += 0.5f;
+        Debug.Log( "Call");
+        targetProgress += 1f;
         StartCoroutine(UpdateProgress());
     }
 
-    private void OnCharacterDataLoaded()
-    {
-        targetProgress += 0.5f;
-        StartCoroutine(UpdateProgress());
-    }
 
     private IEnumerator UpdateProgress()
     {
         while (progress < targetProgress)
         {
-            progress += Time.deltaTime * 0.3f; // Adjust the speed as needed
+            progress += Time.deltaTime * 1f; // Adjust the speed as needed
             slider.value = progress;
             yield return null;
         }

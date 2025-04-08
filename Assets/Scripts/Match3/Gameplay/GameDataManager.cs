@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Match3.Shares;
 using Match3.Enums;
 using Newtonsoft.Json;
+using System.Linq;
+using Match3.Shares;
+
 namespace Match3
 {
     public class GameDataManager : MonoBehaviour
@@ -11,8 +14,7 @@ namespace Match3
         public event System.Action OnDataLoaded;
 
 
-        [Header("~Runtime")]
-        public Tile[] Tiles;
+        [Header("~Runtime")] public Tile[] Tiles;
         private Dictionary<TileID, Tile> _tileDict;
 
         public Block[] Blocks;
@@ -38,6 +40,13 @@ namespace Match3
         public ShopItemDataSO[] ShopItemDataSos;
         private Dictionary<ShopItemID, ShopItemDataSO> _shopItemDataDict;
 
+        //character activity data
+        // public List<CharacterActivitySO> characterActivities = new();
+        public CharacterAppearanceSO characterColor;
+        public List<CharacterDialogueSO> characterDialogues = new();
+        public List<CharacterActivitySO> characterActivities = new();
+        public event System.Action OnCharacterDataLoaded;
+
         // Level
         private TextAsset[] _levels;
 
@@ -51,10 +60,10 @@ namespace Match3
                 Destroy(this.gameObject);
                 return;
             }
+
             Instance = this;
             LoadGameData();
         }
-
 
 
         private void LoadGameData()
@@ -90,11 +99,12 @@ namespace Match3
 
             // Character level data
             LoadCharactereLevelData();
+            characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
 
 
             // Shop data
             LoadShopData();
-
+            Debug.Log("LoadShopData");
             OnDataLoaded?.Invoke();
         }
 
@@ -120,12 +130,33 @@ namespace Match3
                 _boosterDataDict.Add(questData.ID, questData);
             }
         }
+
         public BoosterDataSo GetBoosterDataByID(BoosterID id)
         {
             return _boosterDataDict[id];
         }
 
 
+        #region Characters
+
+        public CharacterAppearance GetCharacterAppearanceData(CharacterID id)
+        {
+            return characterColor.AppearancesInfo.Find(x => x.id == id);
+        }
+
+        public Color GetHeartColor(int level, out Color nextLevelColor)
+        {
+            if (level + 1 < characterColor.heartColors.Length)
+            {
+                nextLevelColor = characterColor.heartColors[level + 1];
+            }
+            else
+            {
+                nextLevelColor = characterColor.heartColors[level];
+            }
+
+            return characterColor.heartColors[level];
+        }
 
         private void LoadCharacterData()
         {
@@ -136,12 +167,14 @@ namespace Match3
                 CharacterDataSO characterData = CharacterDataSos[i];
                 _characterDataDict.Add(characterData.id, characterData);
             }
+
+            OnCharacterDataLoaded?.Invoke();
         }
+
         public CharacterDataSO GetCharacterDataByID(CharacterID id)
         {
             return _characterDataDict[id];
         }
-
 
 
         private void LoadCharactereLevelData()
@@ -159,7 +192,7 @@ namespace Match3
                 }
                 else if (version == 2)
                 {
-                    CharacterLevelDatas[i] = JsonConvert.DeserializeObject<CharacterLevelDataV2>(json);   
+                    CharacterLevelDatas[i] = JsonConvert.DeserializeObject<CharacterLevelDataV2>(json);
                 }
                 else
                 {
@@ -168,7 +201,7 @@ namespace Match3
             }
 
             _characterLevelDataDict = new();
-            for(int i = 0; i < CharacterLevelDatas.Length; i++)
+            for (int i = 0; i < CharacterLevelDatas.Length; i++)
             {
                 _characterLevelDataDict.Add(CharacterLevelDatas[i].CharacterID, CharacterLevelDatas[i]);
             }
@@ -176,18 +209,48 @@ namespace Match3
 
         public bool TryGetCharacterLevelDataByID(CharacterID id, out CharacterLevelDataV2 characterLevelData)
         {
-            if(_characterLevelDataDict.ContainsKey(id))
+            Debug.Log($"TryGetCharacterLevelDataByID: {id}");
+            if (_characterLevelDataDict.ContainsKey(id))
             {
                 characterLevelData = _characterLevelDataDict[id];
                 return true;
             }
-           else
+            else
             {
                 characterLevelData = null;
                 return false;
             }
         }
 
+
+        public void LoadDialogueData(LanguageType l)
+        {
+            characterDialogues = Resources.LoadAll<CharacterDialogueSO>($"DataSO/CharacterDialogues_{l}").ToList();
+        }
+
+        public CharacterDialogueSO GetCharacterDialogueByID(CharacterID id)
+        {
+            return characterDialogues.Find(x => x.id == id);
+        }
+
+        public List<CharacterActivitySO> GetCharacterActive(DayInWeek day) //current day
+        {
+            List<CharacterActivitySO> a = new List<CharacterActivitySO>();
+            foreach (var characterActivity in characterActivities)
+            {
+                //Debug.Log(characterActivity.id);
+                if (characterActivity.dayOff == day) continue;
+                if (characterActivity.activityInfos.Any(info => info.dayOfWeek == day))
+                {
+                    Debug.Log($"ADD: {characterActivity.id}");
+                    a.Add(characterActivity);
+                }
+            }
+
+            return a;
+        }
+
+        #endregion
 
 
         private void LoadShopData()
@@ -200,12 +263,15 @@ namespace Match3
                 _shopItemDataDict.Add(shopItemData.ShopItemID, shopItemData);
             }
         }
+
         public ShopItemDataSO GetShopItemDataByID(ShopItemID shopItemID)
         {
             return _shopItemDataDict[shopItemID];
         }
 
+
         #region Extensions
+
         //public Tile GetRandomTile(bool withTileNone = false)
         //{
         //    if(withTileNone)
@@ -251,6 +317,7 @@ namespace Match3
                 Debug.Log("========= Level out of range ==========");
                 return _levels[0];
             }
+
             return _levels[level - 1];
         }
 
@@ -259,6 +326,7 @@ namespace Match3
         {
             return _questDataDict[questID];
         }
+
         #endregion
     }
 }

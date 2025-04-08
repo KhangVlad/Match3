@@ -4,6 +4,7 @@ using Match3;
 using TMPro;
 using UnityEngine.UI;
 using Match3.Enums;
+using Match3.Shares;
 
 public class UILevelDesignManager : MonoBehaviour
 {
@@ -26,8 +27,12 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI progressText;
     [SerializeField] private Transform warningPanel; // for not enough sympathy
     [SerializeField] private TextMeshProUGUI warningText; // for not enough sympathy
-    public CharactersData charData;
+    [SerializeField] private TextMeshProUGUI heartText; // for not enough sympathy
+    // public CharactersData charData;
+    public CharacterData charData;
+    public CharacterDataSO charDataSO;
     public CharacterAppearance appearanceData;
+    
 
     private void Awake()
     {
@@ -57,26 +62,28 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void SetPanelColor(CharacterID id)
     {
-        charData = CharactersDataManager.Instance.GetCharacterData(id);
-        Color heartColor = CharactersDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
-        appearanceData = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
-        heartImage.color = heartColor;
-        heartHeader.color = nextLevelColor;
-        if (appearanceData != null)
-        {
-            panel.color = appearanceData.panelColor;
-            heart.anchoredPosition = new Vector2(appearanceData.heartPosition.x, appearanceData.heartPosition.y);
-        }
-
-        sliderFill.color = nextLevelColor;
-        slider.maxValue = charData.GetNextLevelSympathy();
-        slider.value = charData.currentSympathy;
-        progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
-        ;
-
-
+        charData = UserManager.Instance.GetCharacterData(id);
+        charDataSO = GameDataManager.Instance.GetCharacterDataByID(id);
+        appearanceData = GameDataManager.Instance.GetCharacterAppearanceData(id);
+        heartText.text = charData.TotalHeartPoints().ToString();
+        // // Color heartColor = GameDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
+        // // heartImage.color = heartColor;
+        // // heartHeader.color = nextLevelColor;
+        // if (appearanceData != null)
+        // {
+        //     panel.color = appearanceData.panelColor;
+        //     heart.anchoredPosition = new Vector2(appearanceData.heartPosition.x, appearanceData.heartPosition.y);
+        // }
+        //
+        // // sliderFill.color = nextLevelColor;
+        // // slider.maxValue = charData.GetNextLevelSympathy();
+        // // slider.value = charData.currentSympathy;
+        // // progressText.text = $"{charData.currentSympathy}/{charData.GetNextLevelSympathy()}";
+        // ;
+        //
+        //
         CleanLevels();
-        if (CharactersDataManager.Instance.TotalHeartPoints() >= charData.totalSympathyRequired)
+        if (UserManager.Instance.GetTotalHeart() >= charDataSO.TotalHeartToUnlock)
         {
             InitializeLevels(id);
         }
@@ -96,19 +103,6 @@ public class UILevelDesignManager : MonoBehaviour
                 UILevelDesign levelDesign = Instantiate(levelDesignDesignPrefab, levelDesignParent);
                 levelDesign.InitializeData(id, i, false);
                 levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
-
-                //if (i < 2)
-                //{
-                //    UILevelDesign levelDesign = Instantiate(levelDesignDesignPrefab, levelDesignParent);
-                //    levelDesign.InitializeData(i, false);
-                //    levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
-                //}
-                //else
-                //{
-                //    UILevelDesign levelDesign = Instantiate(lockedLevelDesignPrefab, levelDesignParent);
-                //    levelDesign.InitializeData(i, true);
-                //    levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
-                //}
             }
         }
     }
@@ -161,14 +155,14 @@ public class UILevelDesignManager : MonoBehaviour
 
     public void ActiveCanvas(bool active)
     {
-        int totalHeartPoints = CharactersDataManager.Instance.TotalHeartPoints();
+        int totalHeartPoints = charData.TotalHeartPoints();
         if (active)
         {
-            if (totalHeartPoints < charData.totalSympathyRequired)
+            if (totalHeartPoints < charDataSO.TotalHeartToUnlock)
             {
                 warningPanel.gameObject.SetActive(true);
                 warningText.text =
-                    $"Just {charData.totalSympathyRequired - totalHeartPoints} more <sprite index=1/> to unlock";
+                    $"Just {charDataSO.TotalHeartToUnlock - totalHeartPoints} more <sprite index=1/> to unlock";
             }
             else
             {
@@ -182,7 +176,7 @@ public class UILevelDesignManager : MonoBehaviour
             _canvas.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
             canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
             {
-                if (totalHeartPoints >= charData.totalSympathyRequired)
+                if (totalHeartPoints >= charDataSO.TotalHeartToUnlock)
                 {
                     DialogueManager.Instance.ShowDialogue(typewriterEffect,
                         CharacterDisplay.Instance.GetGreetingDialog());

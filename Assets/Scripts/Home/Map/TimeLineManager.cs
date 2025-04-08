@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Match3;
 using UnityEngine;
 # if UNITY_EDITOR
 using UnityEditor;
 #endif
 using Match3.Enums;
+using Match3.Shares;
 
 
 public class TimeLineManager : MonoBehaviour
@@ -132,7 +134,8 @@ public class TimeLineManager : MonoBehaviour
 
     private void GetCharacterActiveToday()
     {
-        activeInDay = CharactersDataManager.Instance.GetCharacterActive(currentDay);
+        Debug.Log("fix");
+        activeInDay = GameDataManager.Instance.GetCharacterActive(currentDay);
     }
 
     public void PlusCurrentHour()

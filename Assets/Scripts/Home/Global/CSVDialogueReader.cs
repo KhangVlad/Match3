@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using Match3.Enums;
+using Match3.Shares;
 
 public class CSVDialogueReader : MonoBehaviour
 {

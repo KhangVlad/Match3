@@ -3,8 +3,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Video;
 using System.Collections;
+using Match3;
 using Match3.Enums;
-
+using Match3.Shares;
 public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
@@ -81,7 +82,8 @@ public class CharacterDisplay : MonoBehaviour
 
     private void LoadCharacterDialogue(CharacterID id)
     {
-        characterDialogueSO = CharactersDataManager.Instance.GetCharacterDialogue(id);
+        Debug.Log("fix");
+        characterDialogueSO = GameDataManager.Instance.GetCharacterDialogueByID(id);
     }
 
     public void TransitionToState(CharacterState newState)

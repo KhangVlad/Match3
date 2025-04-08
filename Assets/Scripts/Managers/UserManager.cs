@@ -2,14 +2,16 @@ using UnityEngine;
 using System.Collections.Generic;
 using Match3.Enums;
 using Match3;
+using UnityEngine.Serialization;
 
 public class UserManager : MonoBehaviour
 {
     public static UserManager Instance { get; private set; }
+  
 
     [SerializeField] private UserData _userData;
 
-    public int TotalStar => GetTotalStar();
+    public int TotalHeart => GetTotalHeart();
 
 
     private void Awake()
@@ -19,6 +21,7 @@ public class UserManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+
         Instance = this;
     }
 
@@ -42,10 +45,11 @@ public class UserManager : MonoBehaviour
                 {
                     stars.Add(0);
                 }
+
                 CharacterData characterData = new CharacterData()
                 {
                     CharacterID = id,
-                    Stars = stars
+                    Hearts = stars
                 };
                 allCharacterData.Add(characterData);
             }
@@ -71,30 +75,56 @@ public class UserManager : MonoBehaviour
         return null;
     }
 
-    private int GetTotalStar()
+    public int GetTotalHeart()
     {
         int totalStar = 0;
-        for (int i = 0; i < _userData.AllCharacterData.Count; i++)
+       for( int i=0; i< _userData.AllCharacterData.Count; i++)
         {
-            CharacterData characterLevelData = _userData.AllCharacterData[i];
-            for (int j = 0; j < characterLevelData.Stars.Count; i++)
-            {
-                totalStar += characterLevelData.Stars[j];
-            }
+            totalStar += _userData.AllCharacterData[i].TotalHeartPoints();
         }
+
         return totalStar;
     }
+    
+    public CharacterData GetCharacterData(CharacterID id)
+    {
+        return _userData.AllCharacterData.Find(x => x.CharacterID == id);
+    }
+    
+    public int GetTotalHeartCharsOfChar( CharacterID id)
+    {
+        CharacterData characterData = GetCharacterData(id);
+        if (characterData == null)
+        {
+            Debug.LogError($"Character data not found for ID: {id}");
+            return 0;
+        }
+        return characterData.TotalHeartPoints();
+    }
+
+
+    
 }
 
 [System.Serializable]
 public class CharacterData
 {
     public CharacterID CharacterID;
-    public List<int> Stars;
+    public List<int> Hearts;
+   
+
+    public int TotalHeartPoints()
+    {
+        int totalHeartPoints = 0;
+        for (int i = 0; i < Hearts.Count; i++)
+        {
+            totalHeartPoints += Hearts[i];
+        }
+
+        return totalHeartPoints;
+    }
+    
+    
+    
+    
 }
-
-
-
-
-
-

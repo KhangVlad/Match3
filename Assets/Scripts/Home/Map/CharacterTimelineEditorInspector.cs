@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
-
+using Match3.Enums;
+using Match3.Shares;
 #if UNITY_EDITOR
 [CustomEditor(typeof(TimeLineManager))]
 public class CharacterTimelineEditorInspector : Editor

@@ -2516,6 +2516,7 @@ MonoBehaviour:
   CharacterDataSos: []
   CharacterLevelDatas: []
   ShopItemDataSos: []
+  characterColor: {fileID: 11400000, guid: 77aec644ec524476285d9b218adfc8c8, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

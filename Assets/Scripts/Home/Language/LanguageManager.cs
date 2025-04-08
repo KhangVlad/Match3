@@ -1,5 +1,7 @@
 using System;
+using Match3;
 using UnityEngine;
+using Match3.Enums;
 
 public class LanguageManager : MonoBehaviour
 {
@@ -29,14 +31,14 @@ public class LanguageManager : MonoBehaviour
     public void ChangeLanguage(LanguageType newLanguage)
     {
         currentLanguage = newLanguage;
-        CharactersDataManager.Instance.LoadDialogueData(currentLanguage);
+        GameDataManager.Instance.LoadDialogueData(currentLanguage);
         SaveLanguage();
         // Add any additional logic to update the UI or other components with the new language
     }
 
     private void SaveLanguage()
     {
-        CharactersDataManager.Instance.LoadDialogueData(currentLanguage);
+        GameDataManager.Instance.LoadDialogueData(currentLanguage);
         PlayerPrefs.SetInt("Language", (int)currentLanguage);
         PlayerPrefs.Save();
     }
@@ -52,12 +54,7 @@ public class LanguageManager : MonoBehaviour
             currentLanguage = LanguageType.EN; // Default language
         }
 
-        CharactersDataManager.Instance.LoadDialogueData(currentLanguage);
+        GameDataManager.Instance.LoadDialogueData(currentLanguage);
     }
 }
 
-public enum LanguageType
-{
-    EN = 0,
-    VI = 1
-}
