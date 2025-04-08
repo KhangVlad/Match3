@@ -134,7 +134,6 @@ public class TimeLineManager : MonoBehaviour
 
     private void GetCharacterActiveToday()
     {
-        Debug.Log("fix");
         activeInDay = GameDataManager.Instance.GetCharacterActive(currentDay);
     }
 

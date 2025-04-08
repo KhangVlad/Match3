@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Match3.Enums;
@@ -10,6 +11,7 @@ public class UserManager : MonoBehaviour
   
 
     [SerializeField] private UserData _userData;
+    public event Action OnUserDataLoaded;
 
     public int TotalHeart => GetTotalHeart();
 
@@ -27,11 +29,10 @@ public class UserManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeNewUserData();
+        GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
     }
 
-
-    private UserData InitializeNewUserData()
+    private void InitializeNewUserData()
     {
         List<CharacterData> allCharacterData = new List<CharacterData>();
         foreach (CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
@@ -71,8 +72,8 @@ public class UserManager : MonoBehaviour
             },
             AllCharacterData = allCharacterData
         };
-
-        return null;
+        OnUserDataLoaded?.Invoke();
+       
     }
 
     public int GetTotalHeart()

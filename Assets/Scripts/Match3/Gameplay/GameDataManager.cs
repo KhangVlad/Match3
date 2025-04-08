@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Match3.Shares;
@@ -11,7 +12,7 @@ namespace Match3
     public class GameDataManager : MonoBehaviour
     {
         public static GameDataManager Instance { get; private set; }
-        public event System.Action OnDataLoaded;
+        public event Action OnDataLoaded;
 
 
         [Header("~Runtime")] public Tile[] Tiles;
@@ -55,13 +56,19 @@ namespace Match3
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (Instance == null)
             {
-                Destroy(this.gameObject);
-                return;
+                Instance = this;
             }
+            else
+            {
+                Destroy(gameObject);
+            }
+           
+        }
 
-            Instance = this;
+        private void Start()
+        {
             LoadGameData();
         }
 
@@ -209,7 +216,6 @@ namespace Match3
 
         public bool TryGetCharacterLevelDataByID(CharacterID id, out CharacterLevelDataV2 characterLevelData)
         {
-            Debug.Log($"TryGetCharacterLevelDataByID: {id}");
             if (_characterLevelDataDict.ContainsKey(id))
             {
                 characterLevelData = _characterLevelDataDict[id];
@@ -242,7 +248,6 @@ namespace Match3
                 if (characterActivity.dayOff == day) continue;
                 if (characterActivity.activityInfos.Any(info => info.dayOfWeek == day))
                 {
-                    Debug.Log($"ADD: {characterActivity.id}");
                     a.Add(characterActivity);
                 }
             }

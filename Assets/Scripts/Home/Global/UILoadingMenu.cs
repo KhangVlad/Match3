@@ -18,9 +18,9 @@ public class UILoadingMenu : MonoBehaviour
     {
         homeButton.onClick.AddListener(OnHomeClick);
         SetBgByTime();
-        GameDataManager.Instance.OnDataLoaded += OnDataLoaded;
-        Invoke("OnDataLoaded", 0.5f);
-   
+        GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
+        UserManager.Instance.OnUserDataLoaded += OnUserDataLoaded;
+      
     }
 
     private void SetBgByTime()
@@ -56,7 +56,7 @@ public class UILoadingMenu : MonoBehaviour
     //
     //
     //     if (GameDataManager.Instance != null)
-    //     {
+    //     {    
     //         GameDataManager.Instance.OnCharacterDataLoaded += OnCharacterDataLoaded;
     //     }
     // }
@@ -66,14 +66,21 @@ public class UILoadingMenu : MonoBehaviour
         homeButton.onClick.RemoveListener(OnHomeClick);
         if (GameDataManager.Instance != null)
         {
-            GameDataManager.Instance.OnDataLoaded -= OnDataLoaded;
+            GameDataManager.Instance.OnDataLoaded -= OnGameDataLoaded;
         }
     }
 
-    private void OnDataLoaded()
+    private void OnGameDataLoaded()
     {
-        Debug.Log( "Call");
-        targetProgress += 1f;
+        Debug.Log("Call");
+        targetProgress += 0.5f;
+        StartCoroutine(UpdateProgress());
+    }
+    
+    private void OnUserDataLoaded()
+    {
+        Debug.Log("Data Loaded");
+        targetProgress += 0.5f;
         StartCoroutine(UpdateProgress());
     }
 
@@ -93,7 +100,7 @@ public class UILoadingMenu : MonoBehaviour
         if (progress >= 1f)
         {
             homeButton.interactable = true;
-            goHomeText.DOFade(0.5f, 1.5f).SetLoops(-1, LoopType.Yoyo);
+            goHomeText.DOFade(0.7f, 1f).SetLoops(-1, LoopType.Yoyo);
         }
     }
 
