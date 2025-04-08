@@ -1124,6 +1124,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410284480}
   m_CullTransparentMesh: 1
+--- !u!1 &463817433
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463817434}
+  - component: {fileID: 463817435}
+  m_Layer: 0
+  m_Name: TimeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &463817434
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463817433}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 877730072}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &463817435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463817433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dba1e22a0e80498b8636d20803ebf0a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHour: 25
 --- !u!1 &508969747
 GameObject:
   m_ObjectHideFlags: 0
@@ -1599,6 +1644,7 @@ Transform:
   - {fileID: 1723017780}
   - {fileID: 1380516932}
   - {fileID: 741877341}
+  - {fileID: 463817434}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &920754850
@@ -1779,67 +1825,67 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _match3:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _match4:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _match5:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _match6:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _win:
     Guid:
-      Data1: 1393185840
-      Data2: 1112258418
-      Data3: 1387880857
-      Data4: -135619405
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
     Path: event:/Win
   _gameover:
     Guid:
-      Data1: 1647162326
-      Data2: 1139357176
-      Data3: 1322064018
-      Data4: -507620824
-    Path: event:/Gameover
+      Data1: 929327902
+      Data2: 1165098217
+      Data3: 1055814073
+      Data4: 1997139393
+    Path: event:/Lose
   _closeBtn:
     Guid:
-      Data1: -1258431321
-      Data2: 1237825056
-      Data3: -394380390
-      Data4: 1105115172
-    Path: event:/Match3
+      Data1: 1700376784
+      Data2: 1134783529
+      Data3: -517883516
+      Data4: 1074080125
+    Path: event:/CloseButton
   _backgroundMusic:
     Guid:
-      Data1: -1258431321
-      Data2: 1237825056
-      Data3: -394380390
-      Data4: 1105115172
-    Path: event:/Match3
+      Data1: 1778602820
+      Data2: 1232438007
+      Data3: -652049474
+      Data4: -1553129330
+    Path: event:/BackGroundMusic
 --- !u!1 &1341478162
 GameObject:
   m_ObjectHideFlags: 0
@@ -2261,6 +2307,7 @@ MonoBehaviour:
   homeButton: {fileID: 703680321}
   slider: {fileID: 164923553}
   goHomeText: {fileID: 226633877}
+  bgLoading: {fileID: 1544002601}
   progress: 0
 --- !u!1 &1723017779
 GameObject:
