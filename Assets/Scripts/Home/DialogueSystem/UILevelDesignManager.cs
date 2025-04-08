@@ -27,6 +27,7 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Transform warningPanel; // for not enough sympathy
     [SerializeField] private TextMeshProUGUI warningText; // for not enough sympathy
     public CharactersData charData;
+    public CharacterAppearance appearanceData;
 
     private void Awake()
     {
@@ -58,13 +59,13 @@ public class UILevelDesignManager : MonoBehaviour
     {
         charData = CharactersDataManager.Instance.GetCharacterData(id);
         Color heartColor = CharactersDataManager.Instance.GetHeartColor(charData.GetLevel(), out Color nextLevelColor);
-        CharacterAppearance appearance = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
+        appearanceData = CharactersDataManager.Instance.GetCharacterAppearanceData(id);
         heartImage.color = heartColor;
         heartHeader.color = nextLevelColor;
-        if (appearance != null)
+        if (appearanceData != null)
         {
-            panel.color = appearance.panelColor;
-            heart.anchoredPosition = new Vector2(appearance.heartPosition.x, appearance.heartPosition.y);
+            panel.color = appearanceData.panelColor;
+            heart.anchoredPosition = new Vector2(appearanceData.heartPosition.x, appearanceData.heartPosition.y);
         }
 
         sliderFill.color = nextLevelColor;
@@ -162,6 +163,7 @@ public class UILevelDesignManager : MonoBehaviour
             {
                 warningPanel.gameObject.SetActive(false);
             }
+
             _canvas.enabled = true;
             selectBtn.gameObject.SetActive(false);
             _canvas.transform.localScale = Vector3.zero;
@@ -171,12 +173,13 @@ public class UILevelDesignManager : MonoBehaviour
             {
                 if (totalHeartPoints >= charData.totalSympathyRequired)
                 {
-                    DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetDialogue());
+                    DialogueManager.Instance.ShowDialogue(typewriterEffect,
+                        CharacterDisplay.Instance.GetGreetingDialog());
                 }
                 else
                 {
                     DialogueManager.Instance.ShowDialogue(typewriterEffect,
-                        CharacterDisplay.Instance.GetNotEnoughSympathyDialogue());
+                        CharacterDisplay.Instance.GetLowSympathyDialogue());
                     warningPanel.gameObject.SetActive(true);
                 }
             });

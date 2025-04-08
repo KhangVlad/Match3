@@ -11,7 +11,5 @@ public class LightStreet : MonoBehaviour
     {
         IsOn = !IsOn;
         light2D.enabled = IsOn;
-        //doscale light2D then turn back to normal
-        transform.DOScale(1.2f, 0.2f).OnComplete(() => { transform.DOScale(1f, 0.2f); });
     }
 }

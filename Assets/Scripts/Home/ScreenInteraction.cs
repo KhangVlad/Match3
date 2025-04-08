@@ -151,12 +151,15 @@ public class ScreenInteraction : MonoBehaviour
 
     private void MoveTargetWithinBounds(Vector2 dir)
     {
-        Vector2 newPosition = target.position + new Vector3(dir.x, dir.y, 0) * CameraSpeed;
-        if (camLimits.bounds.Contains(newPosition))
+        Vector3 newPosition = target.position + new Vector3(dir.x, dir.y, 0) * CameraSpeed;
+
+        if (camLimits.bounds.Contains(newPosition) && target.position != newPosition)
         {
             target.position = newPosition;
         }
     }
+
+
 
     private IEnumerator InitializeCameraPos()
     {
@@ -164,7 +167,7 @@ public class ScreenInteraction : MonoBehaviour
         float startOrthoSize = 20;
         float endOrthoSize = 8;
         float elapsedTime = 0f;
-
+    
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
@@ -172,12 +175,15 @@ public class ScreenInteraction : MonoBehaviour
             virtualCamera.Lens.OrthographicSize = Mathf.Lerp(startOrthoSize, endOrthoSize, t);
             yield return null;
         }
-
-
+    
+    
         mainCamera.orthographicSize = endOrthoSize;
         InteractAble = true;
         OnInteractAbleTriggered?.Invoke();
     }
+    
+ 
+
 
 #if UNITY_EDITOR
     // private void OnDrawGizmos()

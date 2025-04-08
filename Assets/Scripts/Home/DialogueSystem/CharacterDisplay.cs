@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.Video;
 using System.Collections;
+using Match3.Enums;
 
 public class CharacterDisplay : MonoBehaviour
 {
@@ -23,26 +23,28 @@ public class CharacterDisplay : MonoBehaviour
     private const float AngryDecayRate = 2f;
     private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
 
-    private const string notEnoughSympathyDialogue =
-        "I don't think you are the right person to help me now, but i will ask you later.";
+
 
     public float TimeToDecreaseAngryPoint = 10; //after 10s not touch, decrease angry point
     private float lastInteractionTime; // Track last interaction time
 
     public bool IsRecovering;
 
-    public string GetDialogue()
+    public string GetGreetingDialog()
     {
         int randomIndex = UnityEngine.Random.Range(0, characterDialogueSO.greetingDialogs.Length);
         return characterDialogueSO.greetingDialogs[randomIndex];
     }
-
     public string GetDialogue(int level, int subLevel)
     {
         return characterDialogueSO.data[level].levelDialogs[subLevel];
     }
 
-    public string GetNotEnoughSympathyDialogue() => notEnoughSympathyDialogue;
+    public string GetLowSympathyDialogue()
+    {
+        int randomIndex = UnityEngine.Random.Range(0, characterDialogueSO.lowSympathyDialogs.Length);
+        return characterDialogueSO.lowSympathyDialogs[randomIndex];
+    }
 
     public string GetRejectDialogue() => rejectDialogue;
 
@@ -333,29 +335,28 @@ public class CharacterDisplay : MonoBehaviour
         else if (state == CharacterState.EngAngry)
         {
             // AngryState previousAngryState = ang + 1;
-            if (ang == AngryState.High)
+            if (ang+1 == AngryState.High)
             {
                 VideoClipInfo ae3 = videoClips.Find(x => x.videoType == VideoType.Angry3End);
                 VideoClipInfo id2 = videoClips.Find(x => x.videoType == VideoType.Angry2Idle);
                 InitializeVideoPlayer(ae3, () => InitializeVideoPlayer(id2, PlayCurrentState));
             }
-            else if (ang == AngryState.Medium)
+            else if (ang+1 == AngryState.Medium)
             {
                 VideoClipInfo ae2 = videoClips.Find(x => x.videoType == VideoType.Angry2End);
                 VideoClipInfo id1 = videoClips.Find(x => x.videoType == VideoType.Angry1Idle);
                 InitializeVideoPlayer(ae2, () => InitializeVideoPlayer(id1, PlayCurrentState));
             }
-            else if (ang == AngryState.Low)
+            else if (ang+1 == AngryState.Low)
             {
                 VideoClipInfo ae1 = videoClips.Find(x => x.videoType == VideoType.Angry1End);
                 VideoClipInfo id = videoClips.Find(x => x.videoType == VideoType.Idle);
                 InitializeVideoPlayer(ae1, () => InitializeVideoPlayer(id, PlayCurrentState));
             }
-            else if (ang == AngryState.CompletelyRecover)
+            else if (ang+1 == AngryState.CompletelyRecover)
             {
-                VideoClipInfo ae1 = videoClips.Find(x => x.videoType == VideoType.Angry1End);
                 VideoClipInfo id = videoClips.Find(x => x.videoType == VideoType.Idle);
-                InitializeVideoPlayer(ae1, () => InitializeVideoPlayer(id, PlayCurrentState));
+                InitializeVideoPlayer(id, () => InitializeVideoPlayer(id, PlayCurrentState));
             }
         }
         else if (state == CharacterState.Exit)

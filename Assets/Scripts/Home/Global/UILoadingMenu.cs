@@ -10,13 +10,38 @@ public class UILoadingMenu : MonoBehaviour
     [SerializeField] private Button homeButton;
     [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI goHomeText;
-
+    [SerializeField] private Image bgLoading;
     public float progress = 0f;
     private float targetProgress = 1f;
 
     private void Start()
     {
         homeButton.onClick.AddListener(OnHomeClick);
+        SetBgByTime();
+    }
+
+    private void SetBgByTime()
+    {
+        TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
+        Debug.Log("Current Time of Day: " + timeOfDay);
+        switch (timeOfDay)
+        {
+            case TimeOfDay.Morning:
+                bgLoading.sprite = Resources.Load<Sprite>("Sprites/backgrounds/bg_morning_1");
+                break;
+            case TimeOfDay.Afternoon:
+                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_morning_2");
+                break;
+            case TimeOfDay.Midday:
+                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_morning_2");
+                break;
+            case TimeOfDay.Evening:
+                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_evening_1");
+                break;
+            case TimeOfDay.Night:
+                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_evening_2");
+                break;
+        }
     }
 
     private void OnEnable()

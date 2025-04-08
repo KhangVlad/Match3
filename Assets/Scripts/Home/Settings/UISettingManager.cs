@@ -22,14 +22,13 @@ public class UISettingManager : MonoBehaviour
     [Header("Language Setting")] [SerializeField]
     private Button _openLanguageSettingBtn;
 
-    [SerializeField] private Transform languageParent;
-    [SerializeField] private Button _closeLangueBtn;
-    [SerializeField] private Button _saveLangueBtn;
+    // [SerializeField] private Transform languageParent;
+    // [SerializeField] private Button _closeLangueBtn;
+    // [SerializeField] private Button _saveLangueBtn;
     [SerializeField] private TMP_Dropdown _dropdownlanguage;
 
     [Header("Temp Variables")] [SerializeField]
     private Button _dayAndNightToggle; //get child image to change sprite
-
     private TimeOfDay _timeOfDay;
 
     private void Awake()
@@ -42,12 +41,12 @@ public class UISettingManager : MonoBehaviour
     {
         _closeButton.onClick.AddListener(Close);
         _openSoundSettingBtn.onClick.AddListener(OnOpenButtonClicked);
-        _openLanguageSettingBtn.onClick.AddListener(OnOpenLanguageButtonClicked);
+        // _openLanguageSettingBtn.onClick.AddListener(OnOpenLanguageButtonClicked);
         _musicSlider.onValueChanged.AddListener(OnMusicSliderValueChanged);
         _soundSlider.onValueChanged.AddListener(OnSoundSliderValueChanged);
         _saveButton.onClick.AddListener(OnSaveButtonClicked);
-        _closeLangueBtn.onClick.AddListener(OnCloseLanguageSetting);
-        _saveLangueBtn.onClick.AddListener(OnSaveLanguage);
+        // _closeLangueBtn.onClick.AddListener(OnCloseLanguageSetting);
+        // _saveLangueBtn.onClick.AddListener(OnSaveLanguage);
         _dropdownlanguage.onValueChanged.AddListener(OnLanguageChange);
         _dayAndNightToggle.onClick.AddListener(OnDayAndNightToggle);
     }
@@ -55,15 +54,15 @@ public class UISettingManager : MonoBehaviour
 
     private void OnDayAndNightToggle()
     {
-        if (_timeOfDay == TimeOfDay.Day)
+        if (_timeOfDay == TimeOfDay.Morning)
         {
             TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Night);
             _timeOfDay = TimeOfDay.Night;
         }
         else
         {
-            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Day);
-            _timeOfDay = TimeOfDay.Day;
+            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Morning);
+            _timeOfDay = TimeOfDay.Morning;
         }
     }
 
@@ -72,20 +71,20 @@ public class UISettingManager : MonoBehaviour
         LanguageManager.Instance.ChangeLanguage((LanguageType)value);
     }
 
-    private void OnCloseLanguageSetting()
-    {
-        AudioManager.Instance.PlayCloseBtnSfx();
-        languageParent.gameObject.SetActive(false);
-        m_background.SetActive(false);
-    }
-
-    private void OnSaveLanguage()
-    {
-        AudioManager.Instance.PlayButtonSfx();
-        LanguageManager.Instance.ChangeLanguage((LanguageType)_dropdownlanguage.value);
-        languageParent.gameObject.SetActive(false);
-        m_background.SetActive(false);
-    }
+    // private void OnCloseLanguageSetting()
+    // {
+    //     AudioManager.Instance.PlayCloseBtnSfx();
+    //     languageParent.gameObject.SetActive(false);
+    //     m_background.SetActive(false);
+    // }
+    //
+    // private void OnSaveLanguage()
+    // {
+    //     AudioManager.Instance.PlayButtonSfx();
+    //     LanguageManager.Instance.ChangeLanguage((LanguageType)_dropdownlanguage.value);
+    //     languageParent.gameObject.SetActive(false);
+    //     m_background.SetActive(false);
+    // }
 
     private void OnSaveButtonClicked()
     {
@@ -101,10 +100,10 @@ public class UISettingManager : MonoBehaviour
         _openLanguageSettingBtn.onClick.RemoveAllListeners();
         _musicSlider.onValueChanged.RemoveAllListeners();
         _soundSlider.onValueChanged.RemoveAllListeners();
-        _closeLangueBtn.onClick.RemoveAllListeners();
+        // _closeLangueBtn.onClick.RemoveAllListeners();
         _dropdownlanguage.onValueChanged.RemoveAllListeners();
         _saveButton.onClick.RemoveAllListeners();
-        _saveLangueBtn.onClick.RemoveAllListeners();
+        // _saveLangueBtn.onClick.RemoveAllListeners();
         _dayAndNightToggle.onClick.RemoveAllListeners();
     }
 
@@ -117,14 +116,14 @@ public class UISettingManager : MonoBehaviour
             _animatorSoundPanel.Play("Open");
     }
 
-    private void OnOpenLanguageButtonClicked()
-    {
-        AudioManager.Instance.PlayButtonSfx();
-        CreateBackground();
-        languageParent.gameObject.SetActive(true);
-        if (_animatorLanguagePanel.GetCurrentAnimatorStateInfo(0).IsName("Close"))
-            _animatorLanguagePanel.Play("Open");
-    }
+    // private void OnOpenLanguageButtonClicked()
+    // {
+    //     AudioManager.Instance.PlayButtonSfx();
+    //     CreateBackground();
+    //     languageParent.gameObject.SetActive(true);
+    //     if (_animatorLanguagePanel.GetCurrentAnimatorStateInfo(0).IsName("Close"))
+    //         _animatorLanguagePanel.Play("Open");
+    // }
 
     private void CreateBackground()
     {
@@ -151,12 +150,12 @@ public class UISettingManager : MonoBehaviour
 
     private void OnMusicSliderValueChanged(float value)
     {
-        AudioManager.Instance.SetMasterVolume(value);
+        AudioManager.Instance.SetMusicVolume(value);
     }
 
     private void OnSoundSliderValueChanged(float value)
     {
-        AudioManager.Instance.SetMasterVolume(value);
+        AudioManager.Instance.SetSoundVolume(value);
     }
 
     public void Close()
@@ -165,12 +164,11 @@ public class UISettingManager : MonoBehaviour
         {
             _animatorSoundPanel.Play("Close");
         }
-        else if (languageParent.gameObject.activeSelf &&
-                 _animatorLanguagePanel.GetCurrentAnimatorStateInfo(0).IsName("Open"))
-        {
-            _animatorLanguagePanel.Play("Close");
-        }
-
+        // else if (languageParent.gameObject.activeSelf &&
+        //          _animatorLanguagePanel.GetCurrentAnimatorStateInfo(0).IsName("Open"))
+        // {
+        //     _animatorLanguagePanel.Play("Close");
+        // }
         AudioManager.Instance.PlayCloseBtnSfx();
         RemoveBackground();
         StartCoroutine(RunPopupDestroy());

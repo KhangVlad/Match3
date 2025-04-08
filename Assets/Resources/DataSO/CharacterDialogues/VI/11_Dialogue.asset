@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8571f95c24b54894b1e92e372d09f6ea, type: 3}
-  m_Name: 1_Dialogue
+  m_Name: 11_Dialogue
   m_EditorClassIdentifier: 
-  id: 1
+  id: 11
   data:
   - levelDialogs:
     - "L\u1EC5 h\u1ED9i \u0111ang \u0111\u1EBFn g\u1EA7n H\xE3y t\xECm nh\u1EEFng
@@ -147,42 +147,29 @@ MonoBehaviour:
     vui v\u1EBB kh\xF4ng"
   - "Ch\xE0o b\u1EA1n b\u1EA1n c\xF3 th\xEDch \xE1nh s\xE1ng l\u1EA5p l\xE1nh kh\xF4ng"
   lowSympathyDialogs:
-  - "I don't think you\u2019re the right person to help me now"
+  - Gau gau gau.
   - Hmm
   - "T\xF4i hy v\u1ECDng b\u1EA1n s\u1EBD h\xE0o h\u1EE9ng h\u01A1n"
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!c.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
   - "C\xF3 v\u1EBB b\u1EA1n ch\u01B0a s\u1EB5n s\xE0ng \u0111\u1EC3 gi\xFAp \u0111\u1EE1.
-    T\xF4i s\u1EBD t\xECm ng\u01B0\u1EDDi kh\xE1c cho l\xFAc n\xE0y."
-  - "C\xF3 th\u1EC3 c\xF4ng vi\u1EC7c n\xE0y kh\xF4ng ph\u1EA3i d\xE0nh cho b\u1EA1n
-    h\xF4m nay. T\xF4i s\u1EBD ki\u1EC3m tra l\u1EA1i sau."
-  - "N\u1EBFu b\u1EA1n kh\xF4ng mu\u1ED1n l\xE0m vi\u1EC7c n\xE0y"
-  - "C\xF4ng vi\u1EC7c n\xE0y \u0111\xF2i h\u1ECFi s\u1EF1 t\u1EADp trung h\u01A1n.
-    T\xF4i s\u1EBD quay l\u1EA1i khi b\u1EA1n s\u1EB5n s\xE0ng."
-  - "C\xF3 v\u1EBB nh\u01B0 b\u1EA1n c\xF3 vi\u1EC7c kh\xE1c trong \u0111\u1EA7u.
-    T\xF4i s\u1EBD t\xECm s\u1EF1 tr\u1EE3 gi\xFAp t\u1EEB ng\u01B0\u1EDDi kh\xE1c."
-  - "T\xF4i c\xF3 th\u1EC3 t\u1EF1 lo c\xF4ng vi\u1EC7c n\xE0y. C\xF3 l\u1EBD t\xF4i
-    s\u1EBD quay l\u1EA1i sau."
-  - "C\xF3 v\u1EBB b\u1EA1n ch\u01B0a s\u1EB5n s\xE0ng \u0111\u1EC3 gi\xFAp. T\xF4i
-    s\u1EBD quay l\u1EA1i khi b\u1EA1n chu\u1EA9n b\u1ECB xong."
-  - "I don't think you\u2019re the right person to help me now"
-  - Hmm
-  - "T\xF4i hy v\u1ECDng b\u1EA1n s\u1EBD ch\xFA \xFD h\u01A1n"
-  - "C\xF3 v\u1EBB b\u1EA1n ch\u01B0a s\u1EB5n s\xE0ng \u0111\u1EC3 gi\xFAp \u0111\u1EE1.
-    T\xF4i s\u1EBD t\xECm ng\u01B0\u1EDDi kh\xE1c cho l\xFAc n\xE0y."
-  - "C\xF3 th\u1EC3 c\xF4ng vi\u1EC7c n\xE0y kh\xF4ng ph\u1EA3i d\xE0nh cho b\u1EA1n
-    h\xF4m nay. T\xF4i s\u1EBD ki\u1EC3m tra l\u1EA1i sau."
-  - "N\u1EBFu b\u1EA1n kh\xF4ng mu\u1ED1n l\xE0m vi\u1EC7c n\xE0y"
-  - "C\xF4ng vi\u1EC7c n\xE0y \u0111\xF2i h\u1ECFi s\u1EF1 t\u1EADp trung h\u01A1n.
-    T\xF4i s\u1EBD quay l\u1EA1i khi b\u1EA1n s\u1EB5n s\xE0ng."
-  - "C\xF3 v\u1EBB nh\u01B0 b\u1EA1n c\xF3 vi\u1EC7c kh\xE1c trong \u0111\u1EA7u.
-    T\xF4i s\u1EBD t\xECm s\u1EF1 tr\u1EE3 gi\xFAp t\u1EEB ng\u01B0\u1EDDi kh\xE1c."
-  - "T\xF4i c\xF3 th\u1EC3 t\u1EF1 lo c\xF4ng vi\u1EC7c n\xE0y. C\xF3 l\u1EBD t\xF4i
-    s\u1EBD quay l\u1EA1i sau."
-  - "C\xF3 v\u1EBB b\u1EA1n ch\u01B0a s\u1EB5n s\xE0ng \u0111\u1EC3 gi\xFAp. T\xF4i
-    s\u1EBD quay l\u1EA1i khi b\u1EA1n chu\u1EA9n b\u1ECB xong."
-  - "I don't think you\u2019re the right person to help me now"
-  - Hmm
-  - "T\xF4i hy v\u1ECDng b\u1EA1n s\u1EBD ch\xFA \xFD h\u01A1n"
-  - "C\xF3 v\u1EBB b\u1EA1n ch\u01B0a s\u1EB5n s\xE0ng \u0111\u1EC3 gi\xFAp \u0111\u1EE1.
-    T\xF4i s\u1EBD t\xECm ng\u01B0\u1EDDi kh\xE1c cho l\xFAc n\xE0y."
-  - "C\xF3 th\u1EC3 c\xF4ng vi\u1EC7c n\xE0y kh\xF4ng ph\u1EA3i d\xE0nh cho b\u1EA1n
-    h\xF4m nay. T\xF4i s\u1EBD ki\u1EC3m tra l\u1EA1i sau."
+    Gau gau gau !!."
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau !!.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.
+  - Gau gau gau.

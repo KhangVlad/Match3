@@ -28,14 +28,14 @@ public class CharacterTimelineEditorInspector : Editor
                 startTime = myScript.StartTime,
                 endTime = myScript.EndTime,
                 appearPosition = myScript.AppearPosition,
-                // You can choose to use the manager’s current day or provide another selection.
                 dayOfWeek = myScript.currentDay
             };
 
             if (activitySO != null)
             {
                 // If the asset already exists, add the new activity info.
-                List<ActivityInfo> activityList = new List<ActivityInfo>(activitySO.activityInfos ?? new ActivityInfo[0]);
+                List<ActivityInfo> activityList =
+                    new List<ActivityInfo>(activitySO.activityInfos ?? new ActivityInfo[0]);
                 activityList.Add(newActivity);
                 activitySO.activityInfos = activityList.ToArray();
                 activitySO.homePosition = myScript.HomePos;

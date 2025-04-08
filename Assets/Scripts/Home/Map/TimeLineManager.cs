@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using DG.Tweening;
-using UnityEngine.Serialization;
 # if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,7 +17,7 @@ public class TimeLineManager : MonoBehaviour
     [SerializeField] private SpriteRenderer map;
     [HideInInspector] [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
     [HideInInspector] [SerializeField] private BoxCollider2D cameraCollider;
-    [SerializeField] private float padding = 1f;
+    [SerializeField] private float padding = 1f; //for bounds check
     [SerializeField] private GameObject _lightingManager2D;
     [SerializeField] private GameObject _nightGameobjects;
     private List<CharacterActivitySO> activeInDay = new();
@@ -28,16 +25,6 @@ public class TimeLineManager : MonoBehaviour
     private List<CharacterID> activeIds = new();
     private int lastCheckedHour = -1;
 
-    private static readonly Dictionary<DayOfWeek, DayInWeek> DayMapping = new()
-    {
-        { DayOfWeek.Monday, DayInWeek.Monday },
-        { DayOfWeek.Tuesday, DayInWeek.Tuesday },
-        { DayOfWeek.Wednesday, DayInWeek.Wednesday },
-        { DayOfWeek.Thursday, DayInWeek.Thursday },
-        { DayOfWeek.Friday, DayInWeek.Friday },
-        { DayOfWeek.Saturday, DayInWeek.Saturday },
-        { DayOfWeek.Sunday, DayInWeek.Sunday }
-    };
 
     private Dictionary<CharacterID, IconWithPosition> pairDict = new();
 
@@ -46,7 +33,6 @@ public class TimeLineManager : MonoBehaviour
 
     [Header("Create New Activity Info")] public bool IsCreatingNewActivity;
     public CharacterID EditorCharacterID;
-
     public CharacterBubble simulatedBubble;
     public int StartTime;
     public int EndTime;
@@ -75,7 +61,8 @@ public class TimeLineManager : MonoBehaviour
 #if UNITY_EDITOR
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && IsCreatingNewActivity)
+        if (!IsCreatingNewActivity) return;
+        if (Input.GetMouseButtonDown(0))
         {
             AppearPosition = map.WorldPositionToImagePixel(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             Vector3 worldPosition = (Vector2)map.ImagePixelToWorld(AppearPosition); // Convert Vector2Int to Vector3
@@ -101,6 +88,7 @@ public class TimeLineManager : MonoBehaviour
     private void OnValidate()
     {
         //if id is changed
+        UpdateTimeChange();
         if (EditorCharacterID != simulatedBubble?.characterID && simulatedBubble != null)
         {
             Sprite s = AssetDatabase.LoadAssetAtPath<Sprite>(
@@ -113,22 +101,22 @@ public class TimeLineManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            currentDay = GetCurrentDay();
-            GetCurrentHour();
-            CheckDayAndNight();
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        currentDay = TimeManager.Instance.GetCurrentDayInWeek();
+        GetCurrentHour();
+        CheckDayAndNight();
     }
 
     private void Start()
     {
         GetCharacterActiveToday();
+        AdjustColliderBounds();
         ScreenInteraction.Instance.OnInteractAbleTriggered += OnInteractAbleTriggered;
     }
 
@@ -140,22 +128,12 @@ public class TimeLineManager : MonoBehaviour
     private void OnInteractAbleTriggered()
     {
         GetCharactersInTime(activeInDay);
-        AdjustColliderBounds();
     }
 
     private void GetCharacterActiveToday()
     {
         activeInDay = CharactersDataManager.Instance.GetCharacterActive(currentDay);
     }
-
-    // private void OnValidate()
-    // {
-    //     if (Application.isPlaying && currentHour != lastCheckedHour)
-    //     {
-    //         UpdateTimeChange();
-    //         GetCharactersInTime(activeInDay);
-    //     }
-    // }
 
     public void PlusCurrentHour()
     {
@@ -173,12 +151,12 @@ public class TimeLineManager : MonoBehaviour
 
     public void ChangeTimeOfDay(TimeOfDay t)
     {
-        if (t == TimeOfDay.Day)
+        if (t == TimeOfDay.Morning || t == TimeOfDay.Midday || t == TimeOfDay.Afternoon)
         {
             _lightingManager2D.SetActive(false);
             _nightGameobjects.SetActive(false);
         }
-        else if (t == TimeOfDay.Night)
+        else
         {
             _lightingManager2D.SetActive(true);
             _nightGameobjects.SetActive(true);
@@ -187,23 +165,27 @@ public class TimeLineManager : MonoBehaviour
 
     private void UpdateTimeChange()
     {
+        bool isNewDay = false;
+
         if (currentHour >= 24)
         {
             currentHour = 0;
             currentDay = currentDay == DayInWeek.Sunday ? DayInWeek.Monday : currentDay + 1;
-            CheckNewDay();
+            isNewDay = true;
         }
-
-        if (currentHour < 0)
+        else if (currentHour < 0)
         {
             currentHour = 23;
             currentDay = currentDay == DayInWeek.Monday ? DayInWeek.Sunday : currentDay - 1;
-            CheckNewDay();
+            isNewDay = true;
         }
+
+        if (isNewDay) CheckNewDay();
 
         CheckDayAndNight();
         lastCheckedHour = currentHour;
     }
+
 
     private void CheckDayAndNight()
     {
@@ -264,7 +246,6 @@ public class TimeLineManager : MonoBehaviour
     {
         homeIds.ForEach(UnregisterCharacterIcon);
         activeIds.ForEach(UnregisterCharacterIcon);
-
         homeIds.Clear();
         activeIds.Clear();
     }
@@ -282,18 +263,17 @@ public class TimeLineManager : MonoBehaviour
 
     private void InitializeCharacterToWorld(CharacterActivitySO data)
     {
-        ActivityInfo activity = data.activityInfos.FirstOrDefault(a =>
-            a.dayOfWeek == currentDay &&
-            a.startTime <= currentHour &&
-            a.endTime > currentHour);
-
-        if (activity != null)
+        foreach (var activity in data.activityInfos)
         {
-            Vector2 mapPos = map.ImagePixelToWorld(new Vector2(activity.appearPosition.x, activity.appearPosition.y));
-            CharacterBubble bubble = Instantiate(bubblePrefab, mapPos, Quaternion.identity);
-            bubble.Initialize(data.id, data.sprite, mapPos);
-            RegisterCharacterIcon(data.id, bubble);
-            activeIds.Add(data.id);
+            if (activity.dayOfWeek == currentDay && activity.startTime <= currentHour && activity.endTime > currentHour)
+            {
+                Vector2 mapPos = map.ImagePixelToWorld(activity.appearPosition);
+                CharacterBubble bubble = Instantiate(bubblePrefab, mapPos, Quaternion.identity);
+                bubble.Initialize(data.id, data.sprite, mapPos);
+                RegisterCharacterIcon(data.id, bubble);
+                activeIds.Add(data.id);
+                return;
+            }
         }
     }
 
@@ -302,9 +282,6 @@ public class TimeLineManager : MonoBehaviour
     {
         currentHour = DateTime.Now.Hour;
     }
-
-
-    private DayInWeek GetCurrentDay() => DayMapping[DateTime.Now.DayOfWeek];
 
 
     public void RegisterCharacterIcon(CharacterID id, CharacterBubble characterBubble)
@@ -340,45 +317,10 @@ public class TimeLineManager : MonoBehaviour
     }
 
 
-    // private void CheckCharacterOutOfBound()
-    // {
-    //     paddedBounds = cameraCollider.bounds;
-    //     paddedBounds.Expand(padding * 2); // Expand bounds once per frame
-    //     foreach (var entry in pairDict)
-    //     {
-    //         IconWithPosition iconWithPosition = entry.Value;
-    //         bool isOut = !paddedBounds.Contains(iconWithPosition.bubble.transform.position);
-    //
-    //         if (isOut != iconWithPosition.isOut)
-    //         {
-    //             iconWithPosition.isOut = isOut;
-    //             if (isOut)
-    //             {
-    //                 if (iconWithPosition.directionArrow != null)
-    //                 {
-    //                     iconWithPosition.directionArrow.transform.DOScale(Vector3.one, 0.2f);
-    //                 }
-    //                 else
-    //                 {
-    //                     InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 if (iconWithPosition.directionArrow != null)
-    //                 {
-    //                     iconWithPosition.directionArrow.transform.DOScale(Vector3.zero, 0.2f).OnComplete(() => { });
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     private void CheckCharacterOutOfBound()
     {
-        // Cập nhật lại bounds của collider mỗi khi màn hình thay đổi
         paddedBounds = cameraCollider.bounds;
-        paddedBounds.Expand(padding * 2); // Expand bounds once per frame
+        paddedBounds.Expand(padding * 3);
 
         foreach (var entry in pairDict)
         {
@@ -388,24 +330,19 @@ public class TimeLineManager : MonoBehaviour
             if (isOut != iconWithPosition.isOut)
             {
                 iconWithPosition.isOut = isOut;
+
                 if (isOut)
                 {
-                    // Đặt lại vị trí của các biểu tượng ngoài bounds
-                    if (iconWithPosition.directionArrow != null)
-                    {
-                        iconWithPosition.directionArrow.transform.DOScale(Vector3.one, 0.2f);
-                    }
-                    else
+                    if (iconWithPosition.directionArrow == null)
                     {
                         InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
                     }
+
+                    iconWithPosition.directionArrow.gameObject.SetActive(true);
                 }
                 else
                 {
-                    if (iconWithPosition.directionArrow != null)
-                    {
-                        iconWithPosition.directionArrow.transform.DOScale(Vector3.zero, 0.2f);
-                    }
+                    iconWithPosition.directionArrow?.gameObject.SetActive(false);
                 }
             }
         }
@@ -451,7 +388,6 @@ public class TimeLineManager : MonoBehaviour
     private void AdjustColliderBounds()
     {
         float screenRatio = (float)Screen.width / (float)Screen.height;
-
         float newWidth = cameraCollider.size.x - (padding * screenRatio);
         float newHeight = cameraCollider.size.y - (padding * screenRatio);
         cameraCollider.size = new Vector2(newWidth, newHeight);
@@ -465,12 +401,4 @@ public class IconWithPosition
     public Vector2 originPosition;
     public bool isOut;
     public CharacterDirectionArrow directionArrow;
-}
-
-public enum TimeOfDay
-{
-    Day,
-    Afternoon,
-    Evening,
-    Night
 }

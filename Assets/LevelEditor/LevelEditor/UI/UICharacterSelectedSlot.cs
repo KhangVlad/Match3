@@ -12,7 +12,7 @@ namespace Match3.LevelEditor
 
         [SerializeField] private Button _addBtn;
         [SerializeField] private Image _iconImage;
-       
+
         public CharacterDataSO CharacterData { get; private set; }
         private bool _isEnter = false;
 
@@ -21,6 +21,7 @@ namespace Match3.LevelEditor
             Character = 1,
             UnlockedByCharcter = 2
         }
+
         [SerializeField] private SelectedType _selectedType;
 
 
@@ -34,7 +35,7 @@ namespace Match3.LevelEditor
                 OnClicked?.Invoke(this);
 
                 UIInventoryManager.Instance.DisplayCharacterInventory(true);
-            });      
+            });
         }
 
         private void OnDestroy()
@@ -44,14 +45,12 @@ namespace Match3.LevelEditor
 
         public void SetData(CharacterDataSO characterData)
         {
-            this.CharacterData = characterData;
-
+            CharacterData = characterData;
             _iconImage.sprite = characterData.sprite;
             _iconImage.SetNativeSize();
-            _iconImage.rectTransform.ScaleIcon(75, 75);     
+            _iconImage.rectTransform.ScaleIcon(75, 75);
         }
 
-    
 
         public void OnPointerEnter(PointerEventData eventData)
         {
