@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace Match3
 {
@@ -41,6 +42,7 @@ namespace Match3
 
         private HashSet<int> _triggeredMatch5Set;
         private Dictionary<int, Vector2> _colorBurstParentDictionary;
+        private Dictionary<Tile, Tile> _match3Dictionary;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -103,6 +105,7 @@ namespace Match3
             _clearHorizontalRows = new();
             _blackMudSpreaingList = new();
             _colorBurstParentDictionary = new();
+            _match3Dictionary = new();
 
 
 
@@ -440,54 +443,44 @@ namespace Match3
                     switch (blockID)
                     {
                         case BlockID.None:
-                            //TileID randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             Tile newTile = AddTile(x, y, tileID, BlockID.None);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Void:
-                            //TileID voidTile = GameDataManager.Instance.GetTileByID(TileID.None).ID;
                             newTile = AddTile(x, y, tileID, BlockID.Void);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Fill:
-                            //TileID noneTile = GameDataManager.Instance.GetTileByID(TileID.None).ID;
                             newTile = AddTile(x, y, tileID, BlockID.Fill);
                             newTile.UpdatePosition();
 
                             _fillBlockIndices.Add(x + y * Width);
                             break;
                         case BlockID.Lock:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Lock);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Ice:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Ice);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.HardIce:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.HardIce);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.EternalIce:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.EternalIce);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Stone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Stone);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.HardStone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.HardStone);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.SuperHardStone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.SuperHardStone);
                             newTile.UpdatePosition();
                             break;
@@ -642,7 +635,6 @@ namespace Match3
             bool isMatch = false;
 
 
-
             while (true)
             {
                 int colorBurstCount = 0;
@@ -656,6 +648,23 @@ namespace Match3
                 bool hasMatched = false;
                 // play match animation
                 _unlockTileSet.Clear();
+
+                foreach (var tile in _match3Dictionary)
+                {
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
+                        nb.transform.DOMove(t.transform.position, 0.1f).SetEase(Ease.Linear);
+
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, nb.transform.position);
+                        MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                    }
+                }
+                MatchAnimManager.Instance.PlayCollectAnimation();
+                yield return new WaitForSeconds(0.1f);
+
                 for (int i = 0; i < _matchBuffer.Length; i++)
                 {
                     Tile tile = _tiles[i];
@@ -665,7 +674,6 @@ namespace Match3
                     {
                         AudioManager.Instance.PlayMatch3Sfx();
                     }
-
 
                     // Match & Unlock
                     if (matchID == MatchID.Match)
@@ -825,6 +833,7 @@ namespace Match3
 
             _triggeredMatch5Set.Clear();
             _colorBurstParentDictionary.Clear();
+            _match3Dictionary.Clear();
 
             if (triggerEvent)
             {
@@ -1585,11 +1594,43 @@ namespace Match3
 
 
                 // default
+
                 for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
                 {
                     int index = (x + h) + y * Width;
-                    //_matchBuffer[index] = MatchID.Match;
                     SetMatchBuffer(index, MatchID.Match);
+                }
+
+                int originIndex = (tile.X + 1) + tile.Y * Width;
+                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+                {
+                    int index = (x + h) + y * Width;
+                    if (_tiles[index].ID != _prevTileIDs[index])
+                    {
+                        originIndex = _tiles[index].X + _tiles[index].Y * Width;
+                    }
+
+                    if (_selectedTile != null)
+                        if (_tiles[index].Equal(_selectedTile))
+                        {
+                            originIndex = _selectedTile.X + _selectedTile.Y * Width;
+                            break;
+                        }
+
+                    if (_swappedTile != null)
+                        if (_tiles[index].Equal(_swappedTile))
+                        {
+                            originIndex = _swappedTile.X + _swappedTile.Y * Width;
+                            break;
+                        }
+                }
+
+                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+                {
+                    int index = (x + h) + y * Width;
+                    if (index == originIndex) continue;
+                    if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
             }
         }

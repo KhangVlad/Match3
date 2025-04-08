@@ -14,13 +14,6 @@ namespace Match3
                     Destroy(cachedTile.gameObject);
                 });
             });
-
-            //cachedTile.TileTransform.DOMove(new Vector3(0, 10, 0),0.3f).SetEase(Ease.Linear).OnComplete(() =>
-            //{
-            //    Destroy(cachedTile.gameObject);
-            //});
-
-
             grid[tile.X + tile.Y * width] = null;     
         }
 

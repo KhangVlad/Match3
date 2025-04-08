@@ -19,42 +19,42 @@ namespace Match3
             // Debug.Log($"C : {_background03.anchoredPosition}");
         }
 
-        //private void Update()
-        //{
-        //    if (Input.GetKeyDown(KeyCode.UpArrow))
-        //    {
-        //        _background01.DOAnchorPosY(_background01.anchoredPosition.y - 500, 0.2f);
-        //        _background02.DOAnchorPosY(_background02.anchoredPosition.y - 500, 0.2f);
-        //        _background03.DOAnchorPosY(_background03.anchoredPosition.y - 500, 0.2f).OnComplete(() =>
-        //        {
-        //            UpdateAllBackgroundOrderMoveUp();
-        //        });
-        //    }
+        private void Update()
+        {
+           if (Input.GetKeyDown(KeyCode.UpArrow))
+           {
+               _background01.DOMoveY(_background01.anchoredPosition.y - 500, 0.2f);
+               _background02.DOMoveY(_background02.anchoredPosition.y - 500, 0.2f);
+               _background03.DOMoveY(_background03.anchoredPosition.y - 500, 0.2f).OnComplete(() =>
+               {
+                   UpdateAllBackgroundOrderMoveUp();
+               });
+           }
 
-        //    if (Input.GetKeyDown(KeyCode.DownArrow))
-        //    {
-        //        _background01.DOAnchorPosY(_background01.anchoredPosition.y + 500, 0.2f);
-        //        _background02.DOAnchorPosY(_background02.anchoredPosition.y + 500, 0.2f);
-        //        _background03.DOAnchorPosY(_background03.anchoredPosition.y + 500, 0.2f).OnComplete(() =>
-        //        {
-        //            UpdateAllBackgroundOrderMoveDown();
-        //        });
-        //    }
-        //}
+           if (Input.GetKeyDown(KeyCode.DownArrow))
+           {
+               _background01.DOMoveY(_background01.anchoredPosition.y + 500, 0.2f);
+               _background02.DOMoveY(_background02.anchoredPosition.y + 500, 0.2f);
+               _background03.DOMoveY(_background03.anchoredPosition.y + 500, 0.2f).OnComplete(() =>
+               {
+                   UpdateAllBackgroundOrderMoveDown();
+               });
+           }
+        }
 
         private void UpdateAllBackgroundOrderMoveDown()
         {
             if (_background01.anchoredPosition.y > 0 && _background01.anchoredPosition.y < BG_HEIGHT)
             {
-                _background03.anchoredPosition = new Vector2(_background03.anchoredPosition.x, _background01.anchoredPosition.y - BG_HEIGHT);
+                _background03.position = new Vector2(_background03.anchoredPosition.x, _background01.anchoredPosition.y - BG_HEIGHT);
             }
             else if (_background01.anchoredPosition.y > BG_HEIGHT * 2)
             {
-                _background01.anchoredPosition = new Vector2(_background01.anchoredPosition.x, _background02.anchoredPosition.y - BG_HEIGHT);
+                _background01.position = new Vector2(_background01.anchoredPosition.x, _background02.anchoredPosition.y - BG_HEIGHT);
             }
             else if (_background01.anchoredPosition.y > BG_HEIGHT)
             {
-                _background02.anchoredPosition = new Vector2(_background02.anchoredPosition.x, _background03.anchoredPosition.y - BG_HEIGHT);
+                _background02.position = new Vector2(_background02.anchoredPosition.x, _background03.anchoredPosition.y - BG_HEIGHT);
             }
 
             // if (_background01.anchoredPosition.y > 0 && _background01.anchoredPosition.y < BG_HEIGHT)
