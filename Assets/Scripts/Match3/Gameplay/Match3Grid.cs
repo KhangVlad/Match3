@@ -114,19 +114,19 @@ namespace Match3
                     { 0, 1, 0 },
                     { 0, 1, 0 },
                 },
-                new int[,] // 90° Rotation
+                new int[,] // 90ï¿½ Rotation
                 {
                     { 0, 0, 1 },
                     { 1, 1, 1 },
                     { 0, 0, 1 },
                 },
-                new int[,] // 180° Rotation
+                new int[,] // 180ï¿½ Rotation
                 {
                     { 0, 1, 0 },
                     { 0, 1, 0 },
                     { 1, 1, 1 },
                 },
-                new int[,] // 270° Rotation
+                new int[,] // 270ï¿½ Rotation
                 {
                     { 1, 0, 0 },
                     { 1, 1, 1 },
@@ -141,19 +141,19 @@ namespace Match3
                     { 1, 0, 0 },
                     { 1, 1, 1 },
                 },
-                new int[,] // 90° Rotation
+                new int[,] // 90ï¿½ Rotation
                 {
                     { 1, 1, 1 },
                     { 1, 0, 0 },
                     { 1, 0, 0 },
                 },
-                new int[,] // 180° Rotation
+                new int[,] // 180ï¿½ Rotation
                 {
                     { 1, 1, 1 },
                     { 0, 0, 1 },
                     { 0, 0, 1 },
                 },
-                new int[,] // 270° Rotation
+                new int[,] // 270ï¿½ Rotation
                 {
                     { 0, 0, 1 },
                     { 0, 0, 1 },
@@ -241,7 +241,7 @@ namespace Match3
                             if (IsValidMatchTile(leftTileX, leftTileY))
                             {
                                 Tile leftTile = _tiles[leftTileX + leftTileY * Width];
-                                if (leftTile.CurrentBlock is not Lock && 
+                                if (leftTile.CurrentBlock is not Lock &&
                                     leftTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = leftTile;
@@ -258,7 +258,7 @@ namespace Match3
                             if (IsValidMatchTile(rightTileX, rightTileY))
                             {
                                 Tile rightTile = _tiles[rightTileX + rightTileY * Width];
-                                if (rightTile.CurrentBlock is not Lock && 
+                                if (rightTile.CurrentBlock is not Lock &&
                                     rightTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = rightTile;
@@ -275,7 +275,7 @@ namespace Match3
                             if (IsValidMatchTile(upTileX, upTileY))
                             {
                                 Tile upTile = _tiles[upTileX + upTileY * Width];
-                                if (upTile.CurrentBlock is not Lock && 
+                                if (upTile.CurrentBlock is not Lock &&
                                     upTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = upTile;
@@ -859,8 +859,8 @@ namespace Match3
                     if (currTile.ID == TileID.None) continue;
                     if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
                     if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
-                    if (currTile.CurrentBlock is not NoneBlock && 
-                        currTile.CurrentBlock is not Lock && 
+                    if (currTile.CurrentBlock is not NoneBlock &&
+                        currTile.CurrentBlock is not Lock &&
                         currTile.CurrentBlock is not BushBlock) continue;
 
                     int sameIDCount = 0;
@@ -873,8 +873,8 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock || 
-                            nbTile.CurrentBlock is Lock || 
+                            (nbTile.CurrentBlock is NoneBlock ||
+                            nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
                         {
                             sameIDCount++;
@@ -1140,10 +1140,10 @@ namespace Match3
 
                         if (currTile.ID == nbTile.ID &&
                             (nbTile.CurrentBlock is NoneBlock ||
-                            nbTile.CurrentBlock is Lock || 
+                            nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
                         {
-                            sameIDCountInColumn++;                         
+                            sameIDCountInColumn++;
                         }
                         else
                         {
@@ -1773,18 +1773,18 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
                         _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        if (_selectedTile.ID == _swappedTile.ID)
-                        {
-                            Debug.Log("============= Clear + ==============");
-                            EnableVerticalMatchBuffer(_selectedTile.X);
-                            EnableHorizontalMatchBuffer(_selectedTile.Y);
+                        // if (_selectedTile.ID == _swappedTile.ID)
+                        // {
+                        Debug.Log("============= Clear + ==============");
+                        EnableVerticalMatchBuffer(_selectedTile.X);
+                        EnableHorizontalMatchBuffer(_selectedTile.Y);
 
-                            PlayClearVerticalVFX(_selectedTile);
-                            PlayClearHorizontalVFX(_selectedTile);
+                        PlayClearVerticalVFX(_selectedTile);
+                        PlayClearHorizontalVFX(_selectedTile);
 
-                            _hasMatch4 = true;
-                            AudioManager.Instance.PlayMatch4Sfx();
-                        }
+                        _hasMatch4 = true;
+                        AudioManager.Instance.PlayMatch4Sfx();
+                        // }
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -2343,7 +2343,7 @@ namespace Match3
         {
             return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
                 _tiles[x + y * Width] != null &&
-                (_tiles[x + y * Width].CurrentBlock is NoneBlock || 
+                (_tiles[x + y * Width].CurrentBlock is NoneBlock ||
                 _tiles[x + y * Width].CurrentBlock is Lock ||
                 _tiles[x + y * Width].CurrentBlock is BushBlock);
         }

@@ -1732,7 +1732,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1024774878}
   - component: {fileID: 1024774877}
-  - component: {fileID: 1024774876}
   m_Layer: 0
   m_Name: CSVLoad
   m_TagString: Untagged
@@ -1740,18 +1739,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1024774876
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1024774875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bfd84c37ca947acbf282ab60543e7b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1024774877
 MonoBehaviour:
   m_ObjectHideFlags: 0
