@@ -4,21 +4,34 @@ namespace Match3
 {
     public class UIQuestManager : MonoBehaviour
     {
+        public static UIQuestManager Instance { get; private set; }
+
+
         [Header("Quests")]
         [SerializeField] private UIQuest _uiQuestPrefab;
         [SerializeField] private Transform _questContentParent;
         [SerializeField] private UIQuest[] _uiQuestSlots;
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+            Instance = this;
+        }
+
 
         private void Start()
         {
-                 Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateQuestUI;
+            Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateQuestUI;
             LoadAllQuestsUI();
         }
 
         private void OnDestroy()
         {
-                 Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateQuestUI;
+            Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateQuestUI;
         }
 
         private void LoadAllQuestsUI()
@@ -45,6 +58,18 @@ namespace Match3
 
                 uiQuest.UpdateQuest(quest);
             }
+        }
+
+        public Vector2 GetUIQuestSSPosition(int questIndex)
+        {
+            if(questIndex < 0 || questIndex > GameplayManager.Instance.Quests.Length-1)
+            {
+                Debug.LogError("quest index out of range!");
+                return default;
+            }
+
+            Vector2 uiPosition = _uiQuestSlots[questIndex].IconImage.transform.position;
+            return uiPosition;
         }
     }
 }

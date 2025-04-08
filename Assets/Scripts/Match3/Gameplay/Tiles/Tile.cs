@@ -61,6 +61,11 @@ namespace Match3
             }
         }
 
+        public void SetTileOffset(Vector2 offset)
+        {
+            TileTransform.localPosition = offset;
+        }
+
         public virtual void SetBlock(Block block)
         {
             this.CurrentBlock = block;

@@ -48,18 +48,44 @@ namespace Match3
                 for (int i = 0; i < e.Value.Count; i++)
                 {
                     TilePositionInfo tileInfo = e.Value[i];
-                    Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
-                    Tile tileInstance = Instantiate(tilePrefab, e.Key.Position, Quaternion.identity);
-                    tileInstance.SetRenderOrder(100);
+
+                    QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileInfo.ID);
+                    if (GameplayManager.Instance.TryGetQuestIndex(questID, out int questIndex))
+                    {
+                        Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
+                        Tile tileInstance = Instantiate(tilePrefab, tileInfo.Position, Quaternion.identity);
+                        tileInstance.SetRenderOrder(100);
+                        Vector2 ssPosition = UIQuestManager.Instance.GetUIQuestSSPosition(questIndex) - new Vector2(0.5f, 0.5f);
+
+                        // tileInstance.transform.DOMove(ssPosition, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
+                        // {
+                        //     Destroy(tileInstance.gameObject);
+                        // });
 
 
-                    tileInstance.transform.DOMove(new Vector3(0, 10, 0), 1f).SetEase(Ease.Linear);
-                    yield return new WaitForSeconds(0.1f);
+                        // Store the original position
+                        Vector3 originalPosition = tileInstance.transform.position;
+                        tileInstance.TileTransform.DORotate(new Vector3(0, 0, 720), 2f, RotateMode.FastBeyond360)
+                        .SetEase(Ease.Linear)
+                        .SetLoops(-1, LoopType.Incremental);
+                        tileInstance.TileTransform.DOScale(0.75f, 1.0f).SetEase(Ease.Linear);
+                        tileInstance.transform.DOMove(ssPosition + new Vector2(0.0f, 0.5f), 1.0f).SetEase(Ease.Linear).OnComplete(() =>
+                        {
+                            tileInstance.TileTransform.DOScale(0.0f, 0.5f).SetEase(Ease.InFlash);
+                            tileInstance.transform.DOMove(ssPosition, 0.5f).SetEase(Ease.InFlash).OnComplete(() =>
+                            {
+                                Destroy(tileInstance.gameObject);
+                            });
+                        });
+
+                        yield return new WaitForSeconds(0.1f);
+                    }
                 }
             }
 
             Clear();
         }
+
 
         public void Clear()
         {

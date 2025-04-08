@@ -10,6 +10,8 @@ namespace Match3
         [SerializeField] private Image _iconImage;
         [SerializeField] private GameObject _completeMarkObject;
 
+        public Image IconImage => _iconImage;
+
         public void SetData(Sprite sprite, int quantity)
         {
             this._iconImage.sprite = sprite;

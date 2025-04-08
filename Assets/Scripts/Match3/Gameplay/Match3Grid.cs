@@ -655,15 +655,44 @@ namespace Match3
                     Tile nb = tile.Key;
                     if (t != null && nb != null)
                     {
-                        nb.transform.DOMove(t.transform.position, 0.1f).SetEase(Ease.Linear);
+                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.2f;
+                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.2f;
+                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+
+
+                        nb.transform.DOMove((Vector2)t.transform.position, 0.1f).SetEase(Ease.InSine).OnComplete(() =>
+                        {
+                            nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
+                            nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                            {
+                                nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
+                                nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                                {
+                                    nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
+                                });
+                            });
+                            // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
+
+                        });
+
+                    }
+                }
+                yield return new WaitForSeconds(0.4f);
+
+                foreach (var tile in _match3Dictionary)
+                {
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
 
                         TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, nb.transform.position);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
                         MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
                     }
                 }
                 MatchAnimManager.Instance.PlayCollectAnimation();
-                yield return new WaitForSeconds(0.1f);
+
 
                 for (int i = 0; i < _matchBuffer.Length; i++)
                 {
@@ -706,7 +735,6 @@ namespace Match3
                             }
                             colorBurstCount++;
                         }
-
 
 
                         tile.Match(_tiles, Width);

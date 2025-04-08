@@ -5,7 +5,6 @@ using Match3.Shares;
 using Match3.Enums;
 using Newtonsoft.Json;
 using System.Linq;
-using Match3.Shares;
 
 namespace Match3
 {

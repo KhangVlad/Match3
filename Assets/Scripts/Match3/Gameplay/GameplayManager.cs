@@ -16,7 +16,7 @@ namespace Match3
 
         // HIGH LEVEL
         public event System.Action<int> OnTurnRemaingChanged;
-        public event System.Action<int, TileID, Vector2> OnQuestProgressUpdated;
+        // public event System.Action<int, TileID, Vector2> OnQuestProgressUpdated;
 
 
         public enum GameState
@@ -183,7 +183,7 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Lock)
                 {
                     Quests[i].Quantity--;
-                    OnQuestProgressUpdated?.Invoke(i, TileID.None, @lock.transform.position);
+                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, @lock.transform.position);
                 }
             }
         }
@@ -205,7 +205,7 @@ namespace Match3
                         }
                     }
                     Quests[i].Quantity = blackmudCount;
-                    OnQuestProgressUpdated?.Invoke(i, TileID.None, default);
+                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, default);
                 }
             }
         }
@@ -217,7 +217,7 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Ice)
                 {
                     Quests[i].Quantity--;
-                    OnQuestProgressUpdated?.Invoke(i, TileID.None, ice.transform.position);
+                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, ice.transform.position);
                 }
             }
         }
@@ -230,7 +230,7 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Stone)
                 {
                     Quests[i].Quantity--;
-                    OnQuestProgressUpdated?.Invoke(i, TileID.None, stone.transform.position);
+                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, stone.transform.position);
                 }
             }
         }
@@ -246,7 +246,7 @@ namespace Match3
                         if (tile is RedFlower)
                         {
                             Quests[i].Quantity--;
-                            OnQuestProgressUpdated?.Invoke(i, tile.ID, tile.transform.position);
+                            // OnQuestProgressUpdated?.Invoke(i, tile.ID, tile.transform.position);
                         }
                         break;
                     case QuestID.YellowFlower:
@@ -398,6 +398,61 @@ namespace Match3
         {
             this.TurnRemainingCount += value;
             OnTurnRemaingChanged?.Invoke(TurnRemainingCount);
+        }
+
+        public bool TryGetQuestIndex(QuestID questID, out int index)
+        {
+            for (int i = 0; i < Quests.Length; i++)
+            {
+                if (Quests[i].QuestID == questID)
+                {
+                    index = i;
+                    return true;
+                }
+            }
+            index = -1;
+            return false;
+        }
+
+        public QuestID GetQuestByTileID(TileID tileID)
+        {
+            switch (tileID)
+            {
+                case TileID.RedFlower:
+                    return QuestID.RedFlower;
+                case TileID.YellowFlower:
+                    return QuestID.YellowFlower;
+                case TileID.PurpleFlower:
+                    return QuestID.PurpleFlower;
+                case TileID.BlueFlower:
+                    return QuestID.BlueFlower;
+                case TileID.WhiteFlower:
+                    return QuestID.WhiteFlower;
+                case TileID.RedCandle:
+                    return QuestID.RedCandle;
+                case TileID.YellowCandle:
+                    return QuestID.YellowCandle;
+                case TileID.GreenCandle:
+                    return QuestID.GreenCandle;
+                case TileID.BlueCandle:
+                    return QuestID.BlueCandle;
+                case TileID.WhiteCandle:
+                    return QuestID.WhiteCandle;
+                case TileID.RedRibbon:
+                    return QuestID.RedRibbon;
+                case TileID.YellowRibbon:
+                    return QuestID.YellowRibbon;
+                case TileID.GreenRibbon:
+                    return QuestID.GreenRibbon;
+                case TileID.BlueRibbon:
+                    return QuestID.BlueRibbon;
+                case TileID.PurpleRibbon:
+                    return QuestID.PurpleRibbon;
+                case TileID.MagnifyingGlass:
+                    return QuestID.MagnifyingGlass;
+                default:
+                    return QuestID.None;
+            }
         }
         #endregion
     }
