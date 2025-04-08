@@ -14,7 +14,7 @@ namespace Match3
         [Header("~Runtime")]
         public int Width;
         public int Height;
-        [SerializeField] private LevelData _levelData;
+        [SerializeField] private LevelDataV2 _levelData;
         [SerializeField] private Tile[] _tiles;
         [SerializeField] private Tile _selectedTile;
         [SerializeField] private Tile _swappedTile;
@@ -163,7 +163,7 @@ namespace Match3
 
 
             OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_ImplementGameLogic;
-            UserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
+            GameplayUserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
             LoadGridLevel();
             LoadBoosters();
 
@@ -175,7 +175,7 @@ namespace Match3
 
         private void OnDestroy()
         {
-            UserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateLogic;
+            GameplayUserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateLogic;
             OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_ImplementGameLogic;
         }
 
@@ -191,13 +191,14 @@ namespace Match3
                 if (Input.GetMouseButtonDown(0))
                 {
                     Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
-                    if (UserManager.Instance.SelectedGameplayBooster is HammerBooster)
+                    if (GameplayUserManager.Instance.SelectedGameplayBooster is HammerBooster)
                     {
                         Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
                         switch (tile.CurrentBlock)
                         {
                             case NoneBlock:
                             case Lock:
+                            case BushBlock:
                             case Ice:
                             case HardIce:
                             case EternalIce:
@@ -208,8 +209,8 @@ namespace Match3
                                 _canPlay = false;
                                 _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
                                 OnAfterPlayerMatchInput?.Invoke();
-                                UserManager.Instance.SelectedGameplayBooster.Use();
-                                UserManager.Instance.UnselectGameplayBooster();
+                                GameplayUserManager.Instance.SelectedGameplayBooster.Use();
+                                GameplayUserManager.Instance.UnselectGameplayBooster();
                                 break;
                             default:
                                 Debug.Log("Case not found!!!!!!");
@@ -240,7 +241,8 @@ namespace Match3
                             if (IsValidMatchTile(leftTileX, leftTileY))
                             {
                                 Tile leftTile = _tiles[leftTileX + leftTileY * Width];
-                                if (leftTile.CurrentBlock is not Lock)
+                                if (leftTile.CurrentBlock is not Lock && 
+                                    leftTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = leftTile;
                                     SwapPosition(_selectedTile, _swappedTile);
@@ -256,7 +258,8 @@ namespace Match3
                             if (IsValidMatchTile(rightTileX, rightTileY))
                             {
                                 Tile rightTile = _tiles[rightTileX + rightTileY * Width];
-                                if (rightTile.CurrentBlock is not Lock)
+                                if (rightTile.CurrentBlock is not Lock && 
+                                    rightTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = rightTile;
                                     SwapPosition(_selectedTile, _swappedTile);
@@ -272,7 +275,8 @@ namespace Match3
                             if (IsValidMatchTile(upTileX, upTileY))
                             {
                                 Tile upTile = _tiles[upTileX + upTileY * Width];
-                                if (upTile.CurrentBlock is not Lock)
+                                if (upTile.CurrentBlock is not Lock && 
+                                    upTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = upTile;
                                     SwapPosition(_selectedTile, _swappedTile);
@@ -288,7 +292,8 @@ namespace Match3
                             if (IsValidMatchTile(downTileX, downTileY))
                             {
                                 Tile downTile = _tiles[downTileX + downTileY * Width];
-                                if (downTile.CurrentBlock is not Lock)
+                                if (downTile.CurrentBlock is not Lock &&
+                                    downTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = downTile;
                                     SwapPosition(_selectedTile, _swappedTile);
@@ -306,14 +311,14 @@ namespace Match3
                             Utilities.WaitAfter(AnimationExtensions.TILE_MOVE_TIME + 0.2f, () =>
                             {
                                 // Handle in-game booster
-                                if (UserManager.Instance.SelectedGameplayBooster != null)
+                                if (GameplayUserManager.Instance.SelectedGameplayBooster != null)
                                 {
-                                    Booster booster = UserManager.Instance.SelectedGameplayBooster;
+                                    Booster booster = GameplayUserManager.Instance.SelectedGameplayBooster;
                                     if (booster is FreeSwitchBooster ||
                                         booster is ExtraMoveBooster)
                                     {
                                         booster.Use();
-                                        UserManager.Instance.UnselectGameplayBooster();
+                                        GameplayUserManager.Instance.UnselectGameplayBooster();
                                         OnAfterPlayerMatchInput?.Invoke();
                                     }
                                     else
@@ -490,6 +495,10 @@ namespace Match3
                             newTile = AddTile(x, y, tileID, BlockID.BlackMud);
                             newTile.UpdatePosition();
                             break;
+                        case BlockID.Bush:
+                            newTile = AddTile(x, y, tileID, BlockID.Bush);
+                            newTile.UpdatePosition();
+                            break;
                         default:
                             Debug.LogError("Not set this case");
                             break;
@@ -503,16 +512,16 @@ namespace Match3
             _matchBuffer = new MatchID[_tiles.Length];
             for (int i = 0; i < _matchBuffer.Length; i++)
             {
-                SetMatchBuffer(i,MatchID.None);
+                SetMatchBuffer(i, MatchID.None);
             }
         }
 
         private void LoadBoosters()
         {
-            for (int i = 0; i < UserManager.Instance.EquipBoosters.Count; i++)
+            for (int i = 0; i < GameplayUserManager.Instance.EquipBoosters.Count; i++)
             {
                 int attempts = 0;
-                Booster booster = UserManager.Instance.EquipBoosters[i];
+                Booster booster = GameplayUserManager.Instance.EquipBoosters[i];
                 if (booster.Quantity == 0) continue;
                 while (true)
                 {
@@ -679,7 +688,7 @@ namespace Match3
                     else if (matchID == MatchID.ColorBurst)
                     {
                         // vfx
-                        if(_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
+                        if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
                         {
                             Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
                             PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, 0.4f);
@@ -689,7 +698,7 @@ namespace Match3
                             }
                             colorBurstCount++;
                         }
-                   
+
 
 
                         tile.Match(_tiles, Width);
@@ -785,6 +794,8 @@ namespace Match3
                     break;
                 }
 
+                Debug.Log($"HasMatch: {HasMatch()}");
+
                 if (HasMatch() == false)
                 {
                     break;
@@ -848,7 +859,9 @@ namespace Match3
                     if (currTile.ID == TileID.None) continue;
                     if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
                     if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
-                    if (currTile.CurrentBlock is not NoneBlock && currTile.CurrentBlock is not Lock) continue;
+                    if (currTile.CurrentBlock is not NoneBlock && 
+                        currTile.CurrentBlock is not Lock && 
+                        currTile.CurrentBlock is not BushBlock) continue;
 
                     int sameIDCount = 0;
 
@@ -860,7 +873,9 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock || nbTile.CurrentBlock is Lock))
+                            (nbTile.CurrentBlock is NoneBlock || 
+                            nbTile.CurrentBlock is Lock || 
+                            nbTile.CurrentBlock is BushBlock))
                         {
                             sameIDCount++;
                         }
@@ -883,7 +898,7 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock || nbTile.CurrentBlock is Lock))
+                            (nbTile.CurrentBlock is NoneBlock || nbTile.CurrentBlock is Lock || nbTile.CurrentBlock is BushBlock))
                         {
                             sameIDCount++;
                         }
@@ -915,8 +930,8 @@ namespace Match3
                         Tile downTile = _tiles[newX + (newY - 1) * Width];
                         Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
                         if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
-                            (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
-                            (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
+                            (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock || downTile.CurrentBlock is BushBlock) &&
+                            (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock || downOfDownTile.CurrentBlock is BushBlock))
                         {
                             // Debug.Log($"D: {newX}  {newY}");
                             return true;
@@ -935,8 +950,8 @@ namespace Match3
                         Tile topTile = _tiles[newX + (newY + 1) * Width];
                         Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
                         if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
-                            (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
-                            (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
+                            (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock || topTile.CurrentBlock is BushBlock) &&
+                            (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock || topOfTopTile.CurrentBlock is BushBlock))
                         {
                             // Debug.Log($"C: {newX}  {newY}");
                             return true;
@@ -956,8 +971,8 @@ namespace Match3
                         Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
 
                         if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
-                            (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
-                            (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
+                            (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock || rightTile.CurrentBlock is BushBlock) &&
+                            (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock || rightOfRightTile.CurrentBlock is BushBlock))
                         {
                             // Debug.Log($"B: {newX}  {newY} ");
                             return true;
@@ -977,8 +992,8 @@ namespace Match3
                         Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
 
                         if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
-                            (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
-                            (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
+                            (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock || leftTile.CurrentBlock is BushBlock) &&
+                            (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock || leftOfLeftTile.CurrentBlock is BushBlock))
                         {
                             // Debug.Log($"A: {tileID} {newX} {newY}");
                             return true;
@@ -1083,7 +1098,7 @@ namespace Match3
                     if (currTile.ID == TileID.None) continue;
                     if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
                     if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
-                    if (currTile.CurrentBlock is not NoneBlock && currTile.CurrentBlock is not Lock) continue;
+                    if (currTile.CurrentBlock is not NoneBlock && currTile.CurrentBlock is not Lock && currTile.CurrentBlock is not BushBlock) continue;
                     if (_matchBuffer[x + y * Width] != MatchID.None) continue;
 
 
@@ -1103,7 +1118,8 @@ namespace Match3
 
                         if (currTile.ID == nbTile.ID &&
                             (nbTile.CurrentBlock is NoneBlock ||
-                            nbTile.CurrentBlock is Lock))
+                            nbTile.CurrentBlock is Lock ||
+                            nbTile.CurrentBlock is BushBlock))
                         {
                             sameIDCountInRow++;
                         }
@@ -1124,14 +1140,10 @@ namespace Match3
 
                         if (currTile.ID == nbTile.ID &&
                             (nbTile.CurrentBlock is NoneBlock ||
-                            nbTile.CurrentBlock is Lock))
+                            nbTile.CurrentBlock is Lock || 
+                            nbTile.CurrentBlock is BushBlock))
                         {
-                            sameIDCountInColumn++;
-
-                            if (nbTile.CurrentBlock is Lock)
-                            {
-                                Debug.Log("is lock");
-                            }
+                            sameIDCountInColumn++;                         
                         }
                         else
                         {
@@ -1387,7 +1399,7 @@ namespace Match3
                 _matchBuffer[index] = matchID;
                 return;
             }
-            if(matchID == MatchID.None)
+            if (matchID == MatchID.None)
             {
                 _matchBuffer[index] = matchID;
                 return;
@@ -1397,7 +1409,7 @@ namespace Match3
                 (matchID == MatchID.SpecialMatch && _matchBuffer[index] != MatchID.ColorBurst))
             {
                 _matchBuffer[index] = matchID;
-            }       
+            }
         }
 
 
@@ -2132,7 +2144,8 @@ namespace Match3
 
                             if (index != tile.X + tile.Y * Width)
                             {
-                                _colorBurstParentDictionary.Add(index, tile.transform.position);
+                                if (_colorBurstParentDictionary.ContainsKey(index) == false)
+                                    _colorBurstParentDictionary.Add(index, tile.transform.position);
                             }
                         }
                     }
@@ -2140,7 +2153,7 @@ namespace Match3
             }
         }
 
- 
+
         private void CheckDifferent()
         {
             for (int i = 0; i < _tiles.Length; i++)
@@ -2330,7 +2343,9 @@ namespace Match3
         {
             return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
                 _tiles[x + y * Width] != null &&
-                (_tiles[x + y * Width].CurrentBlock is NoneBlock || _tiles[x + y * Width].CurrentBlock is Lock);
+                (_tiles[x + y * Width].CurrentBlock is NoneBlock || 
+                _tiles[x + y * Width].CurrentBlock is Lock ||
+                _tiles[x + y * Width].CurrentBlock is BushBlock);
         }
         private bool IsValidMatchTile(Vector2Int gridPosition)
         {

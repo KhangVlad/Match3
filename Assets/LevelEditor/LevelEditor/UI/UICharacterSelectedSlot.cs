@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 using Match3.Shares;
+using System;
 
 namespace Match3.LevelEditor
 {
@@ -24,7 +25,6 @@ namespace Match3.LevelEditor
 
         [SerializeField] private SelectedType _selectedType;
 
-
         public SelectedType Type => _selectedType;
 
         private void Start()
@@ -36,11 +36,19 @@ namespace Match3.LevelEditor
 
                 UIInventoryManager.Instance.DisplayCharacterInventory(true);
             });
+
+
+            LevelEditorManager.Instance.OnCharacterLevelDataLoaded += OnCharacterLevelDataLoaded_UpdateUI;
         }
+
+     
 
         private void OnDestroy()
         {
             _addBtn.onClick.RemoveAllListeners();
+
+
+            LevelEditorManager.Instance.OnCharacterLevelDataLoaded -= OnCharacterLevelDataLoaded_UpdateUI;
         }
 
         public void SetData(CharacterDataSO characterData)
@@ -70,6 +78,12 @@ namespace Match3.LevelEditor
         {
             _isEnter = false;
             UIPopupManager.Instance.DisplayUINameInfoPopup(false);
+        }
+
+        private void OnCharacterLevelDataLoaded_UpdateUI(CharacterLevelDataV2 dataV2)
+        {
+            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID(dataV2.CharacterID);
+            SetData(characterData);
         }
     }
 }

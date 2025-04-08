@@ -14,7 +14,7 @@
         Chest = 9,
         BlackMud = 10,
         Key = 11,
-
+        Bush = 12,
 
         Void = 99
     }

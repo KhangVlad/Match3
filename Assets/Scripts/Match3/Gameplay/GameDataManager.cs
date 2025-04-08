@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Match3.Shares;
 using Match3.Enums;
-
+using Newtonsoft.Json;
 namespace Match3
 {
     public class GameDataManager : MonoBehaviour
@@ -29,10 +29,14 @@ namespace Match3
         public CharacterDataSO[] CharacterDataSos;
         private Dictionary<CharacterID, CharacterDataSO> _characterDataDict;
 
+        // Character level data
+        public CharacterLevelDataV2[] CharacterLevelDatas;
+        private Dictionary<CharacterID, CharacterLevelDataV2> _characterLevelDataDict;
+
 
         // Shop Data
         public ShopItemDataSO[] ShopItemDataSos;
-        private Dictionary<ShopItemID, ShopItemDataSO> _shopItemDataDict;   
+        private Dictionary<ShopItemID, ShopItemDataSO> _shopItemDataDict;
 
         // Level
         private TextAsset[] _levels;
@@ -84,6 +88,10 @@ namespace Match3
             // Character data
             LoadCharacterData();
 
+            // Character level data
+            LoadCharactereLevelData();
+
+
             // Shop data
             LoadShopData();
 
@@ -123,7 +131,7 @@ namespace Match3
         {
             CharacterDataSos = Resources.LoadAll<CharacterDataSO>("DataSO/Characters/");
             _characterDataDict = new();
-            for(int i = 0; i <  CharacterDataSos.Length; i++)
+            for (int i = 0; i < CharacterDataSos.Length; i++)
             {
                 CharacterDataSO characterData = CharacterDataSos[i];
                 _characterDataDict.Add(characterData.id, characterData);
@@ -134,11 +142,59 @@ namespace Match3
             return _characterDataDict[id];
         }
 
+
+
+        private void LoadCharactereLevelData()
+        {
+            TextAsset[] allCharacterLevelData = Resources.LoadAll<TextAsset>("CharacterLevelData/");
+            CharacterLevelDatas = new CharacterLevelDataV2[allCharacterLevelData.Length];
+            for (int i = 0; i < allCharacterLevelData.Length; i++)
+            {
+                string json = allCharacterLevelData[i].text;
+
+                int version = CharacterLevelDataExtensions.DetectVersion(allCharacterLevelData[i].text);
+                if (version == 1)
+                {
+                    CharacterLevelDatas[i] = JsonConvert.DeserializeObject<CharacterLevelDataV1>(json).UpgradeV1ToV2();
+                }
+                else if (version == 2)
+                {
+                    CharacterLevelDatas[i] = JsonConvert.DeserializeObject<CharacterLevelDataV2>(json);   
+                }
+                else
+                {
+                    Debug.LogError("Version not found!!!");
+                }
+            }
+
+            _characterLevelDataDict = new();
+            for(int i = 0; i < CharacterLevelDatas.Length; i++)
+            {
+                _characterLevelDataDict.Add(CharacterLevelDatas[i].CharacterID, CharacterLevelDatas[i]);
+            }
+        }
+
+        public bool TryGetCharacterLevelDataByID(CharacterID id, out CharacterLevelDataV2 characterLevelData)
+        {
+            if(_characterLevelDataDict.ContainsKey(id))
+            {
+                characterLevelData = _characterLevelDataDict[id];
+                return true;
+            }
+           else
+            {
+                characterLevelData = null;
+                return false;
+            }
+        }
+
+
+
         private void LoadShopData()
         {
             ShopItemDataSos = Resources.LoadAll<ShopItemDataSO>("Data/ShopItem/");
-            _shopItemDataDict = new();  
-            for(int i = 0; i <  ShopItemDataSos.Length; i++)
+            _shopItemDataDict = new();
+            for (int i = 0; i < ShopItemDataSos.Length; i++)
             {
                 ShopItemDataSO shopItemData = ShopItemDataSos[i];
                 _shopItemDataDict.Add(shopItemData.ShopItemID, shopItemData);
@@ -181,7 +237,7 @@ namespace Match3
         public Tile GetTileByID(TileID tileID)
         {
             return _tileDict[tileID];
-        }  
+        }
 
         public Block GetBlockByID(BlockID blockID)
         {
@@ -190,12 +246,12 @@ namespace Match3
 
         public TextAsset GetLevel(int level)
         {
-            if(level < 1 || level > _levels.Length)
+            if (level < 1 || level > _levels.Length)
             {
                 Debug.Log("========= Level out of range ==========");
                 return _levels[0];
             }
-            return _levels[level-1];
+            return _levels[level - 1];
         }
 
 

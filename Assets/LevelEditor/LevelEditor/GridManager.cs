@@ -35,7 +35,8 @@ namespace Match3.LevelEditor
 
         // Level data cached
         public int MaxTurn = 25;
-        public int[] UnlockData = new int[2] { 0, 5 };
+        public int Heart = 0;
+        public int Energy = 0;
         public List<Tile> AvaiableTiles;
         public List<Quest> Quests;
         #endregion
@@ -175,18 +176,14 @@ namespace Match3.LevelEditor
             }
         }
 
-        public void LoadLevelData(LevelData levelData)
+        public void LoadLevelData(LevelDataV2 levelData)
         {
- 
             RemoveOldGridManagerData();
 
             MaxTurn = levelData.MaxTurn;
+            Heart = levelData.Heart;
+            Energy = levelData.Energy;
 
-            if(levelData.Unlock != null)
-            {
-                UnlockData = levelData.Unlock;
-            }
-           
 
             Quests = new();
             if(levelData.Quests != null)
@@ -410,7 +407,45 @@ namespace Match3.LevelEditor
         }
 
 
-        public LevelData GetLevelData()
+        //public LevelDataV1 GetLevelData()
+        //{
+        //    int[,] blocks = new int[Width, Height];
+        //    TileID[,] tiles = new TileID[Width, Height];
+        //    TileID[] avaiableTiles = new TileID[AvaiableTiles.Count];
+        //    for (int i = 0; i < AvaiableTiles.Count; i++)
+        //    {
+        //        avaiableTiles[i] = AvaiableTiles[i].ID;
+        //    }
+        //    int[,] quests = new int[Quests.Count, 2];
+        //    for (int i = 0; i < Quests.Count; i++)
+        //    {
+        //        quests[i, 0] = (int)Quests[i].QuestID;
+        //        quests[i, 1] = (int)Quests[i].Quantity;
+        //    }
+
+        //    for (int i = 0; i < _tiles.Length; i++)
+        //    {
+        //        int x = i % Width;
+        //        int y = i / Width;
+
+        //        tiles[x, y] = _tiles[i].ID;
+        //        blocks[x, y] = (int)_tiles[i].CurrentBlock.BlockID;
+        //    }
+
+        //    LevelDataV1 levelData = new LevelDataV1(Width, Height)
+        //    {
+        //        MaxTurn = this.MaxTurn,
+        //        Blocks = blocks,
+        //        Tiles = tiles,
+        //        AvaiableTiles = avaiableTiles,
+        //        Quests = quests,
+        //        Unlock = this.UnlockData
+        //    };
+
+        //    return levelData;
+        //}
+
+        public LevelDataV2 GetLevelData()
         {
             int[,] blocks = new int[Width, Height];
             TileID[,] tiles = new TileID[Width, Height];
@@ -435,14 +470,15 @@ namespace Match3.LevelEditor
                 blocks[x, y] = (int)_tiles[i].CurrentBlock.BlockID;
             }
 
-            LevelData levelData = new LevelData(Width, Height)
+            LevelDataV2 levelData = new LevelDataV2(Width, Height)
             {
                 MaxTurn = this.MaxTurn,
                 Blocks = blocks,
                 Tiles = tiles,
                 AvaiableTiles = avaiableTiles,
                 Quests = quests,
-                Unlock = this.UnlockData
+                Heart = this.Heart,
+                Energy = this.Energy
             };
 
             return levelData;

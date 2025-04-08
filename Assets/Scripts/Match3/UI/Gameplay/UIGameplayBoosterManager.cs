@@ -22,15 +22,15 @@ namespace Match3
 
         private void Start()
         {
-            UserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateContext;
-            UserManager.Instance.OnUnselectGameplayBooster += OnUnselectGameplayBooster_UpdateContext;
+            GameplayUserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateContext;
+            GameplayUserManager.Instance.OnUnselectGameplayBooster += OnUnselectGameplayBooster_UpdateContext;
         }
 
 
         private void OnDestroy()
         {
-            UserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateContext;
-            UserManager.Instance.OnUnselectGameplayBooster -= OnUnselectGameplayBooster_UpdateContext;
+            GameplayUserManager.Instance.OnSelectGameplayBooster -= OnSelectGameplayBooster_UpdateContext;
+            GameplayUserManager.Instance.OnUnselectGameplayBooster -= OnUnselectGameplayBooster_UpdateContext;
         }
 
         public void DisplayCanvas(bool enable)

@@ -20,7 +20,7 @@ namespace Match3.LevelEditor
         }
 
 
-        public Texture2D GetLevelTexture(LevelData levelData)
+        public Texture2D GetLevelTexture(LevelDataV2 levelData)
         {
             int width = levelData.Tiles.GetLength(0);
             int height = levelData.Tiles.GetLength(1);

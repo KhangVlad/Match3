@@ -1,5 +1,6 @@
 using UnityEngine;
 using Match3.Enums;
+
 public class CharacterDirectionArrow : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -12,4 +13,4 @@ public class CharacterDirectionArrow : MonoBehaviour
         Pos = position;
         id = chardId;
     }
-}
+}   

@@ -7,7 +7,7 @@ namespace Match3.LevelEditor
     {
         public static LevelEditorManager Instance { get; private set; }
         public event System.Action<string> OnFileNameChanged;
-        public event System.Action<CharacterLevelData> OnCharacterLevelDataLoaded;
+        public event System.Action<CharacterLevelDataV2> OnCharacterLevelDataLoaded;
         public event System.Action<int> OnCharacterLevelDataAdded;
         public event System.Action<int> OnCharacterLevelDataRemoval;
         public event System.Action<int> OnLevelDataSaved;
@@ -15,13 +15,13 @@ namespace Match3.LevelEditor
         public bool ShowCreateNewPanel = true;
         public string FileName;
 
-        public CharacterLevelData CharacterLevelData;
+        public CharacterLevelDataV2 CharacterLevelData;
         [SerializeField] private int _currentSelectLevel;
 
 
         #region Properties
         public int CurrentLevel => _currentSelectLevel;
-        public LevelData SelectLevelData => CharacterLevelData.Levels[_currentSelectLevel];
+        public LevelDataV2 SelectLevelData => CharacterLevelData.Levels[_currentSelectLevel];
         #endregion
 
 
@@ -46,15 +46,15 @@ namespace Match3.LevelEditor
             this._currentSelectLevel = level;
         }
         
-        public CharacterLevelData InitializeNewChartacterLevelData()
+        public CharacterLevelDataV2 InitializeNewChartacterLevelData()
         {
             CharacterLevelData = new();
-            LevelData levelData = new LevelData(0,0);
+            LevelDataV2 levelData = new LevelDataV2(0,0);
             CharacterLevelData.Levels.Add(levelData);
             OnCharacterLevelDataLoaded?.Invoke(CharacterLevelData);        
             return CharacterLevelData;
         }
-        public void SetCharacterLevelData(CharacterLevelData characterLevelData)
+        public void SetCharacterLevelData(CharacterLevelDataV2 characterLevelData)
         {
             this.CharacterLevelData = characterLevelData;
             OnCharacterLevelDataLoaded?.Invoke(CharacterLevelData);
@@ -63,7 +63,7 @@ namespace Match3.LevelEditor
 
         public void AddNewLevelDataAtIndex(int index)
         {
-            LevelData levelData = new LevelData(0, 0);
+            LevelDataV2 levelData = new LevelDataV2(0, 0);
             CharacterLevelData.Levels.Insert(index, levelData);
             OnCharacterLevelDataAdded?.Invoke(index);
            
@@ -75,7 +75,7 @@ namespace Match3.LevelEditor
             OnCharacterLevelDataRemoval?.Invoke(index);
         }
 
-        public void SaveLevelData(int index, LevelData levelData)
+        public void SaveLevelData(int index, LevelDataV2 levelData)
         {
             CharacterLevelData.Levels[index] = levelData;
             OnLevelDataSaved?.Invoke(index);

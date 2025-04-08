@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System;
 
 namespace Match3
 {
@@ -34,6 +33,10 @@ namespace Match3
         [SerializeField] private Transform _boosterContentParent;
 
 
+        [Header("Avatars")]
+        [SerializeField] private Image _characterAvatar;
+
+
         [Header("~Runtime")]
         [SerializeField] private UIQuest[] _uiQuestSlots;
 
@@ -45,6 +48,7 @@ namespace Match3
 
         private void Start()
         {
+            _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
             _turnCountText.text = GameplayManager.Instance.TurnRemainingCount.ToString();
             LoadAllQuestsUI();
             LoadUIBoosters();
@@ -92,9 +96,9 @@ namespace Match3
 
         private void LoadUIBoosters()
         {
-            for (int i = 0; i < UserManager.Instance.GameplayBoosters.Count; i++)
+            for (int i = 0; i < GameplayUserManager.Instance.GameplayBoosters.Count; i++)
             {
-                Booster booster = UserManager.Instance.GameplayBoosters[i];
+                Booster booster = GameplayUserManager.Instance.GameplayBoosters[i];
 
                 UIGameplayBooster uiBooster = Instantiate(_uiGameplayBoosterPrefab, _boosterContentParent);
                 uiBooster.SetBoosterData(booster);

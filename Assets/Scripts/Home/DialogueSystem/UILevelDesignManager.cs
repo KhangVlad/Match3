@@ -78,26 +78,37 @@ public class UILevelDesignManager : MonoBehaviour
         CleanLevels();
         if (CharactersDataManager.Instance.TotalHeartPoints() >= charData.totalSympathyRequired)
         {
-            InitializeLevels();
+            InitializeLevels(id);
         }
     }
 
-    private void InitializeLevels()
+    private void InitializeLevels(CharacterID id)
     {
         CleanLevels();
-        for (int i = 0; i < 4; i++)
+
+        Debug.Log($"InitializeLevels: {id}");
+        if(GameDataManager.Instance.TryGetCharacterLevelDataByID(id, out CharacterLevelDataV2 characterLevelData))
         {
-            if (i < 2)
+            for (int i = 0; i < characterLevelData.Levels.Count; i++)
             {
+                LevelDataV2 levelData = characterLevelData.Levels[i];
+
                 UILevelDesign levelDesign = Instantiate(levelDesignDesignPrefab, levelDesignParent);
-                levelDesign.InitializeData(i, false);
+                levelDesign.InitializeData(id, i, false);
                 levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
-            }
-            else
-            {
-                UILevelDesign levelDesign = Instantiate(lockedLevelDesignPrefab, levelDesignParent);
-                levelDesign.InitializeData(i, true);
-                levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
+
+                //if (i < 2)
+                //{
+                //    UILevelDesign levelDesign = Instantiate(levelDesignDesignPrefab, levelDesignParent);
+                //    levelDesign.InitializeData(i, false);
+                //    levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
+                //}
+                //else
+                //{
+                //    UILevelDesign levelDesign = Instantiate(lockedLevelDesignPrefab, levelDesignParent);
+                //    levelDesign.InitializeData(i, true);
+                //    levelDesign.OnClicked += () => OnLevelDesignClicked(levelDesign);
+                //}
             }
         }
     }
@@ -106,7 +117,7 @@ public class UILevelDesignManager : MonoBehaviour
     private void SelectLevel()
     {
         AudioManager.Instance.PlayButtonSfx();
-        LevelManager.Instance.LoadLevelData(currentChosenLevel.index);
+        LevelManager.Instance.LoadLevelData(currentChosenLevel.CharacterID, currentChosenLevel.index);
         UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
         VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = selectBtn.transform.position;
         UILevelInfomation.Instance.DisplayCanvas(true);

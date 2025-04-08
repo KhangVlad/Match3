@@ -27,7 +27,7 @@ namespace Match3
 
         private void LoadPreviewGrid()
         {
-            LevelData levelData = LevelManager.Instance.LevelData;
+            LevelDataV2 levelData = LevelManager.Instance.LevelData;
             int width = levelData.Blocks.GetLength(0);
             int height = levelData.Blocks.GetLength(1);
 
@@ -40,7 +40,6 @@ namespace Match3
 
                     if(blockID != BlockID.Void && blockID != BlockID.Fill)
                     {
-                        Debug.Log(blockID);
                         _tileMap.SetTile(new Vector3Int(x, y, 0), _tileBase);
                     }
                     //else

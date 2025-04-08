@@ -38,22 +38,22 @@ namespace Match3
                             Debug.Log("Add remove ads");
                             break;
                         case ShopItemID.ColorBurst:
-                            UserManager.Instance.AddBooster(BoosterID.ColorBurst, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.ColorBurst, itemSlot.Quantity);
                             break;
                         case ShopItemID.BlastBomb:
-                            UserManager.Instance.AddBooster(BoosterID.BlastBomb, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.BlastBomb, itemSlot.Quantity);
                             break;
                         case ShopItemID.AxisBomb:
-                            UserManager.Instance.AddBooster(BoosterID.AxisBomb, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.AxisBomb, itemSlot.Quantity);
                             break;
                         case ShopItemID.ExtraMove:
-                            UserManager.Instance.AddBooster(BoosterID.ExtraMove, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.ExtraMove, itemSlot.Quantity);
                             break;
                         case ShopItemID.FreeSwitch:
-                            UserManager.Instance.AddBooster(BoosterID.FreeSwitch, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.FreeSwitch, itemSlot.Quantity);
                             break;
                         case ShopItemID.Hammer:
-                            UserManager.Instance.AddBooster(BoosterID.Hammer, itemSlot.Quantity);
+                            GameplayUserManager.Instance.AddBooster(BoosterID.Hammer, itemSlot.Quantity);
                             break;
                     }
                 }

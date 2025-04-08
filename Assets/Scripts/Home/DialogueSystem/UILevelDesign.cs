@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Match3.Enums;
 
 public class UILevelDesign : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class UILevelDesign : MonoBehaviour
     [SerializeField] private TextMeshProUGUI levelText;
     public event Action OnClicked;
 
+    public CharacterID CharacterID;
     public int index;
     public bool Islocked;
 
@@ -28,8 +30,9 @@ public class UILevelDesign : MonoBehaviour
         button.onClick.RemoveAllListeners();
     }
 
-    public void InitializeData(int ind, bool l)
+    public void InitializeData(CharacterID characterID, int ind, bool l)
     {
+        CharacterID = characterID;
         Islocked = l;
         this.index = ind;
         levelText.text = (index + 1).ToString();

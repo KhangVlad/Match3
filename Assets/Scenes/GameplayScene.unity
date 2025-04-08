@@ -4761,6 +4761,7 @@ MonoBehaviour:
   _unactiveSprite: {fileID: 21300000, guid: 77f356499436245caab55dafd6a3006b, type: 3}
   _uiGameplayBoosterPrefab: {fileID: 4726057803351993924, guid: 760a13e5702b8ab4b929f47abe167c99, type: 3}
   _boosterContentParent: {fileID: 851907168}
+  _characterAvatar: {fileID: 717340042}
   _uiQuestSlots: []
 --- !u!1 &1457405109
 GameObject:
@@ -5287,7 +5288,8 @@ MonoBehaviour:
   _levelData:
     MaxTurn: 0
     AvaiableTiles: 
-    Unlock: 
+    Heart: 0
+    Energy: 0
   _tiles: []
   _selectedTile: {fileID: 0}
   _swappedTile: {fileID: 0}
@@ -5463,8 +5465,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -45, y: -50}
-  m_SizeDelta: {x: 450, y: 150}
+  m_AnchoredPosition: {x: -143, y: -1}
+  m_SizeDelta: {x: 300, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771002292
 MonoBehaviour:
@@ -5487,7 +5489,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 9bcda70fbc7a748dab217100c9a440ab, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5513,7 +5515,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1771002290}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -5522,7 +5524,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 30
+  m_Spacing: 0
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0

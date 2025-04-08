@@ -74,17 +74,17 @@ namespace Match3
         {        
             if (booster == this)
             {
-                var selectedBooster = UserManager.Instance.SelectedGameplayBooster;
+                var selectedBooster = GameplayUserManager.Instance.SelectedGameplayBooster;
 
                 if (selectedBooster == null || selectedBooster.BoosterID != _data.ID)
                 {
-                    UserManager.Instance.SelectGameplayBooster(_data.ID);
+                    GameplayUserManager.Instance.SelectGameplayBooster(_data.ID);
                     Select();
                     UIGameplayManager.Instance.DisplayUIGameplayBoosterManager(true);
                 }
                 else
                 {
-                    UserManager.Instance.UnselectGameplayBooster();
+                    GameplayUserManager.Instance.UnselectGameplayBooster();
                     Unselect();
                     UIGameplayManager.Instance.DisplayUIGameplayBoosterManager(false);
                 }

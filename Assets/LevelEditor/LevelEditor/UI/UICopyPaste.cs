@@ -17,7 +17,7 @@ namespace Match3.LevelEditor
         [SerializeField] private Button _pasteBtn;
 
         // Cached
-        public LevelData CachedLevelData;
+        public LevelDataV2 CachedLevelData;
         public int CachedIndex;
 
         private void Awake()
@@ -60,17 +60,17 @@ namespace Match3.LevelEditor
             _pasteBtn.onClick.RemoveAllListeners();
         }
 
-        private void OnEnable()
-        {
-            if (CopyPasteManager.Instance.LevelData == null)
-            {
-                _pasteBtn.interactable = false;
-            }
-            else
-            {
-                _pasteBtn.interactable = true;
-            }
-        }
+        //private void OnEnable()
+        //{
+        //    if (CopyPasteManager.Instance.LevelData == null)
+        //    {
+        //        _pasteBtn.interactable = false;
+        //    }
+        //    else
+        //    {
+        //        _pasteBtn.interactable = true;
+        //    }
+        //}
 
         public void UpdatePosition()
         {
