@@ -16,6 +16,7 @@ namespace Match3
 
         // HIGH LEVEL
         public event System.Action<int> OnTurnRemaingChanged;
+        public event System.Action<int, TileID, Vector2> OnQuestProgressUpdated;
 
 
         public enum GameState
@@ -182,14 +183,9 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Lock)
                 {
                     Quests[i].Quantity--;
+                    OnQuestProgressUpdated?.Invoke(i, TileID.None, @lock.transform.position);
                 }
             }
-
-
-            //if (CheckCompleteAllQuests())
-            //{
-            //    Debug.Log("All quest completed");
-            //}
         }
 
 
@@ -209,6 +205,7 @@ namespace Match3
                         }
                     }
                     Quests[i].Quantity = blackmudCount;
+                    OnQuestProgressUpdated?.Invoke(i, TileID.None, default);
                 }
             }
         }
@@ -220,6 +217,7 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Ice)
                 {
                     Quests[i].Quantity--;
+                    OnQuestProgressUpdated?.Invoke(i, TileID.None, ice.transform.position);
                 }
             }
         }
@@ -232,6 +230,7 @@ namespace Match3
                 if (Quests[i].QuestID == QuestID.Stone)
                 {
                     Quests[i].Quantity--;
+                    OnQuestProgressUpdated?.Invoke(i, TileID.None, stone.transform.position);
                 }
             }
         }
@@ -245,7 +244,10 @@ namespace Match3
                 {
                     case QuestID.RedFlower:
                         if (tile is RedFlower)
+                        {
                             Quests[i].Quantity--;
+                            OnQuestProgressUpdated?.Invoke(i, tile.ID, tile.transform.position);
+                        }
                         break;
                     case QuestID.YellowFlower:
                         if (tile is YellowFlower)
@@ -307,8 +309,10 @@ namespace Match3
                         if (tile is MagnifyingGlass)
                             Quests[i].Quantity--;
                         break;
+                    case QuestID.MaxTurn:
+                        break;
                     default:
-                        Debug.Log($"Case not found !!!");
+                        Debug.LogError($"Case not found !!! {Quests[i].QuestID}");
                         break;
                 }
             }
@@ -376,26 +380,6 @@ namespace Match3
             {
                 return false;
             }
-
-
-            //for (int i = 0; i < Quests.Length; i++)
-            //{
-            //    if (Quests[i].QuestID == QuestID.MaxTurn)
-            //    {
-            //        if (Quests[i].Quantity < 0)
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (Quests[i].Quantity > 0)
-            //        {
-            //            return false;
-            //        }
-            //    }
-            //}
-            //return true;
         }
 
         public bool IsQuestCompleted(int index)

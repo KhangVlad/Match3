@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace Match3
 {
@@ -41,6 +42,7 @@ namespace Match3
 
         private HashSet<int> _triggeredMatch5Set;
         private Dictionary<int, Vector2> _colorBurstParentDictionary;
+        private Dictionary<Tile, Tile> _match3Dictionary;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -103,6 +105,7 @@ namespace Match3
             _clearHorizontalRows = new();
             _blackMudSpreaingList = new();
             _colorBurstParentDictionary = new();
+            _match3Dictionary = new();
 
 
 
@@ -114,19 +117,19 @@ namespace Match3
                     { 0, 1, 0 },
                     { 0, 1, 0 },
                 },
-                new int[,] // 90° Rotation
+                new int[,] // 90ï¿½ Rotation
                 {
                     { 0, 0, 1 },
                     { 1, 1, 1 },
                     { 0, 0, 1 },
                 },
-                new int[,] // 180° Rotation
+                new int[,] // 180ï¿½ Rotation
                 {
                     { 0, 1, 0 },
                     { 0, 1, 0 },
                     { 1, 1, 1 },
                 },
-                new int[,] // 270° Rotation
+                new int[,] // 270ï¿½ Rotation
                 {
                     { 1, 0, 0 },
                     { 1, 1, 1 },
@@ -141,19 +144,19 @@ namespace Match3
                     { 1, 0, 0 },
                     { 1, 1, 1 },
                 },
-                new int[,] // 90° Rotation
+                new int[,] // 90ï¿½ Rotation
                 {
                     { 1, 1, 1 },
                     { 1, 0, 0 },
                     { 1, 0, 0 },
                 },
-                new int[,] // 180° Rotation
+                new int[,] // 180ï¿½ Rotation
                 {
                     { 1, 1, 1 },
                     { 0, 0, 1 },
                     { 0, 0, 1 },
                 },
-                new int[,] // 270° Rotation
+                new int[,] // 270ï¿½ Rotation
                 {
                     { 0, 0, 1 },
                     { 0, 0, 1 },
@@ -241,7 +244,7 @@ namespace Match3
                             if (IsValidMatchTile(leftTileX, leftTileY))
                             {
                                 Tile leftTile = _tiles[leftTileX + leftTileY * Width];
-                                if (leftTile.CurrentBlock is not Lock && 
+                                if (leftTile.CurrentBlock is not Lock &&
                                     leftTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = leftTile;
@@ -258,7 +261,7 @@ namespace Match3
                             if (IsValidMatchTile(rightTileX, rightTileY))
                             {
                                 Tile rightTile = _tiles[rightTileX + rightTileY * Width];
-                                if (rightTile.CurrentBlock is not Lock && 
+                                if (rightTile.CurrentBlock is not Lock &&
                                     rightTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = rightTile;
@@ -275,7 +278,7 @@ namespace Match3
                             if (IsValidMatchTile(upTileX, upTileY))
                             {
                                 Tile upTile = _tiles[upTileX + upTileY * Width];
-                                if (upTile.CurrentBlock is not Lock && 
+                                if (upTile.CurrentBlock is not Lock &&
                                     upTile.CurrentBlock is not BushBlock)
                                 {
                                     _swappedTile = upTile;
@@ -440,54 +443,44 @@ namespace Match3
                     switch (blockID)
                     {
                         case BlockID.None:
-                            //TileID randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             Tile newTile = AddTile(x, y, tileID, BlockID.None);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Void:
-                            //TileID voidTile = GameDataManager.Instance.GetTileByID(TileID.None).ID;
                             newTile = AddTile(x, y, tileID, BlockID.Void);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Fill:
-                            //TileID noneTile = GameDataManager.Instance.GetTileByID(TileID.None).ID;
                             newTile = AddTile(x, y, tileID, BlockID.Fill);
                             newTile.UpdatePosition();
 
                             _fillBlockIndices.Add(x + y * Width);
                             break;
                         case BlockID.Lock:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Lock);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Ice:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Ice);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.HardIce:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.HardIce);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.EternalIce:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.EternalIce);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Stone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.Stone);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.HardStone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.HardStone);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.SuperHardStone:
-                            //randomTile = GameDataManager.Instance.GetRandomTile().ID;
                             newTile = AddTile(x, y, tileID, BlockID.SuperHardStone);
                             newTile.UpdatePosition();
                             break;
@@ -642,7 +635,6 @@ namespace Match3
             bool isMatch = false;
 
 
-
             while (true)
             {
                 int colorBurstCount = 0;
@@ -656,6 +648,23 @@ namespace Match3
                 bool hasMatched = false;
                 // play match animation
                 _unlockTileSet.Clear();
+
+                foreach (var tile in _match3Dictionary)
+                {
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
+                        nb.transform.DOMove(t.transform.position, 0.1f).SetEase(Ease.Linear);
+
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, nb.transform.position);
+                        MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                    }
+                }
+                MatchAnimManager.Instance.PlayCollectAnimation();
+                yield return new WaitForSeconds(0.1f);
+
                 for (int i = 0; i < _matchBuffer.Length; i++)
                 {
                     Tile tile = _tiles[i];
@@ -665,7 +674,6 @@ namespace Match3
                     {
                         AudioManager.Instance.PlayMatch3Sfx();
                     }
-
 
                     // Match & Unlock
                     if (matchID == MatchID.Match)
@@ -825,6 +833,7 @@ namespace Match3
 
             _triggeredMatch5Set.Clear();
             _colorBurstParentDictionary.Clear();
+            _match3Dictionary.Clear();
 
             if (triggerEvent)
             {
@@ -859,8 +868,8 @@ namespace Match3
                     if (currTile.ID == TileID.None) continue;
                     if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
                     if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
-                    if (currTile.CurrentBlock is not NoneBlock && 
-                        currTile.CurrentBlock is not Lock && 
+                    if (currTile.CurrentBlock is not NoneBlock &&
+                        currTile.CurrentBlock is not Lock &&
                         currTile.CurrentBlock is not BushBlock) continue;
 
                     int sameIDCount = 0;
@@ -873,8 +882,8 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
                         if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock || 
-                            nbTile.CurrentBlock is Lock || 
+                            (nbTile.CurrentBlock is NoneBlock ||
+                            nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
                         {
                             sameIDCount++;
@@ -1140,10 +1149,10 @@ namespace Match3
 
                         if (currTile.ID == nbTile.ID &&
                             (nbTile.CurrentBlock is NoneBlock ||
-                            nbTile.CurrentBlock is Lock || 
+                            nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
                         {
-                            sameIDCountInColumn++;                         
+                            sameIDCountInColumn++;
                         }
                         else
                         {
@@ -1585,11 +1594,43 @@ namespace Match3
 
 
                 // default
+
                 for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
                 {
                     int index = (x + h) + y * Width;
-                    //_matchBuffer[index] = MatchID.Match;
                     SetMatchBuffer(index, MatchID.Match);
+                }
+
+                int originIndex = (tile.X + 1) + tile.Y * Width;
+                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+                {
+                    int index = (x + h) + y * Width;
+                    if (_tiles[index].ID != _prevTileIDs[index])
+                    {
+                        originIndex = _tiles[index].X + _tiles[index].Y * Width;
+                    }
+
+                    if (_selectedTile != null)
+                        if (_tiles[index].Equal(_selectedTile))
+                        {
+                            originIndex = _selectedTile.X + _selectedTile.Y * Width;
+                            break;
+                        }
+
+                    if (_swappedTile != null)
+                        if (_tiles[index].Equal(_swappedTile))
+                        {
+                            originIndex = _swappedTile.X + _swappedTile.Y * Width;
+                            break;
+                        }
+                }
+
+                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+                {
+                    int index = (x + h) + y * Width;
+                    if (index == originIndex) continue;
+                    if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
             }
         }
@@ -1773,18 +1814,18 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
                         _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        if (_selectedTile.ID == _swappedTile.ID)
-                        {
-                            Debug.Log("============= Clear + ==============");
-                            EnableVerticalMatchBuffer(_selectedTile.X);
-                            EnableHorizontalMatchBuffer(_selectedTile.Y);
+                        // if (_selectedTile.ID == _swappedTile.ID)
+                        // {
+                        Debug.Log("============= Clear + ==============");
+                        EnableVerticalMatchBuffer(_selectedTile.X);
+                        EnableHorizontalMatchBuffer(_selectedTile.Y);
 
-                            PlayClearVerticalVFX(_selectedTile);
-                            PlayClearHorizontalVFX(_selectedTile);
+                        PlayClearVerticalVFX(_selectedTile);
+                        PlayClearHorizontalVFX(_selectedTile);
 
-                            _hasMatch4 = true;
-                            AudioManager.Instance.PlayMatch4Sfx();
-                        }
+                        _hasMatch4 = true;
+                        AudioManager.Instance.PlayMatch4Sfx();
+                        // }
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -2343,7 +2384,7 @@ namespace Match3
         {
             return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
                 _tiles[x + y * Width] != null &&
-                (_tiles[x + y * Width].CurrentBlock is NoneBlock || 
+                (_tiles[x + y * Width].CurrentBlock is NoneBlock ||
                 _tiles[x + y * Width].CurrentBlock is Lock ||
                 _tiles[x + y * Width].CurrentBlock is BushBlock);
         }

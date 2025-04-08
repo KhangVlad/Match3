@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
+using DG.Tweening;
 
 namespace Match3
 {
@@ -12,12 +14,6 @@ namespace Match3
 
         [Header("Buttons")]
         [SerializeField] private Button _settingsBtn;
-
-
-        [Header("Quests")]
-        [SerializeField] private UIQuest _uiQuestPrefab;
-        [SerializeField] private Transform _questContentParent;
-
 
         [Header("Progress")]
         [SerializeField] private Slider _progressSlider;
@@ -37,10 +33,6 @@ namespace Match3
         [SerializeField] private Image _characterAvatar;
 
 
-        [Header("~Runtime")]
-        [SerializeField] private UIQuest[] _uiQuestSlots;
-
-
         private void Awake()
         {
             _canvas = GetComponent<Canvas>();
@@ -50,7 +42,6 @@ namespace Match3
         {
             _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
             _turnCountText.text = GameplayManager.Instance.TurnRemainingCount.ToString();
-            LoadAllQuestsUI();
             LoadUIBoosters();
 
             _settingsBtn.onClick.AddListener(() =>
@@ -65,34 +56,24 @@ namespace Match3
 #endif
 
             GameplayManager.Instance.OnTurnRemaingChanged += OnTurnRemaingChanged_UpdateUI;
-            Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateQuestUI;
             UIGameplayBoosterManager.OnUIGameplayBoosterManagerDisplay += OnUIGameplayBoosterManagerDisplay_UpdateUI;
+
         }
 
-   
 
         private void OnDestroy()
         {
             _settingsBtn.onClick.RemoveAllListeners();
             GameplayManager.Instance.OnTurnRemaingChanged -= OnTurnRemaingChanged_UpdateUI;
-            Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateQuestUI;
             UIGameplayBoosterManager.OnUIGameplayBoosterManagerDisplay -= OnUIGameplayBoosterManagerDisplay_UpdateUI;
         }
 
 
-        private void LoadAllQuestsUI()
+        public void DisplayCanvas(bool enable)
         {
-            _uiQuestSlots = new UIQuest[GameplayManager.Instance.Quests.Length];
-            for (int i = 0; i < GameplayManager.Instance.Quests.Length; i++)
-            {
-                Quest quest = GameplayManager.Instance.Quests[i];
-                QuestDataSO questData = GameDataManager.Instance.GetQuestDataByID(quest.QuestID);
-
-                UIQuest uiQuest = Instantiate(_uiQuestPrefab, _questContentParent);
-                uiQuest.SetData(questData.Icon, quest.Quantity);
-                _uiQuestSlots[i] = uiQuest;
-            }
+            this._canvas.enabled = enable;
         }
+
 
         private void LoadUIBoosters()
         {
@@ -109,24 +90,10 @@ namespace Match3
             _turnCountText.text = value.ToString();
         }
 
-        private void OnEndOfTurn_UpdateQuestUI()
-        {
-            for(int i = 0; i < _uiQuestSlots.Length; i++)
-            {
-                UIQuest uiQuest = _uiQuestSlots[i];
-                Quest quest = GameplayManager.Instance.Quests[i];
-
-                uiQuest.UpdateQuest(quest);
-            }
-        }
         private void OnUIGameplayBoosterManagerDisplay_UpdateUI(bool enable)
         {
             _settingsBtn.interactable = !enable;
         }
-
-        public void DisplayCanvas(bool enable)
-        {
-            this._canvas.enabled = enable;
-        }
     }
+
 }

@@ -11052,66 +11052,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _button:
     Guid:
-      Data1: 785846939
-      Data2: 1333723963
-      Data3: -390048101
-      Data4: 1546261908
+      Data1: -1006153111
+      Data2: 1085597468
+      Data3: -1365038185
+      Data4: -1035004792
     Path: event:/Button
   _match3:
     Guid:
-      Data1: -1258431321
-      Data2: 1237825056
-      Data3: -394380390
-      Data4: 1105115172
-    Path: event:/Match3
+      Data1: 929327902
+      Data2: 1165098217
+      Data3: 1055814073
+      Data4: 1997139393
+    Path: event:/Lose
   _match4:
     Guid:
-      Data1: 1183918869
-      Data2: 1319331177
-      Data3: -1857234012
-      Data4: 142681943
-    Path: event:/Match4
+      Data1: 929327902
+      Data2: 1165098217
+      Data3: 1055814073
+      Data4: 1997139393
+    Path: event:/Lose
   _match5:
     Guid:
-      Data1: 875187288
-      Data2: 1213615521
-      Data3: 701029537
-      Data4: -650926810
-    Path: event:/Match5
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
+    Path: event:/Win
   _match6:
     Guid:
-      Data1: -2038965868
-      Data2: 1097826189
-      Data3: -2085498219
-      Data4: 1367708236
-    Path: event:/Match6
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
+    Path: event:/Win
   _win:
     Guid:
-      Data1: 1393185840
-      Data2: 1112258418
-      Data3: 1387880857
-      Data4: -135619405
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
     Path: event:/Win
   _gameover:
     Guid:
-      Data1: 1647162326
-      Data2: 1139357176
-      Data3: 1322064018
-      Data4: -507620824
-    Path: event:/Gameover
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
+    Path: event:/Win
   _closeBtn:
     Guid:
-      Data1: 1393185840
-      Data2: 1112258418
-      Data3: 1387880857
-      Data4: -135619405
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
     Path: event:/Win
   _backgroundMusic:
     Guid:
-      Data1: 1393185840
-      Data2: 1112258418
-      Data3: 1387880857
-      Data4: -135619405
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
     Path: event:/Win
 --- !u!4 &1310305417
 Transform:
@@ -13395,7 +13395,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 152779.5}
+  m_AnchoredPosition: {x: 0, y: 277676.88}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1577166308
