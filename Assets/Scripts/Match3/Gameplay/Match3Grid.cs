@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using System.Linq;
 
 namespace Match3
 {
@@ -43,6 +44,7 @@ namespace Match3
         private HashSet<int> _triggeredMatch5Set;
         private Dictionary<int, Vector2> _colorBurstParentDictionary;
         private Dictionary<Tile, Tile> _match3Dictionary;
+        private Dictionary<int, int> _fillDownDictionary = new();          // x, count
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -657,8 +659,8 @@ namespace Match3
                         Tile nb = tile.Key;
                         if (t != null && nb != null)
                         {
-                            float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.2f;
-                            float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.2f;
+                            float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                            float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
 
 
@@ -2394,54 +2396,89 @@ namespace Match3
             //Debug.Log($"{maxMoveY}");
             //yield return new WaitForSeconds(AnimationExtensions.TILE_MOVE_TIME * maxMoveY);
 
-
+            _fillDownDictionary.Clear();
             for (int i = 0; i < _fillBlockIndices.Count; i++)
             {
                 int index = _fillBlockIndices[i];
                 int x = index % Width;
                 int y = index / Width;
 
-                Dictionary<int, int> fillDict = new();
                 for (int yy = 0; yy < y; yy++)
                 {
                     if (_tiles[x + yy * Width] == null)
                     {
                         TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
                         Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
-          
-                        if(fillDict.ContainsKey(x) == false)
+
+                        if (_fillDownDictionary.ContainsKey(x) == false)
                         {
-                            fillDict.Add(x, 1);
+                            _fillDownDictionary.Add(x, 1);
                         }
                         else
                         {
-                            fillDict[x]++;
+                            _fillDownDictionary[x]++;
                         }
-                        Debug.Log(fillDict[x]);
-                        int offsetFillY = Height - yy + fillDict[x] - 2;    // 2: 1 fill block + sizeY = height - 1
+                        int offsetFillY = Height - yy + _fillDownDictionary[x] - 2;    // 2: 1 fill block + sizeY = height - 1
                         newTile.UpdatePosition(0, offsetFillY);
                         newTile.Display(true);
                     }
                 }
             }
 
-            //Debug.Break();
 
-            for (int i = 0; i < _tiles.Length; i++)
+            //int currY = 0;
+            //for (int i = 0; i < _tiles.Length; i++)
+            //{
+            //    if (_tiles[i] != null)
+            //    {
+            //        _tiles[i].Display(true);
+            //        if (_tiles[i].IsCorrectPosition() == false)
+            //        {
+            //            int x = i % Width;
+            //            int y = i / Width;
+            //            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * _fillDownDictionary[x]);
+
+            //            if (currY < y)
+            //            {
+            //                currY = y;
+            //                Debug.Log($"Y: {y}");
+            //                yield return new WaitForSeconds(0.1f);
+            //            }
+            //        }
+            //    }
+            //}
+
+            for (int y = 0; y < Height; y++)
             {
-                if (_tiles[i] != null)
+                bool hasFilledTile = false;
+                for (int x = 0; x < Width; x++)
                 {
-                    _tiles[i].Display(true);
-                    if (_tiles[i].IsCorrectPosition() == false)
+                    int i = x + y * Width;
+                    if (_tiles[i] != null)
                     {
-                        _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME);
+                        _tiles[i].Display(true);
+                        if (_tiles[i].IsCorrectPosition() == false)
+                        {
+                            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * _fillDownDictionary[x]);
+                            hasFilledTile = true;
+                        }
                     }
                 }
+                if (hasFilledTile)
+                    yield return new WaitForSeconds(0.1f);
             }
 
-            if(_fillBlockIndices.Count > 0)
+
+            if (_fillBlockIndices.Count > 0)
             {
-                yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME);
+                int maxColumnFillCount = 1;
+                foreach (var e in _fillDownDictionary)
+                {
+                    if (e.Value > maxColumnFillCount)
+                        maxColumnFillCount = e.Value;
+                }
+
+                yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
             }
         }
 

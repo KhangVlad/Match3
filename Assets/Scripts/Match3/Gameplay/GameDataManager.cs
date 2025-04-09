@@ -71,7 +71,11 @@ namespace Match3
             LoadGameData();
         }
 
-
+        private void OnDestroy()
+        {
+            for (int i = 0; i < Tiles.Length; i++)
+                Tiles[i].TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+        }
         private void LoadGameData()
         {
             // Load all tiles

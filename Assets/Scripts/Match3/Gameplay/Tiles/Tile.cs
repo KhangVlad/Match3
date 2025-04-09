@@ -15,7 +15,9 @@ namespace Match3
         [SerializeField] protected Sprite _match4Horizontal;
         [SerializeField] protected Sprite _match5;
         [SerializeField] protected Sprite _match6;
+        public Transform TilePivot;
         public Transform TileTransform;
+    
 
         [Header("~Runtime")]
         public Block CurrentBlock;
@@ -177,22 +179,27 @@ namespace Match3
 
             Vector3 targetPosition = this.GetWorldPosition();
 
-            _moveTween = transform.DOMove(targetPosition, moveTime * 0.75f)
-                .SetEase(Ease.InQuad)
+            _moveTween = transform.DOMove(targetPosition, moveTime * 0.8f)
+                .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
                     // Tiny bounce up
-                    transform.DOMove(targetPosition + new Vector3(0, 0.1f, 0), moveTime * 0.1f)
-                        .SetEase(Ease.OutQuad)
-                        .OnComplete(() =>
-                        {
-                            // Jelly squish on impact
-                            transform.DOMove(targetPosition, moveTime * 0.15f)
-                                .SetEase(Ease.InQuad);
+                    //transform.DOMove(targetPosition + new Vector3(0, 0.2f, 0), moveTime * 0.125f)
+                    //    .SetEase(Ease.OutQuad)
+                    //    .OnComplete(() =>
+                    //    {
+                    //        // Jelly squish on impact
+                    //        transform.DOMove(targetPosition, moveTime * 0.125f)
+                    //            .SetEase(Ease.InQuad);
+                    //    });
 
-                            // Scale punch effect to simulate jelly wobble
-                            //transform.DOPunchScale(new Vector3(0.0f, -0.25f, 0f), 0.1f, 8, 0.1f);
-                        });
+                   
+                    TilePivot.transform.DOScaleX(1.2f, 0.2f);
+                    TilePivot.transform.DOScaleY(0.8f,0.2f).OnComplete(() =>
+                    {
+                        TilePivot.transform.DOScaleX(1.0f, 0.2f);
+                        TilePivot.transform.DOScaleY(1.0f, 0.2f);
+                    });
                 });
         }
 
