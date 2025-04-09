@@ -4866,8 +4866,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _turnCountText: {fileID: 1836909658}
   _settingsBtn: {fileID: 380584987}
-  _uiQuestPrefab: {fileID: 350133789202985320, guid: d58c24eaf0f48b142b0b602968471d18, type: 3}
-  _questContentParent: {fileID: 1771002291}
   _progressSlider: {fileID: 208999976}
   _start1: {fileID: 293316692}
   _start2: {fileID: 1323792573}
@@ -4877,7 +4875,6 @@ MonoBehaviour:
   _uiGameplayBoosterPrefab: {fileID: 4726057803351993924, guid: 760a13e5702b8ab4b929f47abe167c99, type: 3}
   _boosterContentParent: {fileID: 851907168}
   _characterAvatar: {fileID: 717340042}
-  _uiQuestSlots: []
 --- !u!1 &1457405109
 GameObject:
   m_ObjectHideFlags: 0
@@ -6332,6 +6329,7 @@ GameObject:
   - component: {fileID: 2016386151}
   - component: {fileID: 2016386153}
   - component: {fileID: 2016386152}
+  - component: {fileID: 2016386154}
   m_Layer: 0
   m_Name: Tilemap
   m_TagString: Untagged
@@ -6444,6 +6442,61 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!331 &2016386154
+SpriteMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016386150}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 0}
+  m_MaskAlphaCutoff: 0.2
+  m_FrontSortingLayerID: 0
+  m_BackSortingLayerID: 0
+  m_FrontSortingLayer: 0
+  m_BackSortingLayer: 0
+  m_FrontSortingOrder: 0
+  m_BackSortingOrder: 0
+  m_IsCustomRangeActive: 0
+  m_SpriteSortPoint: 0
+  m_MaskSource: 1
 --- !u!1 &2073388304
 GameObject:
   m_ObjectHideFlags: 0

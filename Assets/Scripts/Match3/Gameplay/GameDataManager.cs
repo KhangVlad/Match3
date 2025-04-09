@@ -76,6 +76,8 @@ namespace Match3
         {
             // Load all tiles
             Tiles = Resources.LoadAll<Tile>("Tiles/");
+            for (int i = 0; i < Tiles.Length; i++)
+                Tiles[i].TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
 
             _tileDict = new();
             for (int i = 0; i < Tiles.Length; i++)
