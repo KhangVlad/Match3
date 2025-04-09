@@ -149,16 +149,51 @@ namespace Match3
             Vector3 targetPosition = this.GetWorldPosition();
             _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(Ease.Linear);
         }
-        public void FallDownToGridPosition(float moveTime = AnimationExtensions.TILE_MOVE_TIME)
+        public void FallDownToGridPosition(float moveTime = AnimationExtensions.TILE_FALLDOWN_TIME)
         {
+            //Vector3 targetPosition = this.GetWorldPosition();
+            //_moveTween = transform.DOMove(targetPosition, moveTime * 0.75f).SetEase(Ease.Linear).OnComplete(() =>
+            //{
+            //    transform.DOMove(targetPosition + new Vector3(0, 0.5f, 0), moveTime * 0.15f).OnComplete(() =>
+            //    {
+            //        transform.DOMove(targetPosition, 0.1f).SetEase(Ease.Linear);
+            //    });
+            //});
+
+            //Vector3 targetPosition = this.GetWorldPosition();
+            //_moveTween = transform.DOMove(targetPosition, moveTime * 0.7f).SetEase(Ease.InSine).OnComplete(() =>
+            //{
+            //    TileTransform.DOScaleY(0.85f, moveTime * 0.2f).OnComplete(() =>
+            //    {
+            //        TileTransform.DOScaleY(1f, moveTime * 0.1f);
+            //        //transform.DOMove(targetPosition + new Vector3(0, 0.5f, 0), moveTime * 0.3f).OnComplete(() =>
+            //        //{
+            //        //    transform.DOMove(targetPosition, 0.1f).SetEase(Ease.Linear);
+            //        //});
+            //    });
+
+            //});
+
+
             Vector3 targetPosition = this.GetWorldPosition();
-            _moveTween = transform.DOMove(targetPosition, moveTime * 0.75f).SetEase(Ease.Linear).OnComplete(() =>
-            {
-                transform.DOMove(targetPosition + new Vector3(0,0.5f,0), moveTime * 0.15f).OnComplete(()=>
+
+            _moveTween = transform.DOMove(targetPosition, moveTime * 0.75f)
+                .SetEase(Ease.InQuad)
+                .OnComplete(() =>
                 {
-                    transform.DOMove(targetPosition, 0.1f).SetEase(Ease.Linear);
+                    // Tiny bounce up
+                    transform.DOMove(targetPosition + new Vector3(0, 0.1f, 0), moveTime * 0.1f)
+                        .SetEase(Ease.OutQuad)
+                        .OnComplete(() =>
+                        {
+                            // Jelly squish on impact
+                            transform.DOMove(targetPosition, moveTime * 0.15f)
+                                .SetEase(Ease.InQuad);
+
+                            // Scale punch effect to simulate jelly wobble
+                            //transform.DOPunchScale(new Vector3(0.0f, -0.25f, 0f), 0.1f, 8, 0.1f);
+                        });
                 });
-            });
         }
 
 

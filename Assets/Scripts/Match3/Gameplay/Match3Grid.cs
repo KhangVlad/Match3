@@ -311,7 +311,7 @@ namespace Match3
                         {
                             _canPlay = false;
                             // wait animation completed
-                            Utilities.WaitAfter(AnimationExtensions.TILE_MOVE_TIME + 0.2f, () =>
+                            Utilities.WaitAfter(AnimationExtensions.TILE_MOVE_TIME, () =>
                             {
                                 // Handle in-game booster
                                 if (GameplayUserManager.Instance.SelectedGameplayBooster != null)
@@ -2401,18 +2401,31 @@ namespace Match3
                 int x = index % Width;
                 int y = index / Width;
 
+                Dictionary<int, int> fillDict = new();
                 for (int yy = 0; yy < y; yy++)
                 {
                     if (_tiles[x + yy * Width] == null)
                     {
                         TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
                         Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
-                        newTile.UpdatePosition(0, 5);
-                        newTile.Display(false);
+          
+                        if(fillDict.ContainsKey(x) == false)
+                        {
+                            fillDict.Add(x, 1);
+                        }
+                        else
+                        {
+                            fillDict[x]++;
+                        }
+                        Debug.Log(fillDict[x]);
+                        int offsetFillY = Height - yy + fillDict[x] - 2;    // 2: 1 fill block + sizeY = height - 1
+                        newTile.UpdatePosition(0, offsetFillY);
+                        newTile.Display(true);
                     }
                 }
             }
 
+            //Debug.Break();
 
             for (int i = 0; i < _tiles.Length; i++)
             {
@@ -2421,12 +2434,15 @@ namespace Match3
                     _tiles[i].Display(true);
                     if (_tiles[i].IsCorrectPosition() == false)
                     {
-                        _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_MOVE_TIME);
+                        _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME);
                     }
-
                 }
             }
-            yield return null;
+
+            if(_fillBlockIndices.Count > 0)
+            {
+                yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME);
+            }
         }
 
 

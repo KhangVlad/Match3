@@ -43,6 +43,7 @@ namespace Match3
 
         private IEnumerator PlayCollectAnimCoroutine()
         {
+            yield break;
             foreach (var e in Match3TileDict)
             {
                 for (int i = 0; i < e.Value.Count; i++)
