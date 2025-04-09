@@ -225,9 +225,10 @@ namespace Match3
             _scaleTween = transform.DOScale(0.1f, 0.2f).SetEase(Ease.Linear);
         }
 
-        public bool IsCorrectPosition()
+        public bool IsCorrectPosition(out float distance)
         {
-            return Vector2.Distance(transform.position, this.GetWorldPosition()) < 0.05f;
+            distance = Vector2.Distance(transform.position, this.GetWorldPosition());
+            return distance < 0.05f;
         }
 
         public virtual bool Equal(Tile tile)

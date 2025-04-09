@@ -664,24 +664,24 @@ namespace Match3
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
 
 
-                            nb.transform.DOMove((Vector2)t.transform.position, 0.1f).SetEase(Ease.InSine).OnComplete(() =>
+                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine).OnComplete(() =>
                             {
-                                nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
-                                nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
-                                {
-                                    nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
-                                    nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
-                                    {
-                                        nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
-                                    });
-                                });
+                                //nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
+                                //nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                                //{
+                                //    nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
+                                //    nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                                //    {
+                                //        nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
+                                //    });
+                                //});
                                 // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
 
                             });
                         }
                     }
 
-                    yield return new WaitForSeconds(0.4f);
+                    yield return new WaitForSeconds(0.2f);
 
                     foreach (var tile in _match3Dictionary)
                     {
@@ -2393,9 +2393,6 @@ namespace Match3
                 }
             }
 
-            //Debug.Log($"{maxMoveY}");
-            //yield return new WaitForSeconds(AnimationExtensions.TILE_MOVE_TIME * maxMoveY);
-
             _fillDownDictionary.Clear();
             for (int i = 0; i < _fillBlockIndices.Count; i++)
             {
@@ -2426,28 +2423,6 @@ namespace Match3
             }
 
 
-            //int currY = 0;
-            //for (int i = 0; i < _tiles.Length; i++)
-            //{
-            //    if (_tiles[i] != null)
-            //    {
-            //        _tiles[i].Display(true);
-            //        if (_tiles[i].IsCorrectPosition() == false)
-            //        {
-            //            int x = i % Width;
-            //            int y = i / Width;
-            //            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * _fillDownDictionary[x]);
-
-            //            if (currY < y)
-            //            {
-            //                currY = y;
-            //                Debug.Log($"Y: {y}");
-            //                yield return new WaitForSeconds(0.1f);
-            //            }
-            //        }
-            //    }
-            //}
-
             for (int y = 0; y < Height; y++)
             {
                 bool hasFilledTile = false;
@@ -2457,9 +2432,9 @@ namespace Match3
                     if (_tiles[i] != null)
                     {
                         _tiles[i].Display(true);
-                        if (_tiles[i].IsCorrectPosition() == false)
+                        if (_tiles[i].IsCorrectPosition(out float distance) == false)
                         {
-                            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * _fillDownDictionary[x]);
+                            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * distance);
                             hasFilledTile = true;
                         }
                     }
@@ -2478,8 +2453,11 @@ namespace Match3
                         maxColumnFillCount = e.Value;
                 }
 
+                //yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
                 yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
             }
+
+            yield return null;
         }
 
 
