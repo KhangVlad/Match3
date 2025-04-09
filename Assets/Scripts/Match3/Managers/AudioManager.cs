@@ -80,8 +80,17 @@ namespace Match3
             RuntimeManager.LoadBank("Master", true);
             // DontDestroyOnLoad(this.gameObject);
             _masterBus = RuntimeManager.GetBus("bus:/");
-            _musicBus = RuntimeManager.GetBus("bus:/MUSIC");
-            _soundBus = RuntimeManager.GetBus("bus:/SFX");
+            try
+            {
+                _musicBus = RuntimeManager.GetBus("bus:/MUSIC");
+                _soundBus = RuntimeManager.GetBus("bus:/SFX");
+            }
+            catch
+            {
+
+            }
+           
+           
         }
 
         private void Start()

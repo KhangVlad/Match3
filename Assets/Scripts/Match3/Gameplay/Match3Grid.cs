@@ -649,49 +649,52 @@ namespace Match3
                 // play match animation
                 _unlockTileSet.Clear();
 
-                foreach (var tile in _match3Dictionary)
+                if (_match3Dictionary.Count > 0)
                 {
-                    Tile t = tile.Value;
-                    Tile nb = tile.Key;
-                    if (t != null && nb != null)
+                    foreach (var tile in _match3Dictionary)
                     {
-                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.2f;
-                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.2f;
-                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-
-
-                        nb.transform.DOMove((Vector2)t.transform.position, 0.1f).SetEase(Ease.InSine).OnComplete(() =>
+                        Tile t = tile.Value;
+                        Tile nb = tile.Key;
+                        if (t != null && nb != null)
                         {
-                            nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
-                            nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                            float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.2f;
+                            float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.2f;
+                            Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+
+
+                            nb.transform.DOMove((Vector2)t.transform.position, 0.1f).SetEase(Ease.InSine).OnComplete(() =>
                             {
-                                nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
-                                nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                                nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
+                                nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
                                 {
-                                    nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
+                                    nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
+                                    nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                                    {
+                                        nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
+                                    });
                                 });
+                                // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
+
                             });
-                            // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
-
-                        });
-
+                        }
                     }
-                }
-                yield return new WaitForSeconds(0.4f);
 
-                foreach (var tile in _match3Dictionary)
-                {
-                    Tile t = tile.Value;
-                    Tile nb = tile.Key;
-                    if (t != null && nb != null)
+                    yield return new WaitForSeconds(0.4f);
+
+                    foreach (var tile in _match3Dictionary)
                     {
+                        Tile t = tile.Value;
+                        Tile nb = tile.Key;
+                        if (t != null && nb != null)
+                        {
 
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
-                        MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
+                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                        }
                     }
+                    MatchAnimManager.Instance.PlayCollectAnimation();
                 }
-                MatchAnimManager.Instance.PlayCollectAnimation();
 
 
                 for (int i = 0; i < _matchBuffer.Length; i++)
@@ -1628,39 +1631,8 @@ namespace Match3
                     int index = (x + h) + y * Width;
                     SetMatchBuffer(index, MatchID.Match);
                 }
-
-                int originIndex = (tile.X + 1) + tile.Y * Width;
-                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
-                {
-                    int index = (x + h) + y * Width;
-                    if (_tiles[index].ID != _prevTileIDs[index])
-                    {
-                        originIndex = _tiles[index].X + _tiles[index].Y * Width;
-                    }
-
-                    if (_selectedTile != null)
-                        if (_tiles[index].Equal(_selectedTile))
-                        {
-                            originIndex = _selectedTile.X + _selectedTile.Y * Width;
-                            break;
-                        }
-
-                    if (_swappedTile != null)
-                        if (_tiles[index].Equal(_swappedTile))
-                        {
-                            originIndex = _swappedTile.X + _swappedTile.Y * Width;
-                            break;
-                        }
-                }
-
-                for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
-                {
-                    int index = (x + h) + y * Width;
-                    if (index == originIndex) continue;
-                    if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
-                        _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
-                }
             }
+            HandleCollectInrow(tile, sameIDCountInRow);
         }
         private void HandleMatchSameIDInColumn(Tile tile, int sameIDCountInColumn)
         {
@@ -1830,6 +1802,8 @@ namespace Match3
                     _matchBuffer[x + (y + v) * Width] = MatchID.Match;
                 }
             }
+
+            HandleCollectInColumn(tile, sameIDCountInColumn);
         }
         private void HandleSpecialMatch()
         {
@@ -2246,6 +2220,79 @@ namespace Match3
         }
 
 
+        private void HandleCollectInrow(Tile tile, int sameIDCountInRow)
+        {
+            int originIndex = (tile.X + 1) + tile.Y * Width;
+            int x = tile.X;
+            int y = tile.Y;
+            for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+            {
+                int index = (x + h) + y * Width;
+                if (_tiles[index].ID != _prevTileIDs[index])
+                {
+                    originIndex = _tiles[index].X + _tiles[index].Y * Width;
+                }
+
+                if (_selectedTile != null)
+                    if (_tiles[index].Equal(_selectedTile))
+                    {
+                        originIndex = _selectedTile.X + _selectedTile.Y * Width;
+                        break;
+                    }
+
+                if (_swappedTile != null)
+                    if (_tiles[index].Equal(_swappedTile))
+                    {
+                        originIndex = _swappedTile.X + _swappedTile.Y * Width;
+                        break;
+                    }
+            }
+
+            for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
+            {
+                int index = (x + h) + y * Width;
+                if (index == originIndex) continue;
+                if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                    _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+            }
+        }
+
+        private void HandleCollectInColumn(Tile tile, int sameIDCountInColumn)
+        {
+            int originIndex = (tile.X + 1) + tile.Y * Width;
+            int x = tile.X;
+            int y = tile.Y;
+            for (int v = 0; v <= sameIDCountInColumn; v++)
+            {
+                int index = x + (y + v) * Width;
+                if (_tiles[index].ID != _prevTileIDs[index])
+                {
+                    originIndex = _tiles[index].X + _tiles[index].Y * Width;
+                }
+
+                if (_selectedTile != null)
+                    if (_tiles[index].Equal(_selectedTile))
+                    {
+                        originIndex = _selectedTile.X + _selectedTile.Y * Width;
+                        break;
+                    }
+
+                if (_swappedTile != null)
+                    if (_tiles[index].Equal(_swappedTile))
+                    {
+                        originIndex = _swappedTile.X + _swappedTile.Y * Width;
+                        break;
+                    }
+            }
+
+            for (int v = 0; v <= sameIDCountInColumn; v++)
+            {
+                int index = x + (y + v) * Width;
+                if (index == originIndex) continue;
+                if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                    _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+            }
+        }
 
 
 
