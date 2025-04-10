@@ -1323,7 +1323,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb779f2ac664a48ec9d44021624985eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiTilePrefab: {fileID: 3409263146255568601, guid: b761b3af05a1d47ac85177a3a3b76c01, type: 3}
 --- !u!1 &334948557
 GameObject:
   m_ObjectHideFlags: 0
