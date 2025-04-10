@@ -51,7 +51,7 @@ namespace Match3
                     BlockID blockID = (BlockID)System.Enum.ToObject(typeof(BlockID), _levelData.Blocks[x, y]);
                     TileID tileID = _levelData.Tiles[x, y];
 
-                    GameplayGridSlot newSlot = Instantiate(_gridSlotPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                    GameplayGridSlot newSlot = Instantiate(_gridSlotPrefab, new Vector3(x, y, 0), Quaternion.identity, this.transform);
                     newSlot.SetDefaultColor();
                     _gridSlots[x + y * width] = newSlot;
 

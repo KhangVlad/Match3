@@ -8,6 +8,8 @@ namespace Match3
         {
             Tile cachedTile = tile;
             grid[tile.X + tile.Y * width] = null;
+            Destroy(cachedTile.gameObject);
+            return;
             // cachedTile.TileTransform.DOScale(0.8f, 0.2f).SetEase(Ease.InFlash).OnComplete(() =>
             // {
             //     cachedTile.TileTransform.DOScale(1.3f, 0.1f).SetEase(Ease.InFlash).OnComplete(() =>
@@ -19,7 +21,6 @@ namespace Match3
             if (GameplayManager.Instance.TryGetQuestIndex(questID, out int index))
             {
                 Destroy(cachedTile.gameObject);
-
             }
             else
             {
@@ -44,8 +45,6 @@ namespace Match3
                 });
 
             }
-
-
 
         }
 

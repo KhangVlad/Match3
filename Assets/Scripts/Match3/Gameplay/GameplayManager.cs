@@ -454,6 +454,12 @@ namespace Match3
                     return QuestID.None;
             }
         }
+
+        public bool HasTileQuest(Tile tile, out QuestID questID)
+        {
+            questID = GetQuestByTileID(tile.ID);
+            return TryGetQuestIndex(questID, out int index);
+        }
         #endregion
     }
 }
