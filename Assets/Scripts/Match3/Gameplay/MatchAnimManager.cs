@@ -9,7 +9,8 @@ namespace Match3
     {
         public static MatchAnimManager Instance { get; private set; }
         public Dictionary<TilePositionInfo, List<TilePositionInfo>> Match3TileDict;
-
+        private Vector3[] _path = new Vector3[3];
+        private List<Tile> _animatedTiles;
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -20,6 +21,7 @@ namespace Match3
             Instance = this;
 
             Match3TileDict = new();
+            _animatedTiles = new();
         }
 
         public void Add(TilePositionInfo key, TilePositionInfo value)
@@ -32,7 +34,17 @@ namespace Match3
             }
             else
             {
-                Match3TileDict[key].Add(value);
+                bool hasTile = false;
+                for (int i = 0; i < Match3TileDict[key].Count; i++)
+                {
+                    if (Match3TileDict[key][i].Position == value.Position)
+                    {
+                        hasTile = true;
+                        break;
+                    }
+                }
+                if (hasTile == false)
+                    Match3TileDict[key].Add(value);
             }
         }
 
@@ -43,47 +55,55 @@ namespace Match3
 
         private IEnumerator PlayCollectAnimCoroutine()
         {
-            yield break;
+            // yield break;
+            // foreach(var e in Match3TileDict)
+            // {
+            //     e.Value.Add(e.Key);
+            // }
+            _animatedTiles.Clear();
             foreach (var e in Match3TileDict)
             {
                 for (int i = 0; i < e.Value.Count; i++)
                 {
                     TilePositionInfo tileInfo = e.Value[i];
-
                     QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileInfo.ID);
                     if (GameplayManager.Instance.TryGetQuestIndex(questID, out int questIndex))
                     {
                         Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
                         Tile tileInstance = Instantiate(tilePrefab, tileInfo.Position, Quaternion.identity);
                         tileInstance.SetRenderOrder(100);
-                        Vector2 ssPosition = UIQuestManager.Instance.GetUIQuestSSPosition(questIndex) - new Vector2(0.5f, 0.5f);
-
-                        // tileInstance.transform.DOMove(ssPosition, 0.5f).SetEase(Ease.Linear).OnComplete(() =>
-                        // {
-                        //     Destroy(tileInstance.gameObject);
-                        // });
-
-
-                        // Store the original position
-                        Vector3 originalPosition = tileInstance.transform.position;
-                        tileInstance.TileTransform.DORotate(new Vector3(0, 0, 720), 2f, RotateMode.FastBeyond360)
-                        .SetEase(Ease.Linear)
-                        .SetLoops(-1, LoopType.Incremental);
-                        tileInstance.TileTransform.DOScale(0.75f, 1.0f).SetEase(Ease.Linear);
-                        tileInstance.transform.DOMove(ssPosition + new Vector2(0.0f, 0.5f), 1.0f).SetEase(Ease.Linear).OnComplete(() =>
-                        {
-                            tileInstance.TileTransform.DOScale(0.0f, 0.5f).SetEase(Ease.InFlash);
-                            tileInstance.transform.DOMove(ssPosition, 0.5f).SetEase(Ease.InFlash).OnComplete(() =>
-                            {
-                                Destroy(tileInstance.gameObject);
-                            });
-                        });
-
-                        yield return new WaitForSeconds(0.1f);
+                        tileInstance.TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+                        _animatedTiles.Add(tileInstance);
                     }
                 }
             }
 
+            for (int i = 0; i < _animatedTiles.Count; i++)
+            {
+                Tile tile = _animatedTiles[i];
+                QuestID questID = GameplayManager.Instance.GetQuestByTileID(tile.ID);
+                if (GameplayManager.Instance.TryGetQuestIndex(questID, out int questIndex))
+                {
+                    Vector2 ssPosition = UIQuestManager.Instance.GetUIQuestSSPosition(questIndex) - new Vector2(0.5f, 0.5f);
+
+                    Vector3 startPos =tile.transform.position;
+                    Vector3 endPos = ssPosition;
+                    // Control point: this will determine the curve arch
+                    Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.5f, -1f, (endPos.z - startPos.z) * 0.5f); // goes downward first
+                    _path[0] = startPos;
+                    _path[1] = controlPoint;
+                    _path[2] = endPos;
+                    tile.transform.DOPath(_path, 1.25f, PathType.CatmullRom)
+                        .SetEase(Ease.InOutQuad)
+                        .OnComplete(() =>
+                        {
+                            Destroy(tile.gameObject);
+                        });
+
+                    yield return new WaitForSeconds(0.1f);
+                }
+            }
+            yield return null;
             Clear();
         }
 

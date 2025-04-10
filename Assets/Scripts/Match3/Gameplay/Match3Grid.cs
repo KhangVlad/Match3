@@ -664,37 +664,37 @@ namespace Match3
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
 
 
-                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine).OnComplete(() =>
-                            {
-                                //nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
-                                //nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
-                                //{
-                                //    nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
-                                //    nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
-                                //    {
-                                //        nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
-                                //    });
-                                //});
-                                // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
-
-                            });
+                            // nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine).OnComplete(() =>
+                            // {
+                            //     //nb.TileTransform.DOScaleX(0.75f, 0.1f).SetEase(Ease.Linear);
+                            //     //nb.TileTransform.DOScaleY(1.25f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                            //     //{
+                            //     //    nb.TileTransform.DOScaleX(1.2f, 0.1f).SetEase(Ease.Linear);
+                            //     //    nb.TileTransform.DOScaleY(0.8f, 0.1f).SetEase(Ease.Linear).OnComplete(() =>
+                            //     //    {
+                            //     //        nb.transform.DOMove((Vector2)t.transform.position + offsetPosition, 0.1f).SetEase(Ease.OutSine);
+                            //     //    });
+                            //     //});
+                            //     // Debug.Log($"{offsetX}  {offsetY}  {offsetPosition}");
+                            // });
                         }
                     }
 
                     yield return new WaitForSeconds(0.2f);
-
                     foreach (var tile in _match3Dictionary)
                     {
                         Tile t = tile.Value;
                         Tile nb = tile.Key;
                         if (t != null && nb != null)
                         {
-
                             TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
                             TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
                             MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
                         }
                     }
+                    // LevelPreviewGrid.Instance.PlayGridCollectAnimation();
+
                     MatchAnimManager.Instance.PlayCollectAnimation();
                 }
 
