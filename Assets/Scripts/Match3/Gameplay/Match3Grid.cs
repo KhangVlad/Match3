@@ -643,7 +643,7 @@ namespace Match3
                 int colorBurstCount = 0;
 
                 if (attempts != 0)
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
 
                 yield return StartCoroutine(HandleMatchCoroutine());
                 HandleTriggerAllSpecialTiles();
@@ -857,7 +857,7 @@ namespace Match3
                             _tiles[i].Display(true);
                     }
 
-                    yield return new WaitForSeconds(0.15f);
+                     yield return new WaitForSeconds(0.1f);
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
 
