@@ -579,6 +579,7 @@ namespace Match3
             Tile tileInstance = Instantiate(tilePrefab, this.transform);
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
+            tileInstance.TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             tileInstance.SetGridPosition(x, y);
             _tiles[x + y * Width] = tileInstance;
 
@@ -642,8 +643,8 @@ namespace Match3
             {
                 int colorBurstCount = 0;
 
-                if (attempts != 0)
-                    yield return new WaitForSeconds(0.1f);
+                //if (attempts != 0)
+                //    yield return new WaitForSeconds(0.1f);
 
                 yield return StartCoroutine(HandleMatchCoroutine());
                 HandleTriggerAllSpecialTiles();
@@ -651,51 +652,42 @@ namespace Match3
                 bool hasMatched = false;
                 // play match animation
                 _unlockTileSet.Clear();
+                if (_match3Dictionary.Count > 0)
+                {
+                    //foreach (var tile in _match3Dictionary)
+                    //{
+                    //    Tile t = tile.Value;
+                    //    Tile nb = tile.Key;
+                    //    if (t != null && nb != null)
+                    //    {
+                    //        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                    //        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                    //        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+                    //        //if (GameplayManager.Instance.HasTileQuest(nb, out QuestID questID) == false)
+                    //        //{
+                    //        //    nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                    //        //}
+                    //        //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                    //    }
+                    //}
 
-                // if (_match3Dictionary.Count > 0)
-                // {
-                //     foreach (var tile in _match3Dictionary)
-                //     {
-                //         Tile t = tile.Value;
-                //         Tile nb = tile.Key;
-                //         if (t != null && nb != null)
-                //         {
-                //             float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
-                //             float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
-                //             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-
-                //             if (GameplayManager.Instance.HasTileQuest(nb, out QuestID questID) == false)
-                //             {
-                //                 nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine).OnComplete(() =>
-                //                     {
-
-                //                     });
-                //             }
-                //         }
-                //     }
-
-                //     yield return new WaitForSeconds(0.2f);
-                //     foreach (var tile in _match3Dictionary)
-                //     {
-                //         Tile t = tile.Value;
-                //         Tile nb = tile.Key;
-                //         if (t != null && nb != null)
-                //         {
-                //             TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                //             TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
-                //             MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
-                //             MatchAnimManager.Instance.Add(tileInfo, tileInfo);
-                //         }
-                //     }
-                //     // LevelPreviewGrid.Instance.PlayGridCollectAnimation();
-
-                //     MatchAnimManager.Instance.PlayCollectAnimation();
-                // }
+                    foreach (var tile in _match3Dictionary)
+                    {
+                        Tile t = tile.Value;
+                        Tile nb = tile.Key;
+                        if (t != null && nb != null)
+                        {
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
+                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                        }
+                    }
+                }
 
 
                 if (_match4Dictionary.Count > 0)
                 {
-                    Debug.Log("Match 4");
                     foreach (var tile in _match4Dictionary)
                     {
                         Tile t = tile.Value;
@@ -706,13 +698,11 @@ namespace Match3
                             float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
 
-                            if (GameplayManager.Instance.HasTileQuest(nb, out QuestID questID) == false)
-                            {
-                                nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine).OnComplete(() =>
-                                {
+                            //if (GameplayManager.Instance.HasTileQuest(nb, out QuestID questID) == false)
+                            //{
 
-                                });
-                            }
+                            //}
+                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
                         }
                     }
                     yield return new WaitForSeconds(0.2f);
@@ -736,7 +726,6 @@ namespace Match3
                     }
                 }
 
-                // yield return new WaitForSeconds(0.5f);
                 for (int i = 0; i < _matchBuffer.Length; i++)
                 {
                     Tile tile = _tiles[i];
@@ -775,7 +764,8 @@ namespace Match3
                             PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, 0.4f);
                             if (colorBurstCount % 3 == 0)
                             {
-                                yield return new WaitForSeconds(0.2f);
+                                Debug.Log("Color burst wait");
+                                //yield return new WaitForSeconds(0.2f);
                             }
                             colorBurstCount++;
                         }
@@ -848,6 +838,10 @@ namespace Match3
                 }
 
 
+
+                MatchAnimManager.Instance.PlayCollectAnimation();
+
+
                 if (hasMatched)
                 {
                     // yield return new WaitForSeconds(0.3f);
@@ -857,7 +851,7 @@ namespace Match3
                             _tiles[i].Display(true);
                     }
 
-                     yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.1f);
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
 
@@ -1358,29 +1352,6 @@ namespace Match3
 
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            //Debug.Log("AutoFillCoroutine");
-            //int attempts = 0;
-            //while (true)
-            //{
-            //    if (attempts++ > 10)
-            //    {
-            //        Debug.Log($"===== max attempts ======");
-            //        break;
-            //    }
-
-            //    //if(_tileHasMove == false)
-            //    //{
-            //    //    Debug.Log($"Break at: {attempts}");
-            //    //}
-            //    if (CanFill() == false)
-            //    {
-            //        Debug.Log($"Break at: {attempts}");
-            //        break;
-            //    }
-            //    //Debug.Log("AutoFillCoroutine");
-            //    yield return StartCoroutine(FillGridCoroutine());
-            //}
-
             yield return StartCoroutine(FillGridCoroutine());
             onCompleted?.Invoke();
         }
@@ -2293,13 +2264,12 @@ namespace Match3
             {
                 int index = (x + h) + y * Width;
                 if (index == originIndex) continue;
-                Debug.Log($"same: {sameIDCountInRow}");
                 if (sameIDCountInRow == 2)
                 {
                     if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
                         _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
-                if (sameIDCountInRow == 3)
+                else if (sameIDCountInRow == 3)
                 {
                     if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
                         _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
@@ -2339,8 +2309,19 @@ namespace Match3
             {
                 int index = x + (y + v) * Width;
                 if (index == originIndex) continue;
-                if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
-                    _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+
+                Debug.Log($"sameIDCountInColumn: {sameIDCountInColumn}");
+                if(sameIDCountInColumn == 2)
+                {
+                    if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                }
+                else if (sameIDCountInColumn == 3)
+                {
+                    if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                }
+            
             }
         }
 
@@ -2433,7 +2414,6 @@ namespace Match3
                     }
                     float moveY = (currTile.transform.position.y - currTile.GetWorldPosition().y) / 1.5f;
                     //currTile.MoveToGridPosition(AnimationExtensions.TILE_MOVE_TIME * moveY);
-
                     if (maxMoveY < moveY)
                     {
                         maxMoveY = moveY;
@@ -2487,8 +2467,8 @@ namespace Match3
                         }
                     }
                 }
-                if (hasFilledTile)
-                    yield return new WaitForSeconds(0.1f);
+                //if (hasFilledTile)
+                //    yield return new WaitForSeconds(0.1f);
             }
 
 

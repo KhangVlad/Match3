@@ -193,7 +193,6 @@ namespace Match3
                     //            .SetEase(Ease.InQuad);
                     //    });
 
-                   
                     TilePivot.transform.DOScaleX(1.2f, 0.2f);
                     TilePivot.transform.DOScaleY(0.8f,0.2f).OnComplete(() =>
                     {

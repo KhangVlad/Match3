@@ -45,6 +45,8 @@ namespace Match3
                 }
                 if (hasTile == false)
                     Match3TileDict[key].Add(value);
+
+                //Match3TileDict[key].Add(value);
             }
         }
 
@@ -78,6 +80,8 @@ namespace Match3
                 }
             }
 
+
+            //Debug.Log($"{Match3TileDict.Count}    {_animatedTiles.Count}");
             for (int i = 0; i < _animatedTiles.Count; i++)
             {
                 Tile tile = _animatedTiles[i];
@@ -100,7 +104,7 @@ namespace Match3
                             Destroy(tile.gameObject);
                         });
 
-                    yield return new WaitForSeconds(0.1f);
+                    //yield return new WaitForSeconds(0.1f);
                 }
             }
             yield return null;
