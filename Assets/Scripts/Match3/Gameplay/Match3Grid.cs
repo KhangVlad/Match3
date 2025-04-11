@@ -10,7 +10,7 @@ namespace Match3
     {
         public static Match3Grid Instance { get; private set; }
 
-        public static event System.Action OnAfterPlayerMatchInput;
+        public event System.Action OnAfterPlayerMatchInput;
         public static event System.Action OnEndOfTurn;
 
         [Header("~Runtime")]
@@ -44,6 +44,7 @@ namespace Match3
         private Dictionary<int, Vector2> _colorBurstParentDictionary;
         private Dictionary<Tile, Tile> _match3Dictionary;
         private Dictionary<Tile, Tile> _match4Dictionary;
+        private Dictionary<Tile, Tile> _match5Dictionary;
         private Dictionary<int, int> _fillDownDictionary = new();          // x, count
 
         private bool _hasMatch4 = false;
@@ -109,6 +110,7 @@ namespace Match3
             _colorBurstParentDictionary = new();
             _match3Dictionary = new();
             _match4Dictionary = new();
+            _match5Dictionary = new();
 
 
 
@@ -688,6 +690,7 @@ namespace Match3
 
                 if (_match4Dictionary.Count > 0)
                 {
+
                     foreach (var tile in _match4Dictionary)
                     {
                         Tile t = tile.Value;
@@ -706,8 +709,47 @@ namespace Match3
                         }
                     }
                     yield return new WaitForSeconds(0.2f);
-                    // HashSet<Vector2Int> spectialTileEffectPostiionSet = new();
+                    int multiplier = 1;
                     foreach (var e in _match4Dictionary)
+                    {
+                        Tile t = e.Value;
+                        Tile nb = e.Key;
+                        if (t != null && nb != null)
+                        {
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);// + new Vector2(0,0.02f) * multiplier);
+                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                        }
+                        multiplier++;
+                        // if (spectialTileEffectPostiionSet.Contains(new Vector2Int(t.X, t.Y)) == false)
+                        // {
+                        //     spectialTileEffectPostiionSet.Add(new Vector2Int(t.X, t.Y));
+                        // }
+                    }
+
+                    // HashSet<Vector2Int> spectialTileEffectPostiionSet = new();
+
+                }
+
+                if (_match5Dictionary.Count > 0)
+                {
+                    foreach (var tile in _match5Dictionary)
+                    {
+                        Tile t = tile.Value;
+                        Tile nb = tile.Key;
+                        if (t != null && nb != null)
+                        {
+                            float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                            float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                            Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+
+
+                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                        }
+                    }
+                    yield return new WaitForSeconds(0.2f);
+                    foreach (var e in _match5Dictionary)
                     {
                         Tile t = e.Value;
                         Tile nb = e.Key;
@@ -718,13 +760,9 @@ namespace Match3
                             MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
                             MatchAnimManager.Instance.Add(tileInfo, tileInfo);
                         }
-
-                        // if (spectialTileEffectPostiionSet.Contains(new Vector2Int(t.X, t.Y)) == false)
-                        // {
-                        //     spectialTileEffectPostiionSet.Add(new Vector2Int(t.X, t.Y));
-                        // }
                     }
                 }
+
 
                 for (int i = 0; i < _matchBuffer.Length; i++)
                 {
@@ -851,7 +889,7 @@ namespace Match3
                             _tiles[i].Display(true);
                     }
 
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.05f);
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
 
@@ -899,7 +937,10 @@ namespace Match3
 
             _triggeredMatch5Set.Clear();
             _colorBurstParentDictionary.Clear();
+
             _match3Dictionary.Clear();
+            _match4Dictionary.Clear();
+            _match5Dictionary.Clear();
 
             if (triggerEvent)
             {
@@ -1532,7 +1573,7 @@ namespace Match3
                 if (foundColorBurstTile == false)
                 {
                     Debug.Log($"Not found match5 tile oriign");
-                    int index = x + y * Width;
+                    int index = (x + sameIDCountInRow / 2) + y * Width;
                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
                 }
 
@@ -1606,7 +1647,7 @@ namespace Match3
                     if (foundMatch4Tile == false)
                     {
                         Debug.Log($"Not found match4 tile oriign");
-                        int index = x + y * Width;
+                        int index = x + 1 + y * Width;
                         _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
                     }
                 }
@@ -2274,6 +2315,11 @@ namespace Match3
                     if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
                         _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
+                else if (sameIDCountInRow >= 4)
+                {
+                    if (_match5Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match5Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                }
             }
         }
 
@@ -2311,7 +2357,7 @@ namespace Match3
                 if (index == originIndex) continue;
 
                 Debug.Log($"sameIDCountInColumn: {sameIDCountInColumn}");
-                if(sameIDCountInColumn == 2)
+                if (sameIDCountInColumn == 2)
                 {
                     if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
                         _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
@@ -2321,7 +2367,12 @@ namespace Match3
                     if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
                         _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
-            
+                else if (sameIDCountInColumn >= 4)
+                {
+                    if (_match5Dictionary.ContainsKey(_tiles[index]) == false)
+                        _match5Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                }
+
             }
         }
 

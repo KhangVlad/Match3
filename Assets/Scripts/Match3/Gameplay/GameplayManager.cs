@@ -74,7 +74,7 @@ namespace Match3
         {
             ChangeGameState(GameState.PLAYING);
 
-            Match3Grid.OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_UpdateTurnCount;
+            Match3Grid.Instance.OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateGameState;
 
             Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
@@ -88,7 +88,7 @@ namespace Match3
 
         private void OnDestroy()
         {
-            Match3Grid.OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_UpdateTurnCount;
+            Match3Grid.Instance.OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_UpdateTurnCount;
             Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateGameState;
 
             Match3Grid.OnEndOfTurn -= OnEndOfTurnQuestTriggered;

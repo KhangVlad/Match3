@@ -62,7 +62,7 @@ namespace Match3
             // {
             //     e.Value.Add(e.Key);
             // }
-            _animatedTiles.Clear();
+            
             foreach (var e in Match3TileDict)
             {
                 for (int i = 0; i < e.Value.Count; i++)
@@ -80,6 +80,7 @@ namespace Match3
                 }
             }
 
+            Match3TileDict.Clear();
 
             //Debug.Log($"{Match3TileDict.Count}    {_animatedTiles.Count}");
             for (int i = 0; i < _animatedTiles.Count; i++)
@@ -93,28 +94,29 @@ namespace Match3
                     Vector3 startPos =tile.transform.position;
                     Vector3 endPos = ssPosition;
                     // Control point: this will determine the curve arch
-                    Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.5f, -1f, (endPos.z - startPos.z) * 0.5f); // goes downward first
+                    Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.5f, -1f + i * 0.5f, (endPos.z - startPos.z) * 0.5f); // goes downward first
                     _path[0] = startPos;
                     _path[1] = controlPoint;
                     _path[2] = endPos;
-                    tile.transform.DOPath(_path, 1.25f, PathType.CatmullRom)
+                    tile.transform.DOPath(_path, 1.0f, PathType.CatmullRom)
                         .SetEase(Ease.InOutQuad)
                         .OnComplete(() =>
                         {
                             Destroy(tile.gameObject);
                         });
 
-                    //yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.05f);
                 }
             }
+            _animatedTiles.Clear();
             yield return null;
-            Clear();
         }
 
 
         public void Clear()
         {
             Match3TileDict.Clear();
+            _animatedTiles.Clear();
         }
     }
 
@@ -129,6 +131,30 @@ namespace Match3
         {
             this.ID = id;
             this.Position = position;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is TilePositionInfo other)
+            {
+                return ID.Equals(other.ID) && Position.Equals(other.Position);
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode() ^ Position.GetHashCode();
+        }
+
+        public static bool operator ==(TilePositionInfo a, TilePositionInfo b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(TilePositionInfo a, TilePositionInfo b)
+        {
+            return !a.Equals(b);
         }
     }
 }
