@@ -103,13 +103,15 @@ namespace Match3
                 case BlockID.Ice:
                 case BlockID.HardIce:
                 case BlockID.EternalIce:
-                case BlockID.BlackMud:
                 case BlockID.Leaf_01:
                 case BlockID.Leaf_02:
                 case BlockID.Leaf_03:
                 case BlockID.Wall_01:
                 case BlockID.Wall_02:
                 case BlockID.Wall_03:
+                case BlockID.Spider:
+                case BlockID.SpiderNet:
+                case BlockID.SpiderOnNet:
                     SetRenderOrder(1);
                     sr.enabled = true;
                     break;

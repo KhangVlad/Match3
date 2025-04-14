@@ -10,7 +10,7 @@
         EternalIce = 5,
     
         Chest = 9,
-        BlackMud = 10,
+        // BlackMud = 10,
         Key = 11,
         Bush = 12,
         Wall_01= 13,
@@ -23,6 +23,7 @@
 
         Spider = 19,
         SpiderNet = 20,
+        SpiderOnNet = 21,
 
         Void = 99
     }

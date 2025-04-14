@@ -17,13 +17,14 @@ namespace Match3
 
         public override void Unlock(Tile tile)
         {
-            Destroy(tile.CurrentBlock.gameObject);
+            tile.ChangeBlock(BlockID.None);
+            // Destroy(tile.CurrentBlock.gameObject);
 
-            Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.None);
-            Block blockInstance = Instantiate(blockPrefab, tile.transform);
-            blockInstance.transform.localPosition = Vector3.zero;
+            // Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.None);
+            // Block blockInstance = Instantiate(blockPrefab, tile.transform);
+            // blockInstance.transform.localPosition = Vector3.zero;
 
-            tile.SetBlock(blockInstance);
+            // tile.SetBlock(blockInstance);
         }
     }
 }

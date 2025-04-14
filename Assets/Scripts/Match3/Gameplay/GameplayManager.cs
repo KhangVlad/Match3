@@ -152,8 +152,6 @@ namespace Match3
 
         private void OnEndOfTurn_UpdateGameState()
         {
-            OnBlackMudUpdate();
-
             //if (IsQuestCompleted(_currentQuestIndex))
             //{
             //    _currentQuestIndex++;
@@ -188,26 +186,26 @@ namespace Match3
         }
 
 
-        private void OnBlackMudUpdate()
-        {
-            for (int i = 0; i < Quests.Length; i++)
-            {
-                if (Quests[i].QuestID == QuestID.BlackMud)
-                {
-                    int blackmudCount = 0;
-                    for (int j = 0; j < Match3Grid.Instance.Tiles.Length; j++)
-                    {
-                        Tile tile = Match3Grid.Instance.Tiles[j];
-                        if (tile.CurrentBlock is BlackMud)
-                        {
-                            blackmudCount++;
-                        }
-                    }
-                    Quests[i].Quantity = blackmudCount;
-                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, default);
-                }
-            }
-        }
+        // private void OnBlackMudUpdate()
+        // {
+        //     for (int i = 0; i < Quests.Length; i++)
+        //     {
+        //         if (Quests[i].QuestID == QuestID.BlackMud)
+        //         {
+        //             int blackmudCount = 0;
+        //             for (int j = 0; j < Match3Grid.Instance.Tiles.Length; j++)
+        //             {
+        //                 Tile tile = Match3Grid.Instance.Tiles[j];
+        //                 if (tile.CurrentBlock is BlackMud)
+        //                 {
+        //                     blackmudCount++;
+        //                 }
+        //             }
+        //             Quests[i].Quantity = blackmudCount;
+        //             // OnQuestProgressUpdated?.Invoke(i, TileID.None, default);
+        //         }
+        //     }
+        // }
 
         private void OnIceUnlockedTriggered(Ice ice)
         {

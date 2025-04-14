@@ -63,9 +63,10 @@ namespace Match3
         };
 
 
-        // black mud
-        private int[] _directions = new int[] { 1, 2, 3, 4 };
-        private List<int> _blackMudSpreaingList;
+        // spider
+        private int[] _4directions = new int[] { 1, 2, 3, 4 };
+        private int[] _8directions = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+        private List<int> _spiderSpreadingList;
         [SerializeField] private bool _canPlay = true;
 
 
@@ -107,7 +108,7 @@ namespace Match3
 
             _clearVerticalColumns = new();
             _clearHorizontalRows = new();
-            _blackMudSpreaingList = new();
+            _spiderSpreadingList = new();
             _colorBurstParentDictionary = new();
             _match3Dictionary = new();
             _match4Dictionary = new();
@@ -217,7 +218,8 @@ namespace Match3
                             case Leaf01:
                             case Leaf02:
                             case Leaf03:
-                            case BlackMud:
+                            case Spider:
+                            case SpiderNet:
                                 UseBoosterThisTurn = true;
                                 _canPlay = false;
                                 _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
@@ -483,10 +485,6 @@ namespace Match3
                             newTile = AddTile(x, y, tileID, BlockID.EternalIce);
                             newTile.UpdatePosition();
                             break;
-                        case BlockID.BlackMud:
-                            newTile = AddTile(x, y, tileID, BlockID.BlackMud);
-                            newTile.UpdatePosition();
-                            break;
                         case BlockID.Bush:
                             newTile = AddTile(x, y, tileID, BlockID.Bush);
                             newTile.UpdatePosition();
@@ -521,6 +519,10 @@ namespace Match3
                             break;
                         case BlockID.SpiderNet:
                             newTile = AddTile(x, y, tileID, BlockID.SpiderNet);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.SpiderOnNet:
+                            newTile = AddTile(x, y, tileID, BlockID.SpiderOnNet);
                             newTile.UpdatePosition();
                             break;
                         default:
@@ -968,18 +970,19 @@ namespace Match3
             _match4Dictionary.Clear();
             _match5Dictionary.Clear();
 
-            if (UseBoosterThisTurn == false)
-            {
-                HandleBlackMudSpreading();
-                HandleLeafGrowth();
-            }
-            else
-            {
-                UseBoosterThisTurn = false;
-            }
 
             if (triggerEvent)
             {
+                if (UseBoosterThisTurn == false)
+                {
+                    HandleSpiderNetSpreading();
+                    HandleLeafGrowth();
+                }
+                else
+                {
+                    UseBoosterThisTurn = false;
+                }
+
                 OnEndOfTurn?.Invoke();
             }
         }
@@ -1382,11 +1385,11 @@ namespace Match3
                         else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
                         {
                             Debug.Log("Handle Special Color Burst");
-                            Utilities.Shuffle(_directions);
-                            for (int j = 0; j < _directions.Length; j++)
+                            Utilities.Shuffle(_4directions);
+                            for (int j = 0; j < _4directions.Length; j++)
                             {
                                 bool found = false;
-                                switch (_directions[j])
+                                switch (_4directions[j])
                                 {
                                     case 1: // left
                                         if (IsValidMatchTile(tile.X - 1, tile.Y))
@@ -1431,92 +1434,6 @@ namespace Match3
             yield return StartCoroutine(FillGridCoroutine());
             onCompleted?.Invoke();
         }
-        private void HandleBlackMudSpreading()
-        {
-            _blackMudSpreaingList.Clear();
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    int index = x + y * Width;
-                    if (_tiles[index] == null) continue;
-                    if (_tiles[index].CurrentBlock is BlackMud)
-                    {
-                        _blackMudSpreaingList.Add(index);
-                    }
-                }
-            }
-
-            for (int i = 0; i < _blackMudSpreaingList.Count; i++)
-            {
-                int tileIndex = _blackMudSpreaingList[i];
-                int x = tileIndex % Width;
-                int y = tileIndex / Width;
-
-                Utilities.Shuffle(_directions);
-                bool spreadToNeighbor = false;
-                for (int d = 0; d < _directions.Length; d++)
-                {
-                    switch (d)
-                    {
-                        case 1: // left
-                            if (IsValidNonBlockTile(x - 1, y))
-                            {
-                                Tile leftTile = _tiles[x - 1 + y * Width];
-                                Destroy(leftTile.CurrentBlock.gameObject);
-                                Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.BlackMud);
-                                Block blockInstance = Instantiate(blockPrefab, leftTile.transform);
-                                blockInstance.transform.localPosition = Vector3.zero;
-                                leftTile.SetBlock(blockInstance);
-
-                                spreadToNeighbor = true;
-                            }
-                            break;
-                        case 2: // right
-                            if (IsValidNonBlockTile(x + 1, y))
-                            {
-                                Tile rightTile = _tiles[x + 1 + y * Width];
-                                Destroy(rightTile.CurrentBlock.gameObject);
-                                Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.BlackMud);
-                                Block blockInstance = Instantiate(blockPrefab, rightTile.transform);
-                                blockInstance.transform.localPosition = Vector3.zero;
-                                rightTile.SetBlock(blockInstance);
-
-                                spreadToNeighbor = true;
-                            }
-                            break;
-                        case 3: // up
-                            if (IsValidNonBlockTile(x, y + 1))
-                            {
-                                Tile upTile = _tiles[x + (y + 1) * Width];
-                                Destroy(upTile.CurrentBlock.gameObject);
-                                Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.BlackMud);
-                                Block blockInstance = Instantiate(blockPrefab, upTile.transform);
-                                blockInstance.transform.localPosition = Vector3.zero;
-                                upTile.SetBlock(blockInstance);
-
-                                spreadToNeighbor = true;
-                            }
-                            break;
-                        case 4: // down
-                            if (IsValidNonBlockTile(x, y - 1))
-                            {
-                                Tile downTile = _tiles[x + (y - 1) * Width];
-                                Destroy(downTile.CurrentBlock.gameObject);
-                                Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.BlackMud);
-                                Block blockInstance = Instantiate(blockPrefab, downTile.transform);
-                                blockInstance.transform.localPosition = Vector3.zero;
-                                downTile.SetBlock(blockInstance);
-
-                                spreadToNeighbor = true;
-                            }
-                            break;
-                    }
-                }
-
-                if (spreadToNeighbor) break;
-            }
-        }
 
         private void HandleLeafGrowth()
         {
@@ -1552,6 +1469,119 @@ namespace Match3
             }
         }
 
+        private void HandleSpiderNetSpreading()
+        {
+            _spiderSpreadingList.Clear();
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = x + y * Width;
+                    if (_tiles[index] == null) continue;
+                    if (_tiles[index].CurrentBlock is Spider ||
+                        _tiles[index].CurrentBlock is SpiderOnNet)
+                    {
+                        _tiles[index].ChangeBlock(BlockID.SpiderNet);
+                        _spiderSpreadingList.Add(index);
+                    }
+                }
+            }
+
+            bool spreadToNeighbor = false;
+            for (int i = 0; i < _spiderSpreadingList.Count; i++)
+            {
+                int tileIndex = _spiderSpreadingList[i];
+                int x = tileIndex % Width;
+                int y = tileIndex / Width;
+
+                Utilities.Shuffle(_8directions);
+
+                for (int d = 0; d < _8directions.Length; d++)
+                {
+                    int dx = 0, dy = 0;
+                    switch (_8directions[d])
+                    {
+                        case 1: dx = -1; dy = 0; break; // Left
+                        case 2: dx = 1; dy = 0; break;  // Right
+                        case 3: dx = 0; dy = 1; break;  // Up
+                        case 4: dx = 0; dy = -1; break; // Down
+                        case 5: dx = -1; dy = 1; break; // Top-left
+                        case 6: dx = 1; dy = 1; break;  // Top-right
+                        case 7: dx = -1; dy = -1; break; // Bottom-left
+                        case 8: dx = 1; dy = -1; break;  // Bottom-right
+                    }
+
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    if (IsValidNonBlockTile(nx, ny))
+                    {
+                        Tile neighborTile = _tiles[nx + ny * Width];
+                        neighborTile.ChangeBlock(BlockID.Spider);
+                        spreadToNeighbor = true;
+                        Debug.Log("A");
+                        break;
+                    }
+                }
+                if (spreadToNeighbor)
+                    break;
+            }
+
+            if (spreadToNeighbor == false)
+            {
+                for (int i = 0; i < _spiderSpreadingList.Count; i++)
+                {
+                    int tileIndex = _spiderSpreadingList[i];
+                    int x = tileIndex % Width;
+                    int y = tileIndex / Width;
+
+                    Utilities.Shuffle(_8directions);
+                    for (int d = 0; d < _8directions.Length; d++)
+                    {
+                        int dx = 0, dy = 0;
+                        switch (_8directions[d])
+                        {
+                            case 1: dx = -1; dy = 0; break; // Left
+                            case 2: dx = 1; dy = 0; break;  // Right
+                            case 3: dx = 0; dy = 1; break;  // Up
+                            case 4: dx = 0; dy = -1; break; // Down
+                            case 5: dx = -1; dy = 1; break; // Top-left
+                            case 6: dx = 1; dy = 1; break;  // Top-right
+                            case 7: dx = -1; dy = -1; break; // Bottom-left
+                            case 8: dx = 1; dy = -1; break;  // Bottom-right
+                        }
+
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (IsValidGridTile(nx, ny))
+                        {
+                            Tile neighborTile = _tiles[nx + ny * Width];
+                            if (neighborTile.CurrentBlock is SpiderNet)
+                            {
+                                neighborTile.ChangeBlock(BlockID.SpiderOnNet);
+                                spreadToNeighbor = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (spreadToNeighbor)
+                        break;
+                }
+            }
+
+            if (spreadToNeighbor == false)
+            {
+                //   Debug.Log("Last case");
+                for (int i = 0; i < _spiderSpreadingList.Count; i++)
+                {
+                    int tileIndex = _spiderSpreadingList[i];
+                    int x = tileIndex % Width;
+                    int y = tileIndex / Width;
+                    _tiles[x + y * Width].ChangeBlock(BlockID.SpiderOnNet);
+                }
+            }
+        }
 
 
         private void SetMatchBuffer(int index, MatchID matchID)
