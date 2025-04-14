@@ -112,7 +112,7 @@ public class UILevelDesignManager : MonoBehaviour
     {
         AudioManager.Instance.PlayButtonSfx();
         LevelManager.Instance.LoadLevelData(currentChosenLevel.CharacterID, currentChosenLevel.index);
-        UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+        UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
         VfxPool.Instance.GetVfxByName("Energy").gameObject.transform.position = selectBtn.transform.position;
         UILevelInfomation.Instance.DisplayCanvas(true);
     }

@@ -41,6 +41,7 @@ namespace Match3.LevelEditor
                 AudioManager.Instance.PlayButtonSfx();
 
                 LevelEditorManager.Instance.SetSelectLevel(_level);
+                LevelManager.Instance.SetCurrentLevelIndex(_level);
                 GridManager.Instance.LoadLevelData(LevelEditorManager.Instance.SelectLevelData);
 
                 UILevelEditorManager.Instance.DisplayUILevelSelector(false);

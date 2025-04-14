@@ -2,6 +2,7 @@
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System.Collections;
+using Match3.Enums;
 
 namespace Match3
 {
@@ -10,10 +11,6 @@ namespace Match3
         public static LevelPreviewGrid Instance { get; private set; }
 
         [SerializeField] private Tilemap _tileMap;
-        [SerializeField] private Tilemap _tileMapFrame;
-        [SerializeField] private TileBase _tileBase;
-        [SerializeField] private TileBase _tileBaseFrame;
-
         [SerializeField] private GameplayGridSlot _gridSlotPrefab;
         [SerializeField] private GameplayGridSlot[] _gridSlots;
         public Dictionary<Vector2Int, List<Vector2Int>> MatchTileDictionary;
@@ -35,39 +32,38 @@ namespace Match3
 
         private void Start()
         {
-            LoadPreviewGrid();
+            Debug.Log($"{LevelManager.Instance.CharacterLevelData.CharacterID}   {LevelManager.Instance.CurrentLevelIndex}");
+            LoadTilemap(LevelManager.Instance.CharacterLevelData.CharacterID, LevelManager.Instance.CurrentLevelIndex);
         }
 
-        private void LoadPreviewGrid()
+
+        private void LoadTilemap(CharacterID charcterID, int levelIndex)
         {
-            _levelData = LevelManager.Instance.LevelData;
-            int width = _levelData.Blocks.GetLength(0);
-            int height = _levelData.Blocks.GetLength(1);
-            _gridSlots = new GameplayGridSlot[width * height];
-            for (int y = 0; y < height; y++)
+            string fileName = $"id_{(int)charcterID}_{levelIndex + 1}";
+            TextAsset levelText = Resources.Load<TextAsset>($"TilemapLevels/{fileName}");
+            if (levelText == null)
             {
-                for (int x = 0; x < width; x++)
+                Debug.Log("File not found! " + fileName);
+                return;
+            }
+
+            string json = levelText.text;
+            TilemapSaver.TilemapSaveData saveData = JsonUtility.FromJson<TilemapSaver.TilemapSaveData>(json);
+            _tileMap.ClearAllTiles();
+
+            for (int i = 0; i < saveData.Tiles.Count; i++)
+            {
+                TilemapSaver.TileData tileData = saveData.Tiles[i];
+                if (GameDataManager.Instance.TryGetTilebaseByName(tileData.TileName, out TileBase tilebase))
                 {
-                    BlockID blockID = (BlockID)System.Enum.ToObject(typeof(BlockID), _levelData.Blocks[x, y]);
-                    TileID tileID = _levelData.Tiles[x, y];
-
-                    GameplayGridSlot newSlot = Instantiate(_gridSlotPrefab, new Vector3(x, y, 0), Quaternion.identity, this.transform);
-                    newSlot.SetDefaultColor();
-                    _gridSlots[x + y * width] = newSlot;
-
-                    if (blockID != BlockID.Void && blockID != BlockID.Fill)
-                    {
-                        //  _tileMap.SetTile(new Vector3Int(x, y, 0), _tileBase);
-                        _tileMapFrame.SetTile(new Vector3Int(x, y, 0), _tileBaseFrame);
-                    }
-                    else
-                    {
-                        newSlot.SpriteRenderer.enabled = false;
-                    }
+                    _tileMap.SetTile(tileData.Position, tilebase);
+                }
+                else
+                {
+                    Debug.LogWarning("Tile not found !!!!!!" + tileData.TileName);
                 }
             }
         }
-
 
         public void Add(Vector2Int key, Vector2Int value)
         {

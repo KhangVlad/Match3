@@ -11,10 +11,10 @@ namespace Match3
     {
         public static LevelManager Instance { get; private set; }
 
-        private int _currentLevel = 1;
+        private int _currentLevelIndex = 1;
         public CharacterLevelDataV2 CharacterLevelData { get; private set; }
         public LevelDataV2 LevelData { get; private set; }
-        public int CurrentLevel => _currentLevel;
+        public int CurrentLevelIndex => _currentLevelIndex;
 
 
         private void Awake()
@@ -30,7 +30,7 @@ namespace Match3
 
         public LevelDataV2 LoadLevelData(int level)
         {
-            _currentLevel = level;
+            _currentLevelIndex = level;
             string levelJson = GameDataManager.Instance.GetLevel(level).text;
             LevelData = JsonConvert.DeserializeObject<LevelDataV2>(levelJson);
             LevelData.ApplyRotateMatrix();
@@ -39,7 +39,7 @@ namespace Match3
 
         public LevelDataV2 LoadLevelData(CharacterID characterID, int level)
         {
-            _currentLevel = level;
+            _currentLevelIndex = level;
             GameDataManager.Instance.TryGetCharacterLevelDataByID(characterID, out var data);
             CharacterLevelData = data;
             LevelData = CharacterLevelData.Levels[level];
@@ -52,14 +52,19 @@ namespace Match3
         }
 
 
+        public void SetCurrentLevelIndex(int levelIndex)
+        {
+            _currentLevelIndex = levelIndex;
+        }
+
 
         public int NextLevel()
         {
             //_currentLevel = (_currentLevel + 1) % (GameDataManager.Instance.Levels.Length + 1);
             //return _currentLevel;
 
-            _currentLevel = (_currentLevel + 1) % (CharacterLevelData.Levels.Count + 1);
-            return _currentLevel;
+            _currentLevelIndex = (_currentLevelIndex + 1) % (CharacterLevelData.Levels.Count + 1);
+            return _currentLevelIndex;
         }
 
 

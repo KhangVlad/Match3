@@ -21,7 +21,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 LevelManager.Instance.LoadLevelData(1);
 
-                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
                 UILevelInfomation.Instance.DisplayCanvas(true);
 
             });
@@ -31,7 +31,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 LevelManager.Instance.LoadLevelData(2);
 
-                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
                 UILevelInfomation.Instance.DisplayCanvas(true);
             });
 
@@ -40,7 +40,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 LevelManager.Instance.LoadLevelData(3);
 
-                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
                 UILevelInfomation.Instance.DisplayCanvas(true);
             });
 
@@ -49,7 +49,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 LevelManager.Instance.LoadLevelData(4);
 
-                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
                 UILevelInfomation.Instance.DisplayCanvas(true);
             });
 
@@ -58,7 +58,7 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 LevelManager.Instance.LoadLevelData(5);
 
-                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevel);
+                UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData, LevelManager.Instance.CurrentLevelIndex);
                 UILevelInfomation.Instance.DisplayCanvas(true);
             });
 

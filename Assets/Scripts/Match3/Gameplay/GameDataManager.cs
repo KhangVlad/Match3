@@ -5,6 +5,7 @@ using Match3.Shares;
 using Match3.Enums;
 using Newtonsoft.Json;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 namespace Match3
 {
@@ -13,8 +14,11 @@ namespace Match3
         public static GameDataManager Instance { get; private set; }
         public event Action OnDataLoaded;
 
+        //[Header("Tilebases")]
+        private Dictionary<string, TileBase> _tilebaseDictionary;
 
-        [Header("~Runtime")] public Tile[] Tiles;
+        [Header("~Runtime")] 
+        public Tile[] Tiles;
         private Dictionary<TileID, Tile> _tileDict;
 
         public Block[] Blocks;
@@ -47,6 +51,7 @@ namespace Match3
         public List<CharacterActivitySO> characterActivities = new();
         public event System.Action OnCharacterDataLoaded;
 
+
         // Level
         private TextAsset[] _levels;
 
@@ -68,6 +73,7 @@ namespace Match3
 
         private void Start()
         {
+            LoadAllTilebases();
             LoadGameData();
         }
 
@@ -337,6 +343,34 @@ namespace Match3
             return _questDataDict[questID];
         }
 
+        #endregion
+
+
+        #region Tilebase
+        private void LoadAllTilebases()
+        {
+            TileBase[] tilebases = Resources.LoadAll<TileBase>("Tilebases");
+            _tilebaseDictionary = new();
+            Debug.Log(tilebases.Length);
+
+            for(int i = 0; i < tilebases.Length; i++)
+            {
+                _tilebaseDictionary.Add(tilebases[i].name, tilebases[i]);
+            }
+        }
+
+        public bool TryGetTilebaseByName(string tileName, out TileBase tilebase)
+        {   
+            if(_tilebaseDictionary.TryGetValue(tileName, out tilebase))
+            {
+                return true;
+            }
+            else
+            {
+                Debug.LogError("Tile base not found: " + tileName);
+                return false;
+            }
+        }
         #endregion
     }
 }
