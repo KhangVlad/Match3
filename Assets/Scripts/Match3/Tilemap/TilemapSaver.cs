@@ -39,9 +39,40 @@ namespace Match3
             }
 
             string json = JsonUtility.ToJson(saveData, true);
-            System.IO.File.WriteAllText(Application.persistentDataPath + $"/{_fileName}.json", json);
-            Debug.Log("Tilemap saved to: " + Application.persistentDataPath + $"/{_fileName}.json");
+            System.IO.File.WriteAllText(Application.streamingAssetsPath + $"/{_fileName}.json", json);
+            Debug.Log("Tilemap saved to: " + Application.streamingAssetsPath + $"/{_fileName}.json");
         }
+
+
+
+        [ContextMenu("Load tilemap")]
+        private void LoadTilemap()
+        {
+            TextAsset levelText = Resources.Load<TextAsset>($"TilemapLevels/{_fileName}");
+            if (levelText == null)
+            {
+                Debug.Log("File not found! " + _fileName);
+                return;
+            }
+
+            string json = levelText.text;
+            TilemapSaver.TilemapSaveData saveData = JsonUtility.FromJson<TilemapSaver.TilemapSaveData>(json);
+            _tileMap.ClearAllTiles();
+
+            for (int i = 0; i < saveData.Tiles.Count; i++)
+            {
+                TilemapSaver.TileData tileData = saveData.Tiles[i];
+                if (GameDataManager.Instance.TryGetTilebaseByName(tileData.TileName, out TileBase tilebase))
+                {
+                    _tileMap.SetTile(tileData.Position, tilebase);
+                }
+                else
+                {
+                    Debug.LogWarning("Tile not found !!!!!!" + tileData.TileName);
+                }
+            }
+        }
+
 
 
         [System.Serializable]

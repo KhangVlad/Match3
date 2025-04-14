@@ -210,9 +210,9 @@ namespace Match3
                             case Ice:
                             case HardIce:
                             case EternalIce:
-                            case Stone:
-                            case HardStone:
-                            case SuperHardStone:
+                            case Wall01:
+                            case Wall02:
+                            case Wall03:
                             case BlackMud:
                                 _canPlay = false;
                                 _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
@@ -477,24 +477,44 @@ namespace Match3
                             newTile = AddTile(x, y, tileID, BlockID.EternalIce);
                             newTile.UpdatePosition();
                             break;
-                        case BlockID.Stone:
-                            newTile = AddTile(x, y, tileID, BlockID.Stone);
-                            newTile.UpdatePosition();
-                            break;
-                        case BlockID.HardStone:
-                            newTile = AddTile(x, y, tileID, BlockID.HardStone);
-                            newTile.UpdatePosition();
-                            break;
-                        case BlockID.SuperHardStone:
-                            newTile = AddTile(x, y, tileID, BlockID.SuperHardStone);
-                            newTile.UpdatePosition();
-                            break;
                         case BlockID.BlackMud:
                             newTile = AddTile(x, y, tileID, BlockID.BlackMud);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Bush:
                             newTile = AddTile(x, y, tileID, BlockID.Bush);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Leaf_01:
+                            newTile = AddTile(x, y, tileID, BlockID.Leaf_01);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Leaf_02:
+                            newTile = AddTile(x, y, tileID, BlockID.Leaf_02);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Leaf_03:
+                            newTile = AddTile(x, y, tileID, BlockID.Leaf_03);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Wall_01:
+                            newTile = AddTile(x, y, tileID, BlockID.Wall_01);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Wall_02:
+                            newTile = AddTile(x, y, tileID, BlockID.Wall_02);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Wall_03:
+                            newTile = AddTile(x, y, tileID, BlockID.Wall_03);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.Spider:
+                            newTile = AddTile(x, y, tileID, BlockID.Spider);
+                            newTile.UpdatePosition();
+                            break;
+                        case BlockID.SpiderNet:
+                            newTile = AddTile(x, y, tileID, BlockID.SpiderNet);
                             newTile.UpdatePosition();
                             break;
                         default:
@@ -589,7 +609,6 @@ namespace Match3
             Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
             Block blockInstance = Instantiate(blockPrefab, tileInstance.transform);
             blockInstance.transform.localPosition = Vector3.zero;
-
 
             tileInstance.SetBlock(blockInstance);
 
@@ -2231,7 +2250,7 @@ namespace Match3
                 for (int x = 0; x < Width; x++)
                 {
                     int index = x + y * Width;
-                    if (IsValidMatchTile(x, y) && _matchBuffer[index] != MatchID.ColorBurst)
+                    if (IsValidSpecialMatchTile(x, y) && _matchBuffer[index] != MatchID.ColorBurst)
                     {
                         if (_tiles[index].ID == tileID)
                         {
@@ -2576,6 +2595,12 @@ namespace Match3
         private bool IsValidMatchTile(Vector2Int gridPosition)
         {
             return IsValidMatchTile(gridPosition.x, gridPosition.y);
+        }
+
+        private bool IsValidSpecialMatchTile(int x, int y)
+        {
+            return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
+                _tiles[x + y * Width] != null;
         }
 
         private bool IsValidNonBlockTile(int x, int y)

@@ -80,7 +80,6 @@ namespace Match3
             Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch += OnLockMatchTriggered;
             Ice.OnIceUnlocked += OnIceUnlockedTriggered;
-            Stone.OnStoneMatch += OnStoneMatchTriggered;
             Tile.OnMatched += OnTileMatchedTriggered;
         }
 
@@ -94,7 +93,6 @@ namespace Match3
             Match3Grid.OnEndOfTurn -= OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch -= OnLockMatchTriggered;
             Ice.OnIceUnlocked -= OnIceUnlockedTriggered;
-            Stone.OnStoneMatch -= OnStoneMatchTriggered;
             Tile.OnMatched -= OnTileMatchedTriggered;
         }
 
@@ -223,17 +221,7 @@ namespace Match3
         }
 
 
-        private void OnStoneMatchTriggered(Stone stone)
-        {
-            for (int i = 0; i < Quests.Length; i++)
-            {
-                if (Quests[i].QuestID == QuestID.Stone)
-                {
-                    Quests[i].Quantity--;
-                    // OnQuestProgressUpdated?.Invoke(i, TileID.None, stone.transform.position);
-                }
-            }
-        }
+
 
         private void OnTileMatchedTriggered(Tile tile)
         {

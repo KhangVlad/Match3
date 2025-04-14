@@ -93,9 +93,9 @@ namespace Match3
                 case BlockID.Ice:
                 case BlockID.HardIce:
                 case BlockID.EternalIce:
-                case BlockID.Stone:
-                case BlockID.HardStone:
-                case BlockID.SuperHardStone:
+                // case BlockID.Stone:
+                // case BlockID.HardStone:
+                // case BlockID.SuperHardStone:
                 case BlockID.BlackMud:
                     SetRenderOrder(1);
                     sr.enabled = true;

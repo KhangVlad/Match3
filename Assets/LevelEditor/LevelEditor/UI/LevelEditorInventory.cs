@@ -46,7 +46,6 @@ namespace Match3.LevelEditor
 
         private void OnGridInitialized_InitalizeInventory()
         {
-
             Blocks = new Block[System.Enum.GetValues(typeof(BlockID)).Length];
             int index = 0;
             foreach (BlockID blockID in System.Enum.GetValues(typeof(BlockID)))
