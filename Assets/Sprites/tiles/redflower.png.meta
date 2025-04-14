@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: e5e2440d8942ebb4bb6009842f10e579
+guid: 4ec370b5aa94d45e1b7a4c94e56ce5f2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 762938572595762988
-    second: tile_13_0
-  - first:
-      213: -3635281893244124507
-    second: tile_13_1
+      213: -682061260844400398
+    second: redflower_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 300
+  spritePixelsToUnits: 1300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 512
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -129,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tile_13_0
+      name: redflower_0
       rect:
         serializedVersion: 2
-        x: 67
-        y: 229
-        width: 12
-        height: 7
+        x: 37
+        y: 32
+        width: 948
+        height: 959
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -144,30 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c27930de690869a00800000000000000
-      internalID: 762938572595762988
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: tile_13_1
-      rect:
-        serializedVersion: 2
-        x: 4
-        y: 1
-        width: 251
-        height: 223
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 5a246cee062ec8dc0800000000000000
-      internalID: -3635281893244124507
+      spriteID: 2f08050a5e4d886f0800000000000000
+      internalID: -682061260844400398
       vertices: []
       indices: 
       edges: []
@@ -176,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: e06c26201c58940968a12dba2c468a5c
     internalID: 0
     vertices: []
     indices: 
@@ -186,8 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      tile_13_0: 762938572595762988
-      tile_13_1: -3635281893244124507
+      redflower_0: -682061260844400398
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
