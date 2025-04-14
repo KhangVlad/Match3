@@ -4,6 +4,13 @@ namespace Match3
 {
     public class Leaf03 : Block
     {
+        public int ExistTurnCount { get; set; } = 0;
+
+        private void Awake()
+        {
+            ExistTurnCount = 0;
+        }
+
         public override void Match(Tile tile, Tile[] grid, int width)
         {
         }

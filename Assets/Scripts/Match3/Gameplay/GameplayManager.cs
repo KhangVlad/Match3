@@ -142,6 +142,7 @@ namespace Match3
         #region Quest
         private void OnAfterPlayerMatchInput_UpdateTurnCount()
         {
+            if(Match3Grid.Instance.UseBoosterThisTurn) return;
             TurnRemainingCount--;
             if (TurnRemainingCount <= 0)
                 TurnRemainingCount = 0;

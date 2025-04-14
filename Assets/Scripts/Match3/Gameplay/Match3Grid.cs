@@ -81,6 +81,7 @@ namespace Match3
         public Tile SelectedTile => _selectedTile;
         public Tile SwappedTile => _swappedTile;
         public bool Canplay => _canPlay;
+        public bool UseBoosterThisTurn { get; private set; } = false;
         #endregion
 
 
@@ -213,7 +214,11 @@ namespace Match3
                             case Wall01:
                             case Wall02:
                             case Wall03:
+                            case Leaf01:
+                            case Leaf02:
+                            case Leaf03:
                             case BlackMud:
+                                UseBoosterThisTurn = true;
                                 _canPlay = false;
                                 _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
                                 OnAfterPlayerMatchInput?.Invoke();
@@ -325,6 +330,7 @@ namespace Match3
                                     if (booster is FreeSwitchBooster ||
                                         booster is ExtraMoveBooster)
                                     {
+                                        UseBoosterThisTurn = true;
                                         booster.Use();
                                         GameplayUserManager.Instance.UnselectGameplayBooster();
                                         OnAfterPlayerMatchInput?.Invoke();
@@ -417,7 +423,7 @@ namespace Match3
 
                     Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.YellowFlower, BlockID.None);
                     newTile.UpdatePosition();
-                    newTile.SetSpecialTile(SpecialTileID.None);
+                    newTile.SetSpecialTile(SpecialTileID.ColumnBomb);
                     _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.YellowFlower;
                 }
             }
@@ -614,6 +620,7 @@ namespace Match3
 
             return tileInstance;
         }
+
 
         private void ShuffleGrid()
         {
@@ -961,9 +968,18 @@ namespace Match3
             _match4Dictionary.Clear();
             _match5Dictionary.Clear();
 
-            if (triggerEvent)
+            if (UseBoosterThisTurn == false)
             {
                 HandleBlackMudSpreading();
+                HandleLeafGrowth();
+            }
+            else
+            {
+                UseBoosterThisTurn = false;
+            }
+
+            if (triggerEvent)
+            {
                 OnEndOfTurn?.Invoke();
             }
         }
@@ -1499,6 +1515,40 @@ namespace Match3
                 }
 
                 if (spreadToNeighbor) break;
+            }
+        }
+
+        private void HandleLeafGrowth()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    if (IsValidGridTile(x, y))
+                    {
+                        int index = x + y * Width;
+                        Tile tile = _tiles[index];
+                        if (tile.CurrentBlock is Leaf02)
+                        {
+                            Leaf02 leaf = ((Leaf02)tile.CurrentBlock);
+                            leaf.ExistTurnCount++;
+                            if (leaf.ExistTurnCount > 2)
+                            {
+                                tile.ChangeBlock(BlockID.Leaf_01);
+                            }
+                        }
+                        else if (tile.CurrentBlock is Leaf03)
+                        {
+                            // tile.ChangeBlock(BlockID.Leaf_02);
+                            Leaf03 leaf = ((Leaf03)tile.CurrentBlock);
+                            leaf.ExistTurnCount++;
+                            if (leaf.ExistTurnCount > 2)
+                            {
+                                tile.ChangeBlock(BlockID.Leaf_02);
+                            }
+                        }
+                    }
+                }
             }
         }
 

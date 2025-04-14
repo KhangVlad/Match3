@@ -17,7 +17,7 @@ namespace Match3
         [SerializeField] protected Sprite _match6;
         public Transform TilePivot;
         public Transform TileTransform;
-    
+
 
         [Header("~Runtime")]
         public Block CurrentBlock;
@@ -50,7 +50,7 @@ namespace Match3
                 _scaleTween.Kill();
             }
         }
-    
+
         public void Display(bool enable)
         {
             if (enable)
@@ -66,6 +66,16 @@ namespace Match3
         public void SetTileOffset(Vector2 offset)
         {
             TileTransform.localPosition = offset;
+        }
+
+        public void ChangeBlock(BlockID blockID)
+        {
+            Destroy(CurrentBlock.gameObject);
+
+            Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
+            Block blockInstance = Instantiate(blockPrefab, this.transform);
+            blockInstance.transform.localPosition = Vector3.zero;
+            SetBlock(blockInstance);
         }
 
         public virtual void SetBlock(Block block)
@@ -93,10 +103,13 @@ namespace Match3
                 case BlockID.Ice:
                 case BlockID.HardIce:
                 case BlockID.EternalIce:
-                // case BlockID.Stone:
-                // case BlockID.HardStone:
-                // case BlockID.SuperHardStone:
                 case BlockID.BlackMud:
+                case BlockID.Leaf_01:
+                case BlockID.Leaf_02:
+                case BlockID.Leaf_03:
+                case BlockID.Wall_01:
+                case BlockID.Wall_02:
+                case BlockID.Wall_03:
                     SetRenderOrder(1);
                     sr.enabled = true;
                     break;
@@ -136,7 +149,7 @@ namespace Match3
         }
 
         public virtual void Match(Tile[] grid, int width)
-        {   
+        {
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
         }
@@ -153,48 +166,14 @@ namespace Match3
         }
         public void FallDownToGridPosition(float moveTime = AnimationExtensions.TILE_FALLDOWN_TIME)
         {
-            //Vector3 targetPosition = this.GetWorldPosition();
-            //_moveTween = transform.DOMove(targetPosition, moveTime * 0.75f).SetEase(Ease.Linear).OnComplete(() =>
-            //{
-            //    transform.DOMove(targetPosition + new Vector3(0, 0.5f, 0), moveTime * 0.15f).OnComplete(() =>
-            //    {
-            //        transform.DOMove(targetPosition, 0.1f).SetEase(Ease.Linear);
-            //    });
-            //});
-
-            //Vector3 targetPosition = this.GetWorldPosition();
-            //_moveTween = transform.DOMove(targetPosition, moveTime * 0.7f).SetEase(Ease.InSine).OnComplete(() =>
-            //{
-            //    TileTransform.DOScaleY(0.85f, moveTime * 0.2f).OnComplete(() =>
-            //    {
-            //        TileTransform.DOScaleY(1f, moveTime * 0.1f);
-            //        //transform.DOMove(targetPosition + new Vector3(0, 0.5f, 0), moveTime * 0.3f).OnComplete(() =>
-            //        //{
-            //        //    transform.DOMove(targetPosition, 0.1f).SetEase(Ease.Linear);
-            //        //});
-            //    });
-
-            //});
-
-
             Vector3 targetPosition = this.GetWorldPosition();
 
             _moveTween = transform.DOMove(targetPosition, moveTime * 0.8f)
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
-                    // Tiny bounce up
-                    //transform.DOMove(targetPosition + new Vector3(0, 0.2f, 0), moveTime * 0.125f)
-                    //    .SetEase(Ease.OutQuad)
-                    //    .OnComplete(() =>
-                    //    {
-                    //        // Jelly squish on impact
-                    //        transform.DOMove(targetPosition, moveTime * 0.125f)
-                    //            .SetEase(Ease.InQuad);
-                    //    });
-
                     TilePivot.transform.DOScaleX(1.2f, 0.2f);
-                    TilePivot.transform.DOScaleY(0.8f,0.2f).OnComplete(() =>
+                    TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
                     {
                         TilePivot.transform.DOScaleX(1.0f, 0.2f);
                         TilePivot.transform.DOScaleY(1.0f, 0.2f);
