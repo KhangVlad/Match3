@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e7aa42906da7047dfa72427abc221058
+guid: a384fe4783b62441fa98b6c88541a137
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1352064259229788268
-    second: spider_net_0
+      213: -3787186718068959810
+    second: net_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 350
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: spider_net_0
+      name: net_0
       rect:
         serializedVersion: 2
-        x: 9
+        x: 0
         y: 1
-        width: 241
-        height: 255
+        width: 256
+        height: 250
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4975b1348b08c3de0800000000000000
-      internalID: -1352064259229788268
+      spriteID: eb51c6bceb5317bc0800000000000000
+      internalID: -3787186718068959810
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      spider_net_0: -1352064259229788268
+      net_0: -3787186718068959810
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

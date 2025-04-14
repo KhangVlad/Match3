@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using System.Linq;
+using UnityEditor.Rendering;
+using TMPro;
 
 namespace Match3
 {
@@ -45,6 +47,7 @@ namespace Match3
         private Dictionary<Tile, Tile> _match3Dictionary;
         private Dictionary<Tile, Tile> _match4Dictionary;
         private Dictionary<Tile, Tile> _match5Dictionary;
+        private Dictionary<Tile, Tile> _blastBombDictionary;
         private Dictionary<int, int> _fillDownDictionary = new();          // x, count
 
         private bool _hasMatch4 = false;
@@ -113,6 +116,7 @@ namespace Match3
             _match3Dictionary = new();
             _match4Dictionary = new();
             _match5Dictionary = new();
+            _blastBombDictionary = new();
 
 
 
@@ -204,32 +208,35 @@ namespace Match3
                     if (GameplayUserManager.Instance.SelectedGameplayBooster is HammerBooster)
                     {
                         Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
-                        switch (tile.CurrentBlock)
+                        if (tile != null)
                         {
-                            case NoneBlock:
-                            case Lock:
-                            case BushBlock:
-                            case Ice:
-                            case HardIce:
-                            case EternalIce:
-                            case Wall01:
-                            case Wall02:
-                            case Wall03:
-                            case Leaf01:
-                            case Leaf02:
-                            case Leaf03:
-                            case Spider:
-                            case SpiderNet:
-                                UseBoosterThisTurn = true;
-                                _canPlay = false;
-                                _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
-                                OnAfterPlayerMatchInput?.Invoke();
-                                GameplayUserManager.Instance.SelectedGameplayBooster.Use();
-                                GameplayUserManager.Instance.UnselectGameplayBooster();
-                                break;
-                            default:
-                                Debug.Log("Case not found!!!!!!");
-                                break;
+                            switch (tile.CurrentBlock)
+                            {
+                                case NoneBlock:
+                                case Lock:
+                                case BushBlock:
+                                case Ice:
+                                case HardIce:
+                                case EternalIce:
+                                case Wall01:
+                                case Wall02:
+                                case Wall03:
+                                case Leaf01:
+                                case Leaf02:
+                                case Leaf03:
+                                case Spider:
+                                case SpiderNet:
+                                    UseBoosterThisTurn = true;
+                                    _canPlay = false;
+                                    _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
+                                    OnAfterPlayerMatchInput?.Invoke();
+                                    GameplayUserManager.Instance.SelectedGameplayBooster.Use();
+                                    GameplayUserManager.Instance.UnselectGameplayBooster();
+                                    break;
+                                default:
+                                    Debug.Log("Case not found!!!!!!");
+                                    break;
+                            }
                         }
                     }
                     else if (IsValidMatchTile(gridPosition))
@@ -682,6 +689,38 @@ namespace Match3
                 bool hasMatched = false;
                 // play match animation
                 _unlockTileSet.Clear();
+
+                if (_blastBombDictionary.Count > 0)
+                {
+                    foreach (var tile in _blastBombDictionary)
+                    {
+                        Tile t = tile.Value;
+                        Tile nb = tile.Key;
+                        if (t != null && nb != null)
+                        {
+                            float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                            float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                            Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                        }
+                    }
+                    yield return new WaitForSeconds(0.2f);
+                    int multiplier = 1;
+                    foreach (var e in _blastBombDictionary)
+                    {
+                        Tile t = e.Value;
+                        Tile nb = e.Key;
+                        if (t != null && nb != null)
+                        {
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);// + new Vector2(0,0.02f) * multiplier);
+                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                        }
+                        multiplier++;
+                    }
+                }
+
                 if (_match3Dictionary.Count > 0)
                 {
                     //foreach (var tile in _match3Dictionary)
@@ -718,7 +757,6 @@ namespace Match3
 
                 if (_match4Dictionary.Count > 0)
                 {
-
                     foreach (var tile in _match4Dictionary)
                     {
                         Tile t = tile.Value;
@@ -969,6 +1007,7 @@ namespace Match3
             _match3Dictionary.Clear();
             _match4Dictionary.Clear();
             _match5Dictionary.Clear();
+            _blastBombDictionary.Clear();
 
 
             if (triggerEvent)
@@ -1240,7 +1279,7 @@ namespace Match3
 
         private IEnumerator HandleMatchCoroutine()
         {
-            FindFlashBomb();
+            FindBlastBomb();
             HandleSpecialMatch();
             // Debug.Log("CheckMatch3");
             for (int y = 0; y < Height; y++)
@@ -2117,22 +2156,22 @@ namespace Match3
                 }
             }
         }
-        private bool FindFlashBomb()
+        private bool FindBlastBomb()
         {
-            bool FoundFlashBomb(List<int[,]> shape, int xIndex, int yIndex)
+            bool FoundBlastBomb(List<int[,]> shapes, int xIndex, int yIndex, out int[,] shape)
             {
-                for (int i = 0; i < shape.Count; i++)
+                for (int i = 0; i < shapes.Count; i++)
                 {
                     bool found = true;
-                    int w = shape[i].GetLength(0);
-                    int h = shape[i].GetLength(1);
+                    int w = shapes[i].GetLength(0);
+                    int h = shapes[i].GetLength(1);
                     TileID targetTileID = default;
 
                     for (int y = 0; y < h; y++)
                     {
                         for (int x = 0; x < h; x++)
                         {
-                            if (shape[i][x, y] == 1)
+                            if (shapes[i][x, y] == 1)
                             {
                                 int offsetX = xIndex + x;
                                 int offsetY = yIndex + y;
@@ -2150,7 +2189,7 @@ namespace Match3
                     {
                         for (int x = 0; x < w; x++)
                         {
-                            if (shape[i][x, y] == 1)
+                            if (shapes[i][x, y] == 1)
                             {
                                 int offsetX = xIndex + x;
                                 int offsetY = yIndex + y;
@@ -2185,7 +2224,7 @@ namespace Match3
                         {
                             for (int x = 0; x < w; x++)
                             {
-                                if (shape[i][x, y] == 1)
+                                if (shapes[i][x, y] == 1)
                                 {
                                     int offsetX = xIndex + x;
                                     int offsetY = yIndex + y;
@@ -2215,6 +2254,7 @@ namespace Match3
 
                         if (foundBlashBombTile)
                         {
+                            shape = shapes[i];
                             return true;
                         }
                         int lastMatchIndex = 0;
@@ -2225,7 +2265,7 @@ namespace Match3
                             {
                                 for (int x = 0; x < w; x++)
                                 {
-                                    if (shape[i][x, y] == 1)
+                                    if (shapes[i][x, y] == 1)
                                     {
                                         int offsetX = xIndex + x;
                                         int offsetY = yIndex + y;
@@ -2237,6 +2277,7 @@ namespace Match3
                                         {
                                             _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
                                             foundBlashBombTile = true;
+                                            shape = shapes[i];
                                             return true;
                                         }
                                     }
@@ -2248,10 +2289,11 @@ namespace Match3
                         Debug.Log("??????");
                         // not found -> Get last match tile index
                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, lastMatchIndex));
+                        shape = shapes[i];
                         return true;
                     }
                 }
-
+                shape = null;
                 return false;
             }
 
@@ -2266,15 +2308,16 @@ namespace Match3
                         if (_matchBuffer[index] != MatchID.None) continue;
 
                         Tile tile = _tiles[index];
-                        if (FoundFlashBomb(_tShapes, tile.X, tile.Y))
+                        if (FoundBlastBomb(_tShapes, tile.X, tile.Y, out int[,] shape))
                         {
-                            //Debug.Log($"Found flash bomb at: {tile.X}  {tile.Y}");
+                            Debug.Log($"Found flash bomb T-Shape at: {tile.X}  {tile.Y}");
+                            HandleCollectBlastBomb(shape, tile.X, tile.Y);
                             return true;
                         }
                         else
                         {
 
-                            if (FoundFlashBomb(_lShapes, tile.X, tile.Y))
+                            if (FoundBlastBomb(_lShapes, tile.X, tile.Y, out shape))
                             {
                                 return true;
                             }
@@ -2475,6 +2518,80 @@ namespace Match3
             }
         }
 
+
+        private void HandleCollectBlastBomb(int[,] shape, int xIndex, int yIndex)
+        {
+            int startX = xIndex;
+            int startY = yIndex;
+            int endX = startX + shape.GetLength(0);
+            int endY = startY + shape.GetLength(1);
+            int innerX = 0, innerY = 0;
+            int sourceIndex = 0;
+            bool foundSourceIndex = false;
+            for (int y = startY; y < endY; y++, innerY++)
+            {
+                for (int x = startX; x < endX; x++, innerX++)
+                {
+                    int index = x + y * Width;
+                    if (IsValidGridTile(x, y) == false) continue;
+                    if (shape[innerX, innerY] == 0) continue;
+                    if (_tiles[index].Equal(_selectedTile))
+                    {
+                        sourceIndex = index;
+                        foundSourceIndex = true;
+                        break;
+                    }
+                    if (_tiles[index].Equal(_swappedTile))
+                    {
+                        sourceIndex = index;
+                        foundSourceIndex = true;
+                        break;
+                    }
+                }
+            }
+
+            innerX = 0;
+            innerY = 0;
+            if (foundSourceIndex == false)
+            {
+                for (int y = startY; y < endY; y++, innerY++)
+                {
+                    for (int x = startX; x < endX; x++, innerX++)
+                    {
+                        if (IsValidGridTile(x, y) == false) continue;
+                        if (shape[innerX, innerY] == 0) continue;
+                        int index = x + y * Width;
+                        if (_tiles[index].ID != _prevTileIDs[index])
+                        {
+                            sourceIndex = index;
+                            foundSourceIndex = true;
+                        }
+                    }
+                }
+            }
+
+            if (foundSourceIndex)
+            {
+                innerX = 0;
+                innerY = 0;
+                for (int y = startY; y < endY; y++, innerY++)
+                {
+                    for (int x = startX; x < endX; x++, innerX++)
+                    {
+                        if (shape[innerX, innerY] == 0) continue;
+                        int index = x + y * Width;
+                        if (index == sourceIndex) continue;
+
+                        if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
+                            _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("NOt found source indexxxxxxxxxxxxxxxxxxxx");
+            }
+        }
 
 
         private bool CanFill()
