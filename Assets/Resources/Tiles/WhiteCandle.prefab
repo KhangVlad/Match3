@@ -55,7 +55,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 211b3c4d7cca44332a348bff363d982b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -133,7 +133,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ID>k__BackingField: 10
-  _tileSprite: {fileID: 21300000, guid: 50529ea6620327048a1b173e68585a0c, type: 3}
   _match4Vertical: {fileID: -949317967, guid: f37acec232a676d448efcfdced2ced79, type: 3}
   _match4Horizontal: {fileID: -11547284, guid: bea4ce718374bf849aa50d3230bf42f7, type: 3}
   _match5: {fileID: 21300000, guid: 42e07a801324844acbd0f74adace83ad, type: 3}

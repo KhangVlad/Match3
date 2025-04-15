@@ -6,6 +6,7 @@ using System.Linq;
 using Match3.Enums;
 using Match3.Shares;
 using UnityEngine.Tilemaps;
+using FMOD.Studio;
 
 namespace Match3
 {
@@ -50,6 +51,9 @@ namespace Match3
         private Dictionary<Tile, Tile> _match5Dictionary;
         private Dictionary<Tile, Tile> _blastBombDictionary;
         private Dictionary<int, int> _fillDownDictionary = new();          // x, count
+        private Queue<Tile> _emissiveTileQueue;
+        private HashSet<Vector2Int> _matchThisTurnSet;
+        private HashSet<Vector2Int> _unlockThisTurnSet;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -118,7 +122,9 @@ namespace Match3
             _match4Dictionary = new();
             _match5Dictionary = new();
             _blastBombDictionary = new();
-
+            _emissiveTileQueue = new();
+            _matchThisTurnSet = new();
+            _unlockThisTurnSet = new();
 
 
             _tShapes = new List<int[,]>
@@ -222,9 +228,9 @@ namespace Match3
                                 case Wall01:
                                 case Wall02:
                                 case Wall03:
-                                case Leaf01:
-                                case Leaf02:
-                                case Leaf03:
+                                case Bush01:
+                                case Bush02:
+                                case Bush03:
                                 case Spider:
                                 case SpiderNet:
                                     UseBoosterThisTurn = true;
@@ -272,7 +278,7 @@ namespace Match3
                                     _selectedTile.MoveToGridPosition();
                                     _swappedTile.MoveToGridPosition();
 
-                                    Debug.Log("HEHEHEHHEHEHE");
+                                    Debug.Log("VFX HERE");
                                     // vfx
                                     // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
                                     // {
@@ -339,7 +345,7 @@ namespace Match3
                         {
                             _canPlay = false;
                             // wait animation completed
-                            Utilities.WaitAfter(AnimationExtensions.TILE_MOVE_TIME, () =>
+                            Utilities.WaitAfter(TileAnimationExtensions.TILE_MOVE_TIME, () =>
                             {
                                 // Handle in-game booster
                                 if (GameplayUserManager.Instance.SelectedGameplayBooster != null)
@@ -501,20 +507,16 @@ namespace Match3
                             newTile = AddTile(x, y, tileID, BlockID.EternalIce);
                             newTile.UpdatePosition();
                             break;
-                        case BlockID.Bush:
-                            newTile = AddTile(x, y, tileID, BlockID.Bush);
+                        case BlockID.Bush_01:
+                            newTile = AddTile(x, y, tileID, BlockID.Bush_01);
                             newTile.UpdatePosition();
                             break;
-                        case BlockID.Leaf_01:
-                            newTile = AddTile(x, y, tileID, BlockID.Leaf_01);
+                        case BlockID.Bush_02:
+                            newTile = AddTile(x, y, tileID, BlockID.Bush_02);
                             newTile.UpdatePosition();
                             break;
-                        case BlockID.Leaf_02:
-                            newTile = AddTile(x, y, tileID, BlockID.Leaf_02);
-                            newTile.UpdatePosition();
-                            break;
-                        case BlockID.Leaf_03:
-                            newTile = AddTile(x, y, tileID, BlockID.Leaf_03);
+                        case BlockID.Bush_03:
+                            newTile = AddTile(x, y, tileID, BlockID.Bush_03);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Wall_01:
@@ -721,10 +723,10 @@ namespace Match3
                         Tile nb = e.Key;
                         if (t != null && nb != null)
                         {
-                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);// + new Vector2(0,0.02f) * multiplier);
-                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
-                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                         }
                         multiplier++;
                     }
@@ -755,10 +757,10 @@ namespace Match3
                         Tile nb = tile.Key;
                         if (t != null && nb != null)
                         {
-                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
-                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
-                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                            MatchAnimManager.Instance.AddMatch3(tileInfo, tileInfo);
+                            MatchAnimManager.Instance.AddMatch3(tileInfo, nbTileInfo);
                         }
                     }
                 }
@@ -766,35 +768,42 @@ namespace Match3
 
                 if (_match4Dictionary.Count > 0)
                 {
+                    Tile t = null;
+                    Tile nb = null;
                     foreach (var tile in _match4Dictionary)
                     {
-                        Tile t = tile.Value;
-                        Tile nb = tile.Key;
+                        t = tile.Value;
+                        nb = tile.Key;
                         if (t != null && nb != null)
                         {
                             float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                             float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+                            nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
 
-                            //if (GameplayManager.Instance.HasTileQuest(nb, out QuestID questID) == false)
-                            //{
-
-                            //}
-                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                            Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
+                            {
+                                nb.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
+                            });
                         }
                     }
-                    yield return new WaitForSeconds(0.2f);
+                    Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
+                    {
+                        t.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
+                    });
+
+                    yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
                     int multiplier = 1;
                     foreach (var e in _match4Dictionary)
                     {
-                        Tile t = e.Value;
-                        Tile nb = e.Key;
+                        t = e.Value;
+                        nb = e.Key;
                         if (t != null && nb != null)
                         {
-                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);// + new Vector2(0,0.02f) * multiplier);
-                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
-                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                         }
                         multiplier++;
                         // if (spectialTileEffectPostiionSet.Contains(new Vector2Int(t.X, t.Y)) == false)
@@ -802,6 +811,7 @@ namespace Match3
                         //     spectialTileEffectPostiionSet.Add(new Vector2Int(t.X, t.Y));
                         // }
                     }
+
 
                     // HashSet<Vector2Int> spectialTileEffectPostiionSet = new();
 
@@ -820,20 +830,20 @@ namespace Match3
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
 
 
-                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                            nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
                         }
                     }
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
                     foreach (var e in _match5Dictionary)
                     {
                         Tile t = e.Value;
                         Tile nb = e.Key;
                         if (t != null && nb != null)
                         {
-                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position);
-                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position);
-                            MatchAnimManager.Instance.Add(tileInfo, nbTileInfo);
-                            MatchAnimManager.Instance.Add(tileInfo, tileInfo);
+                            TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                            TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                            MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                         }
                     }
                 }
@@ -853,16 +863,20 @@ namespace Match3
                     // Match & Unlock
                     if (matchID == MatchID.Match)
                     {
+                        _matchThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+
                         tile.Match(_tiles, Width);
                         HandleUnlockTileNeighbors(tile);
-
                         hasMatched = true;
                     }
                     else if (matchID == MatchID.SpecialMatch)
                     {
+                        _matchThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
                         tile.Match(_tiles, Width);
                         if (_unlockTileSet.Contains(i) == false)
                         {
+                            _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+
                             _unlockTileSet.Add(i);
                             tile.Unlock();
                         }
@@ -887,6 +901,8 @@ namespace Match3
                         tile.Match(_tiles, Width);
                         if (_unlockTileSet.Contains(i) == false)
                         {
+                            _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+
                             _unlockTileSet.Add(i);
                             tile.Unlock();
                         }
@@ -906,6 +922,10 @@ namespace Match3
                     Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
                     tile.UpdatePosition();
                     tile.SetSpecialTile(SpecialTileID.ColorBurst);
+
+                    tile.Emissive(0.1f);
+                    _emissiveTileQueue.Enqueue(tile);
+                    // tile.StopEmissive();
                 }
 
                 // match 5
@@ -918,6 +938,10 @@ namespace Match3
                     Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
                     tile.UpdatePosition();
                     tile.SetSpecialTile(SpecialTileID.BlastBomb);
+
+                    // tile.StopEmissive();
+                    tile.Emissive(0.1f);
+                    _emissiveTileQueue.Enqueue(tile);
                 }
 
 
@@ -933,6 +957,10 @@ namespace Match3
                     tile.UpdatePosition();
                     tile.Display(true);
                     tile.SetSpecialTile(SpecialTileID.RowBomb);
+
+                    // tile.StopEmissive();
+                    tile.Emissive(0.1f);
+                    _emissiveTileQueue.Enqueue(tile);
                 }
 
 
@@ -948,11 +976,25 @@ namespace Match3
                     tile.UpdatePosition();
                     tile.Display(true);
                     tile.SetSpecialTile(SpecialTileID.ColumnBomb);
+
+                    // tile.StopEmissive();
+                    tile.Emissive(0.1f);
+                    _emissiveTileQueue.Enqueue(tile);
                 }
 
+                yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
 
+                if (_emissiveTileQueue.Count > 0)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    while (_emissiveTileQueue.Count > 0)
+                    {
+                        Debug.Log("Stop");
+                        Tile tile = _emissiveTileQueue.Dequeue();
+                        tile.StopEmissive();
+                    }
 
-                MatchAnimManager.Instance.PlayCollectAnimation();
+                }
 
 
                 if (hasMatched)
@@ -981,7 +1023,7 @@ namespace Match3
                     break;
                 }
 
-                Debug.Log($"HasMatch: {HasMatch()}");
+                // Debug.Log($"HasMatch: {HasMatch()}");
 
                 if (HasMatch() == false)
                 {
@@ -1010,21 +1052,13 @@ namespace Match3
             yield return new WaitForSeconds(0.2f);
             _canPlay = true;
 
-            _triggeredMatch5Set.Clear();
-            _colorBurstParentDictionary.Clear();
-
-            _match3Dictionary.Clear();
-            _match4Dictionary.Clear();
-            _match5Dictionary.Clear();
-            _blastBombDictionary.Clear();
-
 
             if (triggerEvent)
             {
                 if (UseBoosterThisTurn == false)
                 {
                     HandleSpiderNetSpreading();
-                    HandleLeafGrowth();
+                    HandleBushGrowth();
                 }
                 else
                 {
@@ -1033,6 +1067,17 @@ namespace Match3
 
                 OnEndOfTurn?.Invoke();
             }
+
+            // Debug.Log($"Attempt:  {attempts}");
+            _triggeredMatch5Set.Clear();
+            _colorBurstParentDictionary.Clear();
+
+            _match3Dictionary.Clear();
+            _match4Dictionary.Clear();
+            _match5Dictionary.Clear();
+            _blastBombDictionary.Clear();
+            _matchThisTurnSet.Clear();
+            _unlockThisTurnSet.Clear();
         }
 
         private IEnumerator ShuffleGridUntilCanMatchCoroutine()
@@ -1371,6 +1416,11 @@ namespace Match3
                     _unlockTileSet.Add(index);
                     _tiles[index].Unlock();
                 }
+
+                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X - 1, tile.Y)) == false)
+                {
+                    _unlockThisTurnSet.Add(new Vector2Int(tile.X - 1, tile.Y));
+                }
             }
             if (IsValidGridTile(tile.X + 1, tile.Y))
             {
@@ -1379,6 +1429,11 @@ namespace Match3
                 {
                     _unlockTileSet.Add(index);
                     _tiles[index].Unlock();
+                }
+
+                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X + 1, tile.Y)) == false)
+                {
+                    _unlockThisTurnSet.Add(new Vector2Int(tile.X + 1, tile.Y));
                 }
             }
             if (IsValidGridTile(tile.X, tile.Y - 1))
@@ -1389,6 +1444,11 @@ namespace Match3
                     _unlockTileSet.Add(index);
                     _tiles[index].Unlock();
                 }
+
+                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y - 1)) == false)
+                {
+                    _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y - 1));
+                }
             }
             if (IsValidGridTile(tile.X, tile.Y + 1))
             {
@@ -1397,6 +1457,11 @@ namespace Match3
                 {
                     _unlockTileSet.Add(index);
                     _tiles[index].Unlock();
+                }
+
+                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y + 1)) == false)
+                {
+                    _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y + 1));
                 }
             }
         }
@@ -1483,7 +1548,7 @@ namespace Match3
             onCompleted?.Invoke();
         }
 
-        private void HandleLeafGrowth()
+        private void HandleBushGrowth()
         {
             for (int y = 0; y < Height; y++)
             {
@@ -1493,23 +1558,25 @@ namespace Match3
                     {
                         int index = x + y * Width;
                         Tile tile = _tiles[index];
-                        if (tile.CurrentBlock is Leaf02)
+                        if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y))) continue;
+                        if (tile.CurrentBlock is Bush01)
                         {
-                            Leaf02 leaf = ((Leaf02)tile.CurrentBlock);
-                            leaf.ExistTurnCount++;
-                            if (leaf.ExistTurnCount > 2)
+                            Bush01 bush = ((Bush01)tile.CurrentBlock);
+                            bush.ExistTurnCount++;
+                            Debug.Log($"B:   {bush.ExistTurnCount}");
+                            if (bush.ExistTurnCount >= 2)
                             {
-                                tile.ChangeBlock(BlockID.Leaf_01);
+                                tile.ChangeBlock(BlockID.Bush_02);
                             }
                         }
-                        else if (tile.CurrentBlock is Leaf03)
+                        else if (tile.CurrentBlock is Bush02)
                         {
-                            // tile.ChangeBlock(BlockID.Leaf_02);
-                            Leaf03 leaf = ((Leaf03)tile.CurrentBlock);
-                            leaf.ExistTurnCount++;
-                            if (leaf.ExistTurnCount > 2)
+                            Bush02 bush = ((Bush02)tile.CurrentBlock);
+                            bush.ExistTurnCount++;
+                            Debug.Log($"A:   {bush.ExistTurnCount}");
+                            if (bush.ExistTurnCount >= 2)
                             {
-                                tile.ChangeBlock(BlockID.Leaf_02);
+                                tile.ChangeBlock(BlockID.Bush_03);
                             }
                         }
                     }
@@ -2508,7 +2575,6 @@ namespace Match3
                 int index = x + (y + v) * Width;
                 if (index == originIndex) continue;
 
-                Debug.Log($"sameIDCountInColumn: {sameIDCountInColumn}");
                 if (sameIDCountInColumn == 2)
                 {
                     if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
@@ -2536,7 +2602,6 @@ namespace Match3
             int endX = startX + shape.GetLength(0);
             int endY = startY + shape.GetLength(1);
 
-            Debug.Log($"{startX}  {endX}   {startY}  {endY}  {shape.GetLength(0)}  {shape.GetLength(1)}");
             int innerX = 0, innerY = 0;
             int sourceIndex = 0;
             bool foundSourceIndex = false;
@@ -2744,7 +2809,7 @@ namespace Match3
                         _tiles[i].Display(true);
                         if (_tiles[i].IsCorrectPosition(out float distance) == false)
                         {
-                            _tiles[i].FallDownToGridPosition(AnimationExtensions.TILE_FALLDOWN_TIME * distance);
+                            _tiles[i].FallDownToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME * distance);
                             hasFilledTile = true;
                         }
                     }
@@ -2764,7 +2829,7 @@ namespace Match3
                 }
 
                 //yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
-                yield return new WaitForSeconds(AnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
             }
 
             yield return null;
@@ -2935,7 +3000,7 @@ namespace Match3
             ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
             Vector2 targetLeft = new Vector2(_tiles[0 + tile.Y * Width].transform.position.x - TileExtension.TILE_WIDTH / 2f, _tiles[0 + tile.Y * Width].transform.position.y);
             Vector2 targetRight = new Vector2(_tiles[Width - 1 + tile.Y * Width].transform.position.x + TileExtension.TILE_WIDTH / 2f, _tiles[Width - 1 + tile.Y * Width].transform.position.y);
-            clearAxisLine.ActiveAxisLine(tile.transform.position, targetLeft, targetRight, AnimationExtensions.CLEAR_AXIS_DURATION);
+            clearAxisLine.ActiveAxisLine(tile.transform.position, targetLeft, targetRight, TileAnimationExtensions.CLEAR_AXIS_DURATION);
         }
 
         private void PlayClearVerticalVFX(Tile tile)
@@ -2946,7 +3011,7 @@ namespace Match3
             ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
             Vector2 targetDown = new Vector2(_tiles[tile.X + 0 * Width].transform.position.x, _tiles[tile.X + 0 * Width].transform.position.y - TileExtension.TILE_HEIGHT / 2f);
             Vector2 targetUp = new Vector2(_tiles[tile.X + (Height - 1) * Width].transform.position.x, _tiles[tile.X + (Height - 1) * Width].transform.position.y + TileExtension.TILE_HEIGHT / 2f);
-            clearAxisLine.ActiveAxisLine(tile.transform.position, targetDown, targetUp, AnimationExtensions.CLEAR_AXIS_DURATION);
+            clearAxisLine.ActiveAxisLine(tile.transform.position, targetDown, targetUp, TileAnimationExtensions.CLEAR_AXIS_DURATION);
         }
 
         private void PlayFlashBombVfx(Tile tile)

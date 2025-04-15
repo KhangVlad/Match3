@@ -2,15 +2,8 @@ using UnityEngine;
 
 namespace Match3
 {
-    public class Leaf02 : Block
+    public class Bush03 : Block
     {
-        public int ExistTurnCount { get; set; } = 0;
-
-        private void Awake()
-        {
-            ExistTurnCount = 0;
-        }
-        
         public override void Match(Tile tile, Tile[] grid, int width)
         {
         }
@@ -19,7 +12,7 @@ namespace Match3
         {
             Destroy(tile.CurrentBlock.gameObject);
 
-            Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.Leaf_03);
+            Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.Bush_02);
             Block blockInstance = Instantiate(blockPrefab, tile.transform);
             blockInstance.transform.localPosition = Vector3.zero;
 

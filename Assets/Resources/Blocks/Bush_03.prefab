@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 9188221716268396902}
   - component: {fileID: 6476537187321676990}
-  - component: {fileID: 6137681329254871183}
+  - component: {fileID: 3012532393322654394}
   m_Layer: 0
-  m_Name: Leaf_02
+  m_Name: Bush_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,18 +77,18 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: a96be4ec1c1e1408a90864c5004fe7c4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ba2090d4b8f274017ac063bbc4565530, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.73142856, y: 0.73142856}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6137681329254871183
+--- !u!114 &3012532393322654394
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8264668924268973374}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20a16ea00eb874c2db50b0b8ea42b4c9, type: 3}
+  m_Script: {fileID: 11500000, guid: a2225f5c3109e4270b09c37d5781a556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BlockID>k__BackingField: 17
+  <BlockID>k__BackingField: 18

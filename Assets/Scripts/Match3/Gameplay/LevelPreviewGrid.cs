@@ -32,7 +32,6 @@ namespace Match3
 
         private void Start()
         {
-            Debug.Log($"{LevelManager.Instance.CharacterLevelData.CharacterID}   {LevelManager.Instance.CurrentLevelIndex}");
             LoadTilemap(LevelManager.Instance.CharacterLevelData.CharacterID, LevelManager.Instance.CurrentLevelIndex);
         }
 

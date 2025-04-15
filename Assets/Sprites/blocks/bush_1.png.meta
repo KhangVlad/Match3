@@ -1,37 +1,19 @@
 fileFormatVersion: 2
-guid: e7881932ffe1247e89ac632a81aaa25b
+guid: cae4b25e1fa9a4043a4665f004b574f4
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7801973723302519702
-    second: leaf_3_0
+      213: -4936142861167156310
+    second: bush_1_0
   - first:
-      213: 5093079676164583450
-    second: leaf_3_1
+      213: 6443926599609642144
+    second: bush_1_1
   - first:
-      213: 4623138596254180215
-    second: leaf_3_2
+      213: -5867623052389053342
+    second: bush_1_2
   - first:
-      213: -588361892275616006
-    second: leaf_3_3
-  - first:
-      213: 8970751550802489784
-    second: leaf_3_4
-  - first:
-      213: -7210673267111050643
-    second: leaf_3_5
-  - first:
-      213: -3687283848566082703
-    second: leaf_3_6
-  - first:
-      213: -596201439745279766
-    second: leaf_3_7
-  - first:
-      213: -8660257478799527081
-    second: leaf_3_8
-  - first:
-      213: -2789049389721395005
-    second: leaf_3_9
+      213: 8763604583418853164
+    second: bush_1_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -153,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: leaf_3_0
+      name: bush_1_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 2
-        width: 245
-        height: 254
+        x: 2
+        y: 0
+        width: 254
+        height: 191
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -168,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a6c1f9b3c32d9b390800000000000000
-      internalID: -7801973723302519702
+      spriteID: aa32d87783c4f7bb0800000000000000
+      internalID: -4936142861167156310
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: leaf_3_1
+      name: bush_1_1
       rect:
         serializedVersion: 2
-        x: 33
-        y: 250
-        width: 15
-        height: 6
+        x: 170
+        y: 188
+        width: 13
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -190,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a103d8e2bf04ea640800000000000000
-      internalID: 5093079676164583450
+      spriteID: 0ac6c68d91d6d6950800000000000000
+      internalID: 6443926599609642144
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: leaf_3_2
+      name: bush_1_2
       rect:
         serializedVersion: 2
-        x: 246
-        y: 184
-        width: 7
-        height: 11
+        x: 182
+        y: 188
+        width: 59
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -212,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 773e0211f00b82040800000000000000
-      internalID: 4623138596254180215
+      spriteID: 26c057efbe3029ea0800000000000000
+      internalID: -5867623052389053342
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: leaf_3_3
+      name: bush_1_3
       rect:
         serializedVersion: 2
-        x: 245
-        y: 166
+        x: 186
+        y: 172
         width: 9
-        height: 17
+        height: 7
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -234,140 +216,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: af6098be9f7b5d7f0800000000000000
-      internalID: -588361892275616006
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_4
-      rect:
-        serializedVersion: 2
-        x: 246
-        y: 35
-        width: 10
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8b1fdd1a1038e7c70800000000000000
-      internalID: 8970751550802489784
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_5
-      rect:
-        serializedVersion: 2
-        x: 45
-        y: 0
-        width: 12
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: d62c07a0eda8eeb90800000000000000
-      internalID: -7210673267111050643
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_6
-      rect:
-        serializedVersion: 2
-        x: 57
-        y: 0
-        width: 15
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 173fe2430e224dcc0800000000000000
-      internalID: -3687283848566082703
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_7
-      rect:
-        serializedVersion: 2
-        x: 94
-        y: 0
-        width: 17
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ae8f76903fdd9b7f0800000000000000
-      internalID: -596201439745279766
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_8
-      rect:
-        serializedVersion: 2
-        x: 121
-        y: 0
-        width: 38
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 753fbb005b590d780800000000000000
-      internalID: -8660257478799527081
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: leaf_3_9
-      rect:
-        serializedVersion: 2
-        x: 172
-        y: 0
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3c0e2a86b5e4b49d0800000000000000
-      internalID: -2789049389721395005
+      spriteID: c277aa2efe39e9970800000000000000
+      internalID: 8763604583418853164
       vertices: []
       indices: 
       edges: []
@@ -386,16 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      leaf_3_0: -7801973723302519702
-      leaf_3_1: 5093079676164583450
-      leaf_3_2: 4623138596254180215
-      leaf_3_3: -588361892275616006
-      leaf_3_4: 8970751550802489784
-      leaf_3_5: -7210673267111050643
-      leaf_3_6: -3687283848566082703
-      leaf_3_7: -596201439745279766
-      leaf_3_8: -8660257478799527081
-      leaf_3_9: -2789049389721395005
+      bush_1_0: -4936142861167156310
+      bush_1_1: 6443926599609642144
+      bush_1_2: -5867623052389053342
+      bush_1_3: 8763604583418853164
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

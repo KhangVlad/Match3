@@ -1,6 +1,8 @@
 using UnityEngine;
 using DG.Tweening;
 using RoboRyanTron.SearchableEnum;
+using FMOD.Studio;
+using System.Collections;
 
 namespace Match3
 {
@@ -10,13 +12,18 @@ namespace Match3
 
         protected SpriteRenderer sr;
         [field: SerializeField, SearchableEnum] public TileID ID { get; protected set; }
-        [SerializeField] protected Sprite _tileSprite;
+        protected Sprite _tileSprite;
         [SerializeField] protected Sprite _match4Vertical;
         [SerializeField] protected Sprite _match4Horizontal;
         [SerializeField] protected Sprite _match5;
         [SerializeField] protected Sprite _match6;
         public Transform TilePivot;
         public Transform TileTransform;
+
+
+        // mask interaction
+        private MaterialPropertyBlock _propBlock;
+        private Coroutine _emissiveCoroutine;
 
 
         [Header("~Runtime")]
@@ -34,10 +41,22 @@ namespace Match3
         public Sprite TileSprite => _tileSprite;
         #endregion
 
-        protected virtual void Awake()
+
+        public void Initialize()
         {
             sr = TileTransform.GetComponent<SpriteRenderer>();
+            _tileSprite = sr.sprite;
+            _propBlock = new MaterialPropertyBlock();
         }
+
+        protected virtual void Awake()
+        {
+            if (sr == null)
+            {
+                Initialize();
+            }
+        }
+
 
         private void OnDestroy()
         {
@@ -104,9 +123,9 @@ namespace Match3
                 case BlockID.Ice:
                 case BlockID.HardIce:
                 case BlockID.EternalIce:
-                case BlockID.Leaf_01:
-                case BlockID.Leaf_02:
-                case BlockID.Leaf_03:
+                case BlockID.Bush_01:
+                case BlockID.Bush_02:
+                case BlockID.Bush_03:
                 case BlockID.Wall_01:
                 case BlockID.Wall_02:
                 case BlockID.Wall_03:
@@ -153,6 +172,11 @@ namespace Match3
 
         public virtual void Match(Tile[] grid, int width)
         {
+            if (_emissiveCoroutine != null)
+            {
+                StopCoroutine(_emissiveCoroutine);
+
+            }
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
         }
@@ -162,12 +186,12 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
-        public void MoveToGridPosition(float moveTime = AnimationExtensions.TILE_MOVE_TIME)
+        public void MoveToGridPosition(float moveTime = TileAnimationExtensions.TILE_MOVE_TIME)
         {
             Vector3 targetPosition = this.GetWorldPosition();
             _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(Ease.Linear);
         }
-        public void FallDownToGridPosition(float moveTime = AnimationExtensions.TILE_FALLDOWN_TIME)
+        public void FallDownToGridPosition(float moveTime = TileAnimationExtensions.TILE_FALLDOWN_TIME)
         {
             Vector3 targetPosition = this.GetWorldPosition();
 
@@ -204,6 +228,52 @@ namespace Match3
         public void SetInteractionMask(SpriteMaskInteraction mask)
         {
             sr.maskInteraction = mask;
+
+            // if (ID == TileID.RedFlower)
+            // {
+            //     sr.GetPropertyBlock(_propBlock);
+            //     _propBlock.SetFloat("_StencilComp", (float)mask);
+            //     sr.SetPropertyBlock(_propBlock);
+            // }
+        }
+
+
+        public void Emissive(float duration)
+        {
+            if (_emissiveCoroutine != null)
+                return;
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(0f, 5f, duration));
+        }
+
+        private IEnumerator EmissiveCoroutine(float startValue, float endValue, float duration)
+        {
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float currentValue = Mathf.Lerp(startValue, endValue, elapsed / duration);
+                sr.GetPropertyBlock(_propBlock);
+                _propBlock.SetFloat("_EmissionStrength", currentValue);
+                sr.SetPropertyBlock(_propBlock);
+                yield return null;
+            }
+
+            // Ensure it ends at the final value
+            sr.GetPropertyBlock(_propBlock);
+            _propBlock.SetFloat("_EmissionStrength", endValue);
+            sr.SetPropertyBlock(_propBlock);
+        }
+
+
+
+        public void StopEmissive(float startValue = 5f, float endValue = 0f, float duration = 0.2f)
+        {
+            if (_emissiveCoroutine != null)
+            {
+                StopCoroutine(_emissiveCoroutine);
+            }
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
         }
 
         public virtual void PlayMatchAnimation()

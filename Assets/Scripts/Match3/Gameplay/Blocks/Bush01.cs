@@ -1,8 +1,7 @@
 using UnityEngine;
-
 namespace Match3
 {
-    public class Leaf03 : Block
+    public class Bush01 : Block
     {
         public int ExistTurnCount { get; set; } = 0;
 
@@ -18,13 +17,6 @@ namespace Match3
         public override void Unlock(Tile tile)
         {
             tile.ChangeBlock(BlockID.None);
-            // Destroy(tile.CurrentBlock.gameObject);
-
-            // Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.None);
-            // Block blockInstance = Instantiate(blockPrefab, tile.transform);
-            // blockInstance.transform.localPosition = Vector3.zero;
-
-            // tile.SetBlock(blockInstance);
         }
     }
 }

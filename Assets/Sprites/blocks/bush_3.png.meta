@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: b6e819ada9c8f48dca8ae7b11c2f220f
+guid: ba2090d4b8f274017ac063bbc4565530
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1317686395865825732
-    second: wall_3_1_0
-  - first:
-      213: -3435523218693526365
-    second: wall_3_1_1
+      213: -536480052504382514
+    second: bush_3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -129,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: wall_3_1_0
+      name: bush_3_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 33
+        y: 0
         width: 256
-        height: 223
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -144,30 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4c182feabcc594210800000000000000
-      internalID: 1317686395865825732
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: wall_3_1_1
-      rect:
-        serializedVersion: 2
-        x: 225
-        y: 12
-        width: 16
-        height: 7
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3ac6a24b5d19250d0800000000000000
-      internalID: -3435523218693526365
+      spriteID: ec3b4611c3a0e88f0800000000000000
+      internalID: -536480052504382514
       vertices: []
       indices: 
       edges: []
@@ -186,8 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      wall_3_1_0: 1317686395865825732
-      wall_3_1_1: -3435523218693526365
+      bush_3_0: -536480052504382514
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
