@@ -8374,7 +8374,11 @@ MonoBehaviour:
   QuestDataSos: []
   BoosterDataSos: []
   CharacterDataSos: []
+  CharacterLevelDatas: []
   ShopItemDataSos: []
+  characterColor: {fileID: 0}
+  characterDialogues: []
+  characterActivities: []
 --- !u!4 &1013348967
 Transform:
   m_ObjectHideFlags: 0
@@ -10312,9 +10316,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b038d46497a4c8d9ee3f698915cfd83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterActivities: []
-  characterColor: {fileID: 11400000, guid: 77aec644ec524476285d9b218adfc8c8, type: 2}
-  charactersData: []
 --- !u!1 &1265977363
 GameObject:
   m_ObjectHideFlags: 0
@@ -14725,6 +14726,20 @@ MonoBehaviour:
       Data3: 1322064018
       Data4: -507620824
     Path: event:/Gameover
+  _closeBtn:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  _backgroundMusic:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!1 &1681788306
 GameObject:
   m_ObjectHideFlags: 0

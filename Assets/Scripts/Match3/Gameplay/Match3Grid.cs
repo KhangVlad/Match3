@@ -2310,7 +2310,7 @@ namespace Match3
                         Tile tile = _tiles[index];
                         if (FoundBlastBomb(_tShapes, tile.X, tile.Y, out int[,] shape))
                         {
-                            Debug.Log($"Found flash bomb T-Shape at: {tile.X}  {tile.Y}");
+                            // Debug.Log($"Found flash bomb T-Shape at: {tile.X}  {tile.Y}");
                             HandleCollectBlastBomb(shape, tile.X, tile.Y);
                             return true;
                         }
@@ -2319,7 +2319,8 @@ namespace Match3
 
                             if (FoundBlastBomb(_lShapes, tile.X, tile.Y, out shape))
                             {
-                                return true;
+                                HandleCollectBlastBomb(shape, tile.X, tile.Y);
+                                return true;    
                             }
                         }
                     }
@@ -2525,11 +2526,14 @@ namespace Match3
             int startY = yIndex;
             int endX = startX + shape.GetLength(0);
             int endY = startY + shape.GetLength(1);
+
+            Debug.Log($"{startX}  {endX}   {startY}  {endY}  {shape.GetLength(0)}  {shape.GetLength(1)}");
             int innerX = 0, innerY = 0;
             int sourceIndex = 0;
             bool foundSourceIndex = false;
             for (int y = startY; y < endY; y++, innerY++)
             {
+                innerX = 0;
                 for (int x = startX; x < endX; x++, innerX++)
                 {
                     int index = x + y * Width;
@@ -2556,6 +2560,7 @@ namespace Match3
             {
                 for (int y = startY; y < endY; y++, innerY++)
                 {
+                    innerX = 0;
                     for (int x = startX; x < endX; x++, innerX++)
                     {
                         if (IsValidGridTile(x, y) == false) continue;
@@ -2576,6 +2581,7 @@ namespace Match3
                 innerY = 0;
                 for (int y = startY; y < endY; y++, innerY++)
                 {
+                    innerX = 0;
                     for (int x = startX; x < endX; x++, innerX++)
                     {
                         if (shape[innerX, innerY] == 0) continue;
