@@ -14,10 +14,13 @@ namespace Match3
         public static GameDataManager Instance { get; private set; }
         public event Action OnDataLoaded;
 
+        // [Header("VFX")]
+        private Dictionary<VisualEffectID, BaseVisualEffect> _visualEffectDictionary;
+
         //[Header("Tilebases")]
         private Dictionary<string, TileBase> _tilebaseDictionary;
 
-        [Header("~Runtime")] 
+        [Header("~Runtime")]
         public Tile[] Tiles;
         private Dictionary<TileID, Tile> _tileDict;
 
@@ -54,8 +57,6 @@ namespace Match3
 
         // Level
         private TextAsset[] _levels;
-
-
         public TextAsset[] Levels => _levels;
 
         private void Awake()
@@ -68,11 +69,12 @@ namespace Match3
             {
                 Destroy(gameObject);
             }
-           
+
         }
 
         private void Start()
         {
+            LoadAllVisualEffect();
             LoadAllTilebases();
             LoadGameData();
         }
@@ -351,23 +353,52 @@ namespace Match3
         {
             TileBase[] tilebases = Resources.LoadAll<TileBase>("Tilebases");
             _tilebaseDictionary = new();
-            Debug.Log(tilebases.Length);
+            // Debug.Log(tilebases.Length);
 
-            for(int i = 0; i < tilebases.Length; i++)
+            for (int i = 0; i < tilebases.Length; i++)
             {
                 _tilebaseDictionary.Add(tilebases[i].name, tilebases[i]);
             }
         }
 
         public bool TryGetTilebaseByName(string tileName, out TileBase tilebase)
-        {   
-            if(_tilebaseDictionary.TryGetValue(tileName, out tilebase))
+        {
+            if (_tilebaseDictionary.TryGetValue(tileName, out tilebase))
             {
                 return true;
             }
             else
             {
                 Debug.LogError("Tile base not found: " + tileName);
+                return false;
+            }
+        }
+        #endregion
+
+
+        #region  Visual Effect
+        private void LoadAllVisualEffect()
+        {
+            BaseVisualEffect[] vfxs = Resources.LoadAll<BaseVisualEffect>("Effects/");
+            Debug.Log(vfxs.Length);
+            _visualEffectDictionary = new();
+            for (int i = 0; i < vfxs.Length; i++)
+            {
+                BaseVisualEffect vfx = vfxs[i];
+                vfx.Initialize();
+                _visualEffectDictionary.Add(vfx.VfxID, vfx);
+            }
+        }
+
+        public bool TryGetVfxByID(VisualEffectID visualEffectID, out BaseVisualEffect vfxPrefab)
+        {
+            if (_visualEffectDictionary.TryGetValue(visualEffectID, out vfxPrefab))
+            {
+                return true;
+            }
+            else
+            {
+                Debug.Log($"====== Missing vfx effect at id: {visualEffectID}");
                 return false;
             }
         }

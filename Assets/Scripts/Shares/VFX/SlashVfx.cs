@@ -1,0 +1,17 @@
+using UnityEngine;
+using Match3.Enums;
+
+namespace Match3.Shares
+{
+    public class SlashVfx : BaseVisualEffect
+    {
+        public override void Initialize()
+        {
+            VfxID = VisualEffectID.Slash;
+        }
+        public override void Play()
+        {
+
+        }
+    }
+}

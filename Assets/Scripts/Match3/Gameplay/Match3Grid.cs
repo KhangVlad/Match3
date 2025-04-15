@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using System.Linq;
-using UnityEditor.Rendering;
-using TMPro;
+using Match3.Enums;
+using Match3.Shares;
+using UnityEngine.Tilemaps;
 
 namespace Match3
 {
@@ -270,6 +271,14 @@ namespace Match3
                                     SwapPosition(_selectedTile, _swappedTile);
                                     _selectedTile.MoveToGridPosition();
                                     _swappedTile.MoveToGridPosition();
+
+                                    Debug.Log("HEHEHEHHEHEHE");
+                                    // vfx
+                                    if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
+                                    {
+                                        SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
+                                        Destroy(slashVfx01.gameObject, 0.5f);
+                                    }
                                 }
                             }
                         }
@@ -2320,7 +2329,7 @@ namespace Match3
                             if (FoundBlastBomb(_lShapes, tile.X, tile.Y, out shape))
                             {
                                 HandleCollectBlastBomb(shape, tile.X, tile.Y);
-                                return true;    
+                                return true;
                             }
                         }
                     }
