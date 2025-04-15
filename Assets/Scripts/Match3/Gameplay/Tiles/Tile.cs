@@ -30,6 +30,7 @@ namespace Match3
 
 
         #region Properties
+        public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         #endregion
 
@@ -198,6 +199,11 @@ namespace Match3
         public void SetRenderOrder(int order)
         {
             sr.sortingOrder = order;
+        }
+
+        public void SetInteractionMask(SpriteMaskInteraction mask)
+        {
+            sr.maskInteraction = mask;
         }
 
         public virtual void PlayMatchAnimation()

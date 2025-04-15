@@ -10,6 +10,11 @@ Shader "Custom/EmissiveSpriteMasked"
         [HideInInspector]_Flip ("Flip", Vector) = (1,1,1,1)
         [PerRendererData]_AlphaTex ("External Alpha", 2D) = "white" {}
         [PerRendererData]_EnableExternalAlpha ("Enable External Alpha", Float) = 0
+        
+        // Add mask interaction property
+        // [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp ("Mask Interaction", Float) = 8 // Equal = 8
+        // Replace the existing _StencilComp property with this:
+        [MaterialEnum(Off,0,Visible Inside Mask,3,Visible Outside Mask,6)] _StencilComp ("Mask Interaction", Float) = 3
     }
 
     SubShader
@@ -31,7 +36,7 @@ Shader "Custom/EmissiveSpriteMasked"
         Stencil
         {
             Ref 1
-            Comp Equal
+            Comp [_StencilComp]  // Use the property to control comparison
             Pass Keep
         }
 

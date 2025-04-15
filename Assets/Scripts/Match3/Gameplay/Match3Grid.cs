@@ -274,11 +274,11 @@ namespace Match3
 
                                     Debug.Log("HEHEHEHHEHEHE");
                                     // vfx
-                                    if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
-                                    {
-                                        SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
-                                        Destroy(slashVfx01.gameObject, 0.5f);
-                                    }
+                                    // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
+                                    // {
+                                    //     SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
+                                    //     Destroy(slashVfx01.gameObject, 0.5f);
+                                    // }
                                 }
                             }
                         }
@@ -625,7 +625,7 @@ namespace Match3
             Tile tileInstance = Instantiate(tilePrefab, this.transform);
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
-            tileInstance.TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            tileInstance.SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
             tileInstance.SetGridPosition(x, y);
             _tiles[x + y * Width] = tileInstance;
 

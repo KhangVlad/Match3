@@ -82,14 +82,14 @@ namespace Match3
         private void OnDestroy()
         {
             for (int i = 0; i < Tiles.Length; i++)
-                Tiles[i].TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+                Tiles[i].SetInteractionMask(SpriteMaskInteraction.None);
         }
         private void LoadGameData()
         {
             // Load all tiles
             Tiles = Resources.LoadAll<Tile>("Tiles/");
             for (int i = 0; i < Tiles.Length; i++)
-                Tiles[i].TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                Tiles[i].SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
 
             _tileDict = new();
             for (int i = 0; i < Tiles.Length; i++)

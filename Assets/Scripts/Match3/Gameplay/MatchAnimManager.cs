@@ -74,7 +74,7 @@ namespace Match3
                         Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
                         Tile tileInstance = Instantiate(tilePrefab, tileInfo.Position, Quaternion.identity);
                         tileInstance.SetRenderOrder(100);
-                        tileInstance.TileTransform.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.None;
+                        tileInstance.SetInteractionMask(SpriteMaskInteraction.None);
                         _animatedTiles.Add(tileInstance);
                     }
                 }
