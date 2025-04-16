@@ -44,6 +44,12 @@ namespace Match3
 
         public void Initialize()
         {
+            if (TileTransform == null)
+            {
+                Debug.Log("NMULLL");
+                TileTransform = transform.Find("Pivot/Tile");
+            }
+               
             sr = TileTransform.GetComponent<SpriteRenderer>();
             _tileSprite = sr.sprite;
             _propBlock = new MaterialPropertyBlock();

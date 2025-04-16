@@ -1,0 +1,16 @@
+﻿using Match3.Enums;
+
+namespace Match3.Shares
+{
+    public class WhiteCandleVfx : BaseVisualEffect
+    {
+        public override void Initialize()
+        {
+            VfxID = VisualEffectID.WhiteCandleDestroy;
+        }
+        public override void Play()
+        {
+
+        }
+    }
+}
