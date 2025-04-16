@@ -401,7 +401,7 @@ namespace Match3
 
                     Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.RedFlower, BlockID.None);
                     newTile.UpdatePosition();
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.RedFlower;
+                    //_prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.RedFlower;
                 }
             }
             if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -2734,9 +2734,11 @@ namespace Match3
                                 {
                                     _tiles[x + y * Width] = _tiles[x + yy * Width];
                                     _tiles[x + y * Width].SetGridPosition(x, y);
-                                    _tiles[x + yy * Width] = null;
-
+                                    _tiles[x + yy * Width] = null;       
                                     _tileHasMove = true;
+
+                                    //_prevTileIDs[x + y * Width] = _tiles[x + y * Width].ID;
+                                    //_prevTileIDs[x + yy * Width] = TileID.None;
                                     break;
                                 }
                             }
