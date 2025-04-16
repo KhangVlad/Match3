@@ -712,7 +712,8 @@ namespace Match3
                             float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                             float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                             Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                            nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                            //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                            nb.MoveToPosition((Vector2)t.transform.position, 0.2f, Ease.InSine);
                         }
                     }
                     yield return new WaitForSeconds(0.2f);

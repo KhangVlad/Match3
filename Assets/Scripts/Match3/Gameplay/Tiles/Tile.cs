@@ -186,6 +186,12 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
+
+        public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease)
+        {
+            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease);
+        }
+
         public void MoveToGridPosition(float moveTime = TileAnimationExtensions.TILE_MOVE_TIME)
         {
             Vector3 targetPosition = this.GetWorldPosition();

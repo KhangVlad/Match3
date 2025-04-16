@@ -13,7 +13,6 @@ namespace Match3
         private HashSet<TilePositionInfo> AnotherMatchSet;
         private Vector3[] _path = new Vector3[3];
         private List<Tile> _animatedTiles;
-
         private float TILE_MOVE_PATH_TIME = 1.0f;
 
         private void Awake()
@@ -133,13 +132,12 @@ namespace Match3
                     _path[0] = startPos;
                     _path[1] = controlPoint;
                     _path[2] = endPos;
-                    tile.transform.DOPath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom)
+                    Tween moveTween = tile.transform.DOPath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom)
                         .SetEase(Ease.InOutQuad)
                         .OnComplete(() =>
                         {
                             Destroy(tile.gameObject);
                         });
-
                     yield return new WaitForSeconds(0.05f);
                 }
             }
@@ -195,13 +193,12 @@ namespace Match3
                     _path[1] = controlPoint;
                     _path[2] = endPos;
                     tile.transform.DOPath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom)
-                        .SetEase(Ease.InOutQuad)
-                        .OnComplete(() =>
-                        {
-                            Destroy(tile.gameObject);
-                        });
-
-                    tile.transform.DOScale(1f, TILE_MOVE_PATH_TIME).SetEase(Ease.InOutBounce);
+                         .SetEase(Ease.InOutQuad)
+                         .OnComplete(() =>
+                         {
+                             Destroy(tile.gameObject);
+                         });
+                    //tile.transform.DOScale(1f, TILE_MOVE_PATH_TIME).SetEase(Ease.InOutBounce);
                     yield return new WaitForSeconds(0.1f);
                 }
             }
