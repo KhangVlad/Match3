@@ -15,7 +15,9 @@ namespace Match3
         {
             base.Match(grid, width);
 
-            if(GameDataManager.Instance.TryGetVfxByID(VisualEffectID.RedFlowerDestroy, out BaseVisualEffect redFlowerVfx))
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID))  return;
+
+            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.RedFlowerDestroy, out BaseVisualEffect redFlowerVfx))
             {
                 RedFlowerVfx redFlowerInstance = Instantiate((RedFlowerVfx)redFlowerVfx, TileTransform.position, Quaternion.identity);
                 Destroy(redFlowerInstance.gameObject, 1f);

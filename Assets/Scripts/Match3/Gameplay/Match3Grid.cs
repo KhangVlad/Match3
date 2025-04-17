@@ -5,8 +5,6 @@ using DG.Tweening;
 using System.Linq;
 using Match3.Enums;
 using Match3.Shares;
-using UnityEngine.Tilemaps;
-using FMOD.Studio;
 
 namespace Match3
 {

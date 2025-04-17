@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Match3
 {
     public class GreenCandle : Tile
-    {  
+    {
         protected override void Awake()
         {
             base.Awake();
@@ -14,7 +14,7 @@ namespace Match3
         public override void Match(Tile[] grid, int width)
         {
             base.Match(grid, width);
-
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
             if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.GreenCandleDestroy, out BaseVisualEffect vfxPrefab))
             {
                 var vfxInstance = Instantiate(vfxPrefab, TileTransform.position, Quaternion.identity);
