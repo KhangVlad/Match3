@@ -416,7 +416,7 @@ namespace Match3
                     //newTile.SetSpecialTile(SpecialTileID.Match5);
                     //newTile.SetSpecialTile(SpecialTileID.Match6);
 
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.BlueFlower;
                 }
             }
 
@@ -450,12 +450,12 @@ namespace Match3
                 }
             }
 
-             if (Input.GetKeyDown(KeyCode.Alpha5))
+            if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
                 {
-                      _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+                    _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
                 }
             }
         }
@@ -719,7 +719,6 @@ namespace Match3
                     yield return new WaitForSeconds(0.1f);
                     while (_emissiveTileQueue.Count > 0)
                     {
-                        Debug.Log("Stop");
                         Tile tile = _emissiveTileQueue.Dequeue();
                         if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
                         {
@@ -903,6 +902,7 @@ namespace Match3
                     {
                         TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
                         TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+
                         MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
                         MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                     }
@@ -1861,14 +1861,13 @@ namespace Match3
                                 foundMatch4Tile = true;
                             }
                         }
-
                         //_matchBuffer[index] = MatchID.Match;
                         SetMatchBuffer(index, MatchID.Match);
                     }
 
                     if (foundMatch4Tile == false)
                     {
-                        Debug.Log($"Not found match4 tile oriign");
+                        // Debug.Log($"Not found match4 tile oriign");
                         int index = x + 1 + y * Width;
                         _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
                     }
@@ -2508,10 +2507,10 @@ namespace Match3
             for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
             {
                 int index = (x + h) + y * Width;
-                if (_tiles[index].ID != _prevTileIDs[index])
-                {
-                    originIndex = _tiles[index].X + _tiles[index].Y * Width;
-                }
+                // if (_tiles[index].ID != _prevTileIDs[index])
+                // {
+                //     originIndex = _tiles[index].X + _tiles[index].Y * Width;
+                // }
 
                 if (_selectedTile != null)
                     if (_tiles[index].Equal(_selectedTile))
@@ -2552,17 +2551,12 @@ namespace Match3
 
         private void HandleCollectInColumn(Tile tile, int sameIDCountInColumn)
         {
-            int originIndex = (tile.X + 1) + tile.Y * Width;
+            int originIndex = tile.X + tile.Y * Width;
             int x = tile.X;
             int y = tile.Y;
             for (int v = 0; v <= sameIDCountInColumn; v++)
             {
                 int index = x + (y + v) * Width;
-                if (_tiles[index].ID != _prevTileIDs[index])
-                {
-                    originIndex = _tiles[index].X + _tiles[index].Y * Width;
-                }
-
                 if (_selectedTile != null)
                     if (_tiles[index].Equal(_selectedTile))
                     {
@@ -2591,14 +2585,15 @@ namespace Match3
                 else if (sameIDCountInColumn == 3)
                 {
                     if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
+                    {
                         _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                    }
                 }
                 else if (sameIDCountInColumn >= 4)
                 {
                     if (_match5Dictionary.ContainsKey(_tiles[index]) == false)
                         _match5Dictionary.Add(_tiles[index], _tiles[originIndex]);
                 }
-
             }
         }
 
