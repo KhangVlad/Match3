@@ -127,7 +127,6 @@ namespace Match3
 
             // Shop data
             LoadShopData();
-            Debug.Log("LoadShopData");
             OnDataLoaded?.Invoke();
         }
 

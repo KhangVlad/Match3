@@ -709,13 +709,13 @@ namespace Match3
 
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
-                HandleMatchAndUnlock(ref hasMatched);
+                HandleMatchAndUnlock(ref hasMatched, colorBurstDuration: 1f);
 
                 // Color burst
                 if (_colorBurstParentDictionary.Count > 0)
                 {
                     Debug.Log("wait a second");
-                    // yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(1f);
                 }
 
                 HandleSpawnSpecialTile();
@@ -949,7 +949,7 @@ namespace Match3
                 }
             }
         }
-        private void HandleMatchAndUnlock(ref bool hasMatched)
+        private void HandleMatchAndUnlock(ref bool hasMatched, float colorBurstDuration)
         {
             for (int i = 0; i < _matchBuffer.Length; i++)
             {
@@ -987,16 +987,19 @@ namespace Match3
                 else if (matchID == MatchID.ColorBurst)
                 {
                     // vfx
-                    if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
+                    // if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
+                    // {
+                    //     Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
+                    //     PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, colorBurstDuration);
+                    // }
+                    if (_colorBurstParentDictionary.Count > 0)
                     {
-                        Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
-                        PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, 0.4f);
-                        // if (colorBurstCount % 3 == 0)
-                        // {
-                        //     Debug.Log("Color burst wait");
-                        //     //yield return new WaitForSeconds(0.2f);
-                        // }
-                        // colorBurstCount++;
+                        if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ColorBurstFX, out var vfxPrefab))
+                        {
+                            ColorBurstFX fxInstance = Instantiate((ColorBurstFX)vfxPrefab);
+                            
+                            Destroy(fxInstance, 2f);
+                        }
                     }
 
 
@@ -2601,7 +2604,6 @@ namespace Match3
             if (sameIDCountInRow == 2) offsetX = 0;
             else if (sameIDCountInRow == 3) offsetX = 1;
             else if (sameIDCountInRow == 4) offsetX = 2;
-            Debug.Log(offsetX);
 
             int originIndex = (tile.X + offsetX) + tile.Y * Width;
             int x = tile.X;
@@ -2814,7 +2816,6 @@ namespace Match3
 
             if (foundSourceIndex)
             {
-                Debug.Log("A");
                 for (int y = startY; y < endY; y++, innerY++)
                 {
                     innerX = 0;
@@ -2868,7 +2869,6 @@ namespace Match3
                     }
                     else
                     {
-                        Debug.Log("Sour ce not valid");
                         innerX = 0;
                         innerY = 0;
                         for (int y = startY; y < endY; y++, innerY++)
@@ -2885,80 +2885,12 @@ namespace Match3
                             }
                         }
                     }
-
-
-                    // if (foundSourceIndex)
-                    // {
-                    //     innerX = 0;
-                    //     innerY = 0;
-                    //     for (int y = startY; y < endY; y++, innerY++)
-                    //     {
-                    //         innerX = 0;
-                    //         for (int x = startX; x < endX; x++, innerX++)
-                    //         {
-                    //             if (shape[innerX, innerY] == 0) continue;
-                    //             int index = x + y * Width;
-                    //             if (index == sourceIndex) continue;
-
-                    //             if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
-                    //                 _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
-                    //         }
-                    //     }
-                    // }
-                    // else
-                    // {
-
-                    //     Debug.Log("NOt found source indexxxxxxxxxxxxxxxxxxxx");
-                    //     bool foundLastCase = false;
-                    //     innerX = 0;
-                    //     innerY = 0;
-                    //     for (int y = startY; y < endY && !foundLastCase; y++, innerY++)
-                    //     {
-                    //         innerX = 0;
-                    //         for (int x = startX; x < endX; x++, innerX++)
-                    //         {
-                    //             if (shape[innerX, innerY] == 2)
-                    //             {
-                    //                 foundLastCase = true;
-                    //                 sourceIndex = x + y * Width;
-                    //                 break;
-                    //             }
-                    //         }
-                    //     }
-                    //     innerX = 0;
-                    //     innerY = 0;
-                    //     for (int y = startY; y < endY; y++, innerY++)
-                    //     {
-                    //         innerX = 0;
-                    //         for (int x = startX; x < endX; x++, innerX++)
-                    //         {
-                    //             if (shape[innerX, innerY] == 0) continue;
-                    //             int index = x + y * Width;
-                    //             if (index == sourceIndex) continue;
-                    //             if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
-                    //                 _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
-                    //         }
-                    //     }
-                    // }
                 }
             }
         }
 
         private bool CanFill()
         {
-            //for (int y = 0; y < Height - 1; y++)
-            //{
-            //    for (int x = 0; x < Width; x++)
-            //    {
-            //        Tile currTile = _tiles[x + y * Width];
-            //        Tile aboveTile = _tiles[x + (y + 1) * Width];
-
-            //        if (currTile.Data.ID == TileID.None && aboveTile.Data.ID != TileID.None)
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -2970,7 +2902,6 @@ namespace Match3
                     }
                 }
             }
-
             return false;
         }
 
@@ -3264,14 +3195,6 @@ namespace Match3
         #region VFX
         private void PlayClearHorizontalVFX(Tile tile)
         {
-            // Line
-            // ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
-            // if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
-            // ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
-            // Vector2 targetLeft = new Vector2(_tiles[0 + tile.Y * Width].transform.position.x - TileExtension.TILE_WIDTH / 2f, _tiles[0 + tile.Y * Width].transform.position.y);
-            // Vector2 targetRight = new Vector2(_tiles[Width - 1 + tile.Y * Width].transform.position.x + TileExtension.TILE_WIDTH / 2f, _tiles[Width - 1 + tile.Y * Width].transform.position.y);
-            // clearAxisLine.ActiveAxisLine(tile.transform.position, targetLeft, targetRight, TileAnimationExtensions.CLEAR_AXIS_DURATION);
-
             if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionHorizontalFX, out BaseVisualEffect vfxPrefab))
             {
                 var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
@@ -3281,14 +3204,6 @@ namespace Match3
 
         private void PlayClearVerticalVFX(Tile tile)
         {
-            // Line
-            // ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
-            // if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
-            // ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
-            // Vector2 targetDown = new Vector2(_tiles[tile.X + 0 * Width].transform.position.x, _tiles[tile.X + 0 * Width].transform.position.y - TileExtension.TILE_HEIGHT / 2f);
-            // Vector2 targetUp = new Vector2(_tiles[tile.X + (Height - 1) * Width].transform.position.x, _tiles[tile.X + (Height - 1) * Width].transform.position.y + TileExtension.TILE_HEIGHT / 2f);
-            // clearAxisLine.ActiveAxisLine(tile.transform.position, targetDown, targetUp, TileAnimationExtensions.CLEAR_AXIS_DURATION);
-
             if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionVerticalFX, out BaseVisualEffect vfxPrefab))
             {
                 var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);

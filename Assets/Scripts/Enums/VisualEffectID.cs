@@ -26,6 +26,8 @@ namespace Match3.Enums
         // Special Tiles
         ExplosionHorizontalFX = 51,
         ExplosionVerticalFX = 52,
+        ColorBurstFX = 53,
+        ColorBurstLine = 54,
 
 
 
