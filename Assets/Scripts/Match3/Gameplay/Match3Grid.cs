@@ -1374,6 +1374,7 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
 
                         if (currTile.ID == nbTile.ID &&
+                            _matchBuffer[h + y * Width] == MatchID.None &&
                             (nbTile.CurrentBlock is NoneBlock ||
                             nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
@@ -1396,6 +1397,7 @@ namespace Match3
                         if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
 
                         if (currTile.ID == nbTile.ID &&
+                            _matchBuffer[x + v * Width] == MatchID.None &&
                             (nbTile.CurrentBlock is NoneBlock ||
                             nbTile.CurrentBlock is Lock ||
                             nbTile.CurrentBlock is BushBlock))
@@ -2501,16 +2503,13 @@ namespace Match3
 
         private void HandleCollectInrow(Tile tile, int sameIDCountInRow)
         {
-            int originIndex = (tile.X + 1) + tile.Y * Width;
+            int offsetX = sameIDCountInRow / 2;
+            int originIndex = (tile.X + offsetX) + tile.Y * Width;
             int x = tile.X;
             int y = tile.Y;
             for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
             {
                 int index = (x + h) + y * Width;
-                // if (_tiles[index].ID != _prevTileIDs[index])
-                // {
-                //     originIndex = _tiles[index].X + _tiles[index].Y * Width;
-                // }
 
                 if (_selectedTile != null)
                     if (_tiles[index].Equal(_selectedTile))
