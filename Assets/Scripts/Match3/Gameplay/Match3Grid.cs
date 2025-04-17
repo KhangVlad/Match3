@@ -2730,13 +2730,13 @@ namespace Match3
 
                                 if (aboveTile != null && aboveTile.CurrentBlock is NoneBlock)
                                 {
+                                    // _prevTileIDs[x + y * Width] = _tiles[x + y * Width].ID;
+                                    _prevTileIDs[x + yy * Width] = _tiles[x + yy * Width].ID;
+
                                     _tiles[x + y * Width] = _tiles[x + yy * Width];
                                     _tiles[x + y * Width].SetGridPosition(x, y);
                                     _tiles[x + yy * Width] = null;
                                     _tileHasMove = true;
-
-                                    //_prevTileIDs[x + y * Width] = _tiles[x + y * Width].ID;
-                                    //_prevTileIDs[x + yy * Width] = TileID.None;
                                     break;
                                 }
                             }
@@ -2780,6 +2780,8 @@ namespace Match3
                 {
                     if (_tiles[x + yy * Width] == null)
                     {
+                        _prevTileIDs[x + yy * Width] = TileID.None;
+
                         TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
                         Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
 
