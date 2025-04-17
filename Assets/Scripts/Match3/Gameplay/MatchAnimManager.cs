@@ -116,7 +116,6 @@ namespace Match3
 
             _animatedTiles.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
 
-            //Debug.Log($"{Match3TileDict.Count}    {_animatedTiles.Count}");
             for (int i = 0; i < _animatedTiles.Count; i++)
             {
                 Tile tile = _animatedTiles[i];
@@ -138,7 +137,7 @@ namespace Match3
                         {
                             Destroy(tile.gameObject);
                         });
-                    yield return new WaitForSeconds(0.05f);
+                    // yield return new WaitForSeconds(0.05f);
                 }
             }
             _animatedTiles.Clear();

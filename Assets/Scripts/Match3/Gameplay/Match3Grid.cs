@@ -710,6 +710,14 @@ namespace Match3
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
                 HandleMatchAndUnlock(ref hasMatched);
+
+                // Color burst
+                if (_colorBurstParentDictionary.Count > 0)
+                {
+                    Debug.Log("wait a second");
+                    // yield return new WaitForSeconds(1f);
+                }
+
                 HandleSpawnSpecialTile();
 
                 yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
@@ -768,6 +776,14 @@ namespace Match3
                 {
                     yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
                 }
+
+                _colorBurstParentDictionary.Clear();
+                _match3Dictionary.Clear();
+                _match4Dictionary.Clear();
+                _match5Dictionary.Clear();
+                _blastBombDictionary.Clear();
+                _matchThisTurnSet.Clear();
+                _unlockThisTurnSet.Clear();
             }
 
             if (HandleReswapIfNotMatch)
@@ -804,14 +820,6 @@ namespace Match3
 
             // Debug.Log($"Attempt:  {attempts}");
             _triggeredMatch5Set.Clear();
-            _colorBurstParentDictionary.Clear();
-
-            _match3Dictionary.Clear();
-            _match4Dictionary.Clear();
-            _match5Dictionary.Clear();
-            _blastBombDictionary.Clear();
-            _matchThisTurnSet.Clear();
-            _unlockThisTurnSet.Clear();
         }
 
 
@@ -1047,6 +1055,7 @@ namespace Match3
 
                 int x = e.Index % Width;
                 int y = e.Index / Width;
+
 
                 Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
                 tile.UpdatePosition();
@@ -1834,13 +1843,17 @@ namespace Match3
                 else
                 {
                     bool foundMatch4Tile = false;
+                    for (int h = 0; h <= 3; h++)
+                    {
+                        int index = (x + h) + y * Width;
+                        SetMatchBuffer(index, MatchID.Match);
+                    }
+
                     if (_selectedTile != null && _swappedTile != null)
                     {
                         for (int h = 0; h <= 3; h++)
                         {
                             int index = (x + h) + y * Width;
-                            SetMatchBuffer(index, MatchID.Match);
-
                             if (foundMatch4Tile == false)
                             {
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
@@ -1851,10 +1864,8 @@ namespace Match3
                             }
                         }
                     }
-
-
                     int originIndex = x + 1 + y * Width;
-                    int cachedIndex = 0;
+                    int cachedIndex = originIndex;
                     bool foundOriginIndex = false;
                     if (foundMatch4Tile == false)
                     {
@@ -2586,7 +2597,12 @@ namespace Match3
 
         private void HandleCollectInrow(Tile tile, int sameIDCountInRow)
         {
-            int offsetX = sameIDCountInRow / 2;
+            int offsetX = 0;
+            if (sameIDCountInRow == 2) offsetX = 0;
+            else if (sameIDCountInRow == 3) offsetX = 1;
+            else if (sameIDCountInRow == 4) offsetX = 2;
+            Debug.Log(offsetX);
+
             int originIndex = (tile.X + offsetX) + tile.Y * Width;
             int x = tile.X;
             int y = tile.Y;
@@ -2613,7 +2629,7 @@ namespace Match3
             if (foundOriginIndex == false)
             {
                 // Debug.Log("Not found origin index");
-                int cachedIndex = x + y * Width;
+                int cachedIndex = originIndex;
                 for (int h = 0; h <= sameIDCountInRow; h++)
                 {
                     int index = (x + h) + y * Width;
@@ -2631,7 +2647,6 @@ namespace Match3
                     }
                 }
 
-                Debug.Log("HEE");
                 originIndex = foundOriginIndex ? originIndex : cachedIndex;
                 // originIndex = (tile.X + 1) + tile.Y * Width;
             }
@@ -2649,7 +2664,10 @@ namespace Match3
                 else if (sameIDCountInRow == 3)
                 {
                     if (_match4Dictionary.ContainsKey(_tiles[index]) == false)
+                    {
                         _match4Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                    }
+
                 }
                 else if (sameIDCountInRow >= 4)
                 {
@@ -2689,7 +2707,7 @@ namespace Match3
             if (foundOriginIndex == false)
             {
                 Debug.Log("Not found origin indexxxx");
-                int cachedIndex = x + y * Width;
+                int cachedIndex = originIndex;
                 for (int v = 0; v <= sameIDCountInColumn; v++)
                 {
                     int index = x + (y + v) * Width;
