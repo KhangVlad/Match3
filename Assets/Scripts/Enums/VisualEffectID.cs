@@ -4,6 +4,7 @@ namespace Match3.Enums
     public enum VisualEffectID : byte
     {
         None = 0,
+        // Tiles
         RedFlowerDestroy = 1,
         YellowFlowerDestroy = 2,
         PurpleFlowerDestroy = 3,
@@ -19,6 +20,14 @@ namespace Match3.Enums
         GreenRibbonDestroy = 13,
         BlueRibbonDestroy = 14,
         PurpleRibbonDestroy = 15,
+
+
+
+        // Special Tiles
+        ExplosionHorizontalFX = 51,
+        ExplosionVerticalFX = 52,
+
+
 
         Slash = 100,
     }

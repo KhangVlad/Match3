@@ -2734,7 +2734,7 @@ namespace Match3
                                 {
                                     _tiles[x + y * Width] = _tiles[x + yy * Width];
                                     _tiles[x + y * Width].SetGridPosition(x, y);
-                                    _tiles[x + yy * Width] = null;       
+                                    _tiles[x + yy * Width] = null;
                                     _tileHasMove = true;
 
                                     //_prevTileIDs[x + y * Width] = _tiles[x + y * Width].ID;
@@ -2998,23 +2998,35 @@ namespace Match3
         private void PlayClearHorizontalVFX(Tile tile)
         {
             // Line
-            ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
-            if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
-            ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
-            Vector2 targetLeft = new Vector2(_tiles[0 + tile.Y * Width].transform.position.x - TileExtension.TILE_WIDTH / 2f, _tiles[0 + tile.Y * Width].transform.position.y);
-            Vector2 targetRight = new Vector2(_tiles[Width - 1 + tile.Y * Width].transform.position.x + TileExtension.TILE_WIDTH / 2f, _tiles[Width - 1 + tile.Y * Width].transform.position.y);
-            clearAxisLine.ActiveAxisLine(tile.transform.position, targetLeft, targetRight, TileAnimationExtensions.CLEAR_AXIS_DURATION);
+            // ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
+            // if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
+            // ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
+            // Vector2 targetLeft = new Vector2(_tiles[0 + tile.Y * Width].transform.position.x - TileExtension.TILE_WIDTH / 2f, _tiles[0 + tile.Y * Width].transform.position.y);
+            // Vector2 targetRight = new Vector2(_tiles[Width - 1 + tile.Y * Width].transform.position.x + TileExtension.TILE_WIDTH / 2f, _tiles[Width - 1 + tile.Y * Width].transform.position.y);
+            // clearAxisLine.ActiveAxisLine(tile.transform.position, targetLeft, targetRight, TileAnimationExtensions.CLEAR_AXIS_DURATION);
+
+            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionHorizontalFX, out BaseVisualEffect vfxPrefab))
+            {
+                var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
+                Destroy(vfxInstance.gameObject, 1f);
+            }
         }
 
         private void PlayClearVerticalVFX(Tile tile)
         {
             // Line
-            ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
-            if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
-            ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
-            Vector2 targetDown = new Vector2(_tiles[tile.X + 0 * Width].transform.position.x, _tiles[tile.X + 0 * Width].transform.position.y - TileExtension.TILE_HEIGHT / 2f);
-            Vector2 targetUp = new Vector2(_tiles[tile.X + (Height - 1) * Width].transform.position.x, _tiles[tile.X + (Height - 1) * Width].transform.position.y + TileExtension.TILE_HEIGHT / 2f);
-            clearAxisLine.ActiveAxisLine(tile.transform.position, targetDown, targetUp, TileAnimationExtensions.CLEAR_AXIS_DURATION);
+            // ClearAxisLine clearAxisLinePrefab = Resources.Load<ClearAxisLine>("Effects/ClearAxisLine");
+            // if (clearAxisLinePrefab == null) Debug.LogError("Missing clearAxisLinePrefab!!!");
+            // ClearAxisLine clearAxisLine = Instantiate(clearAxisLinePrefab, TileExtension.TileCenter(), Quaternion.identity);
+            // Vector2 targetDown = new Vector2(_tiles[tile.X + 0 * Width].transform.position.x, _tiles[tile.X + 0 * Width].transform.position.y - TileExtension.TILE_HEIGHT / 2f);
+            // Vector2 targetUp = new Vector2(_tiles[tile.X + (Height - 1) * Width].transform.position.x, _tiles[tile.X + (Height - 1) * Width].transform.position.y + TileExtension.TILE_HEIGHT / 2f);
+            // clearAxisLine.ActiveAxisLine(tile.transform.position, targetDown, targetUp, TileAnimationExtensions.CLEAR_AXIS_DURATION);
+
+            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionVerticalFX, out BaseVisualEffect vfxPrefab))
+            {
+                var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
+                Destroy(vfxInstance.gameObject, 1f);
+            }
         }
 
         private void PlayFlashBombVfx(Tile tile)
