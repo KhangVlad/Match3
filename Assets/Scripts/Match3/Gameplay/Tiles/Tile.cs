@@ -49,7 +49,7 @@ namespace Match3
                 Debug.Log("NMULLL");
                 TileTransform = transform.Find("Pivot/Tile");
             }
-               
+
             sr = TileTransform.GetComponent<SpriteRenderer>();
             _tileSprite = sr.sprite;
             _propBlock = new MaterialPropertyBlock();
@@ -87,6 +87,12 @@ namespace Match3
             {
                 sr.color = new Color(255, 255, 255, 0);
             }
+        }
+
+        public void PlayAppearAnimation(float duration)
+        {
+            TileTransform.localScale = Vector3.zero;
+            _scaleTween = TileTransform.DOScale(1f, duration).SetEase(Ease.OutBack);
         }
 
         public void SetTileOffset(Vector2 offset)
