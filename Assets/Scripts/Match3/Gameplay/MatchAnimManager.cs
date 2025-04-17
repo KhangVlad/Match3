@@ -13,7 +13,7 @@ namespace Match3
         private HashSet<TilePositionInfo> AnotherMatchSet;
         private Vector3[] _path = new Vector3[3];
         private List<Tile> _animatedTiles;
-        private float TILE_MOVE_PATH_TIME = 1.0f;
+        private float TILE_MOVE_PATH_TIME = 0.8f;
 
         private void Awake()
         {
@@ -188,7 +188,7 @@ namespace Match3
                     Vector3 startPos = tile.transform.position;
                     Vector3 endPos = ssPosition;
                     // Control point: this will determine the curve arch
-                    Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.5f, -1f + i * 0.5f, (endPos.z - startPos.z) * 0.5f); // goes downward first
+                    Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.8f, -1f + (i * 1.5f) * 0.5f, (endPos.z - startPos.z) * 0.5f); // goes downward first
                     _path[0] = startPos;
                     _path[1] = controlPoint;
                     _path[2] = endPos;
@@ -198,7 +198,7 @@ namespace Match3
                          {
                              Destroy(tile.gameObject);
                          });
-                    //tile.transform.DOScale(1f, TILE_MOVE_PATH_TIME).SetEase(Ease.InOutBounce);
+                    tile.transform.DOScale(0.7f, TILE_MOVE_PATH_TIME).SetEase(Ease.InBack);
                     yield return new WaitForSeconds(0.1f);
                 }
             }

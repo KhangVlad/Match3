@@ -129,26 +129,26 @@ namespace Match3
             {
                 new int[,] // Original T-shape
                 {
-                    { 1, 1, 1 },
+                    { 1, 2, 1 },
                     { 0, 1, 0 },
                     { 0, 1, 0 },
                 },
                 new int[,] // 90� Rotation
                 {
                     { 0, 0, 1 },
-                    { 1, 1, 1 },
+                    { 1, 1, 2 },
                     { 0, 0, 1 },
                 },
                 new int[,] // 180� Rotation
                 {
                     { 0, 1, 0 },
                     { 0, 1, 0 },
-                    { 1, 1, 1 },
+                    { 1, 2, 1 },
                 },
                 new int[,] // 270� Rotation
                 {
                     { 1, 0, 0 },
-                    { 1, 1, 1 },
+                    { 2, 1, 1 },
                     { 1, 0, 0 },
                 }
             };
@@ -158,17 +158,17 @@ namespace Match3
                 {
                     { 1, 0, 0 },
                     { 1, 0, 0 },
-                    { 1, 1, 1 },
+                    { 2, 1, 1 },
                 },
                 new int[,] // 90� Rotation
                 {
-                    { 1, 1, 1 },
+                    { 2, 1, 1 },
                     { 1, 0, 0 },
                     { 1, 0, 0 },
                 },
                 new int[,] // 180� Rotation
                 {
-                    { 1, 1, 1 },
+                    { 1, 1, 2 },
                     { 0, 0, 1 },
                     { 0, 0, 1 },
                 },
@@ -176,7 +176,7 @@ namespace Match3
                 {
                     { 0, 0, 1 },
                     { 0, 0, 1 },
-                    { 1, 1, 1 },
+                    { 1, 1, 2 },
                 }
             };
 
@@ -2252,17 +2252,19 @@ namespace Match3
                     int h = shapes[i].GetLength(1);
                     TileID targetTileID = default;
 
-                    for (int y = 0; y < h; y++)
+                    bool foundFirstValidTile = false;
+                    for (int y = 0; y < h && !foundFirstValidTile; y++)
                     {
                         for (int x = 0; x < h; x++)
                         {
-                            if (shapes[i][x, y] == 1)
+                            if (shapes[i][x, y] != 0)
                             {
                                 int offsetX = xIndex + x;
                                 int offsetY = yIndex + y;
                                 if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
                                 {
                                     targetTileID = _tiles[offsetX + offsetY * Width].ID;
+                                    foundFirstValidTile = true;
                                     break;
                                 }
                             }
@@ -2274,7 +2276,7 @@ namespace Match3
                     {
                         for (int x = 0; x < w; x++)
                         {
-                            if (shapes[i][x, y] == 1)
+                            if (shapes[i][x, y] != 0)
                             {
                                 int offsetX = xIndex + x;
                                 int offsetY = yIndex + y;
@@ -2304,34 +2306,45 @@ namespace Match3
 
                     if (found)
                     {
+                        Debug.Log(")))");
                         bool foundBlashBombTile = false;
                         for (int y = 0; y < h; y++)
                         {
                             for (int x = 0; x < w; x++)
                             {
-                                if (shapes[i][x, y] == 1)
+                                if (shapes[i][x, y] == 0) continue;
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+                                int index = offsetX + offsetY * Width;
+                                if (IsValidMatchTile(offsetX, offsetY))
                                 {
-                                    int offsetX = xIndex + x;
-                                    int offsetY = yIndex + y;
-                                    int index = offsetX + offsetY * Width;
-                                    if (IsValidMatchTile(offsetX, offsetY))
-                                    {
-                                        //_matchBuffer[index] = MatchID.Match;
-                                        SetMatchBuffer(index, MatchID.Match);
-                                    }
+                                    SetMatchBuffer(index, MatchID.Match);
+                                }
+                            }
+                        }
 
-                                    if (_selectedTile != null && _swappedTile != null)
+                        for (int y = 0; y < h && !foundBlashBombTile; y++)
+                        {
+                            for (int x = 0; x < w; x++)
+                            {
+                                if (shapes[i][x, y] == 0) continue;
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+                                int index = offsetX + offsetY * Width;
+
+                                if (_selectedTile != null && _swappedTile != null)
+                                {
+                                    if (_selectedTile.Equal(_tiles[index]))
                                     {
-                                        if (_selectedTile.Equal(_tiles[index]))
-                                        {
-                                            _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_selectedTile.ID, index));
-                                            foundBlashBombTile = true;
-                                        }
-                                        else if (_swappedTile.Equal(_tiles[index]))
-                                        {
-                                            _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_swappedTile.ID, index));
-                                            foundBlashBombTile = true;
-                                        }
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_selectedTile.ID, index));
+                                        foundBlashBombTile = true;
+                                        break;
+                                    }
+                                    else if (_swappedTile.Equal(_tiles[index]))
+                                    {
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_swappedTile.ID, index));
+                                        foundBlashBombTile = true;
+                                        break;
                                     }
                                 }
                             }
@@ -2343,20 +2356,18 @@ namespace Match3
                             return true;
                         }
                         int lastMatchIndex = 0;
-
                         if (foundBlashBombTile == false)
                         {
                             for (int y = 0; y < h; y++)
                             {
                                 for (int x = 0; x < w; x++)
                                 {
-                                    if (shapes[i][x, y] == 1)
+                                    if (shapes[i][x, y] != 0)
                                     {
                                         int offsetX = xIndex + x;
                                         int offsetY = yIndex + y;
                                         int index = offsetX + offsetY * Width;
                                         lastMatchIndex = index;
-
 
                                         if (_prevTileIDs[index] != _tiles[index].ID)
                                         {
@@ -2371,7 +2382,25 @@ namespace Match3
                             }
                         }
 
+
+                        // Last case
                         Debug.Log("??????");
+                        bool foundLastCase = false;
+                        for (int y = 0; y < h && !foundLastCase; y++)
+                        {
+                            for (int x = 0; x < w; x++)
+                            {
+                                if (shapes[i][x, y] == 2)
+                                {
+                                    int offsetX = xIndex + x;
+                                    int offsetY = yIndex + y;
+                                    lastMatchIndex = offsetX + offsetY * Width;
+                                    foundLastCase = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         // not found -> Get last match tile index
                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, lastMatchIndex));
                         shape = shapes[i];
@@ -2596,6 +2625,29 @@ namespace Match3
             }
         }
 
+        private bool FindOriginalBlastBombIndex(int[,] shape, out int x, out int y)
+        {
+            int width = shape.GetLength(0);
+            int height = shape.GetLength(1);
+
+            for (int yy = 0; yy < height; yy++)
+            {
+                for (int xx = 0; xx < width; xx++)
+                {
+                    if (shape[xx, yy] == 2)
+                    {
+                        x = xx;
+                        y = yy;
+                        return true;
+                    }
+                }
+            }
+
+            x = 0;
+            y = 0;
+            Debug.LogError("Not found origin source !!!!!!!!!");
+            return false;
+        }
 
         private void HandleCollectBlastBomb(int[,] shape, int xIndex, int yIndex)
         {
@@ -2632,29 +2684,10 @@ namespace Match3
 
             innerX = 0;
             innerY = 0;
-            if (foundSourceIndex == false)
-            {
-                for (int y = startY; y < endY; y++, innerY++)
-                {
-                    innerX = 0;
-                    for (int x = startX; x < endX; x++, innerX++)
-                    {
-                        if (IsValidGridTile(x, y) == false) continue;
-                        if (shape[innerX, innerY] == 0) continue;
-                        int index = x + y * Width;
-                        if (_tiles[index].ID != _prevTileIDs[index])
-                        {
-                            sourceIndex = index;
-                            foundSourceIndex = true;
-                        }
-                    }
-                }
-            }
 
             if (foundSourceIndex)
             {
-                innerX = 0;
-                innerY = 0;
+                Debug.Log("A");
                 for (int y = startY; y < endY; y++, innerY++)
                 {
                     innerX = 0;
@@ -2663,7 +2696,6 @@ namespace Match3
                         if (shape[innerX, innerY] == 0) continue;
                         int index = x + y * Width;
                         if (index == sourceIndex) continue;
-
                         if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
                             _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
                     }
@@ -2671,10 +2703,140 @@ namespace Match3
             }
             else
             {
-                Debug.Log("NOt found source indexxxxxxxxxxxxxxxxxxxx");
+                Debug.Log("B");
+                if (FindOriginalBlastBombIndex(shape, out int xxx, out int yyy))
+                {
+                    // if (foundSourceIndex == false)
+                    // {
+                    //     for (int y = startY; y < endY; y++, innerY++)
+                    //     {
+                    //         innerX = 0;
+                    //         for (int x = startX; x < endX; x++, innerX++)
+                    //         {
+                    //             if (IsValidGridTile(x, y) == false) continue;
+                    //             if (shape[innerX, innerY] == 0) continue;
+                    //             int index = x + y * Width;
+                    //             if (_tiles[index].ID != _prevTileIDs[index])
+                    //             {
+                    //                 sourceIndex = index;
+                    //                 foundSourceIndex = true;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    sourceIndex = (xIndex + xxx) + (yIndex + yyy) * Width;
+                    bool isSourceIndexValid = false;
+                    for (int y = startY; y < endY && !isSourceIndexValid; y++, innerY++)
+                    {
+                        innerX = 0;
+                        for (int x = startX; x < endX; x++, innerX++)
+                        {
+                            if (shape[innerX, innerY] == 0) continue;
+                            int index = x + y * Width;
+                            if (index == sourceIndex)
+                            {
+                                isSourceIndexValid = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isSourceIndexValid)
+                    {
+                        Debug.Log("C");
+                        innerX = 0;
+                        innerY = 0;
+                        for (int y = startY; y < endY; y++, innerY++)
+                        {
+                            innerX = 0;
+                            for (int x = startX; x < endX; x++, innerX++)
+                            {
+                                if (shape[innerX, innerY] == 0) continue;
+                                int index = x + y * Width;
+                                if (index == sourceIndex) continue;
+                                if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
+                                    _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Sour ce not valid");
+                        innerX = 0;
+                        innerY = 0;
+                        for (int y = startY; y < endY; y++, innerY++)
+                        {
+                            innerX = 0;
+                            for (int x = startX; x < endX; x++, innerX++)
+                            {
+                                if (shape[innerX, innerY] == 0) continue;
+                                int index = x + y * Width;
+                                if (index == sourceIndex) continue;
+
+                                if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
+                                    _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
+                            }
+                        }
+                    }
+
+
+                    // if (foundSourceIndex)
+                    // {
+                    //     innerX = 0;
+                    //     innerY = 0;
+                    //     for (int y = startY; y < endY; y++, innerY++)
+                    //     {
+                    //         innerX = 0;
+                    //         for (int x = startX; x < endX; x++, innerX++)
+                    //         {
+                    //             if (shape[innerX, innerY] == 0) continue;
+                    //             int index = x + y * Width;
+                    //             if (index == sourceIndex) continue;
+
+                    //             if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
+                    //                 _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
+                    //         }
+                    //     }
+                    // }
+                    // else
+                    // {
+
+                    //     Debug.Log("NOt found source indexxxxxxxxxxxxxxxxxxxx");
+                    //     bool foundLastCase = false;
+                    //     innerX = 0;
+                    //     innerY = 0;
+                    //     for (int y = startY; y < endY && !foundLastCase; y++, innerY++)
+                    //     {
+                    //         innerX = 0;
+                    //         for (int x = startX; x < endX; x++, innerX++)
+                    //         {
+                    //             if (shape[innerX, innerY] == 2)
+                    //             {
+                    //                 foundLastCase = true;
+                    //                 sourceIndex = x + y * Width;
+                    //                 break;
+                    //             }
+                    //         }
+                    //     }
+                    //     innerX = 0;
+                    //     innerY = 0;
+                    //     for (int y = startY; y < endY; y++, innerY++)
+                    //     {
+                    //         innerX = 0;
+                    //         for (int x = startX; x < endX; x++, innerX++)
+                    //         {
+                    //             if (shape[innerX, innerY] == 0) continue;
+                    //             int index = x + y * Width;
+                    //             if (index == sourceIndex) continue;
+                    //             if (_blastBombDictionary.ContainsKey(_tiles[index]) == false)
+                    //                 _blastBombDictionary.Add(_tiles[index], _tiles[sourceIndex]);
+                    //         }
+                    //     }
+                    // }
+                }
             }
         }
-
 
         private bool CanFill()
         {
