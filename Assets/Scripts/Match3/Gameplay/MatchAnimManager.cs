@@ -80,10 +80,10 @@ namespace Match3
             }
         }
 
-        public void PlayCollectAnimation()
-        {
-            StartCoroutine(PlayCollectAnimationCoroutine());
-        }
+        // public void PlayCollectAnimation()
+        // {
+        //     StartCoroutine(PlayCollectAnimationCoroutine());
+        // }
 
         public IEnumerator PlayCollectAnimationCoroutine()
         {

@@ -1840,11 +1840,14 @@ namespace Match3
                         {
                             int index = (x + h) + y * Width;
                             SetMatchBuffer(index, MatchID.Match);
-                            if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
+
+                            if (foundMatch4Tile == false)
                             {
-                                _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
-                                foundMatch4Tile = true;
-                                break;
+                                if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
+                                {
+                                    _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                                    foundMatch4Tile = true;
+                                }
                             }
                         }
                     }
@@ -1871,7 +1874,7 @@ namespace Match3
                                 }
                             }
                         }
-                        originIndex = foundOriginIndex ? cachedIndex : originIndex;
+                        originIndex = foundOriginIndex ? originIndex : cachedIndex;
                         _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[originIndex].ID, originIndex));
                     }
                 }
@@ -2627,9 +2630,11 @@ namespace Match3
                         }
                     }
                 }
-                originIndex = foundOriginIndex ? cachedIndex : originIndex;
-            }
 
+                Debug.Log("HEE");
+                originIndex = foundOriginIndex ? originIndex : cachedIndex;
+                // originIndex = (tile.X + 1) + tile.Y * Width;
+            }
 
 
             for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
@@ -2701,7 +2706,7 @@ namespace Match3
                         }
                     }
                 }
-                originIndex = foundOriginIndex ? cachedIndex : originIndex;
+                originIndex = foundOriginIndex ? originIndex : cachedIndex;
             }
 
             for (int v = 0; v <= sameIDCountInColumn; v++)
