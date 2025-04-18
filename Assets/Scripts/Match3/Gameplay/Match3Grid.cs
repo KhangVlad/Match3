@@ -212,34 +212,37 @@ namespace Match3
                     Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
                     if (GameplayUserManager.Instance.SelectedGameplayBooster is HammerBooster)
                     {
-                        Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
-                        if (tile != null)
+                        if (IsValidGridTile(gridPosition.x, gridPosition.y))
                         {
-                            switch (tile.CurrentBlock)
+                            Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
+                            if (tile != null)
                             {
-                                case NoneBlock:
-                                case Lock:
-                                case Ice:
-                                case HardIce:
-                                case EternalIce:
-                                case Wall01:
-                                case Wall02:
-                                case Wall03:
-                                case Bush01:
-                                case Bush02:
-                                case Bush03:
-                                case Spider:
-                                case SpiderNet:
-                                    UseBoosterThisTurn = true;
-                                    _canPlay = false;
-                                    _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
-                                    OnAfterPlayerMatchInput?.Invoke();
-                                    GameplayUserManager.Instance.SelectedGameplayBooster.Use();
-                                    GameplayUserManager.Instance.UnselectGameplayBooster();
-                                    break;
-                                default:
-                                    Debug.Log("Case not found!!!!!!");
-                                    break;
+                                switch (tile.CurrentBlock)
+                                {
+                                    case NoneBlock:
+                                    case Lock:
+                                    case Ice:
+                                    case HardIce:
+                                    case EternalIce:
+                                    case Wall01:
+                                    case Wall02:
+                                    case Wall03:
+                                    case Bush01:
+                                    case Bush02:
+                                    case Bush03:
+                                    case Spider:
+                                    case SpiderNet:
+                                        UseBoosterThisTurn = true;
+                                        _canPlay = false;
+                                        _matchBuffer[tile.X + tile.Y * Width] = MatchID.SpecialMatch;
+                                        OnAfterPlayerMatchInput?.Invoke();
+                                        GameplayUserManager.Instance.SelectedGameplayBooster.Use();
+                                        GameplayUserManager.Instance.UnselectGameplayBooster();
+                                        break;
+                                    default:
+                                        Debug.Log("Case not found!!!!!!");
+                                        break;
+                                }
                             }
                         }
                     }
@@ -625,8 +628,6 @@ namespace Match3
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
         {
             // Tile
-            // Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileID);
-            // Tile tileInstance = Instantiate(tilePrefab, this.transform);
             Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
 
             tileInstance.Display(display);
@@ -637,10 +638,6 @@ namespace Match3
 
             // Block
             tileInstance.ChangeBlock(blockID);
-            // Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
-            // Block blockInstance = Instantiate(blockPrefab, tileInstance.transform);
-            // blockInstance.transform.localPosition = Vector3.zero;
-            // tileInstance.SetBlock(blockInstance);
             return tileInstance;
         }
 
@@ -955,17 +952,18 @@ namespace Match3
             {
                 Tile tile = _tiles[i];
                 if (tile == null) continue;
+                int x = i % Width;
+                int y = i / Width;
 
                 MatchID matchID = _matchBuffer[i];
                 if (matchID == MatchID.Match)
                 {
                     AudioManager.Instance.PlayMatch3Sfx();
                 }
-
                 // Match & Unlock
                 if (matchID == MatchID.Match)
                 {
-                    _matchThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+                    _matchThisTurnSet.Add(new Vector2Int(x, y));
 
                     tile.Match(_tiles, Width);
                     HandleUnlockTileNeighbors(tile);
@@ -973,11 +971,11 @@ namespace Match3
                 }
                 else if (matchID == MatchID.SpecialMatch)
                 {
-                    _matchThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+                    _matchThisTurnSet.Add(new Vector2Int(x, y));
                     tile.Match(_tiles, Width);
                     if (_unlockTileSet.Contains(i) == false)
                     {
-                        _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+                        _unlockThisTurnSet.Add(new Vector2Int(x, y));
 
                         _unlockTileSet.Add(i);
                         tile.Unlock();
@@ -1006,7 +1004,7 @@ namespace Match3
                     tile.Match(_tiles, Width);
                     if (_unlockTileSet.Contains(i) == false)
                     {
-                        _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y));
+                        _unlockThisTurnSet.Add(new Vector2Int(x,y));
 
                         _unlockTileSet.Add(i);
                         tile.Unlock();
@@ -1428,6 +1426,7 @@ namespace Match3
         }
         private void HandleUnlockTileNeighbors(Tile tile)
         {
+
             if (IsValidGridTile(tile.X - 1, tile.Y))
             {
                 int index = tile.X - 1 + tile.Y * Width;

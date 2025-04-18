@@ -13,9 +13,7 @@ namespace Match3
         {
             int index = tile.X + tile.Y * width;
             grid[index] = null;
-
             tile.ReturnToPool();
-            // Destroy(tile.gameObject);
         }
         public override void Unlock(Tile tile)
         {

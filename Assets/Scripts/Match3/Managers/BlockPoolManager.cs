@@ -20,7 +20,7 @@ namespace Match3
             }
             Instance = this;
 
-            // LoadBlockPool();
+            LoadBlockPool();
         }
 
         private void LoadBlockPool()
@@ -40,9 +40,9 @@ namespace Match3
                         blockInstance.SetPool(pool);
                         return blockInstance;
                     },
-                    actionOnGet: tile => tile.gameObject.SetActive(true),
-                    actionOnRelease: tile => tile.gameObject.SetActive(false),
-                    actionOnDestroy: tile => Destroy(tile.gameObject),
+                    actionOnGet: block => block.gameObject.SetActive(true),
+                    actionOnRelease: block => block.gameObject.SetActive(false),
+                    actionOnDestroy: block => Destroy(block.gameObject),
                     collectionCheck: false,
                     defaultCapacity: defaultCapacity
                 );

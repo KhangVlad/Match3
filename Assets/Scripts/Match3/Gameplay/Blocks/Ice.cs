@@ -6,7 +6,7 @@ namespace Match3
     {
         public static event System.Action<Ice> OnIceUnlocked;
 
-     public override void Initialize()
+        public override void Initialize()
         {
             BlockID = BlockID.Ice;
         }
@@ -17,14 +17,7 @@ namespace Match3
 
         public override void Unlock(Tile tile)
         {
-            Destroy(tile.CurrentBlock.gameObject);
-
-            Block blockPrefab = GameDataManager.Instance.GetBlockByID(BlockID.None);
-            Block blockInstance = Instantiate(blockPrefab, tile.transform);
-            blockInstance.transform.localPosition = Vector3.zero;
-
-            tile.SetBlock(blockInstance);
-
+            tile.ChangeBlock(BlockID.None);
             OnIceUnlocked?.Invoke(this);
         }
     }

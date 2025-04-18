@@ -26,6 +26,7 @@ namespace Match3
         }
         public virtual void ReturnToPool()
         {
+            transform.SetParent(BlockPoolManager.Instance.transform);
             ResetBlock();
             pool?.Release(this);
         }

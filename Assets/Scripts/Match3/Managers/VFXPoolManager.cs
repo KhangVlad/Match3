@@ -18,7 +18,6 @@ namespace Match3
                 return;
             }
             Instance = this;
-
             LoadAllVFXPool();
         }
 
