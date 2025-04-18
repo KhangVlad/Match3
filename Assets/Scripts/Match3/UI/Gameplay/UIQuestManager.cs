@@ -1,4 +1,6 @@
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Match3
 {
@@ -6,11 +8,12 @@ namespace Match3
     {
         public static UIQuestManager Instance { get; private set; }
 
-
         [Header("Quests")]
+        private GridLayoutGroup _gridLayoutGroup;
         [SerializeField] private UIQuest _uiQuestPrefab;
         [SerializeField] private Transform _questContentParent;
         [SerializeField] private UIQuest[] _uiQuestSlots;
+
 
         private void Awake()
         {
@@ -20,6 +23,11 @@ namespace Match3
                 return;
             }
             Instance = this;
+            _gridLayoutGroup = _questContentParent.GetComponent<GridLayoutGroup>();
+            if (_gridLayoutGroup == null)
+            {
+                Debug.LogError("Missing GridLayoutGroup components !!!");
+            }
         }
 
 
@@ -36,6 +44,11 @@ namespace Match3
 
         private void LoadAllQuestsUI()
         {
+            float uiScale = 1f;
+            int questCount = GameplayManager.Instance.Quests.Length;
+            if (questCount == 1) uiScale = 1.75f;
+            else uiScale = 1f;
+
             _uiQuestSlots = new UIQuest[GameplayManager.Instance.Quests.Length];
             for (int i = 0; i < GameplayManager.Instance.Quests.Length; i++)
             {
@@ -45,6 +58,7 @@ namespace Match3
                 UIQuest uiQuest = Instantiate(_uiQuestPrefab, _questContentParent);
                 uiQuest.SetData(questData.Icon, quest.Quantity);
                 _uiQuestSlots[i] = uiQuest;
+                _uiQuestSlots[i].transform.localScale = new Vector3(uiScale, uiScale, 1f);
             }
         }
 
@@ -62,7 +76,7 @@ namespace Match3
 
         public Vector2 GetUIQuestSSPosition(int questIndex)
         {
-            if(questIndex < 0 || questIndex > GameplayManager.Instance.Quests.Length-1)
+            if (questIndex < 0 || questIndex > GameplayManager.Instance.Quests.Length - 1)
             {
                 Debug.LogError("quest index out of range!");
                 return default;
