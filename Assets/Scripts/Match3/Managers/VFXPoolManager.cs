@@ -25,8 +25,8 @@ namespace Match3
 
         private void LoadAllVFXPool()
         {
+             Debug.Log("LoadAllVFXPool");
             _poolMap = new();
-            Debug.Log("LoadAllVFXPool");
             foreach (var e in GameDataManager.Instance.VisualEffectDictionary)
             {
                 ObjectPool<BaseVisualEffect> pool = null;

@@ -11,6 +11,12 @@ namespace Match3
             base.Awake();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            this.ID = TileID.BlueCandle;
+        }
+
         public override void Match(Tile[] grid, int width)
         {
             base.Match(grid, width);

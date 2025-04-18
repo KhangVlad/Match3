@@ -709,13 +709,15 @@ namespace Match3
 
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
-                HandleMatchAndUnlock(ref hasMatched, colorBurstDuration: 1f);
+
+                float colorBurstDuration = 0f;
+                HandleMatchAndUnlock(ref hasMatched, colorBurstDuration);
 
                 // Color burst
                 if (_colorBurstParentDictionary.Count > 0)
                 {
                     Debug.Log("wait a second");
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(colorBurstDuration);
                 }
 
                 HandleSpawnSpecialTile();

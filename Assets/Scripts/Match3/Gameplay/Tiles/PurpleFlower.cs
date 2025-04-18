@@ -6,6 +6,12 @@ namespace Match3
 {
     public class PurpleFlower : Tile
     {
+          public override void Initialize()
+        {
+            base.Initialize();
+            this.ID = TileID.PurpleFlower;
+        }
+
         protected override void Awake()
         {
             base.Awake();

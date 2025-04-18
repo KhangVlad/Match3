@@ -3,15 +3,17 @@ using DG.Tweening;
 using RoboRyanTron.SearchableEnum;
 using FMOD.Studio;
 using System.Collections;
+using UnityEngine.Pool;
 
 namespace Match3
 {
     public abstract class Tile : MonoBehaviour
     {
         public static event System.Action<Tile> OnMatched;
+        protected ObjectPool<Tile> pool;
 
         protected SpriteRenderer sr;
-        [field: SerializeField, SearchableEnum] public TileID ID { get; protected set; }
+        public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
         [SerializeField] protected Sprite _match4Vertical;
         [SerializeField] protected Sprite _match4Horizontal;
@@ -42,11 +44,10 @@ namespace Match3
         #endregion
 
 
-        public void Initialize()
+        public virtual void Initialize()
         {
             if (TileTransform == null)
             {
-                Debug.Log("NMULLL");
                 TileTransform = transform.Find("Pivot/Tile");
             }
 
@@ -310,5 +311,18 @@ namespace Match3
             if (tile == null) return false;
             return tile.X == this.X && tile.Y == this.Y;
         }
+
+
+        #region  Pool
+        public void SetPool(ObjectPool<Tile> pool)
+        {
+            this.pool = pool;
+        }
+
+        public virtual void ReturnToPool()
+        {
+            pool?.Release(this);
+        }
+        #endregion
     }
 }
