@@ -74,7 +74,7 @@ namespace Match3
         {
             ChangeGameState(GameState.PLAYING);
 
-            Match3Grid.Instance.OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_UpdateTurnCount;
+            Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateTurnCount;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateGameState;
 
             Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
@@ -87,7 +87,7 @@ namespace Match3
 
         private void OnDestroy()
         {
-            Match3Grid.Instance.OnAfterPlayerMatchInput -= OnAfterPlayerMatchInput_UpdateTurnCount;
+            Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateTurnCount;
             Match3Grid.OnEndOfTurn -= OnEndOfTurn_UpdateGameState;
 
             Match3Grid.OnEndOfTurn -= OnEndOfTurnQuestTriggered;
@@ -140,9 +140,11 @@ namespace Match3
 
 
         #region Quest
-        private void OnAfterPlayerMatchInput_UpdateTurnCount()
+        private void OnEndOfTurn_UpdateTurnCount()
         {
+            Debug.Log($"End of turn: {Match3Grid.Instance.UseBoosterThisTurn}");
             if(Match3Grid.Instance.UseBoosterThisTurn) return;
+            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
             TurnRemainingCount--;
             if (TurnRemainingCount <= 0)
                 TurnRemainingCount = 0;

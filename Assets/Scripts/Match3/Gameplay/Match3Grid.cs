@@ -89,6 +89,7 @@ namespace Match3
         public Tile SwappedTile => _swappedTile;
         public bool Canplay => _canPlay;
         public bool UseBoosterThisTurn { get; private set; } = false;
+        public bool SwapTileHasMatched { get; private set; } = false;
         #endregion
 
 
@@ -687,6 +688,7 @@ namespace Match3
             //Debug.Log($"ImplementGameLogicCoroutine");
             int attempts = 0;
             bool isMatch = false;
+            SwapTileHasMatched = false;
 
             while (true)
             {
@@ -707,6 +709,7 @@ namespace Match3
                 if (hasMatched)
                 {
                     isMatch = true;
+                    SwapTileHasMatched = true;
                 }
 
                 // Color burst
@@ -802,16 +805,12 @@ namespace Match3
 
             if (triggerEvent)
             {
+                Debug.Log("SETTT");
                 if (UseBoosterThisTurn == false)
                 {
                     HandleSpiderNetSpreading();
                     HandleBushGrowth();
                 }
-                else
-                {
-                    UseBoosterThisTurn = false;
-                }
-
                 OnEndOfTurn?.Invoke();
             }
 
@@ -819,6 +818,7 @@ namespace Match3
             _triggeredMatch5Set.Clear();
             _unlockThisPlayTurnSet.Clear();
             _matchThisPlayTurnSet.Clear();
+            UseBoosterThisTurn = false;
         }
 
 
@@ -1422,7 +1422,6 @@ namespace Match3
                 }
             }
             yield return null;
-
             MatchPreviousTilesDifferent();
         }
         private void HandleUnlockTileNeighbors(Tile tile)
