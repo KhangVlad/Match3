@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using log4net.Core;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +9,7 @@ namespace Match3
     public class UIWin : MonoBehaviour
     {
         private Canvas _canvas;
-
+        [SerializeField] private TextMeshProUGUI _levelText;
         [SerializeField] private Button _homeBtn;
         [SerializeField] private ParticleSystem _cofettiPS;
         [SerializeField] private UIWinStar[] _uiStars;
@@ -19,27 +21,12 @@ namespace Match3
 
         private void Start()
         {
+            _levelText.text =  $"Level  {LevelManager.Instance.CurrentLevelIndex + 1}";
             _homeBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
                 Loader.Load(Loader.Scene.Town);
             });
-
-            // _replayBtn.onClick.AddListener(() =>
-            // {
-            //     AudioManager.Instance.PlayButtonSfx();
-
-            //     Loader.Load(Loader.Scene.GameplayScene);
-            // });
-
-            // _nextBtn.onClick.AddListener(() =>
-            // {
-            //     AudioManager.Instance.PlayButtonSfx();
-
-            //     int nextLevel = LevelManager.Instance.NextLevel();
-            //     LevelManager.Instance.LoadLevelData(LevelManager.Instance.CharacterLevelData.CharacterID, nextLevel);
-            //     Loader.Load(Loader.Scene.GameplayScene);
-            // });
 
 #if WEBGL_BUILD
             _homeBtn.gameObject.SetActive(false);

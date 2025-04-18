@@ -5386,6 +5386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 985735e118a1c6042bd08c322b8a046d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _levelText: {fileID: 324983115}
   _homeBtn: {fileID: 2066234181}
   _cofettiPS: {fileID: 33252476857219587}
   _uiStars:
