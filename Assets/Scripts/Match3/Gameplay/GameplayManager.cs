@@ -310,6 +310,7 @@ namespace Match3
 
         private void OnEndOfTurnQuestTriggered()
         {
+            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
             for (int i = 0; i < Quests.Length; i++)
             {
                 if (Quests[i].QuestID == QuestID.MaxTurn)

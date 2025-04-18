@@ -85,5 +85,15 @@ namespace Match3
             Vector2 uiPosition = _uiQuestSlots[questIndex].IconImage.transform.position;
             return uiPosition;
         }
+
+        public void PlayQuestCollectAnimation(int questIndex)
+        {
+            if (questIndex < 0 || questIndex > GameplayManager.Instance.Quests.Length - 1)
+            {
+                Debug.LogError("quest index out of range!");
+                return;
+            }
+            _uiQuestSlots[questIndex].PlayCollectAnimation();
+        }
     }
 }

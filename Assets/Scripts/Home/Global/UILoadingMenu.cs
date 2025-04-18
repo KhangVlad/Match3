@@ -72,14 +72,12 @@ public class UILoadingMenu : MonoBehaviour
 
     private void OnGameDataLoaded()
     {
-        Debug.Log("Call");
         targetProgress += 0.5f;
         StartCoroutine(UpdateProgress());
     }
     
     private void OnUserDataLoaded()
     {
-        Debug.Log("Data Loaded");
         targetProgress += 0.5f;
         StartCoroutine(UpdateProgress());
     }

@@ -390,7 +390,6 @@ namespace Match3
         private void LoadAllVisualEffect()
         {
             BaseVisualEffect[] vfxs = Resources.LoadAll<BaseVisualEffect>("Effects/");
-            Debug.Log(vfxs.Length);
             VisualEffectDictionary = new();
             for (int i = 0; i < vfxs.Length; i++)
             {

@@ -80,11 +80,6 @@ namespace Match3
             }
         }
 
-        // public void PlayCollectAnimation()
-        // {
-        //     StartCoroutine(PlayCollectAnimationCoroutine());
-        // }
-
         public IEnumerator PlayCollectAnimationCoroutine()
         {
             yield return StartCoroutine(PlayCollectMatch3AnimCoroutine());
@@ -104,8 +99,6 @@ namespace Match3
                     QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileInfo.ID);
                     if (GameplayManager.Instance.TryGetQuestIndex(questID, out int questIndex))
                     {
-                        // Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
-                        // Tile tileInstance = Instantiate(tilePrefab, tileInfo.Position, Quaternion.identity);
                         Tile tileInstance = TilePoolManager.Instance.GetTile(tileInfo.ID);
                         tileInstance.transform.position = tileInfo.Position;
 
@@ -133,17 +126,13 @@ namespace Match3
                     _path[0] = startPos;
                     _path[1] = controlPoint;
                     _path[2] = endPos;
-                    // Tween moveTween = tile.transform.DOPath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom)
-                    //     .SetEase(Ease.InOutQuad)
-                    //     .OnComplete(() =>
-                    //     {
-                    //         Destroy(tile.gameObject);
-                    //     });
 
                     tile.MovePath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom, Ease.InOutQuad, oncompleted: () =>
                     {
                         tile.ReturnToPool();
+                        UIQuestManager.Instance.PlayQuestCollectAnimation(questIndex);
                     });
+                    tile.PlayScaleTile(0.7f, TILE_MOVE_PATH_TIME, Ease.InBack);
                     // yield return new WaitForSeconds(0.05f);
                 }
             }
@@ -204,15 +193,10 @@ namespace Match3
                     _path[2] = endPos;
                     tile.MovePath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom, Ease.InOutQuad, oncompleted: () =>
                     {
+                        UIQuestManager.Instance.PlayQuestCollectAnimation(questIndex);
                         tile.ReturnToPool();
                     });
-                    // tile.transform.DOPath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom)
-                    //      .SetEase(Ease.InOutQuad)
-                    //      .OnComplete(() =>
-                    //      {
-                    //          tile.ReturnToPool();
-                    //          //  Destroy(tile.gameObject);
-                    //      });
+
                     tile.PlayScaleTile(0.7f, TILE_MOVE_PATH_TIME, Ease.InBack);
                     yield return new WaitForSeconds(0.1f);
                     break;

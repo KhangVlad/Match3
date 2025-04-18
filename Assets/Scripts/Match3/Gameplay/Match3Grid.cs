@@ -805,7 +805,6 @@ namespace Match3
 
             if (triggerEvent)
             {
-                Debug.Log("SETTT");
                 if (UseBoosterThisTurn == false)
                 {
                     HandleSpiderNetSpreading();
