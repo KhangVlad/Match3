@@ -15,7 +15,7 @@ namespace Match3
         public event Action OnDataLoaded;
 
         // [Header("VFX")]
-        public Dictionary<VisualEffectID, BaseVisualEffect> VisualEffectDictionary {get; private set;}
+        public Dictionary<VisualEffectID, BaseVisualEffect> VisualEffectDictionary { get; private set; }
 
         //[Header("Tilebases")]
         private Dictionary<string, TileBase> _tilebaseDictionary;
@@ -97,7 +97,14 @@ namespace Match3
             _tileDict = new();
             for (int i = 0; i < Tiles.Length; i++)
             {
-                _tileDict.Add(Tiles[i].ID, Tiles[i]);
+                if (_tileDict.ContainsKey(Tiles[i].ID) == false)
+                {
+                    _tileDict.Add(Tiles[i].ID, Tiles[i]);
+                }
+                else
+                {
+                    Debug.LogError($"Tile ID {Tiles[i].ID} already added to tile dictionry");
+                }
             }
 
             // Load all blocks

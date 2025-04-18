@@ -7,6 +7,7 @@ using UnityEngine.Pool;
 
 namespace Match3
 {
+    [SelectionBase]
     public abstract class Tile : MonoBehaviour
     {
         public static event System.Action<Tile> OnMatched;
@@ -36,6 +37,7 @@ namespace Match3
 
         private Tween _moveTween;
         private Tween _scaleTween;
+        private Tween _tileScaleTween;
 
 
         #region Properties
@@ -67,6 +69,11 @@ namespace Match3
 
         private void OnDestroy()
         {
+            ClearAllTweens();
+        }
+
+        private void ClearAllTweens()
+        {
             if (_moveTween != null && _moveTween.IsActive())
             {
                 _moveTween.Kill();
@@ -75,6 +82,11 @@ namespace Match3
             if (_scaleTween != null && _scaleTween.IsActive())
             {
                 _scaleTween.Kill();
+            }
+
+            if (_tileScaleTween != null && _tileScaleTween.IsActive())
+            {
+                _tileScaleTween.Kill();
             }
         }
 
@@ -103,7 +115,7 @@ namespace Match3
 
         public void ChangeBlock(BlockID blockID)
         {
-            Destroy(CurrentBlock.gameObject);
+            Destroy(CurrentBlock?.gameObject);
 
             Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
             Block blockInstance = Instantiate(blockPrefab, this.transform);
@@ -295,6 +307,21 @@ namespace Match3
             _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
         }
 
+
+        public virtual void PlayScaleTile(float endValue, float duration, Ease ease)
+        {
+            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease);
+        }
+        public virtual void MovePath(Vector3[] path, float duration, PathType pathType, Ease ease, System.Action oncompleted)
+        {
+            _moveTween = transform.DOPath(path, duration, PathType.CatmullRom)
+                       .SetEase(Ease.InOutQuad)
+                       .OnComplete(() =>
+                       {
+                           oncompleted?.Invoke();
+                       });
+        }
+
         public virtual void PlayMatchAnimation()
         {
             _scaleTween = transform.DOScale(0.1f, 0.2f).SetEase(Ease.Linear);
@@ -321,7 +348,25 @@ namespace Match3
 
         public virtual void ReturnToPool()
         {
+            ResetTile();
             pool?.Release(this);
+        }
+
+        private void ResetTile()
+        {
+            X = 0;
+            Y = 0;
+            transform.localScale = Vector3.one;
+            TileTransform.localScale = Vector3.one;
+            TilePivot.localScale = Vector3.one;
+
+            ClearAllTweens();
+            ChangeBlock(BlockID.None);
+            SpecialProperties = SpecialTileID.None;
+
+            sr.GetPropertyBlock(_propBlock);
+            _propBlock.SetFloat("_EmissionStrength", 0);
+            sr.SetPropertyBlock(_propBlock);
         }
         #endregion
     }

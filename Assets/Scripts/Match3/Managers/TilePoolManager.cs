@@ -34,10 +34,11 @@ namespace Match3
             for (int i = 0; i < GameDataManager.Instance.Tiles.Length; i++)
             {
                 ObjectPool<Tile> pool = null;
+                int cachedIndex = i;
                 pool = new ObjectPool<Tile>(
                     createFunc: () =>
                     {
-                        Tile tilePrefab = GameDataManager.Instance.Tiles[i];
+                        Tile tilePrefab = GameDataManager.Instance.Tiles[cachedIndex];
                         Tile tileInstance = Instantiate(tilePrefab, this.transform);
                         tileInstance.SetPool(pool);
                         return tileInstance;

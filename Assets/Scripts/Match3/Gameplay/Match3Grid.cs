@@ -630,8 +630,10 @@ namespace Match3
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
         {
             // Tile
-            Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileID);
-            Tile tileInstance = Instantiate(tilePrefab, this.transform);
+            // Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileID);
+            // Tile tileInstance = Instantiate(tilePrefab, this.transform);
+            Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
+
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
             tileInstance.SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
@@ -639,12 +641,11 @@ namespace Match3
             _tiles[x + y * Width] = tileInstance;
 
             // Block
-            Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
-            Block blockInstance = Instantiate(blockPrefab, tileInstance.transform);
-            blockInstance.transform.localPosition = Vector3.zero;
-
-            tileInstance.SetBlock(blockInstance);
-
+            tileInstance.ChangeBlock(blockID);
+            // Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
+            // Block blockInstance = Instantiate(blockPrefab, tileInstance.transform);
+            // blockInstance.transform.localPosition = Vector3.zero;
+            // tileInstance.SetBlock(blockInstance);
             return tileInstance;
         }
 
@@ -695,7 +696,6 @@ namespace Match3
             int attempts = 0;
             bool isMatch = false;
 
-
             while (true)
             {
                 // int colorBurstCount = 0;
@@ -712,6 +712,10 @@ namespace Match3
 
                 float colorBurstDuration = 0f;
                 HandleMatchAndUnlock(ref hasMatched, colorBurstDuration);
+                if (hasMatched)
+                {
+                    isMatch = true;
+                }
 
                 // Color burst
                 if (_colorBurstParentDictionary.Count > 0)
@@ -760,6 +764,14 @@ namespace Match3
                 _hasMatch4 = false;
 
 
+                _colorBurstParentDictionary.Clear();
+                _match3Dictionary.Clear();
+                _match4Dictionary.Clear();
+                _match5Dictionary.Clear();
+                _blastBombDictionary.Clear();
+                _matchThisTurnSet.Clear();
+                _unlockThisTurnSet.Clear();
+
                 attempts++;
                 if (attempts > 50)
                 {
@@ -778,14 +790,6 @@ namespace Match3
                 {
                     yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
                 }
-
-                _colorBurstParentDictionary.Clear();
-                _match3Dictionary.Clear();
-                _match4Dictionary.Clear();
-                _match5Dictionary.Clear();
-                _blastBombDictionary.Clear();
-                _matchThisTurnSet.Clear();
-                _unlockThisTurnSet.Clear();
             }
 
             if (HandleReswapIfNotMatch)
@@ -874,7 +878,6 @@ namespace Match3
                     }
                 }
             }
-
 
             if (_match4Dictionary.Count > 0)
             {
@@ -999,7 +1002,7 @@ namespace Match3
                         if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ColorBurstFX, out var vfxPrefab))
                         {
                             ColorBurstFX fxInstance = Instantiate((ColorBurstFX)vfxPrefab);
-                            
+
                             Destroy(fxInstance, 2f);
                         }
                     }
@@ -2663,7 +2666,10 @@ namespace Match3
                 if (sameIDCountInRow == 2)
                 {
                     if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                    {
                         _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                    }
+
                 }
                 else if (sameIDCountInRow == 3)
                 {
@@ -2739,7 +2745,10 @@ namespace Match3
                 if (sameIDCountInColumn == 2)
                 {
                     if (_match3Dictionary.ContainsKey(_tiles[index]) == false)
+                    {
                         _match3Dictionary.Add(_tiles[index], _tiles[originIndex]);
+                    }
+
                 }
                 else if (sameIDCountInColumn == 3)
                 {

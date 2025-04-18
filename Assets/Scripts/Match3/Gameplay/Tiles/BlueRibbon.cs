@@ -9,7 +9,7 @@ namespace Match3
           public override void Initialize()
         {
             base.Initialize();
-            this.ID = TileID.RedRibbon;
+            this.ID = TileID.BlueRibbon;
         }
 
         protected override void Awake()
