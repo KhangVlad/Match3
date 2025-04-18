@@ -14,12 +14,10 @@ namespace Match3
         public override void Match(Tile[] grid, int width)
         {
             base.Match(grid, width);
- if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID))  return;
-            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.RedCandleDestroy, out BaseVisualEffect vfxPrefab))
-            {
-                var vfxInstance = Instantiate(vfxPrefab, TileTransform.position, Quaternion.identity);
-                Destroy(vfxInstance.gameObject, 1f);
-            }
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
+            BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.RedCandleDestroy);
+            effect.transform.position = TileTransform.position;
+            effect.Play();
         }
     }
 }

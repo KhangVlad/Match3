@@ -9,9 +9,5 @@ namespace Match3.Shares
         {
             VfxID = VisualEffectID.ExplosionHorizontalFX;
         }
-        public override void Play()
-        {
-
-        }
     }
 }

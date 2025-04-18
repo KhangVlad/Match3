@@ -4960,6 +4960,50 @@ MonoBehaviour:
   _uiGameplayBoosterPrefab: {fileID: 4726057803351993924, guid: 760a13e5702b8ab4b929f47abe167c99, type: 3}
   _boosterContentParent: {fileID: 851907168}
   _characterAvatar: {fileID: 717340042}
+--- !u!1 &1428164309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1428164310}
+  - component: {fileID: 1428164312}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1428164310
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428164309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1428164312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428164309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 525f5c700a48d46a4bb86c9ddd1bb952, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1457405109
 GameObject:
   m_ObjectHideFlags: 0
@@ -25377,3 +25421,4 @@ SceneRoots:
   - {fileID: 1506295554}
   - {fileID: 754685152}
   - {fileID: 2112072209}
+  - {fileID: 1428164310}

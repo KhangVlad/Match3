@@ -9,9 +9,5 @@ namespace Match3.Shares
         {
             VfxID = VisualEffectID.Slash;
         }
-        public override void Play()
-        {
-
-        }
     }
 }

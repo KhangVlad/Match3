@@ -15,11 +15,9 @@ namespace Match3
         {
             base.Match(grid, width);
             if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
-            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.BlueRibbonDestroy, out BaseVisualEffect vfxPrefab))
-            {
-                var vfxInstance = Instantiate(vfxPrefab, TileTransform.position, Quaternion.identity);
-                Destroy(vfxInstance.gameObject, 1f);
-            }
+           BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlueRibbonDestroy);
+            effect.transform.position = TileTransform.position;
+            effect.Play();
         }
     }
 }

@@ -8,9 +8,5 @@ namespace Match3.Shares
         {
             VfxID = VisualEffectID.WhiteFlowerDestroy;
         }
-        public override void Play()
-        {
-
-        }
     }
 }

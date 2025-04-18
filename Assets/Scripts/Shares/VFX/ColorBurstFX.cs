@@ -9,11 +9,5 @@ namespace Match3.Shares
         {
             VfxID = VisualEffectID.ColorBurstFX;
         }
-
-        public override void Play()
-        {
-            base.Play();
-        }
-        
     }
 }

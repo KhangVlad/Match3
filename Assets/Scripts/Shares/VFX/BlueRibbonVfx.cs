@@ -8,9 +8,5 @@ namespace Match3.Shares
         {
             VfxID = VisualEffectID.BlueRibbonDestroy;
         }
-        public override void Play()
-        {
-
-        }
     }
 }

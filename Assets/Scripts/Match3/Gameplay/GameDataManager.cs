@@ -15,7 +15,7 @@ namespace Match3
         public event Action OnDataLoaded;
 
         // [Header("VFX")]
-        private Dictionary<VisualEffectID, BaseVisualEffect> _visualEffectDictionary;
+        public Dictionary<VisualEffectID, BaseVisualEffect> VisualEffectDictionary {get; private set;}
 
         //[Header("Tilebases")]
         private Dictionary<string, TileBase> _tilebaseDictionary;
@@ -383,18 +383,18 @@ namespace Match3
         {
             BaseVisualEffect[] vfxs = Resources.LoadAll<BaseVisualEffect>("Effects/");
             Debug.Log(vfxs.Length);
-            _visualEffectDictionary = new();
+            VisualEffectDictionary = new();
             for (int i = 0; i < vfxs.Length; i++)
             {
                 BaseVisualEffect vfx = vfxs[i];
                 vfx.Initialize();
-                _visualEffectDictionary.Add(vfx.VfxID, vfx);
+                VisualEffectDictionary.Add(vfx.VfxID, vfx);
             }
         }
 
         public bool TryGetVfxByID(VisualEffectID visualEffectID, out BaseVisualEffect vfxPrefab)
         {
-            if (_visualEffectDictionary.TryGetValue(visualEffectID, out vfxPrefab))
+            if (VisualEffectDictionary.TryGetValue(visualEffectID, out vfxPrefab))
             {
                 return true;
             }
