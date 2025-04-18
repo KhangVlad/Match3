@@ -50,8 +50,8 @@ namespace Match3
         private Dictionary<Tile, Tile> _blastBombDictionary;
         private Dictionary<int, int> _fillDownDictionary = new();          // x, count
         private Queue<Tile> _emissiveTileQueue;
-        private HashSet<Vector2Int> _matchThisTurnSet;
-        private HashSet<Vector2Int> _unlockThisTurnSet;
+        private HashSet<Vector2Int> _matchThisPlayTurnSet;
+        private HashSet<Vector2Int> _unlockThisPlayTurnSet;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -121,8 +121,8 @@ namespace Match3
             _match5Dictionary = new();
             _blastBombDictionary = new();
             _emissiveTileQueue = new();
-            _matchThisTurnSet = new();
-            _unlockThisTurnSet = new();
+            _matchThisPlayTurnSet = new();
+            _unlockThisPlayTurnSet = new();
 
 
             _tShapes = new List<int[,]>
@@ -761,8 +761,7 @@ namespace Match3
                 _match4Dictionary.Clear();
                 _match5Dictionary.Clear();
                 _blastBombDictionary.Clear();
-                _matchThisTurnSet.Clear();
-                _unlockThisTurnSet.Clear();
+
 
                 attempts++;
                 if (attempts > 50)
@@ -818,6 +817,8 @@ namespace Match3
 
             // Debug.Log($"Attempt:  {attempts}");
             _triggeredMatch5Set.Clear();
+            _unlockThisPlayTurnSet.Clear();
+            _matchThisPlayTurnSet.Clear();
         }
 
 
@@ -963,7 +964,7 @@ namespace Match3
                 // Match & Unlock
                 if (matchID == MatchID.Match)
                 {
-                    _matchThisTurnSet.Add(new Vector2Int(x, y));
+                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
 
                     tile.Match(_tiles, Width);
                     HandleUnlockTileNeighbors(tile);
@@ -971,11 +972,11 @@ namespace Match3
                 }
                 else if (matchID == MatchID.SpecialMatch)
                 {
-                    _matchThisTurnSet.Add(new Vector2Int(x, y));
+                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
                     tile.Match(_tiles, Width);
                     if (_unlockTileSet.Contains(i) == false)
                     {
-                        _unlockThisTurnSet.Add(new Vector2Int(x, y));
+                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
 
                         _unlockTileSet.Add(i);
                         tile.Unlock();
@@ -1004,7 +1005,7 @@ namespace Match3
                     tile.Match(_tiles, Width);
                     if (_unlockTileSet.Contains(i) == false)
                     {
-                        _unlockThisTurnSet.Add(new Vector2Int(x,y));
+                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
 
                         _unlockTileSet.Add(i);
                         tile.Unlock();
@@ -1436,9 +1437,9 @@ namespace Match3
                     _tiles[index].Unlock();
                 }
 
-                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X - 1, tile.Y)) == false)
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X - 1, tile.Y)) == false)
                 {
-                    _unlockThisTurnSet.Add(new Vector2Int(tile.X - 1, tile.Y));
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X - 1, tile.Y));
                 }
             }
             if (IsValidGridTile(tile.X + 1, tile.Y))
@@ -1450,9 +1451,9 @@ namespace Match3
                     _tiles[index].Unlock();
                 }
 
-                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X + 1, tile.Y)) == false)
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X + 1, tile.Y)) == false)
                 {
-                    _unlockThisTurnSet.Add(new Vector2Int(tile.X + 1, tile.Y));
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X + 1, tile.Y));
                 }
             }
             if (IsValidGridTile(tile.X, tile.Y - 1))
@@ -1464,9 +1465,9 @@ namespace Match3
                     _tiles[index].Unlock();
                 }
 
-                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y - 1)) == false)
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y - 1)) == false)
                 {
-                    _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y - 1));
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y - 1));
                 }
             }
             if (IsValidGridTile(tile.X, tile.Y + 1))
@@ -1478,9 +1479,9 @@ namespace Match3
                     _tiles[index].Unlock();
                 }
 
-                if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y + 1)) == false)
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y + 1)) == false)
                 {
-                    _unlockThisTurnSet.Add(new Vector2Int(tile.X, tile.Y + 1));
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y + 1));
                 }
             }
         }
@@ -1577,7 +1578,7 @@ namespace Match3
                     {
                         int index = x + y * Width;
                         Tile tile = _tiles[index];
-                        if (_unlockThisTurnSet.Contains(new Vector2Int(tile.X, tile.Y))) continue;
+                        if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y))) continue;
                         if (tile.CurrentBlock is Bush01)
                         {
                             Bush01 bush = ((Bush01)tile.CurrentBlock);

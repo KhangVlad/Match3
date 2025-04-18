@@ -115,21 +115,18 @@ namespace Match3
 
         public void ChangeBlock(BlockID blockID)
         {
-            // if (CurrentBlock != null)
-            // {
-            //     CurrentBlock.ReturnToPool();
-            //     CurrentBlock = null;
+            if (CurrentBlock != null)
+            {
+                CurrentBlock.ReturnToPool();
+                CurrentBlock = null;
+            }
+            // Destroy(CurrentBlock?.gameObject);
 
-            // }
-
-            Destroy(CurrentBlock?.gameObject);
-
-            Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
-            Block blockInstance = Instantiate(blockPrefab, this.transform);
-            blockInstance.transform.localPosition = Vector3.zero;
-
-            // Block blockInstance = BlockPoolManager.Instance.GetBlock(blockID);
-            // blockInstance.transform.SetParent(this.transform);
+            // Block blockPrefab = GameDataManager.Instance.GetBlockByID(blockID);
+            // Block blockInstance = Instantiate(blockPrefab, this.transform);
+            // blockInstance.transform.localPosition = Vector3.zero;
+            Block blockInstance = BlockPoolManager.Instance.GetBlock(blockID);
+            blockInstance.transform.SetParent(this.transform);
 
             blockInstance.transform.localPosition = Vector3.zero;
             SetBlock(blockInstance);

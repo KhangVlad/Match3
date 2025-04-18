@@ -25,5 +25,11 @@ namespace Match3
         {
             tile.ChangeBlock(BlockID.Bush_01);
         }
+
+        protected override void ResetBlock()
+        {
+            base.ResetBlock();
+            ExistTurnCount = 0;
+        }
     }
 }
