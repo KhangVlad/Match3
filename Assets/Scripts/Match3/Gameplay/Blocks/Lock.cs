@@ -5,6 +5,11 @@ namespace Match3
     {
         public static event System.Action<Lock> OnLockMatch;
 
+         public override void Initialize()
+        {
+            BlockID = BlockID.Lock;
+        }
+
         public override void Match(Tile tile, Tile[] grid, int width)
         {
             Destroy(tile.gameObject);

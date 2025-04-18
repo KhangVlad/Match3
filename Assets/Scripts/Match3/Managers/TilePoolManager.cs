@@ -1,10 +1,6 @@
 using System.Collections.Generic;
-using Match3.Shares;
-using Match3.Enums;
 using UnityEngine;
 using UnityEngine.Pool;
-using System.Linq;
-
 
 namespace Match3
 {
@@ -28,7 +24,6 @@ namespace Match3
 
         private void LoadTilePool()
         {
-            Debug.Log("Load Tile Pool");
             _poolMap = new();
 
             for (int i = 0; i < GameDataManager.Instance.Tiles.Length; i++)

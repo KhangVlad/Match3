@@ -6,11 +6,17 @@ namespace Match3
     {
         public int ExistTurnCount { get; set; } = 0;
 
-        private void Awake()
+        public override void Initialize()
         {
+            BlockID = BlockID.Bush_02;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
             ExistTurnCount = 0;
         }
-        
+
         public override void Match(Tile tile, Tile[] grid, int width)
         {
         }

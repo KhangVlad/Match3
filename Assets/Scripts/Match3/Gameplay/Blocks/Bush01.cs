@@ -5,8 +5,14 @@ namespace Match3
     {
         public int ExistTurnCount { get; set; } = 0;
 
-        private void Awake()
+        public override void Initialize()
         {
+            BlockID = BlockID.Bush_01;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
             ExistTurnCount = 0;
         }
 

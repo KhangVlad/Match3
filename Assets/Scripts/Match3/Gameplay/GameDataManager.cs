@@ -112,6 +112,7 @@ namespace Match3
             Blocks = Resources.LoadAll<Block>("Blocks/");
             for (int i = 0; i < Blocks.Length; i++)
             {
+                Blocks[i].Initialize();
                 _blockDict.Add(Blocks[i].BlockID, Blocks[i]);
             }
 

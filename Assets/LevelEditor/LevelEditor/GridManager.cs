@@ -57,7 +57,7 @@ namespace Match3.LevelEditor
         private void Update()
         {
             if (IsGridLoaded == false) return;
-        
+
             UpdateGridVisualize();
 
             if (Input.GetMouseButton(0))
@@ -66,7 +66,7 @@ namespace Match3.LevelEditor
                 Vector2Int gridPosition = GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
                 {
-                    if(LevelEditorInventory.Instance.Source == LevelEditorInventory.SelectSource.Tile)
+                    if (LevelEditorInventory.Instance.Source == LevelEditorInventory.SelectSource.Tile)
                     {
                         int index = gridPosition.x + gridPosition.y * Width;
 
@@ -186,7 +186,7 @@ namespace Match3.LevelEditor
 
 
             Quests = new();
-            if(levelData.Quests != null)
+            if (levelData.Quests != null)
             {
                 //Debug.Log(levelData.Quests.GetLength(0));
                 for (int i = 0; i < levelData.Quests.GetLength(0); i++)
@@ -199,10 +199,10 @@ namespace Match3.LevelEditor
                     Quests.Add(quest);
                 }
             }
-           
+
 
             AvaiableTiles = new();
-            if(levelData.AvaiableTiles != null)
+            if (levelData.AvaiableTiles != null)
             {
                 for (int i = 0; i < levelData.AvaiableTiles.Length; i++)
                 {
@@ -210,7 +210,7 @@ namespace Match3.LevelEditor
                     AvaiableTiles.Add(tile);
                 }
             }
-         
+
 
             this.Width = levelData.Tiles.GetLength(0);
             this.Height = levelData.Tiles.GetLength(1);
@@ -303,14 +303,14 @@ namespace Match3.LevelEditor
                     Destroy(_tiles[i].gameObject);
                 _tiles = null;
             }
-         
 
-            if(_gridSlots != null)
+
+            if (_gridSlots != null)
             {
                 for (int i = 0; i < _gridSlots.Length; i++)
                     Destroy(_gridSlots[i].gameObject);
                 _gridSlots = null;
-            } 
+            }
         }
 
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)

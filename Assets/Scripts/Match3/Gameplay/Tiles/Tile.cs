@@ -259,13 +259,6 @@ namespace Match3
         public void SetInteractionMask(SpriteMaskInteraction mask)
         {
             sr.maskInteraction = mask;
-
-            // if (ID == TileID.RedFlower)
-            // {
-            //     sr.GetPropertyBlock(_propBlock);
-            //     _propBlock.SetFloat("_StencilComp", (float)mask);
-            //     sr.SetPropertyBlock(_propBlock);
-            // }
         }
 
 

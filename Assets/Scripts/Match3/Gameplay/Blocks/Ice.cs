@@ -6,6 +6,11 @@ namespace Match3
     {
         public static event System.Action<Ice> OnIceUnlocked;
 
+     public override void Initialize()
+        {
+            BlockID = BlockID.Ice;
+        }
+
         public override void Match(Tile tile, Tile[] grid, int width)
         {
         }
