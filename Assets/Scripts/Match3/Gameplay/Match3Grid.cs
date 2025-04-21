@@ -52,6 +52,7 @@ namespace Match3
         private Queue<Tile> _emissiveTileQueue;
         private HashSet<Vector2Int> _matchThisPlayTurnSet;
         private HashSet<Vector2Int> _unlockThisPlayTurnSet;
+        private List<ColorBurstLine> _cachedColorBurstLine;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -124,7 +125,7 @@ namespace Match3
             _emissiveTileQueue = new();
             _matchThisPlayTurnSet = new();
             _unlockThisPlayTurnSet = new();
-
+            _cachedColorBurstLine = new();
 
             _tShapes = new List<int[,]>
             {
@@ -667,10 +668,10 @@ namespace Match3
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
 
                 // Color burst
+                _cachedColorBurstLine.Clear();
                 if (_colorBurstParentDictionary.Count > 0)
                 {
-                    List<ColorBurstLine> _cachedFXs = new();
-                    foreach(var e in _colorBurstParentDictionary)
+                    foreach (var e in _colorBurstParentDictionary)
                     {
                         Tile t = e.Key;       
                         //t.PlayScaleTile(0.8f, 0.2f, Ease.OutBack);
@@ -680,8 +681,8 @@ namespace Match3
                             ColorBurstLine colorBurstLine = (ColorBurstLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLine);
                             colorBurstLine.transform.position = Vector2.zero;
                             colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
-                            _cachedFXs.Add(colorBurstLine);
-                            _cachedFXs[i].SetTargetTransform(nb.transform, new Vector2(-0.5f,-0.5f));
+                            _cachedColorBurstLine.Add(colorBurstLine);
+                            _cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f,-0.5f));
                         }
                     }
             
@@ -690,10 +691,10 @@ namespace Match3
                     yield return new WaitForSeconds(colorBurstDuration);
 
 
-                    for(int i = 0; i < _cachedFXs.Count; i++)
+                    for(int i = 0; i < _cachedColorBurstLine.Count; i++)
                     {
-                        _cachedFXs[i].CallbackLine();
-                        _cachedFXs[i].ReturnToPool(0.5f);
+                        _cachedColorBurstLine[i].CallbackLine();
+                        _cachedColorBurstLine[i].ReturnToPool(0.5f);
                     }
 
                     //foreach (var e in _colorBurstParentDictionary)
