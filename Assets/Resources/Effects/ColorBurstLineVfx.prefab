@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1115445485074077114}
   - component: {fileID: 6525946795523740645}
   m_Layer: 0
-  m_Name: ColorBurstVfx
+  m_Name: ColorBurstLineVfx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,7 +42,7 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7523631755400502682}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -57,7 +57,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 28ed95caa210d13459f4bed84884f673, type: 2}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -83,19 +83,28 @@ LineRenderer:
   - {x: 0, y: 10, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 3
+    widthMultiplier: 0.3
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: -0.9651763
+        outSlope: -0.9651763
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.08499095
+      - serializedVersion: 3
+        time: 1
+        value: 0.06640625
+        inSlope: -0.8376109
+        outSlope: -0.8376109
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.08860767
+        outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -152,3 +161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2f454f91a3f9634c9a0fbcbaf84e8f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  segmentCount: 20
+  springSpeed: 60
+  damping: 0.85
+  curveTightness: 0.5
+  startPoint: {x: 0, y: 0}

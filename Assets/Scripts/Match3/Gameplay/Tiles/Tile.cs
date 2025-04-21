@@ -354,6 +354,11 @@ namespace Match3
             pool?.Release(this);
         }
 
+        public virtual void ReturnToPool(float duration)
+        {
+            Invoke(nameof(ReturnToPool), duration); 
+        }
+
         private void ResetTile()
         {
             // X = 0;

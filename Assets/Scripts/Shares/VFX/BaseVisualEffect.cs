@@ -22,5 +22,10 @@ namespace Match3.Shares
         {
             pool?.Release(this);
         }
+
+        public virtual void ReturnToPool(float duration)
+        {
+            Invoke(nameof(ReturnToPool), duration);
+        }
     }
 }

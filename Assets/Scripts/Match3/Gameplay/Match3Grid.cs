@@ -43,7 +43,7 @@ namespace Match3
         private List<int> _clearHorizontalRows;
 
         private HashSet<int> _triggeredMatch5Set;
-        private Dictionary<int, Vector2> _colorBurstParentDictionary;
+        private Dictionary<Tile, List<Tile>> _colorBurstParentDictionary;
         private Dictionary<Tile, Tile> _match3Dictionary;
         private Dictionary<Tile, Tile> _match4Dictionary;
         private Dictionary<Tile, Tile> _match5Dictionary;
@@ -459,7 +459,7 @@ namespace Match3
             }
         }
 
-
+        #region LOADER
         private void LoadGridLevel()
         {
             // 0: void block
@@ -624,44 +624,9 @@ namespace Match3
                _tiles[x + y * Width].SpecialProperties == SpecialTileID.None;
             }
         }
+        #endregion
 
 
-        private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
-        {
-            // Tile
-            Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
-
-            tileInstance.Display(display);
-            tileInstance.SetSpecialTile(SpecialTileID.None);
-            tileInstance.SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
-            tileInstance.SetGridPosition(x, y);
-            _tiles[x + y * Width] = tileInstance;
-
-            // Block
-            tileInstance.ChangeBlock(blockID);
-            return tileInstance;
-        }
-
-
-        private void ShuffleGrid()
-        {
-            Debug.Log("ShuffleGrid");
-
-            for (int i = _tiles.Length - 1; i > 0; i--)
-            {
-                int randomIndex = Random.Range(0, i + 1);
-
-                Tile currTile = _tiles[i];
-                Tile randomTile = _tiles[randomIndex];
-                if (currTile == null || randomTile == null ||
-                    currTile.CurrentBlock is not NoneBlock ||
-                    randomTile.CurrentBlock is not NoneBlock) continue;
-
-                SwapPosition(currTile, randomTile);
-                currTile.UpdatePosition();
-                randomTile.UpdatePosition();
-            }
-        }
 
 
         private void OnSelectGameplayBooster_UpdateLogic(Booster booster)
@@ -672,9 +637,6 @@ namespace Match3
                 _swappedTile = null;
             }
         }
-
-
-
         private void OnAfterPlayerMatchInput_ImplementGameLogic()
         {
             StartCoroutine(ImplementGameLogicCoroutine(triggerEvent: true));
@@ -704,20 +666,56 @@ namespace Match3
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
 
-                float colorBurstDuration = 0f;
-                HandleMatchAndUnlock(ref hasMatched, colorBurstDuration);
+                // Color burst
+                if (_colorBurstParentDictionary.Count > 0)
+                {
+                    List<ColorBurstLine> _cachedFXs = new();
+                    foreach(var e in _colorBurstParentDictionary)
+                    {
+                        Tile t = e.Key;       
+                        //t.PlayScaleTile(0.8f, 0.2f, Ease.OutBack);
+                        for (int i = 0; i < e.Value.Count; i++) 
+                        {
+                            Tile nb = e.Value[i];
+                            ColorBurstLine colorBurstLine = (ColorBurstLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLine);
+                            colorBurstLine.transform.position = Vector2.zero;
+                            colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
+                            _cachedFXs.Add(colorBurstLine);
+                            _cachedFXs[i].SetTargetTransform(nb.transform, new Vector2(-0.5f,-0.5f));
+                        }
+                    }
+            
+                    Debug.Log("wait a second");
+                    float colorBurstDuration = 0.5f;
+                    yield return new WaitForSeconds(colorBurstDuration);
+
+
+                    for(int i = 0; i < _cachedFXs.Count; i++)
+                    {
+                        _cachedFXs[i].CallbackLine();
+                        _cachedFXs[i].ReturnToPool(0.5f);
+                    }
+
+                    //foreach (var e in _colorBurstParentDictionary)
+                    //{
+                    //    Tile t = e.Key;
+                    //    for (int i = 0; i < e.Value.Count; i++)
+                    //    {
+                    //        Tile nb = e.Value[i];
+                    //        nb.MoveToPosition(t.transform.position, 0.5f, Ease.InBack);
+                    //    }
+                    //}
+                    yield return new WaitForSeconds(colorBurstDuration);
+                }
+
+
+                HandleMatchAndUnlock(ref hasMatched);
                 if (hasMatched)
                 {
                     isMatch = true;
                     SwapTileHasMatched = true;
                 }
 
-                // Color burst
-                if (_colorBurstParentDictionary.Count > 0)
-                {
-                    Debug.Log("wait a second");
-                    yield return new WaitForSeconds(colorBurstDuration);
-                }
 
                 HandleSpawnSpecialTile();
 
@@ -821,534 +819,7 @@ namespace Match3
         }
 
 
-        private IEnumerator HandleCollectAnimationCoroutine()
-        {
-            if (_blastBombDictionary.Count > 0)
-            {
-                foreach (var tile in _blastBombDictionary)
-                {
-                    Tile t = tile.Value;
-                    Tile nb = tile.Key;
-                    if (t != null && nb != null)
-                    {
-                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
-                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
-                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
-                        nb.MoveToPosition((Vector2)t.transform.position, 0.2f, Ease.InSine);
-                    }
-                }
-                yield return new WaitForSeconds(0.2f);
-                int multiplier = 1;
-                foreach (var e in _blastBombDictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
-                }
-            }
-
-            if (_match3Dictionary.Count > 0)
-            {
-                foreach (var tile in _match3Dictionary)
-                {
-                    Tile t = tile.Value;
-                    Tile nb = tile.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
-                        MatchAnimManager.Instance.AddMatch3(tileInfo, tileInfo);
-                        MatchAnimManager.Instance.AddMatch3(tileInfo, nbTileInfo);
-                    }
-                }
-            }
-
-            if (_match4Dictionary.Count > 0)
-            {
-                Tile t = null;
-                Tile nb = null;
-                foreach (var tile in _match4Dictionary)
-                {
-                    t = tile.Value;
-                    nb = tile.Key;
-                    if (t != null && nb != null)
-                    {
-                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
-                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
-                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
-
-                        Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
-                        {
-                            nb.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
-                        });
-                    }
-                }
-                Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
-                {
-                    t.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
-                });
-
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                int multiplier = 1;
-                foreach (var e in _match4Dictionary)
-                {
-                    t = e.Value;
-                    nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
-                }
-            }
-
-            if (_match5Dictionary.Count > 0)
-            {
-                foreach (var tile in _match5Dictionary)
-                {
-                    Tile t = tile.Value;
-                    Tile nb = tile.Key;
-                    if (t != null && nb != null)
-                    {
-                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
-                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
-                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-
-
-                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
-                    }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                foreach (var e in _match5Dictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                }
-            }
-        }
-        private void HandleMatchAndUnlock(ref bool hasMatched, float colorBurstDuration)
-        {
-            for (int i = 0; i < _matchBuffer.Length; i++)
-            {
-                Tile tile = _tiles[i];
-                if (tile == null) continue;
-                int x = i % Width;
-                int y = i / Width;
-
-                MatchID matchID = _matchBuffer[i];
-                if (matchID == MatchID.Match)
-                {
-                    AudioManager.Instance.PlayMatch3Sfx();
-                }
-                // Match & Unlock
-                if (matchID == MatchID.Match)
-                {
-                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
-
-                    tile.Match(_tiles, Width);
-                    HandleUnlockTileNeighbors(tile);
-                    hasMatched = true;
-                }
-                else if (matchID == MatchID.SpecialMatch)
-                {
-                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
-                    tile.Match(_tiles, Width);
-                    if (_unlockTileSet.Contains(i) == false)
-                    {
-                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
-
-                        _unlockTileSet.Add(i);
-                        tile.Unlock();
-                    }
-                    hasMatched = true;
-                }
-                else if (matchID == MatchID.ColorBurst)
-                {
-                    // vfx
-                    // if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
-                    // {
-                    //     Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
-                    //     PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, colorBurstDuration);
-                    // }
-                    if (_colorBurstParentDictionary.Count > 0)
-                    {
-                        if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ColorBurstFX, out var vfxPrefab))
-                        {
-                            ColorBurstFX fxInstance = Instantiate((ColorBurstFX)vfxPrefab);
-
-                            Destroy(fxInstance, 2f);
-                        }
-                    }
-
-
-                    tile.Match(_tiles, Width);
-                    if (_unlockTileSet.Contains(i) == false)
-                    {
-                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
-
-                        _unlockTileSet.Add(i);
-                        tile.Unlock();
-                    }
-                    hasMatched = true;
-                }
-                SetMatchBuffer(i, MatchID.None);
-            }
-        }
-        private void HandleSpawnSpecialTile()
-        {
-            // match 6
-            while (_matchColorBurstQueue.Count > 0)
-            {
-                var e = _matchColorBurstQueue.Dequeue();
-                int x = e.Index % Width;
-                int y = e.Index / Width;
-
-                Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: true);
-                tile.UpdatePosition();
-                tile.SetSpecialTile(SpecialTileID.ColorBurst);
-
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
-                // tile.StopEmissive();
-            }
-
-            // match 5
-            while (_matchBlastBombQueue.Count > 0)
-            {
-                var e = _matchBlastBombQueue.Dequeue();
-                int x = e.Index % Width;
-                int y = e.Index / Width;
-
-                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
-                tile.UpdatePosition();
-                tile.SetSpecialTile(SpecialTileID.BlastBomb);
-
-                // tile.StopEmissive();
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
-            }
-
-
-            // match 4 horizontal
-            while (_matchRowBombQueue.Count > 0)
-            {
-                var e = _matchRowBombQueue.Dequeue();
-
-                int x = e.Index % Width;
-                int y = e.Index / Width;
-
-
-                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
-                tile.UpdatePosition();
-                tile.Display(true);
-                tile.SetSpecialTile(SpecialTileID.RowBomb);
-
-                // tile.StopEmissive();
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
-
-                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
-                {
-                    tile.Display(false);
-                }
-            }
-
-
-            // match 4 vertical
-            while (_match4ColumnBombQueue.Count > 0)
-            {
-                var e = _match4ColumnBombQueue.Dequeue();
-
-                int x = e.Index % Width;
-                int y = e.Index / Width;
-
-                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
-                tile.UpdatePosition();
-                tile.Display(true);
-                tile.SetSpecialTile(SpecialTileID.ColumnBomb);
-
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
-
-                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
-                {
-                    tile.Display(false);
-                }
-            }
-
-        }
-
-        #endregion
-
-        private IEnumerator ShuffleGridUntilCanMatchCoroutine()
-        {
-            // shuffle grid if no match found
-            while (true)
-            {
-                if (CanMatch())
-                {
-                    break;
-                }
-
-                yield return new WaitForSeconds(0.5f);
-                ShuffleGrid();
-            }
-        }
-
-        private bool HasMatch()
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    Tile currTile = _tiles[x + y * Width];
-                    if (currTile == null) continue;
-                    if (currTile.ID == TileID.None) continue;
-                    if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
-                    if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
-                    if (currTile.CurrentBlock is not NoneBlock &&
-                        currTile.CurrentBlock is not Lock) continue;
-
-                    int sameIDCount = 0;
-
-                    // Horizontal check
-                    for (int h = x + 1; h < Width; h++)
-                    {
-                        Tile nbTile = _tiles[h + y * Width]; // Use y instead of currTile.Y
-                        if (nbTile == null) break;
-                        if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
-                        if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
-                        if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock ||
-                            nbTile.CurrentBlock is Lock))
-                        {
-                            sameIDCount++;
-                        }
-                        else
-                        {
-                            break; // Stop if IDs are not the same
-                        }
-                    }
-
-                    if (sameIDCount >= 2)
-                    {
-                        return true;
-                    }
-
-                    sameIDCount = 0;
-                    for (int v = y + 1; v < Height; v++)
-                    {
-                        Tile nbTile = _tiles[x + v * Width]; // Correct index calculation
-                        if (nbTile is null) break;
-                        if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
-                        if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
-                        if (nbTile != null && currTile.ID == nbTile.ID &&
-                            (nbTile.CurrentBlock is NoneBlock || nbTile.CurrentBlock is Lock))
-                        {
-                            sameIDCount++;
-                        }
-                        else
-                        {
-                            break; // Stop if IDs are not the same
-                        }
-                    }
-
-                    if (sameIDCount >= 2)
-                    {
-                        return true;
-                    }
-
-                }
-            }
-
-            return false;
-        }
-        private bool CanMatch()
-        {
-            bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
-            {
-                // down, down of down
-                if (IsValidMatchTile(newX, newY - 1))
-                {
-                    if (IsValidMatchTile(newX, newY - 2))
-                    {
-                        Tile downTile = _tiles[newX + (newY - 1) * Width];
-                        Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
-                        if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
-                            (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
-                            (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"D: {newX}  {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
-            {
-                // top, top of top
-                if (IsValidMatchTile(newX, newY + 1))
-                {
-                    if (IsValidMatchTile(newX, newY + 2))
-                    {
-                        Tile topTile = _tiles[newX + (newY + 1) * Width];
-                        Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
-                        if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
-                            (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
-                            (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"C: {newX}  {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
-            {
-                // right, right of right
-                if (IsValidMatchTile(newX + 1, newY))
-                {
-                    if (IsValidMatchTile(newX + 2, newY))
-                    {
-                        Tile rightTile = _tiles[newX + 1 + newY * Width];
-                        Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
-
-                        if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
-                            (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
-                            (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"B: {newX}  {newY} ");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
-            {
-                // left, left of left
-                if (IsValidMatchTile(newX - 1, newY))
-                {
-                    if (IsValidMatchTile(newX - 2, newY))
-                    {
-                        Tile leftTile = _tiles[newX - 1 + newY * Width];
-                        Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
-
-                        if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
-                            (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
-                            (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"A: {tileID} {newX} {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    Tile tile = _tiles[x + y * Width];
-                    if (tile == null) continue;
-
-                    // left 
-                    if (IsValidMatchTile(x - 1, y))
-                    {
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
-                        {
-                            return true;
-                        }
-                    }
-
-                    // right 
-                    if (IsValidMatchTile(x + 1, y))
-                    {
-                        if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
-                        {
-                            // Debug.Log($"{tile.X} {tile.Y}  {tile.Data.ID}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
-                        {
-                            return true;
-                        }
-                    }
-
-                    // up 
-                    if (IsValidMatchTile(x, y + 1))
-                    {
-                        if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
-                        {
-                            return true;
-                        }
-                    }
-
-                    // down 
-                    if (IsValidMatchTile(x, y - 1))
-                    {
-                        if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
-                        {
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
+        // ================== Handle match logic ====================
         private IEnumerator HandleMatchCoroutine()
         {
             FindBlastBomb();
@@ -1423,319 +894,417 @@ namespace Match3
             yield return null;
             MatchPreviousTilesDifferent();
         }
-        private void HandleUnlockTileNeighbors(Tile tile)
+        private bool FindBlastBomb()
         {
-
-            if (IsValidGridTile(tile.X - 1, tile.Y))
+            bool FoundBlastBomb(List<int[,]> shapes, int xIndex, int yIndex, out int[,] shape)
             {
-                int index = tile.X - 1 + tile.Y * Width;
-                if (_unlockTileSet.Contains(index) == false)
+                for (int i = 0; i < shapes.Count; i++)
                 {
-                    _unlockTileSet.Add(index);
-                    _tiles[index].Unlock();
-                }
+                    bool found = true;
+                    int w = shapes[i].GetLength(0);
+                    int h = shapes[i].GetLength(1);
+                    TileID targetTileID = default;
 
-                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X - 1, tile.Y)) == false)
-                {
-                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X - 1, tile.Y));
-                }
-            }
-            if (IsValidGridTile(tile.X + 1, tile.Y))
-            {
-                int index = tile.X + 1 + tile.Y * Width;
-                if (_unlockTileSet.Contains(index) == false)
-                {
-                    _unlockTileSet.Add(index);
-                    _tiles[index].Unlock();
-                }
-
-                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X + 1, tile.Y)) == false)
-                {
-                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X + 1, tile.Y));
-                }
-            }
-            if (IsValidGridTile(tile.X, tile.Y - 1))
-            {
-                int index = tile.X + (tile.Y - 1) * Width;
-                if (_unlockTileSet.Contains(index) == false)
-                {
-                    _unlockTileSet.Add(index);
-                    _tiles[index].Unlock();
-                }
-
-                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y - 1)) == false)
-                {
-                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y - 1));
-                }
-            }
-            if (IsValidGridTile(tile.X, tile.Y + 1))
-            {
-                int index = tile.X + (tile.Y + 1) * Width;
-                if (_unlockTileSet.Contains(index) == false)
-                {
-                    _unlockTileSet.Add(index);
-                    _tiles[index].Unlock();
-                }
-
-                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y + 1)) == false)
-                {
-                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y + 1));
-                }
-            }
-        }
-
-        private void HandleTriggerAllSpecialTiles()
-        {
-            for (int i = 0; i < _matchBuffer.Length; i++)
-            {
-                Tile tile = _tiles[i];
-                MatchID matchID = _matchBuffer[i];
-
-                if (matchID.IsSpecialMatch())
-                {
-                    if (_triggeredMatch5Set.Contains(i) == false)
+                    bool foundFirstValidTile = false;
+                    for (int y = 0; y < h && !foundFirstValidTile; y++)
                     {
-                        if (tile.SpecialProperties == SpecialTileID.RowBomb)
+                        for (int x = 0; x < h; x++)
                         {
-                            //Debug.Log("Handle Special Match 4 Horizontal");
-                            EnableHorizontalMatchBuffer(tile.Y);
-                            PlayClearHorizontalVFX(tile);
-                        }
-                        else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
-                        {
-                            //Debug.Log("Handle Special Match 4 Vertical");
-                            EnableVerticalMatchBuffer(tile.X);
-                            PlayClearVerticalVFX(tile);
-                        }
-                        else if (tile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            //Debug.Log("Handle Special Match 5");
-                            PlayFlashBombVfx(tile);
-                            HandleBlastBomb(tile);
-                        }
-                        else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
-                        {
-                            Debug.Log("Handle Special Color Burst");
-                            Utilities.Shuffle(_4directions);
-                            for (int j = 0; j < _4directions.Length; j++)
+                            if (shapes[i][x, y] != 0)
                             {
-                                bool found = false;
-                                switch (_4directions[j])
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+                                if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
                                 {
-                                    case 1: // left
-                                        if (IsValidMatchTile(tile.X - 1, tile.Y))
-                                        {
-                                            found = true;
-                                            ClearAllBoardTileID(tile, _tiles[tile.X - 1 + tile.Y * Width].ID);
-                                        }
-                                        break;
-                                    case 2: // right
-                                        if (IsValidMatchTile(tile.X + 1, tile.Y))
-                                        {
-                                            found = true;
-                                            ClearAllBoardTileID(tile, _tiles[tile.X + 1 + tile.Y * Width].ID);
-                                        }
-                                        break;
-                                    case 3: // up
-                                        if (IsValidMatchTile(tile.X, tile.Y + 1))
-                                        {
-                                            found = true;
-                                            ClearAllBoardTileID(tile, _tiles[tile.X + (tile.Y + 1) * Width].ID);
-                                        }
-                                        break;
-                                    case 4: // down
-                                        if (IsValidMatchTile(tile.X, tile.Y - 1))
-                                        {
-                                            found = true;
-                                            ClearAllBoardTileID(tile, _tiles[tile.X + (tile.Y - 1) * Width].ID);
-                                        }
-                                        break;
+                                    targetTileID = _tiles[offsetX + offsetY * Width].ID;
+                                    foundFirstValidTile = true;
+                                    break;
                                 }
-
-                                if (found) break;
                             }
                         }
                     }
+
+
+                    for (int y = 0; y < h; y++)
+                    {
+                        for (int x = 0; x < w; x++)
+                        {
+                            if (shapes[i][x, y] != 0)
+                            {
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+
+                                if (IsValidMatchTile(offsetX, offsetY))
+                                {
+                                    Tile nbTile = _tiles[offsetX + offsetY * Width];
+                                    if (targetTileID != nbTile.ID)
+                                    {
+                                        found = false;
+                                    }
+                                    else
+                                    {
+                                        if (_matchBuffer[offsetX + offsetY * Width] != MatchID.None) found = false;
+                                        if (nbTile.SpecialProperties != SpecialTileID.None) found = false;
+                                    }
+                                }
+                                else
+                                {
+                                    found = false;
+                                }
+                            }
+                            if (found == false) break;
+                        }
+                        if (found == false) break;
+                    }
+
+                    if (found)
+                    {
+                        bool foundBlashBombTile = false;
+                        for (int y = 0; y < h; y++)
+                        {
+                            for (int x = 0; x < w; x++)
+                            {
+                                if (shapes[i][x, y] == 0) continue;
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+                                int index = offsetX + offsetY * Width;
+                                if (IsValidMatchTile(offsetX, offsetY))
+                                {
+                                    SetMatchBuffer(index, MatchID.Match);
+                                }
+                            }
+                        }
+
+                        for (int y = 0; y < h && !foundBlashBombTile; y++)
+                        {
+                            for (int x = 0; x < w; x++)
+                            {
+                                if (shapes[i][x, y] == 0) continue;
+                                int offsetX = xIndex + x;
+                                int offsetY = yIndex + y;
+                                int index = offsetX + offsetY * Width;
+
+                                if (_selectedTile != null && _swappedTile != null)
+                                {
+                                    if (_selectedTile.Equal(_tiles[index]))
+                                    {
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_selectedTile.ID, index));
+                                        foundBlashBombTile = true;
+                                        shape = shapes[i];
+                                        return true;
+                                    }
+                                    else if (_swappedTile.Equal(_tiles[index]))
+                                    {
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_swappedTile.ID, index));
+                                        foundBlashBombTile = true;
+                                        shape = shapes[i];
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+
+                        // not found blast bomb origin
+                        if (FindOriginalBlastBombIndex(shapes[i], out int xxx, out int yyy))
+                        {
+                            int sourceIndex = (xIndex + xxx) + (yIndex + yyy) * Width;
+                            bool isSourceIndexValid = false;
+                            for (int y = 0; y < h && !isSourceIndexValid; y++)
+                            {
+                                for (int x = 0; x < w; x++)
+                                {
+                                    int index = (x + xIndex) + (y + yIndex) * Width;
+                                    if (sourceIndex == index)
+                                    {
+                                        isSourceIndexValid = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (isSourceIndexValid)
+                            {
+                                _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, sourceIndex));
+                                shape = shapes[i];
+                                return true;
+                            }
+                            else
+                            {
+                                for (int y = 0; y < h; y++)
+                                {
+                                    for (int x = 0; x < w; x++)
+                                    {
+                                        if (shapes[i][x, y] != 0)
+                                        {
+                                            int offsetX = xIndex + x;
+                                            int offsetY = yIndex + y;
+                                            int index = offsetX + offsetY * Width;
+                                            if (_prevTileIDs[index] != _tiles[index].ID)
+                                            {
+                                                _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
+                                                foundBlashBombTile = true;
+                                                shape = shapes[i];
+                                                return true;
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            // int lastMatchIndex = 0;
+                            // if (foundBlashBombTile == false)
+                            // {
+                            //     for (int y = 0; y < h; y++)
+                            //     {
+                            //         for (int x = 0; x < w; x++)
+                            //         {
+                            //             if (shapes[i][x, y] != 0)
+                            //             {
+                            //                 int offsetX = xIndex + x;
+                            //                 int offsetY = yIndex + y;
+                            //                 int index = offsetX + offsetY * Width;
+                            //                 lastMatchIndex = index;
+
+                            //                 if (_prevTileIDs[index] != _tiles[index].ID)
+                            //                 {
+                            //                     _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
+                            //                     foundBlashBombTile = true;
+                            //                     shape = shapes[i];
+                            //                     return true;
+                            //                 }
+                            //             }
+
+                            //         }
+                            //     }
+                            // }
+
+
+
+                            // Last case
+                            Debug.Log("??????");
+                            // bool foundLastCase = false;
+                            // for (int y = 0; y < h && !foundLastCase; y++)
+                            // {
+                            //     for (int x = 0; x < w; x++)
+                            //     {
+                            //         if (shapes[i][x, y] == 2)
+                            //         {
+                            //             int offsetX = xIndex + x;
+                            //             int offsetY = yIndex + y;
+                            //             lastMatchIndex = offsetX + offsetY * Width;
+                            //             foundLastCase = true;
+                            //             break;
+                            //         }
+                            //     }
+                            // }
+
+                            // // not found -> Get last match tile index
+                            // _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, lastMatchIndex));
+                            // shape = shapes[i];
+                            // return true;
+                        }
+                        else
+                        {
+                            Debug.LogError("Shape format wronng!!!!");
+                        }
+                    }
                 }
+                shape = null;
+                return false;
             }
-        }
 
-        private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
-        {
-            yield return StartCoroutine(FillGridCoroutine());
-            onCompleted?.Invoke();
-        }
 
-        private void HandleBushGrowth()
-        {
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    if (IsValidGridTile(x, y))
+                    if (IsValidMatchTile(x, y))
                     {
                         int index = x + y * Width;
+                        if (_matchBuffer[index] != MatchID.None) continue;
+
                         Tile tile = _tiles[index];
-                        if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y))) continue;
-                        if (tile.CurrentBlock is Bush01)
+                        if (FoundBlastBomb(_tShapes, tile.X, tile.Y, out int[,] shape))
                         {
-                            Bush01 bush = ((Bush01)tile.CurrentBlock);
-                            bush.ExistTurnCount++;
-                            if (bush.ExistTurnCount >= 2)
-                            {
-                                tile.ChangeBlock(BlockID.Bush_02);
-                            }
+                            // Debug.Log($"Found flash bomb T-Shape at: {tile.X}  {tile.Y}");
+                            HandleCollectBlastBomb(shape, tile.X, tile.Y);
+                            return true;
                         }
-                        else if (tile.CurrentBlock is Bush02)
+                        else
                         {
-                            Bush02 bush = ((Bush02)tile.CurrentBlock);
-                            bush.ExistTurnCount++;
-                            if (bush.ExistTurnCount >= 2)
+
+                            if (FoundBlastBomb(_lShapes, tile.X, tile.Y, out shape))
                             {
-                                tile.ChangeBlock(BlockID.Bush_03);
+                                HandleCollectBlastBomb(shape, tile.X, tile.Y);
+                                return true;
                             }
                         }
                     }
                 }
             }
+            return false;
         }
-
-        private void HandleSpiderNetSpreading()
+        private void HandleSpecialMatch()
         {
-            _spiderSpreadingList.Clear();
-            for (int y = 0; y < Height; y++)
+            if (_selectedTile == null || _swappedTile == null) return;
+
+            switch (_selectedTile.SpecialProperties)
             {
-                for (int x = 0; x < Width; x++)
-                {
-                    int index = x + y * Width;
-                    if (_tiles[index] == null) continue;
-                    if (_tiles[index].CurrentBlock is Spider ||
-                        _tiles[index].CurrentBlock is SpiderOnNet)
+                case SpecialTileID.ColumnBomb:
+                case SpecialTileID.RowBomb:
+                    if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
+                        _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        _tiles[index].ChangeBlock(BlockID.SpiderNet);
-                        _spiderSpreadingList.Add(index);
+                        // if (_selectedTile.ID == _swappedTile.ID)
+                        // {
+                        Debug.Log("============= Clear + ==============");
+                        EnableVerticalMatchBuffer(_selectedTile.X);
+                        EnableHorizontalMatchBuffer(_selectedTile.Y);
+
+                        PlayClearVerticalVFX(_selectedTile);
+                        PlayClearHorizontalVFX(_selectedTile);
+
+                        _hasMatch4 = true;
+                        AudioManager.Instance.PlayMatch4Sfx();
+                        // }
                     }
-                }
-            }
-
-            bool spreadToNeighbor = false;
-            for (int i = 0; i < _spiderSpreadingList.Count; i++)
-            {
-                int tileIndex = _spiderSpreadingList[i];
-                int x = tileIndex % Width;
-                int y = tileIndex / Width;
-
-                Utilities.Shuffle(_8directions);
-
-                for (int d = 0; d < _8directions.Length; d++)
-                {
-                    int dx = 0, dy = 0;
-                    switch (_8directions[d])
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        case 1: dx = -1; dy = 0; break; // Left
-                        case 2: dx = 1; dy = 0; break;  // Right
-                        case 3: dx = 0; dy = 1; break;  // Up
-                        case 4: dx = 0; dy = -1; break; // Down
-                        case 5: dx = -1; dy = 1; break; // Top-left
-                        case 6: dx = 1; dy = 1; break;  // Top-right
-                        case 7: dx = -1; dy = -1; break; // Bottom-left
-                        case 8: dx = 1; dy = -1; break;  // Bottom-right
+                        CombineMatch4AndMatch5();
+                        _hasColorBurst = true;
+                        AudioManager.Instance.PlayMatch5Sfx();
                     }
-
-                    int nx = x + dx;
-                    int ny = y + dy;
-
-                    if (IsValidNonBlockTile(nx, ny))
+                    break;
+                case SpecialTileID.BlastBomb:
+                    if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
-                        Tile neighborTile = _tiles[nx + ny * Width];
-                        neighborTile.ChangeBlock(BlockID.Spider);
-                        spreadToNeighbor = true;
-                        Debug.Log("A");
-                        break;
+                        AudioManager.Instance.PlayMatch5Sfx();
+                        PlayFlashBombVfx(_selectedTile);
+                        HandleBlastBomb(_selectedTile);
+                        _triggeredMatch5Set.Add(_selectedTile.X + _selectedTile.Y * Width);
+                        _hasColorBurst = true;
                     }
-                }
-                if (spreadToNeighbor)
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
+                            _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    {
+                        CombineMatch4AndMatch5();
+
+                        _hasColorBurst = true;
+                        AudioManager.Instance.PlayMatch5Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        ClearAllTiles();
+                        PlayClearAllTilesVfx();
+
+                        _hasColorBurst = true;
+                        AudioManager.Instance.PlayMatch5Sfx();
+                    }
+                    break;
+                case SpecialTileID.ColorBurst:
+                    if (_swappedTile.SpecialProperties == SpecialTileID.None)
+                    {
+                        ClearAllBoardTileID(_selectedTile, _swappedTile.ID);
+
+                        _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] = MatchID.Match;
+
+                        _hasMatch6 = true;
+                        AudioManager.Instance.PlayColorBurstSFX();
+                    }
+                    break;
+                case SpecialTileID.None:
+                    if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        ClearAllBoardTileID(_swappedTile, _selectedTile.ID);
+                        _matchBuffer[_swappedTile.X + _swappedTile.Y * Width] = MatchID.Match;
+
+                        _hasMatch6 = true;
+                        AudioManager.Instance.PlayColorBurstSFX();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        PlayFlashBombVfx(_swappedTile);
+                        for (int y = 0; y < _blastBombPattern.GetLength(1); y++)
+                        {
+                            for (int x = 0; x < _blastBombPattern.GetLength(0); x++)
+                            {
+                                if (_blastBombPattern[x, y] == 1)
+                                {
+                                    int xx = _swappedTile.X + x - _blastBombPatternOffset.x;
+                                    int yy = _swappedTile.Y + y - _blastBombPatternOffset.y;
+
+                                    if (IsValidGridTile(xx, yy))
+                                    {
+                                        int index = xx + yy * Width;
+                                        //_matchBuffer[index] = MatchID.Match;
+                                        SetMatchBuffer(index, MatchID.Match);
+                                    }
+                                }
+                            }
+                        }
+
+                        _hasColorBurst = true;
+                        AudioManager.Instance.PlayMatch5Sfx();
+                    }
                     break;
             }
 
-            if (spreadToNeighbor == false)
+
+            void CombineMatch4AndMatch5()
             {
-                for (int i = 0; i < _spiderSpreadingList.Count; i++)
+                EnableVerticalMatchBuffer(_selectedTile.X);
+                PlayClearVerticalVFX(_selectedTile);
+
+                if (IsValidGridTile(_selectedTile.X - 1, _selectedTile.Y))
                 {
-                    int tileIndex = _spiderSpreadingList[i];
-                    int x = tileIndex % Width;
-                    int y = tileIndex / Width;
+                    EnableVerticalMatchBuffer(_selectedTile.X - 1);
+                    PlayClearVerticalVFX(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
+                }
+                if (IsValidGridTile(_selectedTile.X + 1, _selectedTile.Y))
+                {
+                    EnableVerticalMatchBuffer(_selectedTile.X + 1);
+                    PlayClearVerticalVFX(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
+                }
 
-                    Utilities.Shuffle(_8directions);
-                    for (int d = 0; d < _8directions.Length; d++)
+
+                EnableHorizontalMatchBuffer(_selectedTile.Y);
+                PlayClearHorizontalVFX(_selectedTile);
+
+                if (IsValidGridTile(_selectedTile.X, _selectedTile.Y - 1))
+                {
+                    EnableHorizontalMatchBuffer(_selectedTile.Y - 1);
+                    PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
+                }
+
+                if (IsValidGridTile(_selectedTile.X, _selectedTile.Y + 1))
+                {
+                    EnableHorizontalMatchBuffer(_selectedTile.Y + 1);
+                    PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
+                }
+            }
+
+            void ClearAllTiles()
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    for (int x = 0; x < Width; x++)
                     {
-                        int dx = 0, dy = 0;
-                        switch (_8directions[d])
+                        int index = x + y * Width;
+                        if (_tiles[index].CurrentBlock is NoneBlock)
                         {
-                            case 1: dx = -1; dy = 0; break; // Left
-                            case 2: dx = 1; dy = 0; break;  // Right
-                            case 3: dx = 0; dy = 1; break;  // Up
-                            case 4: dx = 0; dy = -1; break; // Down
-                            case 5: dx = -1; dy = 1; break; // Top-left
-                            case 6: dx = 1; dy = 1; break;  // Top-right
-                            case 7: dx = -1; dy = -1; break; // Bottom-left
-                            case 8: dx = 1; dy = -1; break;  // Bottom-right
+                            //_matchBuffer[index] = MatchID.Match;
+                            SetMatchBuffer(index, MatchID.Match);
                         }
-
-                        int nx = x + dx;
-                        int ny = y + dy;
-
-                        if (IsValidGridTile(nx, ny))
+                        else
                         {
-                            Tile neighborTile = _tiles[nx + ny * Width];
-                            if (neighborTile.CurrentBlock is SpiderNet)
-                            {
-                                neighborTile.ChangeBlock(BlockID.SpiderOnNet);
-                                spreadToNeighbor = true;
-                                break;
-                            }
+                            //_matchBuffer[index] = MatchID.SpecialMatch;
+                            SetMatchBuffer(index, MatchID.SpecialMatch);
                         }
                     }
-                    if (spreadToNeighbor)
-                        break;
-                }
-            }
-
-            if (spreadToNeighbor == false)
-            {
-                //   Debug.Log("Last case");
-                for (int i = 0; i < _spiderSpreadingList.Count; i++)
-                {
-                    int tileIndex = _spiderSpreadingList[i];
-                    int x = tileIndex % Width;
-                    int y = tileIndex / Width;
-                    _tiles[x + y * Width].ChangeBlock(BlockID.SpiderOnNet);
                 }
             }
         }
-
-
-        private void SetMatchBuffer(int index, MatchID matchID)
-        {
-            if (_matchBuffer[index] == MatchID.None)
-            {
-                _matchBuffer[index] = matchID;
-                return;
-            }
-            if (matchID == MatchID.None)
-            {
-                _matchBuffer[index] = matchID;
-                return;
-            }
-
-            if (matchID == MatchID.ColorBurst ||
-                (matchID == MatchID.SpecialMatch && _matchBuffer[index] != MatchID.ColorBurst))
-            {
-                _matchBuffer[index] = matchID;
-            }
-        }
-
-
         private void HandleMatchSameIDInRow(Tile tile, int sameIDCountInRow)
         {
             if (sameIDCountInRow < 2) return;
@@ -2093,417 +1662,649 @@ namespace Match3
 
             HandleCollectInColumn(tile, sameIDCountInColumn);
         }
-        private void HandleSpecialMatch()
+        private void MatchPreviousTilesDifferent()
         {
-            if (_selectedTile == null || _swappedTile == null) return;
-
-            switch (_selectedTile.SpecialProperties)
+            for (int i = 0; i < _tiles.Length; i++)
             {
-                case SpecialTileID.ColumnBomb:
-                case SpecialTileID.RowBomb:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
-                        _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
-                    {
-                        // if (_selectedTile.ID == _swappedTile.ID)
-                        // {
-                        Debug.Log("============= Clear + ==============");
-                        EnableVerticalMatchBuffer(_selectedTile.X);
-                        EnableHorizontalMatchBuffer(_selectedTile.Y);
-
-                        PlayClearVerticalVFX(_selectedTile);
-                        PlayClearHorizontalVFX(_selectedTile);
-
-                        _hasMatch4 = true;
-                        AudioManager.Instance.PlayMatch4Sfx();
-                        // }
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        CombineMatch4AndMatch5();
-                        _hasColorBurst = true;
-                        AudioManager.Instance.PlayMatch5Sfx();
-                    }
-                    break;
-                case SpecialTileID.BlastBomb:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.None)
-                    {
-                        AudioManager.Instance.PlayMatch5Sfx();
-                        PlayFlashBombVfx(_selectedTile);
-                        HandleBlastBomb(_selectedTile);
-                        _triggeredMatch5Set.Add(_selectedTile.X + _selectedTile.Y * Width);
-                        _hasColorBurst = true;
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
-                            _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
-                    {
-                        CombineMatch4AndMatch5();
-
-                        _hasColorBurst = true;
-                        AudioManager.Instance.PlayMatch5Sfx();
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        ClearAllTiles();
-                        PlayClearAllTilesVfx();
-
-                        _hasColorBurst = true;
-                        AudioManager.Instance.PlayMatch5Sfx();
-                    }
-                    break;
-                case SpecialTileID.ColorBurst:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.None)
-                    {
-                        ClearAllBoardTileID(_selectedTile, _swappedTile.ID);
-
-                        _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] = MatchID.Match;
-
-                        _hasMatch6 = true;
-                        AudioManager.Instance.PlayColorBurstSFX();
-                    }
-                    break;
-                case SpecialTileID.None:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        ClearAllBoardTileID(_swappedTile, _selectedTile.ID);
-                        _matchBuffer[_swappedTile.X + _swappedTile.Y * Width] = MatchID.Match;
-
-                        _hasMatch6 = true;
-                        AudioManager.Instance.PlayColorBurstSFX();
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        PlayFlashBombVfx(_swappedTile);
-                        for (int y = 0; y < _blastBombPattern.GetLength(1); y++)
-                        {
-                            for (int x = 0; x < _blastBombPattern.GetLength(0); x++)
-                            {
-                                if (_blastBombPattern[x, y] == 1)
-                                {
-                                    int xx = _swappedTile.X + x - _blastBombPatternOffset.x;
-                                    int yy = _swappedTile.Y + y - _blastBombPatternOffset.y;
-
-                                    if (IsValidGridTile(xx, yy))
-                                    {
-                                        int index = xx + yy * Width;
-                                        //_matchBuffer[index] = MatchID.Match;
-                                        SetMatchBuffer(index, MatchID.Match);
-                                    }
-                                }
-                            }
-                        }
-
-                        _hasColorBurst = true;
-                        AudioManager.Instance.PlayMatch5Sfx();
-                    }
-                    break;
+                if (_tiles[i] == null) continue;
+                _prevTileIDs[i] = _tiles[i].ID;
             }
+        }
+        // ======================================
 
 
-            void CombineMatch4AndMatch5()
+
+
+
+        private IEnumerator HandleCollectAnimationCoroutine()
+        {
+            if (_blastBombDictionary.Count > 0)
             {
-                EnableVerticalMatchBuffer(_selectedTile.X);
-                PlayClearVerticalVFX(_selectedTile);
-
-                if (IsValidGridTile(_selectedTile.X - 1, _selectedTile.Y))
+                foreach (var tile in _blastBombDictionary)
                 {
-                    EnableVerticalMatchBuffer(_selectedTile.X - 1);
-                    PlayClearVerticalVFX(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
+                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+                        //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
+                        nb.MoveToPosition((Vector2)t.transform.position, 0.2f, Ease.InSine);
+                    }
                 }
-                if (IsValidGridTile(_selectedTile.X + 1, _selectedTile.Y))
+                yield return new WaitForSeconds(0.2f);
+                int multiplier = 1;
+                foreach (var e in _blastBombDictionary)
                 {
-                    EnableVerticalMatchBuffer(_selectedTile.X + 1);
-                    PlayClearVerticalVFX(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
-                }
-
-
-                EnableHorizontalMatchBuffer(_selectedTile.Y);
-                PlayClearHorizontalVFX(_selectedTile);
-
-                if (IsValidGridTile(_selectedTile.X, _selectedTile.Y - 1))
-                {
-                    EnableHorizontalMatchBuffer(_selectedTile.Y - 1);
-                    PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
-                }
-
-                if (IsValidGridTile(_selectedTile.X, _selectedTile.Y + 1))
-                {
-                    EnableHorizontalMatchBuffer(_selectedTile.Y + 1);
-                    PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                    multiplier++;
                 }
             }
 
-            void ClearAllTiles()
+            if (_match3Dictionary.Count > 0)
             {
-                for (int y = 0; y < Height; y++)
+                foreach (var tile in _match3Dictionary)
                 {
-                    for (int x = 0; x < Width; x++)
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
                     {
-                        int index = x + y * Width;
-                        if (_tiles[index].CurrentBlock is NoneBlock)
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                        MatchAnimManager.Instance.AddMatch3(tileInfo, tileInfo);
+                        MatchAnimManager.Instance.AddMatch3(tileInfo, nbTileInfo);
+                    }
+                }
+            }
+
+            if (_match4Dictionary.Count > 0)
+            {
+                Tile t = null;
+                Tile nb = null;
+                foreach (var tile in _match4Dictionary)
+                {
+                    t = tile.Value;
+                    nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
+                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
+
+                        Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
                         {
-                            //_matchBuffer[index] = MatchID.Match;
-                            SetMatchBuffer(index, MatchID.Match);
-                        }
-                        else
-                        {
-                            //_matchBuffer[index] = MatchID.SpecialMatch;
-                            SetMatchBuffer(index, MatchID.SpecialMatch);
-                        }
+                            nb.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
+                        });
+                    }
+                }
+                Utilities.WaitAfter(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.7f, () =>
+                {
+                    t.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
+                });
+
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
+                int multiplier = 1;
+                foreach (var e in _match4Dictionary)
+                {
+                    t = e.Value;
+                    nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                    multiplier++;
+                }
+            }
+
+            if (_match5Dictionary.Count > 0)
+            {
+                foreach (var tile in _match5Dictionary)
+                {
+                    Tile t = tile.Value;
+                    Tile nb = tile.Key;
+                    if (t != null && nb != null)
+                    {
+                        float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
+                        float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
+                        Vector2 offsetPosition = new Vector2(offsetX, offsetY);
+
+
+                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
+                    }
+                }
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
+                foreach (var e in _match5Dictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                     }
                 }
             }
         }
-        private bool FindBlastBomb()
+        private void HandleMatchAndUnlock(ref bool hasMatched)
         {
-            bool FoundBlastBomb(List<int[,]> shapes, int xIndex, int yIndex, out int[,] shape)
+            for (int i = 0; i < _matchBuffer.Length; i++)
             {
-                for (int i = 0; i < shapes.Count; i++)
+                Tile tile = _tiles[i];
+                if (tile == null) continue;
+                int x = i % Width;
+                int y = i / Width;
+
+                MatchID matchID = _matchBuffer[i];
+                if (matchID == MatchID.Match)
                 {
-                    bool found = true;
-                    int w = shapes[i].GetLength(0);
-                    int h = shapes[i].GetLength(1);
-                    TileID targetTileID = default;
-
-                    bool foundFirstValidTile = false;
-                    for (int y = 0; y < h && !foundFirstValidTile; y++)
-                    {
-                        for (int x = 0; x < h; x++)
-                        {
-                            if (shapes[i][x, y] != 0)
-                            {
-                                int offsetX = xIndex + x;
-                                int offsetY = yIndex + y;
-                                if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
-                                {
-                                    targetTileID = _tiles[offsetX + offsetY * Width].ID;
-                                    foundFirstValidTile = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-
-                    for (int y = 0; y < h; y++)
-                    {
-                        for (int x = 0; x < w; x++)
-                        {
-                            if (shapes[i][x, y] != 0)
-                            {
-                                int offsetX = xIndex + x;
-                                int offsetY = yIndex + y;
-
-                                if (IsValidMatchTile(offsetX, offsetY))
-                                {
-                                    Tile nbTile = _tiles[offsetX + offsetY * Width];
-                                    if (targetTileID != nbTile.ID)
-                                    {
-                                        found = false;
-                                    }
-                                    else
-                                    {
-                                        if (_matchBuffer[offsetX + offsetY * Width] != MatchID.None) found = false;
-                                        if (nbTile.SpecialProperties != SpecialTileID.None) found = false;
-                                    }
-                                }
-                                else
-                                {
-                                    found = false;
-                                }
-                            }
-                            if (found == false) break;
-                        }
-                        if (found == false) break;
-                    }
-
-                    if (found)
-                    {
-                        bool foundBlashBombTile = false;
-                        for (int y = 0; y < h; y++)
-                        {
-                            for (int x = 0; x < w; x++)
-                            {
-                                if (shapes[i][x, y] == 0) continue;
-                                int offsetX = xIndex + x;
-                                int offsetY = yIndex + y;
-                                int index = offsetX + offsetY * Width;
-                                if (IsValidMatchTile(offsetX, offsetY))
-                                {
-                                    SetMatchBuffer(index, MatchID.Match);
-                                }
-                            }
-                        }
-
-                        for (int y = 0; y < h && !foundBlashBombTile; y++)
-                        {
-                            for (int x = 0; x < w; x++)
-                            {
-                                if (shapes[i][x, y] == 0) continue;
-                                int offsetX = xIndex + x;
-                                int offsetY = yIndex + y;
-                                int index = offsetX + offsetY * Width;
-
-                                if (_selectedTile != null && _swappedTile != null)
-                                {
-                                    if (_selectedTile.Equal(_tiles[index]))
-                                    {
-                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_selectedTile.ID, index));
-                                        foundBlashBombTile = true;
-                                        shape = shapes[i];
-                                        return true;
-                                    }
-                                    else if (_swappedTile.Equal(_tiles[index]))
-                                    {
-                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_swappedTile.ID, index));
-                                        foundBlashBombTile = true;
-                                        shape = shapes[i];
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-
-                        // not found blast bomb origin
-                        if (FindOriginalBlastBombIndex(shapes[i], out int xxx, out int yyy))
-                        {
-                            int sourceIndex = (xIndex + xxx) + (yIndex + yyy) * Width;
-                            bool isSourceIndexValid = false;
-                            for (int y = 0; y < h && !isSourceIndexValid; y++)
-                            {
-                                for (int x = 0; x < w; x++)
-                                {
-                                    int index = (x + xIndex) + (y + yIndex) * Width;
-                                    if (sourceIndex == index)
-                                    {
-                                        isSourceIndexValid = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (isSourceIndexValid)
-                            {
-                                _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, sourceIndex));
-                                shape = shapes[i];
-                                return true;
-                            }
-                            else
-                            {
-                                for (int y = 0; y < h; y++)
-                                {
-                                    for (int x = 0; x < w; x++)
-                                    {
-                                        if (shapes[i][x, y] != 0)
-                                        {
-                                            int offsetX = xIndex + x;
-                                            int offsetY = yIndex + y;
-                                            int index = offsetX + offsetY * Width;
-                                            if (_prevTileIDs[index] != _tiles[index].ID)
-                                            {
-                                                _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
-                                                foundBlashBombTile = true;
-                                                shape = shapes[i];
-                                                return true;
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            // int lastMatchIndex = 0;
-                            // if (foundBlashBombTile == false)
-                            // {
-                            //     for (int y = 0; y < h; y++)
-                            //     {
-                            //         for (int x = 0; x < w; x++)
-                            //         {
-                            //             if (shapes[i][x, y] != 0)
-                            //             {
-                            //                 int offsetX = xIndex + x;
-                            //                 int offsetY = yIndex + y;
-                            //                 int index = offsetX + offsetY * Width;
-                            //                 lastMatchIndex = index;
-
-                            //                 if (_prevTileIDs[index] != _tiles[index].ID)
-                            //                 {
-                            //                     _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
-                            //                     foundBlashBombTile = true;
-                            //                     shape = shapes[i];
-                            //                     return true;
-                            //                 }
-                            //             }
-
-                            //         }
-                            //     }
-                            // }
-
-
-
-                            // Last case
-                            Debug.Log("??????");
-                            // bool foundLastCase = false;
-                            // for (int y = 0; y < h && !foundLastCase; y++)
-                            // {
-                            //     for (int x = 0; x < w; x++)
-                            //     {
-                            //         if (shapes[i][x, y] == 2)
-                            //         {
-                            //             int offsetX = xIndex + x;
-                            //             int offsetY = yIndex + y;
-                            //             lastMatchIndex = offsetX + offsetY * Width;
-                            //             foundLastCase = true;
-                            //             break;
-                            //         }
-                            //     }
-                            // }
-
-                            // // not found -> Get last match tile index
-                            // _matchBlastBombQueue.Enqueue(new SpecialTileQueue(TileID.None, lastMatchIndex));
-                            // shape = shapes[i];
-                            // return true;
-                        }
-                        else
-                        {
-                            Debug.LogError("Shape format wronng!!!!");
-                        }
-                    }
+                    AudioManager.Instance.PlayMatch3Sfx();
                 }
-                shape = null;
-                return false;
+                // Match & Unlock
+                if (matchID == MatchID.Match)
+                {
+                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
+
+                    tile.Match(_tiles, Width);
+                    HandleUnlockTileNeighbors(tile);
+                    hasMatched = true;
+                }
+                else if (matchID == MatchID.SpecialMatch)
+                {
+                    _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
+                    tile.Match(_tiles, Width);
+                    if (_unlockTileSet.Contains(i) == false)
+                    {
+                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
+
+                        _unlockTileSet.Add(i);
+                        tile.Unlock();
+                    }
+                    hasMatched = true;
+                }
+                else if (matchID == MatchID.ColorBurst)
+                {
+                    // vfx
+                    // if (_colorBurstParentDictionary.ContainsKey(tile.X + tile.Y * Width))
+                    // {
+                    //     Vector2 startColoBurstPosition = _colorBurstParentDictionary[tile.X + tile.Y * Width];
+                    //     PlaySingleColorBurstLineVfx(startColoBurstPosition, tile.transform.position, colorBurstDuration);
+                    // }
+
+                    tile.Match(_tiles, Width);
+                    if (_unlockTileSet.Contains(i) == false)
+                    {
+                        _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));
+
+                        _unlockTileSet.Add(i);
+                        tile.Unlock();
+                    }
+                    hasMatched = true;
+                }
+                SetMatchBuffer(i, MatchID.None);
+            }
+        }
+        private void HandleSpawnSpecialTile()
+        {
+            // match 6
+            while (_matchColorBurstQueue.Count > 0)
+            {
+                var e = _matchColorBurstQueue.Dequeue();
+                int x = e.Index % Width;
+                int y = e.Index / Width;
+
+                Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                tile.UpdatePosition();
+                tile.SetSpecialTile(SpecialTileID.ColorBurst);
+
+                tile.Emissive(0.1f);
+                _emissiveTileQueue.Enqueue(tile);
+                // tile.StopEmissive();
+            }
+
+            // match 5
+            while (_matchBlastBombQueue.Count > 0)
+            {
+                var e = _matchBlastBombQueue.Dequeue();
+                int x = e.Index % Width;
+                int y = e.Index / Width;
+
+                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
+                tile.UpdatePosition();
+                tile.SetSpecialTile(SpecialTileID.BlastBomb);
+
+                // tile.StopEmissive();
+                tile.Emissive(0.1f);
+                _emissiveTileQueue.Enqueue(tile);
             }
 
 
+            // match 4 horizontal
+            while (_matchRowBombQueue.Count > 0)
+            {
+                var e = _matchRowBombQueue.Dequeue();
+
+                int x = e.Index % Width;
+                int y = e.Index / Width;
+
+
+                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
+                tile.UpdatePosition();
+                tile.Display(true);
+                tile.SetSpecialTile(SpecialTileID.RowBomb);
+
+                // tile.StopEmissive();
+                tile.Emissive(0.1f);
+                _emissiveTileQueue.Enqueue(tile);
+
+                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
+                {
+                    tile.Display(false);
+                }
+            }
+
+
+            // match 4 vertical
+            while (_match4ColumnBombQueue.Count > 0)
+            {
+                var e = _match4ColumnBombQueue.Dequeue();
+
+                int x = e.Index % Width;
+                int y = e.Index / Width;
+
+                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
+                tile.UpdatePosition();
+                tile.Display(true);
+                tile.SetSpecialTile(SpecialTileID.ColumnBomb);
+
+                tile.Emissive(0.1f);
+                _emissiveTileQueue.Enqueue(tile);
+
+                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
+                {
+                    tile.Display(false);
+                }
+            }
+
+        }
+
+        #endregion
+
+
+
+
+
+        #region SHUFFLE
+        private void ShuffleGrid()
+        {
+            Debug.Log("ShuffleGrid");
+
+            for (int i = _tiles.Length - 1; i > 0; i--)
+            {
+                int randomIndex = Random.Range(0, i + 1);
+
+                Tile currTile = _tiles[i];
+                Tile randomTile = _tiles[randomIndex];
+                if (currTile == null || randomTile == null ||
+                    currTile.CurrentBlock is not NoneBlock ||
+                    randomTile.CurrentBlock is not NoneBlock) continue;
+
+                SwapPosition(currTile, randomTile);
+                currTile.UpdatePosition();
+                randomTile.UpdatePosition();
+            }
+        }
+        private IEnumerator ShuffleGridUntilCanMatchCoroutine()
+        {
+            // shuffle grid if no match found
+            while (true)
+            {
+                if (CanMatch())
+                {
+                    break;
+                }
+
+                yield return new WaitForSeconds(0.5f);
+                ShuffleGrid();
+            }
+        }
+        #endregion
+
+
+
+        #region HANDLE TILES AFTER TURN FINISHED
+        private void HandleBushGrowth()
+        {
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    if (IsValidMatchTile(x, y))
+                    if (IsValidGridTile(x, y))
                     {
                         int index = x + y * Width;
-                        if (_matchBuffer[index] != MatchID.None) continue;
-
                         Tile tile = _tiles[index];
-                        if (FoundBlastBomb(_tShapes, tile.X, tile.Y, out int[,] shape))
+                        if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y))) continue;
+                        if (tile.CurrentBlock is Bush01)
                         {
-                            // Debug.Log($"Found flash bomb T-Shape at: {tile.X}  {tile.Y}");
-                            HandleCollectBlastBomb(shape, tile.X, tile.Y);
-                            return true;
-                        }
-                        else
-                        {
-
-                            if (FoundBlastBomb(_lShapes, tile.X, tile.Y, out shape))
+                            Bush01 bush = ((Bush01)tile.CurrentBlock);
+                            bush.ExistTurnCount++;
+                            if (bush.ExistTurnCount >= 2)
                             {
-                                HandleCollectBlastBomb(shape, tile.X, tile.Y);
-                                return true;
+                                tile.ChangeBlock(BlockID.Bush_02);
+                            }
+                        }
+                        else if (tile.CurrentBlock is Bush02)
+                        {
+                            Bush02 bush = ((Bush02)tile.CurrentBlock);
+                            bush.ExistTurnCount++;
+                            if (bush.ExistTurnCount >= 2)
+                            {
+                                tile.ChangeBlock(BlockID.Bush_03);
                             }
                         }
                     }
                 }
             }
-            return false;
         }
+        private void HandleSpiderNetSpreading()
+        {
+            _spiderSpreadingList.Clear();
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    int index = x + y * Width;
+                    if (_tiles[index] == null) continue;
+                    if (_tiles[index].CurrentBlock is Spider ||
+                        _tiles[index].CurrentBlock is SpiderOnNet)
+                    {
+                        _tiles[index].ChangeBlock(BlockID.SpiderNet);
+                        _spiderSpreadingList.Add(index);
+                    }
+                }
+            }
+
+            bool spreadToNeighbor = false;
+            for (int i = 0; i < _spiderSpreadingList.Count; i++)
+            {
+                int tileIndex = _spiderSpreadingList[i];
+                int x = tileIndex % Width;
+                int y = tileIndex / Width;
+
+                Utilities.Shuffle(_8directions);
+
+                for (int d = 0; d < _8directions.Length; d++)
+                {
+                    int dx = 0, dy = 0;
+                    switch (_8directions[d])
+                    {
+                        case 1: dx = -1; dy = 0; break; // Left
+                        case 2: dx = 1; dy = 0; break;  // Right
+                        case 3: dx = 0; dy = 1; break;  // Up
+                        case 4: dx = 0; dy = -1; break; // Down
+                        case 5: dx = -1; dy = 1; break; // Top-left
+                        case 6: dx = 1; dy = 1; break;  // Top-right
+                        case 7: dx = -1; dy = -1; break; // Bottom-left
+                        case 8: dx = 1; dy = -1; break;  // Bottom-right
+                    }
+
+                    int nx = x + dx;
+                    int ny = y + dy;
+
+                    if (IsValidNonBlockTile(nx, ny))
+                    {
+                        Tile neighborTile = _tiles[nx + ny * Width];
+                        neighborTile.ChangeBlock(BlockID.Spider);
+                        spreadToNeighbor = true;
+                        Debug.Log("A");
+                        break;
+                    }
+                }
+                if (spreadToNeighbor)
+                    break;
+            }
+
+            if (spreadToNeighbor == false)
+            {
+                for (int i = 0; i < _spiderSpreadingList.Count; i++)
+                {
+                    int tileIndex = _spiderSpreadingList[i];
+                    int x = tileIndex % Width;
+                    int y = tileIndex / Width;
+
+                    Utilities.Shuffle(_8directions);
+                    for (int d = 0; d < _8directions.Length; d++)
+                    {
+                        int dx = 0, dy = 0;
+                        switch (_8directions[d])
+                        {
+                            case 1: dx = -1; dy = 0; break; // Left
+                            case 2: dx = 1; dy = 0; break;  // Right
+                            case 3: dx = 0; dy = 1; break;  // Up
+                            case 4: dx = 0; dy = -1; break; // Down
+                            case 5: dx = -1; dy = 1; break; // Top-left
+                            case 6: dx = 1; dy = 1; break;  // Top-right
+                            case 7: dx = -1; dy = -1; break; // Bottom-left
+                            case 8: dx = 1; dy = -1; break;  // Bottom-right
+                        }
+
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (IsValidGridTile(nx, ny))
+                        {
+                            Tile neighborTile = _tiles[nx + ny * Width];
+                            if (neighborTile.CurrentBlock is SpiderNet)
+                            {
+                                neighborTile.ChangeBlock(BlockID.SpiderOnNet);
+                                spreadToNeighbor = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (spreadToNeighbor)
+                        break;
+                }
+            }
+
+            if (spreadToNeighbor == false)
+            {
+                //   Debug.Log("Last case");
+                for (int i = 0; i < _spiderSpreadingList.Count; i++)
+                {
+                    int tileIndex = _spiderSpreadingList[i];
+                    int x = tileIndex % Width;
+                    int y = tileIndex / Width;
+                    _tiles[x + y * Width].ChangeBlock(BlockID.SpiderOnNet);
+                }
+            }
+        }
+        #endregion
+
+
+
+
+        private void HandleUnlockTileNeighbors(Tile tile)
+        {
+
+            if (IsValidGridTile(tile.X - 1, tile.Y))
+            {
+                int index = tile.X - 1 + tile.Y * Width;
+                if (_unlockTileSet.Contains(index) == false)
+                {
+                    _unlockTileSet.Add(index);
+                    _tiles[index].Unlock();
+                }
+
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X - 1, tile.Y)) == false)
+                {
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X - 1, tile.Y));
+                }
+            }
+            if (IsValidGridTile(tile.X + 1, tile.Y))
+            {
+                int index = tile.X + 1 + tile.Y * Width;
+                if (_unlockTileSet.Contains(index) == false)
+                {
+                    _unlockTileSet.Add(index);
+                    _tiles[index].Unlock();
+                }
+
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X + 1, tile.Y)) == false)
+                {
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X + 1, tile.Y));
+                }
+            }
+            if (IsValidGridTile(tile.X, tile.Y - 1))
+            {
+                int index = tile.X + (tile.Y - 1) * Width;
+                if (_unlockTileSet.Contains(index) == false)
+                {
+                    _unlockTileSet.Add(index);
+                    _tiles[index].Unlock();
+                }
+
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y - 1)) == false)
+                {
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y - 1));
+                }
+            }
+            if (IsValidGridTile(tile.X, tile.Y + 1))
+            {
+                int index = tile.X + (tile.Y + 1) * Width;
+                if (_unlockTileSet.Contains(index) == false)
+                {
+                    _unlockTileSet.Add(index);
+                    _tiles[index].Unlock();
+                }
+
+                if (_unlockThisPlayTurnSet.Contains(new Vector2Int(tile.X, tile.Y + 1)) == false)
+                {
+                    _unlockThisPlayTurnSet.Add(new Vector2Int(tile.X, tile.Y + 1));
+                }
+            }
+        }
+
+        private void HandleTriggerAllSpecialTiles()
+        {
+            for (int i = 0; i < _matchBuffer.Length; i++)
+            {
+                Tile tile = _tiles[i];
+                MatchID matchID = _matchBuffer[i];
+
+                if (matchID.IsSpecialMatch())
+                {
+                    if (_triggeredMatch5Set.Contains(i) == false)
+                    {
+                        if (tile.SpecialProperties == SpecialTileID.RowBomb)
+                        {
+                            //Debug.Log("Handle Special Match 4 Horizontal");
+                            EnableHorizontalMatchBuffer(tile.Y);
+                            PlayClearHorizontalVFX(tile);
+                        }
+                        else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
+                        {
+                            //Debug.Log("Handle Special Match 4 Vertical");
+                            EnableVerticalMatchBuffer(tile.X);
+                            PlayClearVerticalVFX(tile);
+                        }
+                        else if (tile.SpecialProperties == SpecialTileID.BlastBomb)
+                        {
+                            //Debug.Log("Handle Special Match 5");
+                            PlayFlashBombVfx(tile);
+                            HandleBlastBomb(tile);
+                        }
+                        else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
+                        {
+                            Debug.Log("Handle Special Color Burst");
+                            Utilities.Shuffle(_4directions);
+                            for (int j = 0; j < _4directions.Length; j++)
+                            {
+                                bool found = false;
+                                switch (_4directions[j])
+                                {
+                                    case 1: // left
+                                        if (IsValidMatchTile(tile.X - 1, tile.Y))
+                                        {
+                                            found = true;
+                                            ClearAllBoardTileID(tile, _tiles[tile.X - 1 + tile.Y * Width].ID);
+                                        }
+                                        break;
+                                    case 2: // right
+                                        if (IsValidMatchTile(tile.X + 1, tile.Y))
+                                        {
+                                            found = true;
+                                            ClearAllBoardTileID(tile, _tiles[tile.X + 1 + tile.Y * Width].ID);
+                                        }
+                                        break;
+                                    case 3: // up
+                                        if (IsValidMatchTile(tile.X, tile.Y + 1))
+                                        {
+                                            found = true;
+                                            ClearAllBoardTileID(tile, _tiles[tile.X + (tile.Y + 1) * Width].ID);
+                                        }
+                                        break;
+                                    case 4: // down
+                                        if (IsValidMatchTile(tile.X, tile.Y - 1))
+                                        {
+                                            found = true;
+                                            ClearAllBoardTileID(tile, _tiles[tile.X + (tile.Y - 1) * Width].ID);
+                                        }
+                                        break;
+                                }
+
+                                if (found) break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
+        {
+            yield return StartCoroutine(FillGridCoroutine());
+            onCompleted?.Invoke();
+        }
+
+
+        private void SetMatchBuffer(int index, MatchID matchID)
+        {
+            if (_matchBuffer[index] == MatchID.None)
+            {
+                _matchBuffer[index] = matchID;
+                return;
+            }
+            if (matchID == MatchID.None)
+            {
+                _matchBuffer[index] = matchID;
+                return;
+            }
+
+            if (matchID == MatchID.ColorBurst ||
+                (matchID == MatchID.SpecialMatch && _matchBuffer[index] != MatchID.ColorBurst))
+            {
+                _matchBuffer[index] = matchID;
+            }
+        }
+
+
+
 
         private void HandleBlastBomb(Tile tile)
         {
@@ -2559,8 +2360,16 @@ namespace Match3
 
                             if (index != tile.X + tile.Y * Width)
                             {
-                                if (_colorBurstParentDictionary.ContainsKey(index) == false)
-                                    _colorBurstParentDictionary.Add(index, tile.transform.position);
+                                if (_colorBurstParentDictionary.ContainsKey(tile) == false)
+                                {
+                                    _colorBurstParentDictionary[tile] = new();
+                                    _colorBurstParentDictionary[tile].Add(_tiles[index]);
+                                    //_colorBurstParentDictionary.Add(index, tile.transform.position);
+                                }
+                                else
+                                {
+                                    _colorBurstParentDictionary[tile].Add(_tiles[index]);
+                                }
                             }
                         }
                     }
@@ -2582,14 +2391,6 @@ namespace Match3
             }
         }
 
-        private void MatchPreviousTilesDifferent()
-        {
-            for (int i = 0; i < _tiles.Length; i++)
-            {
-                if (_tiles[i] == null) continue;
-                _prevTileIDs[i] = _tiles[i].ID;
-            }
-        }
 
 
         private void HandleCollectInrow(Tile tile, int sameIDCountInRow)
@@ -3038,6 +2839,259 @@ namespace Match3
         }
 
 
+
+
+        #region Utilities
+
+        private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
+        {
+            // Tile
+            Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
+
+            tileInstance.Display(display);
+            tileInstance.SetSpecialTile(SpecialTileID.None);
+            tileInstance.SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
+            tileInstance.SetGridPosition(x, y);
+            _tiles[x + y * Width] = tileInstance;
+
+            // Block
+            tileInstance.ChangeBlock(blockID);
+            return tileInstance;
+        }
+        private bool HasMatch()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Tile currTile = _tiles[x + y * Width];
+                    if (currTile == null) continue;
+                    if (currTile.ID == TileID.None) continue;
+                    if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
+                    if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
+                    if (currTile.CurrentBlock is not NoneBlock &&
+                        currTile.CurrentBlock is not Lock) continue;
+
+                    int sameIDCount = 0;
+
+                    // Horizontal check
+                    for (int h = x + 1; h < Width; h++)
+                    {
+                        Tile nbTile = _tiles[h + y * Width]; // Use y instead of currTile.Y
+                        if (nbTile == null) break;
+                        if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
+                        if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
+                        if (nbTile != null && currTile.ID == nbTile.ID &&
+                            (nbTile.CurrentBlock is NoneBlock ||
+                            nbTile.CurrentBlock is Lock))
+                        {
+                            sameIDCount++;
+                        }
+                        else
+                        {
+                            break; // Stop if IDs are not the same
+                        }
+                    }
+
+                    if (sameIDCount >= 2)
+                    {
+                        return true;
+                    }
+
+                    sameIDCount = 0;
+                    for (int v = y + 1; v < Height; v++)
+                    {
+                        Tile nbTile = _tiles[x + v * Width]; // Correct index calculation
+                        if (nbTile is null) break;
+                        if (nbTile.SpecialProperties == SpecialTileID.BlastBomb) break;
+                        if (nbTile.SpecialProperties == SpecialTileID.ColorBurst) break;
+                        if (nbTile != null && currTile.ID == nbTile.ID &&
+                            (nbTile.CurrentBlock is NoneBlock || nbTile.CurrentBlock is Lock))
+                        {
+                            sameIDCount++;
+                        }
+                        else
+                        {
+                            break; // Stop if IDs are not the same
+                        }
+                    }
+
+                    if (sameIDCount >= 2)
+                    {
+                        return true;
+                    }
+
+                }
+            }
+
+            return false;
+        }
+        private bool CanMatch()
+        {
+            bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
+            {
+                // down, down of down
+                if (IsValidMatchTile(newX, newY - 1))
+                {
+                    if (IsValidMatchTile(newX, newY - 2))
+                    {
+                        Tile downTile = _tiles[newX + (newY - 1) * Width];
+                        Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
+                        if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
+                            (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
+                            (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
+                        {
+                            // Debug.Log($"D: {newX}  {newY}");
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
+            {
+                // top, top of top
+                if (IsValidMatchTile(newX, newY + 1))
+                {
+                    if (IsValidMatchTile(newX, newY + 2))
+                    {
+                        Tile topTile = _tiles[newX + (newY + 1) * Width];
+                        Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
+                        if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
+                            (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
+                            (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
+                        {
+                            // Debug.Log($"C: {newX}  {newY}");
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
+            {
+                // right, right of right
+                if (IsValidMatchTile(newX + 1, newY))
+                {
+                    if (IsValidMatchTile(newX + 2, newY))
+                    {
+                        Tile rightTile = _tiles[newX + 1 + newY * Width];
+                        Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
+
+                        if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
+                            (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
+                            (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
+                        {
+                            // Debug.Log($"B: {newX}  {newY} ");
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
+            {
+                // left, left of left
+                if (IsValidMatchTile(newX - 1, newY))
+                {
+                    if (IsValidMatchTile(newX - 2, newY))
+                    {
+                        Tile leftTile = _tiles[newX - 1 + newY * Width];
+                        Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
+
+                        if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
+                            (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
+                            (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
+                        {
+                            // Debug.Log($"A: {tileID} {newX} {newY}");
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Tile tile = _tiles[x + y * Width];
+                    if (tile == null) continue;
+
+                    // left 
+                    if (IsValidMatchTile(x - 1, y))
+                    {
+                        if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
+                        {
+                            return true;
+                        }
+                    }
+
+                    // right 
+                    if (IsValidMatchTile(x + 1, y))
+                    {
+                        if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
+                        {
+                            // Debug.Log($"{tile.X} {tile.Y}  {tile.Data.ID}");
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
+                        {
+                            return true;
+                        }
+                    }
+
+                    // up 
+                    if (IsValidMatchTile(x, y + 1))
+                    {
+                        if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
+                        {
+                            return true;
+                        }
+                    }
+
+                    // down 
+                    if (IsValidMatchTile(x, y - 1))
+                    {
+                        if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
+                        {
+                            return true;
+                        }
+                        if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private void SwapPosition(Tile tileA, Tile tileB)
         {
             // sort render order
@@ -3188,6 +3242,7 @@ namespace Match3
                 }
             }
         }
+        #endregion
 
 
 
@@ -3225,15 +3280,6 @@ namespace Match3
 
             Tile tile = _tiles[(Width / 2) + (Height / 2) * Width];
             GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + new Vector2(0.5f, 0.5f), Quaternion.identity);
-        }
-
-
-        private void PlaySingleColorBurstLineVfx(Vector2 pointA, Vector2 pointB, float duration)
-        {
-            ColorBurstLine colorBurstLinePrefab = Resources.Load<ColorBurstLine>("Effects/ColorBurstVfx");
-            ColorBurstLine vfx = Instantiate(colorBurstLinePrefab, this.transform);
-            vfx.transform.position = new Vector3(0.5f, 0.5f, 0f);
-            vfx.SetLine(pointB, pointA, duration);
         }
         #endregion
     }
