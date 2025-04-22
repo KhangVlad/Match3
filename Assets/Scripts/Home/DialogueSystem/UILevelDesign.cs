@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Match3.Enums;
-
+using Match3.Shares;
 public class UILevelDesign : MonoBehaviour
 {
     [SerializeField] private Button button;

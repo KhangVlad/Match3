@@ -11,6 +11,7 @@ Shader "Custom/SpriteShiny"
         _GlintIntensity ("Glint Intensity", Range(0,15)) = 4.0
         _GlintAngle ("Glint Angle", Range(0,360)) = 30.0    // Added back
         _GlintNoise ("Glint Noise", Range(0,0.3)) = 0.08    // Subtle imperfections
+        _GlintFrequency ("Glint Frequency", Float) = 1.0
     }
 
     SubShader
@@ -60,7 +61,7 @@ Shader "Custom/SpriteShiny"
             float _GlintIntensity;
             float _GlintAngle;
             float _GlintNoise;
-
+            float _GlintFrequency;
             v2f vert(appdata_t IN)
             {
                 v2f OUT;
@@ -83,7 +84,7 @@ Shader "Custom/SpriteShiny"
                 
                 // Animate with time and add noise
                 float noise = (frac(IN.texcoord.y * 37.0) - 0.5) * _GlintNoise;
-                float glintPos = frac(_Time.y * _GlintSpeed + noise);
+                float glintPos = sin(_Time.y * _GlintSpeed * _GlintFrequency + noise);
                 
                 // Calculate distance with sharp falloff
                 float dist = abs(projectedPos - glintPos);

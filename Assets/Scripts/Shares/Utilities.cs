@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Match3.Shares
 {
@@ -44,6 +45,64 @@ namespace Match3.Shares
             action?.Invoke();
         }
 
+        public static void ButtonInteractableAfter(this Button button)
+        {
+            button.StartCoroutine(PreventMultipleClick(button));
+        }
+
+        private static IEnumerator PreventMultipleClick(this Button button)
+        {
+            button.interactable = false;
+            yield return new WaitForSeconds(0.5f);
+            button.interactable = true;
+        }
+        public static bool IsPointerOverUI()
+        {
+            return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+        }
+          public static Vector2Int ImagePixelToWorld(this SpriteRenderer image, Vector2 pixel)
+    {
+        Bounds bounds = image.bounds;
+
+        int imgWidth = image.sprite.texture.width;
+        int imgHeight = image.sprite.texture.height;
+
+        // Normalize coordinates (bottom-left origin in Unity)
+        float normalizedX = pixel.x / imgWidth;
+        float normalizedY = pixel.y / imgHeight; // No need to invert Y
+
+        float worldX = Mathf.Lerp(bounds.min.x, bounds.max.x, normalizedX);
+        float worldY = Mathf.Lerp(bounds.min.y, bounds.max.y, normalizedY);
+        return Vector2Int.RoundToInt(new Vector2(worldX, worldY));
+    }
+
+    public static Vector2Int WorldPositionToImagePixel(this SpriteRenderer image, Vector2 worldPosition)
+    {
+        Bounds bounds = image.bounds;
+
+        int imgWidth = image.sprite.texture.width;
+        int imgHeight = image.sprite.texture.height;
+
+        float normalizedX = Mathf.InverseLerp(bounds.min.x, bounds.max.x, worldPosition.x);
+        float normalizedY = Mathf.InverseLerp(bounds.min.y, bounds.max.y, worldPosition.y);
+
+        float pixelX = Mathf.Lerp(0, imgWidth, normalizedX);
+        float pixelY = Mathf.Lerp(0, imgHeight, normalizedY);
+
+        return new Vector2Int(Mathf.RoundToInt(pixelX), Mathf.RoundToInt(pixelY));
+    }
+    
+
+        public static void SetNativeSize(this Image image)
+        {
+            image.SetNativeSize();
+        }
+
+
+        public static void SetImageSize(this SpriteRenderer image, float width, float height)
+        {
+            image.size = new Vector2(width, height);
+        }
 
         public static void WaitAfter(float waitTime, System.Action action)
         {
