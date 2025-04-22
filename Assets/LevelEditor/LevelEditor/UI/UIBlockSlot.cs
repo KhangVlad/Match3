@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Match3.Shares;
 
 namespace Match3.LevelEditor
 {

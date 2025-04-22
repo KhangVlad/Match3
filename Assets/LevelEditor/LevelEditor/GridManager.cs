@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Match3.Shares;
 
 namespace Match3.LevelEditor
 {

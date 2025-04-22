@@ -3,7 +3,7 @@ using System.Collections;
 using System;
 using UnityEngine.EventSystems;
 
-namespace Match3
+namespace Match3.Shares
 {
     public static class Utilities
     {

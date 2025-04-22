@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Match3.Shares;
 
 namespace Match3
 {

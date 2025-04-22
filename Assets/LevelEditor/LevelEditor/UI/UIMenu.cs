@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using SFB;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Match3.Shares;
 
 namespace Match3.LevelEditor
 {

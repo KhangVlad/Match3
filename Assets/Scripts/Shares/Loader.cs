@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-namespace Match3
+namespace Match3.Shares
 {
     public static class Loader
     {
