@@ -43,6 +43,7 @@ Material:
     - _InnerRadius: 0.4
     - _Rotation: 72
     - _SegmentCount: 5
+    - _StartAngleOffset: 160
     - _UseGradient: 1
     m_Colors:
     - _Color0: {r: 1, g: 0, b: 0.5, a: 0.44705883}
