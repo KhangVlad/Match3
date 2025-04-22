@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "938858293143",
+    "project_id": "chill-haven-story",
+    "storage_bucket": "chill-haven-story.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:938858293143:android:a14f0786c981f0c7bc86d2",
+        "android_client_info": {
+          "package_name": "com.sezyTech.ChillHavenStory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLV7h3OFG0jExTtq6Ff9fclOgHr5BV_J4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
