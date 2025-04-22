@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 6f52f088afcfa46d7888ae07331996b8
+guid: b67bd616668ee42319c2267a3cf2d169
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6061654045167330136
-    second: drill_2_0
+      213: 4429367793627031399
+    second: unscreen-109_0
+  - first:
+      213: -5722113636203196988
+    second: unscreen-109_1
+  - first:
+      213: 6770563115470813304
+    second: unscreen-109_2
+  - first:
+      213: -8631253489185253875
+    second: unscreen-109_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +60,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 300
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -72,10 +81,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 256
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: drill_2_0
+      name: unscreen-109_0
       rect:
         serializedVersion: 2
-        x: 25
-        y: 0
-        width: 206
-        height: 256
+        x: 27
+        y: 27
+        width: 308
+        height: 303
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +150,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8532281fc325f1450800000000000000
-      internalID: 6061654045167330136
+      spriteID: 767e1be5a86487d30800000000000000
+      internalID: 4429367793627031399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unscreen-109_1
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 21
+        width: 51
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cd80b507f7f690b0800000000000000
+      internalID: -5722113636203196988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unscreen-109_2
+      rect:
+        serializedVersion: 2
+        x: 221
+        y: 0
+        width: 35
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 878fff2184fd5fd50800000000000000
+      internalID: 6770563115470813304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unscreen-109_3
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 4
+        width: 101
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0613c29ea0a73880800000000000000
+      internalID: -8631253489185253875
       vertices: []
       indices: 
       edges: []
@@ -161,7 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      drill_2_0: 6061654045167330136
+      unscreen-109_0: 4429367793627031399
+      unscreen-109_1: -5722113636203196988
+      unscreen-109_2: 6770563115470813304
+      unscreen-109_3: -8631253489185253875
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
