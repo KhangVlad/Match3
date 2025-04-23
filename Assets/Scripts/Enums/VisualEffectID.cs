@@ -27,7 +27,8 @@ namespace Match3.Enums
         ExplosionHorizontalFX = 51,
         ExplosionVerticalFX = 52,
         ColorBurstFX = 53,
-        ColorBurstLine = 54,
+        ColorBurstLineFX = 54,
+        LightingLine = 55,
 
 
 

@@ -41,6 +41,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _EdgeBlurSize: 1
+    - _EdgeNoiseScale: 10
+    - _EdgeNoiseSpeed: 1
+    - _EdgeNoiseStrength: 0
+    - _EdgeThreshold: 5
     - _EmissionStrength: 0
     - _EnableExternalAlpha: 0
     - _MaskInteraction: 1

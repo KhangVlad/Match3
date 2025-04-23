@@ -52,7 +52,7 @@ namespace Match3
         private Queue<Tile> _emissiveTileQueue;
         private HashSet<Vector2Int> _matchThisPlayTurnSet;
         private HashSet<Vector2Int> _unlockThisPlayTurnSet;
-        private List<ColorBurstLine> _cachedColorBurstLine;
+        private List<ColorBurstLineFX> _cachedColorBurstLine;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -458,6 +458,21 @@ namespace Match3
                     _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
+                    _tiles[gridPosition.x + gridPosition.y * Width] = null;
+
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                    newTile.UpdatePosition();
+                    newTile.SetSpecialTile(SpecialTileID.ColorBurst);
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
+                }
+            }
         }
 
         #region LOADER
@@ -671,41 +686,43 @@ namespace Match3
                 _cachedColorBurstLine.Clear();
                 if (_colorBurstParentDictionary.Count > 0)
                 {
+                    float colorBurstDuration = 0.5f;
+
                     foreach (var e in _colorBurstParentDictionary)
                     {
                         Tile t = e.Key;
+                        ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                        colorBurstFX.transform.position = t.TileTransform.position;
+                        colorBurstFX.Play(colorBurstDuration);
+
                         //t.PlayScaleTile(0.8f, 0.2f, Ease.OutBack);
                         for (int i = 0; i < e.Value.Count; i++)
                         {
                             Tile nb = e.Value[i];
-                            ColorBurstLine colorBurstLine = (ColorBurstLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLine);
-                            colorBurstLine.transform.position = Vector2.zero;
-                            colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
-                            _cachedColorBurstLine.Add(colorBurstLine);
-                            _cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
+                            //ColorBurstLineFX colorBurstLine = (ColorBurstLineFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLineFX);
+                            //colorBurstLine.transform.position = Vector2.zero;
+                            //colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
+                            //_cachedColorBurstLine.Add(colorBurstLine);
+                            //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
+
+                            LightningLine lightningLineFX = (LightningLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.LightingLine);
+                            lightningLineFX.transform.position = Vector2.zero;
+                            lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, 0.1f, colorBurstDuration);
+                            //_cachedColorBurstLine.Add(colorBurstLine);
+                            //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
                         }
                     }
 
                     Debug.Log("wait a second");
-                    float colorBurstDuration = 0.5f;
-                    yield return new WaitForSeconds(colorBurstDuration);
+                
+                    //yield return new WaitForSeconds(colorBurstDuration);
 
-
-                    for (int i = 0; i < _cachedColorBurstLine.Count; i++)
-                    {
-                        _cachedColorBurstLine[i].CallbackLine();
-                        _cachedColorBurstLine[i].ReturnToPool(0.5f);
-                    }
-
-                    //foreach (var e in _colorBurstParentDictionary)
+                    //for (int i = 0; i < _cachedColorBurstLine.Count; i++)
                     //{
-                    //    Tile t = e.Key;
-                    //    for (int i = 0; i < e.Value.Count; i++)
-                    //    {
-                    //        Tile nb = e.Value[i];
-                    //        nb.MoveToPosition(t.transform.position, 0.5f, Ease.InBack);
-                    //    }
+                    //    _cachedColorBurstLine[i].CallbackLine();
+                    //    _cachedColorBurstLine[i].ReturnToPool(0.5f);
                     //}
+
                     yield return new WaitForSeconds(colorBurstDuration);
                 }
 
