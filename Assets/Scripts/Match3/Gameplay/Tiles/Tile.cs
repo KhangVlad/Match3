@@ -39,6 +39,7 @@ namespace Match3
         private Tween _moveTween;
         private Tween _scaleTween;
         private Tween _tileScaleTween;
+        private Tween _shakeTween;
 
 
         #region Properties
@@ -54,9 +55,10 @@ namespace Match3
                 TileTransform = transform.Find("Pivot/Tile");
             }
 
-            bloomSR = transform.Find("Pivot/Bloom").GetComponent<SpriteRenderer>();
+            bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
             bloomSR.enabled = false;
-            if(bloomSR == null) Debug.LogError("Missing bloom reference !!!");
+            if (bloomSR == null) Debug.LogError("Missing bloom reference !!!");
+            Bloom(false);
             sr = TileTransform.GetComponent<SpriteRenderer>();
             _tileSprite = sr.sprite;
             _propBlock = new MaterialPropertyBlock();
@@ -68,6 +70,7 @@ namespace Match3
             {
                 Initialize();
             }
+            Bloom(false);
         }
 
 
@@ -91,6 +94,11 @@ namespace Match3
             if (_tileScaleTween != null && _tileScaleTween.IsActive())
             {
                 _tileScaleTween.Kill();
+            }
+
+            if (_shakeTween != null && _shakeTween.IsActive())
+            {
+                _shakeTween.Kill();
             }
         }
 
@@ -274,6 +282,11 @@ namespace Match3
             sr.maskInteraction = mask;
         }
 
+        public void Bloom(bool enable)
+        {
+            bloomSR.enabled = enable;
+        }
+
 
         public void Emissive(float duration)
         {
@@ -314,6 +327,15 @@ namespace Match3
         }
 
 
+        public virtual void PlayShaking(float duration)
+        {
+            _shakeTween = transform.DOShakePosition(
+                duration: duration,     // Longer duration = slower overall shake
+                strength: 0.1f,         // Smaller strength = smaller movement
+                vibrato: 5,             // Fewer shakes = slower, less intense
+                randomness: 3f         // Less randomness = more controlled movement
+            );
+        }
         public virtual void PlayScaleTile(float endValue, float duration, Ease ease)
         {
             _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease);
@@ -378,6 +400,8 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
+
+            Bloom(false);
         }
         #endregion
     }

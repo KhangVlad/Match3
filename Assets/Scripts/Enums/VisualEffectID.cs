@@ -29,7 +29,7 @@ namespace Match3.Enums
         ColorBurstFX = 53,
         ColorBurstLineFX = 54,
         LightingLine = 55,
-
+        EndLineColorBurstFX = 56,
 
 
         Slash = 100,

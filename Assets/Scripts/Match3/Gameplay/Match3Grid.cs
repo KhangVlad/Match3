@@ -686,7 +686,7 @@ namespace Match3
                 _cachedColorBurstLine.Clear();
                 if (_colorBurstParentDictionary.Count > 0)
                 {
-                    float colorBurstDuration = 0.5f;
+                    float colorBurstDuration = 1f;
 
                     foreach (var e in _colorBurstParentDictionary)
                     {
@@ -699,22 +699,31 @@ namespace Match3
                         for (int i = 0; i < e.Value.Count; i++)
                         {
                             Tile nb = e.Value[i];
+                            nb.PlayShaking(colorBurstDuration);
                             //ColorBurstLineFX colorBurstLine = (ColorBurstLineFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLineFX);
                             //colorBurstLine.transform.position = Vector2.zero;
                             //colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
                             //_cachedColorBurstLine.Add(colorBurstLine);
                             //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
 
+                            nb.Bloom(true);
+                            Debug.Log("BLoom");
                             LightningLine lightningLineFX = (LightningLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.LightingLine);
                             lightningLineFX.transform.position = Vector2.zero;
-                            lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, 0.1f, colorBurstDuration);
+                            float reachTaretTime = 0.1f;
+                            lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, reachTaretTime, colorBurstDuration);
                             //_cachedColorBurstLine.Add(colorBurstLine);
                             //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
+
+
+                            EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
+                            endLineColorBurstFX.transform.position = nb.TileTransform.position;
+                            endLineColorBurstFX.Play(colorBurstDuration);
                         }
                     }
 
                     Debug.Log("wait a second");
-                
+
                     //yield return new WaitForSeconds(colorBurstDuration);
 
                     //for (int i = 0; i < _cachedColorBurstLine.Count; i++)
@@ -2892,6 +2901,7 @@ namespace Match3
         {
             // Tile
             Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
+            tileInstance.Bloom(false);
 
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
