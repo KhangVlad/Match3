@@ -14,6 +14,7 @@ namespace Match3
         protected ObjectPool<Tile> pool;
 
         protected SpriteRenderer sr;
+        protected SpriteRenderer bloomSR;
         public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
         [SerializeField] protected Sprite _match4Vertical;
@@ -53,6 +54,9 @@ namespace Match3
                 TileTransform = transform.Find("Pivot/Tile");
             }
 
+            bloomSR = transform.Find("Pivot/Bloom").GetComponent<SpriteRenderer>();
+            bloomSR.enabled = false;
+            if(bloomSR == null) Debug.LogError("Missing bloom reference !!!");
             sr = TileTransform.GetComponent<SpriteRenderer>();
             _tileSprite = sr.sprite;
             _propBlock = new MaterialPropertyBlock();
@@ -356,7 +360,7 @@ namespace Match3
 
         public virtual void ReturnToPool(float duration)
         {
-            Invoke(nameof(ReturnToPool), duration); 
+            Invoke(nameof(ReturnToPool), duration);
         }
 
         private void ResetTile()

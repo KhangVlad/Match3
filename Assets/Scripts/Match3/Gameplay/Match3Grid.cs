@@ -1196,7 +1196,6 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
-                        Debug.Log("HEHE");
                         if (_selectedTile.SpecialProperties == SpecialTileID.RowBomb)
                         {
                             EnableHorizontalMatchBuffer(_selectedTile.Y);
