@@ -1,6 +1,13 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Shaders/Custom_DirectionalGradient.mat.meta
 guid: 070c6a5fda01e4aa3b84592268a0c6b3
 NativeFormatImporter:
+========
+guid: 575cd48429b804994812e7d33745abec
+labels:
+- gpsr
+DefaultImporter:
+>>>>>>>> Stashed changes:Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.8.0/firebase-app-unity-12.8.0.pom.meta
   externalObjects: {}
   mainObjectFileID: 2100000
   userData: 

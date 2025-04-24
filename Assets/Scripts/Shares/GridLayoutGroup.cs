@@ -18,15 +18,9 @@ namespace Match3.Shares
 
         private void SetCellsAlongAxis(int axis)
         {
-            // Normally a Layout Controller should only set horizontal values when invoked for the horizontal axis
-            // and only vertical values when invoked for the vertical axis.
-            // However, in this case we set both the horizontal and vertical position when invoked for the vertical axis.
-            // Since we only set the horizontal position and not the size, it shouldn't affect children's layout,
-            // and thus shouldn't break the rule that all horizontal layout must be calculated before all vertical layout.
             var rectChildrenCount = rectChildren.Count;
             if (axis == 0)
             {
-                // Only set the sizes when invoked for horizontal axis, not the positions.
 
                 for (int i = 0; i < rectChildrenCount; i++)
                 {

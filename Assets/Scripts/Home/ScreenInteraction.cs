@@ -81,9 +81,8 @@ public class ScreenInteraction : MonoBehaviour
 
         Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 1000, characterLayerMask);
-
-        VfxGameObject a = VfxPool.Instance.GetVfxByName("Heart");
-        a.gameObject.transform.position = PreviouseMousePos;
+        VfxGameObject a = VfxPool.Instance.GetVfxByName("Ripple");
+        a.gameObject.transform.position = PreviouseMousePos; 
         if (hit.collider is not null)
         {
             if (hit.collider.TryGetComponent(out CharacterBubble character))

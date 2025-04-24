@@ -10,6 +10,9 @@ public class TimeManager : MonoBehaviour
     private TimeOfDay currentTimeOfDay;
     public event Action OnTimeChanged;
 
+    [field: SerializeField] public DateTime LastOnlineTime { get; set; }
+    [field: SerializeField] public DateTime LoginTime { get; set; }
+
     private static readonly Dictionary<DayOfWeek, DayInWeek> DayMapping = new()
     {
         { DayOfWeek.Monday, DayInWeek.Monday },

@@ -40,7 +40,7 @@ namespace Match3
 
         private void Start()
         {
-            _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
+            _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataSOByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
             _turnCountText.text = GameplayManager.Instance.TurnRemainingCount.ToString();
             LoadUIBoosters();
 

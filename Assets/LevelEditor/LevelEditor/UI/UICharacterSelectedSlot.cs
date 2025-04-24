@@ -82,7 +82,7 @@ namespace Match3.LevelEditor
 
         private void OnCharacterLevelDataLoaded_UpdateUI(CharacterLevelDataV2 dataV2)
         {
-            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID(dataV2.CharacterID);
+            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataSOByID(dataV2.CharacterID);
             SetData(characterData);
         }
     }

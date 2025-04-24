@@ -1,4 +1,5 @@
 using System;
+using Match3.Enums;
 using UnityEngine;
 
 namespace Match3
@@ -10,7 +11,7 @@ namespace Match3
         // LOW LEVEL
         public static event System.Action OnStateChanged;
         public static event System.Action OnPlaying;
-        public static event System.Action OnWin;
+        public static event System.Action<CharacterID,int> OnWin;
         public static event System.Action OnGameOver;
 
 
@@ -118,7 +119,7 @@ namespace Match3
                 case GameState.WIN:
                     AudioManager.Instance.PlayWinSfx();
                     UIGameplayManager.Instance.DisplayUIWin(true);
-                    OnWin?.Invoke();
+                  
                     break;
                 case GameState.GAMEOVER:
                     AudioManager.Instance.PlayGameoverSfx();
@@ -161,7 +162,8 @@ namespace Match3
 
             if (CheckCompleteAllQuests(out int star))
             {
-                Debug.Log($"win star: {star}");
+                Debug.Log($"Game win: {star}");
+                OnWin?.Invoke( CharacterID.Alice, star);
                 ChangeGameState(GameState.WIN);
             }
             else

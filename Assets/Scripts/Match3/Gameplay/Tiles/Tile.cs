@@ -112,6 +112,7 @@ namespace Match3
         {
             TileTransform.localPosition = offset;
         }
+        
 
         public void ChangeBlock(BlockID blockID)
         {

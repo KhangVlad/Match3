@@ -31,14 +31,14 @@ public class LanguageManager : MonoBehaviour
     public void ChangeLanguage(LanguageType newLanguage)
     {
         currentLanguage = newLanguage;
-        GameDataManager.Instance.LoadDialogueData(currentLanguage);
+        // GameDataManager.Instance.LoadDialogueData(currentLanguage);
         SaveLanguage();
         // Add any additional logic to update the UI or other components with the new language
     }
 
     private void SaveLanguage()
     {
-        GameDataManager.Instance.LoadDialogueData(currentLanguage);
+        // GameDataManager.Instance.LoadDialogueData(currentLanguage);
         PlayerPrefs.SetInt("Language", (int)currentLanguage);
         PlayerPrefs.Save();
     }
@@ -54,7 +54,7 @@ public class LanguageManager : MonoBehaviour
             currentLanguage = LanguageType.EN; // Default language
         }
 
-        GameDataManager.Instance.LoadDialogueData(currentLanguage);
+        // GameDataManager.Instance.LoadDialogueData(currentLanguage);
     }
 }
 

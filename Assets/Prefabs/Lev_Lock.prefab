@@ -351,6 +351,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 4357820063222587968}
   levelText: {fileID: 3769031173966227295}
+  requirement: {fileID: 0}
+  lockTransform: {fileID: 6366905388215289555}
   index: 0
   Islocked: 0
 --- !u!1 &6479162958561424554

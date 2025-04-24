@@ -206,7 +206,7 @@ namespace Match3.LevelEditor
 
         private void OnCharacterLevelDataLoaded_UpdateUI(CharacterLevelDataV2 dataV2)
         {
-            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataByID((CharacterID)GridManager.Instance.Heart);
+            CharacterDataSO characterData = GameDataManager.Instance.GetCharacterDataSOByID((CharacterID)GridManager.Instance.Heart);
             _characterSelectedSlot.SetData(characterData);
         }
 

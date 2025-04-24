@@ -20,8 +20,7 @@ namespace Match3
         //[Header("Tilebases")]
         private Dictionary<string, TileBase> _tilebaseDictionary;
 
-        [Header("~Runtime")]
-        public Tile[] Tiles;
+        [Header("~Runtime")] public Tile[] Tiles;
         private Dictionary<TileID, Tile> _tileDict;
 
         public Block[] Blocks;
@@ -50,7 +49,8 @@ namespace Match3
         //character activity data
         // public List<CharacterActivitySO> characterActivities = new();
         public CharacterAppearanceSO characterColor;
-        public List<CharacterDialogueSO> characterDialogues = new();
+
+        // public List<CharacterDialogueSO> characterDialogues = new();
         public List<CharacterActivitySO> characterActivities = new();
         public event System.Action OnCharacterDataLoaded;
 
@@ -69,7 +69,6 @@ namespace Match3
             {
                 Destroy(gameObject);
             }
-
         }
 
         private void Start()
@@ -84,6 +83,7 @@ namespace Match3
             for (int i = 0; i < Tiles.Length; i++)
                 Tiles[i].SetInteractionMask(SpriteMaskInteraction.None);
         }
+
         private void LoadGameData()
         {
             // Load all tiles
@@ -201,7 +201,7 @@ namespace Match3
             OnCharacterDataLoaded?.Invoke();
         }
 
-        public CharacterDataSO GetCharacterDataByID(CharacterID id)
+        public CharacterDataSO GetCharacterDataSOByID(CharacterID id)
         {
             return _characterDataDict[id];
         }
@@ -251,15 +251,83 @@ namespace Match3
             }
         }
 
-
-        public void LoadDialogueData(LanguageType l)
+        public RunTimeDialogData ReadDialogueData(CharacterID characterId, LanguageType language)
         {
-            characterDialogues = Resources.LoadAll<CharacterDialogueSO>($"DataSO/CharacterDialogues_{l}").ToList();
+            string resourcePath = "CSVData/Dialogues";
+            string fileName = $"{language.ToString().ToLower()}_{(int)characterId}";
+            TextAsset csvFile = Resources.Load<TextAsset>($"{resourcePath}/{fileName}");
+
+            if (csvFile == null)
+            {
+                Debug.LogError($"Failed to load dialogue file: {fileName}");
+                return null;
+            }
+
+            return ParseCSVData(csvFile.text, characterId);
         }
 
-        public CharacterDialogueSO GetCharacterDialogueByID(CharacterID id)
+        private RunTimeDialogData ParseCSVData(string csvContent, CharacterID characterId)
         {
-            return characterDialogues.Find(x => x.id == id);
+            string[] lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Dictionary to hold LevelDialogueData by level
+            Dictionary<int, List<string>> levelDialogues = new Dictionary<int, List<string>>();
+            List<string> greetingDialogs = new List<string>();
+            List<string> lowSympathyDialogs = new List<string>();
+
+            // Skip the header row and iterate through the lines
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string[] columns = lines[i].Split(',');
+
+                // Make sure the row has enough columns
+                if (columns.Length >= 5)
+                {
+                    int level = int.Parse(columns[0].Trim());
+                    string dialog = columns[2].Trim(); 
+                    string greeting = columns[3].Trim();
+                    string lowSympathy = columns[4].Trim(); 
+
+                    // Store greeting dialogue
+                    if (!string.IsNullOrEmpty(greeting))
+                    {
+                        greetingDialogs.Add(greeting);
+                    }
+                    if (!string.IsNullOrEmpty(lowSympathy))
+                    {
+                        lowSympathyDialogs.Add(lowSympathy);
+                    }
+
+                    if (!levelDialogues.ContainsKey(level))
+                    {
+                        levelDialogues[level] = new List<string>();
+                    }
+
+                    levelDialogues[level].Add(dialog);
+                }
+            }
+
+            // Convert the dictionary into the LevelDialogueData array
+            List<LevelDialogueData> levelDataList = new List<LevelDialogueData>();
+            foreach (var levelEntry in levelDialogues)
+            {
+                LevelDialogueData data = new LevelDialogueData
+                {
+                    levelDialogs = levelEntry.Value.ToArray(),
+                };
+                levelDataList.Add(data);
+            }
+
+            // Create and return the RunTimeDialogData
+            RunTimeDialogData runTimeData = new RunTimeDialogData
+            {
+                id = characterId,
+                data = levelDataList.ToArray(),
+                greetingDialogs = greetingDialogs.ToArray(),
+                lowSympathyDialogs = lowSympathyDialogs.ToArray()
+            };
+
+            return runTimeData;
         }
 
         public List<CharacterActivitySO> GetCharacterActive(DayInWeek day) //current day
@@ -359,6 +427,7 @@ namespace Match3
 
 
         #region Tilebase
+
         private void LoadAllTilebases()
         {
             TileBase[] tilebases = Resources.LoadAll<TileBase>("Tilebases");
@@ -383,10 +452,12 @@ namespace Match3
                 return false;
             }
         }
+
         #endregion
 
 
-        #region  Visual Effect
+        #region Visual Effect
+
         private void LoadAllVisualEffect()
         {
             BaseVisualEffect[] vfxs = Resources.LoadAll<BaseVisualEffect>("Effects/");
@@ -411,6 +482,7 @@ namespace Match3
                 return false;
             }
         }
+
         #endregion
     }
 }

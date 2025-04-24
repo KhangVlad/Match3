@@ -3,16 +3,15 @@ using UnityEngine;
 using System.Collections.Generic;
 using Match3.Enums;
 using Match3;
-using UnityEngine.Serialization;
+using Firebase.Firestore;
+using System.Threading.Tasks;
 
 public class UserManager : MonoBehaviour
 {
     public static UserManager Instance { get; private set; }
-  
-
-    [SerializeField] private UserData _userData;
     public event Action OnUserDataLoaded;
 
+    public UserData UserData { get; set; }
     public int TotalHeart => GetTotalHeart();
 
 
@@ -29,10 +28,10 @@ public class UserManager : MonoBehaviour
 
     private void Start()
     {
-        GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
+        // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
     }
 
-    private void InitializeNewUserData()
+    public UserData InitializeNewUserData()
     {
         List<CharacterData> allCharacterData = new List<CharacterData>();
         foreach (CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
@@ -56,7 +55,7 @@ public class UserManager : MonoBehaviour
             }
         }
 
-        _userData = new UserData()
+        UserData = new UserData()
         {
             AvaiableBoosters = new()
             {
@@ -70,41 +69,51 @@ public class UserManager : MonoBehaviour
                 new BoosterSlot(Match3.BoosterID.FreeSwitch, 99),
                 new BoosterSlot(Match3.BoosterID.Hammer, 99),
             },
-            AllCharacterData = allCharacterData
+            AllCharacterData = allCharacterData,
         };
         OnUserDataLoaded?.Invoke();
-       
+
+
+        return UserData;
     }
 
     public int GetTotalHeart()
     {
         int totalStar = 0;
-       for( int i=0; i< _userData.AllCharacterData.Count; i++)
+        for (int i = 0; i < UserData.AllCharacterData.Count; i++)
         {
-            totalStar += _userData.AllCharacterData[i].TotalHeartPoints();
+            totalStar += UserData.AllCharacterData[i].TotalHeartPoints();
         }
 
         return totalStar;
     }
-    
+
     public CharacterData GetCharacterData(CharacterID id)
     {
-        return _userData.AllCharacterData.Find(x => x.CharacterID == id);
+        return UserData.AllCharacterData.Find(x => x.CharacterID == id);
     }
-    
-
-
-
-    
 }
 
+[FirestoreData]
 [System.Serializable]
 public class CharacterData
 {
-    public CharacterID CharacterID;
-    public List<int> Hearts;
-   
+    [FirestoreProperty]
+    public CharacterID CharacterID { get; set; }
 
+    [FirestoreProperty]
+    public List<int> Hearts { get; set; }
+    [FirestoreProperty] public int higestLevel { get; set; }
+
+    // Parameterless constructor required by Firestore
+    public CharacterData()
+    {
+        CharacterID = CharacterID.None;
+        Hearts = new();
+    }
+
+
+    // Non-serialized helper method
     public int TotalHeartPoints()
     {
         int totalHeartPoints = 0;
@@ -112,11 +121,6 @@ public class CharacterData
         {
             totalHeartPoints += Hearts[i];
         }
-
         return totalHeartPoints;
     }
-    
-    
-    
-    
 }

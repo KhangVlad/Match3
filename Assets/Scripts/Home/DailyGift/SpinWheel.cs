@@ -23,6 +23,7 @@ public class SpinWheel : MonoBehaviour
 
     public void Spin()
     {
+        Debug.Log("no more chance");
         if (!m_spinning)
             StartCoroutine(DoSpin());
     }
