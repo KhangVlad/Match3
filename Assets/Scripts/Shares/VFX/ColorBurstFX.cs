@@ -1,12 +1,15 @@
 using UnityEngine;
 using Match3.Enums;
-
+using DG.Tweening;
 namespace Match3.Shares
 {
     public class ColorBurstFX : BaseVisualEffect
     {
         private Animator _anim;
-      
+        private Transform _target;
+
+        private Tween _scaleTween;
+
         public override void Initialize()
         {
             VfxID = VisualEffectID.ColorBurstFX;
@@ -15,6 +18,12 @@ namespace Match3.Shares
         private void Awake()
         {
             _anim = GetComponent<Animator>();
+        }
+
+        private void Update()
+        {
+            if (_target == null) return;
+            transform.position = _target.transform.position;
         }
 
         public void PlayAnimtion()
@@ -27,10 +36,30 @@ namespace Match3.Shares
             _anim?.SetBool("Rotate", false);
         }
 
+        public void SetTarget(Transform target)
+        {
+            _target = target;
+        }
+
+        public void AppearPopupAnimation()
+        {
+            Debug.Log("AppearPopupAnimation");
+            transform.localScale = Vector3.zero; // Start invisible
+            _scaleTween = transform.DOScale(Vector3.one, 0.5f) // Scale up to full size
+                   .SetEase(Ease.OutBack);     // Nice bouncy ease
+        }
+
         public override void ReturnToPool()
         {
             base.ReturnToPool();
+            SetTarget(null);
             StopAnimation();
+
+            if (_scaleTween != null && _scaleTween.IsActive())
+            {
+                _scaleTween.Kill();
+                transform.localScale = Vector3.one;
+            }
         }
     }
 }

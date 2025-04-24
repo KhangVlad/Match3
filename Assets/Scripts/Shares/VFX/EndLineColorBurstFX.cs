@@ -7,7 +7,7 @@ namespace Match3.Shares
     {
         public override void Initialize()
         {
-                VfxID = VisualEffectID.EndLineColorBurstFX;
+            VfxID = VisualEffectID.EndLineColorBurstFX;
         }
     }
 }

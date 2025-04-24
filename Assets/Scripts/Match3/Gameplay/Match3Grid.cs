@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using Match3.Enums;
 using Match3.Shares;
+using FMOD.Studio;
 
 namespace Match3
 {
@@ -455,7 +456,11 @@ namespace Match3
                 Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
                 {
-                    _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+                    // _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+
+                    _tiles[gridPosition.x + gridPosition.y * Width].transform.localScale = Vector3.zero; // Start invisible
+                    _tiles[gridPosition.x + gridPosition.y * Width].transform.DOScale(Vector3.one, 0.5f) // Scale up to full size
+                        .SetEase(Ease.OutBack);     // Nice bouncy ease
                 }
             }
 
@@ -694,6 +699,7 @@ namespace Match3
                         ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
                         colorBurstFX.transform.position = t.TileTransform.position;
                         colorBurstFX.Play(colorBurstDuration);
+                        colorBurstFX.PlayAnimtion();
 
                         //t.PlayScaleTile(0.8f, 0.2f, Ease.OutBack);
                         for (int i = 0; i < e.Value.Count; i++)
@@ -1925,10 +1931,20 @@ namespace Match3
                 Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: true);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.ColorBurst);
-
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
-                // tile.StopEmissive();
+
+                Utilities.WaitAfter(0.1f, () =>
+                {
+                    tile.Display(false);
+                    ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                    colorBurstFX.transform.position = tile.TileTransform.position;
+                    colorBurstFX.SetTarget(tile.TileTransform);
+                    colorBurstFX.Play(1f);
+                    colorBurstFX.AppearPopupAnimation();
+                });
+
+
             }
 
             // match 5
