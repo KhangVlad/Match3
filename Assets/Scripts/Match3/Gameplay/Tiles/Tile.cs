@@ -45,6 +45,7 @@ namespace Match3
         #region Properties
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
+        public bool IsDisplay { get; private set; } = true;
         #endregion
 
 
@@ -112,6 +113,7 @@ namespace Match3
             {
                 sr.color = new Color(255, 255, 255, 0);
             }
+            IsDisplay = enable;
         }
 
         public void PlayAppearAnimation(float duration)
@@ -231,6 +233,7 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
+        public virtual void PlayMatchVFX() { }
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease)
         {
