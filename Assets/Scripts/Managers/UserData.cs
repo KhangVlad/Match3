@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Firebase.Firestore;
 
+[FirestoreData]
 [System.Serializable]
 public class UserData
 {

@@ -29,8 +29,7 @@ public class UserManager : MonoBehaviour
     private void Start()
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
-        InitializeNewUserData();
-    }   
+    }
 
     public UserData InitializeNewUserData()
     {
@@ -96,6 +95,7 @@ public class UserManager : MonoBehaviour
     }
 }
 
+[FirestoreData]
 [System.Serializable]
 public class CharacterData
 {
@@ -104,14 +104,16 @@ public class CharacterData
 
     [FirestoreProperty]
     public List<int> Hearts { get; set; }
-    [FirestoreProperty] public int higestLevel { get; set; }
+    
+    
+    [FirestoreProperty]
+    public int higestLevel { get; set; }
 
     // Parameterless constructor required by Firestore
     public CharacterData()
     {
         CharacterID = CharacterID.None;
         Hearts = new();
-        higestLevel = 0;
     }
 
 

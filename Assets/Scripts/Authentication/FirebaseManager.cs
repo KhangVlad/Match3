@@ -114,7 +114,7 @@ public class FirebaseManager : MonoBehaviour
 
 }
 
-
+[FirestoreData]
 public struct ServerTimestamp
 {
     [FirestoreProperty] public object UTCNow { get; set; }
