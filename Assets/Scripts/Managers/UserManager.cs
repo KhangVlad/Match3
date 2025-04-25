@@ -29,7 +29,8 @@ public class UserManager : MonoBehaviour
     private void Start()
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
-    }
+        InitializeNewUserData();
+    }   
 
     public UserData InitializeNewUserData()
     {
@@ -70,6 +71,7 @@ public class UserManager : MonoBehaviour
                 new BoosterSlot(Match3.BoosterID.Hammer, 99),
             },
             AllCharacterData = allCharacterData,
+            LastOnline =TimeManager.Instance.LoginTime
         };
         OnUserDataLoaded?.Invoke();
 
@@ -94,7 +96,6 @@ public class UserManager : MonoBehaviour
     }
 }
 
-[FirestoreData]
 [System.Serializable]
 public class CharacterData
 {
@@ -110,6 +111,7 @@ public class CharacterData
     {
         CharacterID = CharacterID.None;
         Hearts = new();
+        higestLevel = 0;
     }
 
 

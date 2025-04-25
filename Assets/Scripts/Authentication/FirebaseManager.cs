@@ -4,7 +4,7 @@ using Firebase.Extensions;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Firestore;
-using System;
+
 
 public class FirebaseManager : MonoBehaviour
 {
@@ -29,6 +29,7 @@ public class FirebaseManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeFirebase();
         AuthenticationManager.Instance.OnAuthenticationSuccessfully += OnAuthenticationSuccessfully_SetUser;
     }
 
@@ -114,7 +115,6 @@ public class FirebaseManager : MonoBehaviour
 }
 
 
-[FirestoreData]
 public struct ServerTimestamp
 {
     [FirestoreProperty] public object UTCNow { get; set; }
