@@ -32,7 +32,7 @@ namespace Match3.Enums
         EndLineColorBurstFX = 56,
         VerticalRocket = 57,
         HorizontalRocket = 58,
-
+        BlastBomb = 59,
 
         Slash = 100,
     }

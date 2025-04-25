@@ -221,7 +221,6 @@ namespace Match3
             if (_emissiveCoroutine != null)
             {
                 StopCoroutine(_emissiveCoroutine);
-
             }
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);

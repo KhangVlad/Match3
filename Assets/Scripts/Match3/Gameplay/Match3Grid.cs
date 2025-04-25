@@ -3321,10 +3321,6 @@ namespace Match3
         #region VFX
         private void PlayClearHorizontalVFX(Tile tile)
         {
-            //BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.ExplosionHorizontalFX);
-            //vfxPrefab.transform.position = tile.TileTransform.position;
-            //vfxPrefab.Play();
-
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(0.5f);
@@ -3339,11 +3335,6 @@ namespace Match3
 
         private void PlayClearVerticalVFX(Tile tile)
         {
-            Debug.Log("=== PlayClearVerticalVFX");
-            //BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.ExplosionVerticalFX);
-            //vfxPrefab.transform.position = tile.TileTransform.position;
-            //vfxPrefab.Play();
-
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(0.5f);
@@ -3358,9 +3349,17 @@ namespace Match3
 
         private void PlayFlashBombVfx(Tile tile)
         {
-            GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
-            if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
-            GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
+            //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
+            //if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
+            //GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
+
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlastBomb);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
+            CameraShakeManager.Instance.Shake(
+                intensity: 0.2f, 
+                duration: 0.1f);
         }
 
         private void PlayClearAllTilesVfx()
