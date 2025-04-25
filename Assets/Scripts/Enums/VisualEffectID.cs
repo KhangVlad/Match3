@@ -30,6 +30,8 @@ namespace Match3.Enums
         ColorBurstLineFX = 54,
         LightingLine = 55,
         EndLineColorBurstFX = 56,
+        VerticalRocket = 57,
+        HorizontalRocket = 58,
 
 
         Slash = 100,
