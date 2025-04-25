@@ -29,8 +29,22 @@ public class UserManager : MonoBehaviour
     private void Start()
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
+        GameplayManager.OnWin += OnWinEvent;
     }
 
+    private void OnDestroy()
+    {
+        GameplayManager.OnWin -= OnWinEvent;
+    }
+
+    private void OnWinEvent(CharacterID id, int heart)
+    {
+        CharacterData data = UserData.AllCharacterData.Find(x => id == x.CharacterID);
+        if (data != null)
+        {
+            data.SetPassLevel(LevelManager.Instance.CurrentLevelIndex, heart);
+        }
+    }
     public UserData InitializeNewUserData()
     {
         List<CharacterData> allCharacterData = new List<CharacterData>();
@@ -114,6 +128,17 @@ public class CharacterData
     {
         CharacterID = CharacterID.None;
         Hearts = new();
+        higestLevel = 0;
+    }
+
+
+    public void SetPassLevel(int index, int start)
+    {
+        if (higestLevel == index)
+        {
+            higestLevel++;
+        }
+        this.Hearts[index] = start;
     }
 
 

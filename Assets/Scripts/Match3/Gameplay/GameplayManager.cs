@@ -163,7 +163,7 @@ namespace Match3
             if (CheckCompleteAllQuests(out int star))
             {
                 Debug.Log($"Game win: {star}");
-                OnWin?.Invoke( CharacterID.Alice, star);
+                OnWin?.Invoke(CharacterID.Alice, star);
                 ChangeGameState(GameState.WIN);
             }
             else

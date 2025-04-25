@@ -1,10 +1,6 @@
 using UnityEngine;
-using System.IO;
 using Newtonsoft.Json;
-using System.Text;
-using System.Linq;
 using Match3.Enums;
-using Match3.Shares;
 
 namespace Match3
 {
@@ -27,8 +23,6 @@ namespace Match3
             }
             Instance = this;
         }
-        
-       
 
 
 
