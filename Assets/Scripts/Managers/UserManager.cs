@@ -10,10 +10,12 @@ public class UserManager : MonoBehaviour
 {
     public static UserManager Instance { get; private set; }
     public event Action OnUserDataLoaded;
+    public event Action<int> OnEnergyChanged; // New event for energy changes
 
+     private int maxEnergy = 100; // Maximum energy cap
+    
     public UserData UserData { get; set; }
     public int TotalHeart => GetTotalHeart();
-
 
     private void Awake()
     {
@@ -24,18 +26,40 @@ public class UserManager : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
         GameplayManager.OnWin += OnWinEvent;
+        
+        // Subscribe to minute elapsed event for energy regeneration
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnMinuteElapsed += OnMinuteElapsed;
+        }
     }
 
     private void OnDestroy()
     {
         GameplayManager.OnWin -= OnWinEvent;
+        
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.OnMinuteElapsed -= OnMinuteElapsed;
+        }
     }
+    
+    private void OnMinuteElapsed()
+    {
+        // Regenerate 1 energy per minute if not at max
+        if (UserData.Energy < maxEnergy)
+        {
+            RestoreEnergy(1);
+        }
+    }
+
 
     private void OnWinEvent(CharacterID id, int heart)
     {
@@ -45,6 +69,7 @@ public class UserManager : MonoBehaviour
             data.SetPassLevel(LevelManager.Instance.CurrentLevelIndex, heart);
         }
     }
+    
     public UserData InitializeNewUserData()
     {
         List<CharacterData> allCharacterData = new List<CharacterData>();
@@ -63,7 +88,8 @@ public class UserManager : MonoBehaviour
                 CharacterData characterData = new CharacterData()
                 {
                     CharacterID = id,
-                    Hearts = stars
+                    Hearts = stars,
+                    higestLevel = 0
                 };
                 allCharacterData.Add(characterData);
             }
@@ -84,11 +110,14 @@ public class UserManager : MonoBehaviour
                 new BoosterSlot(Match3.BoosterID.Hammer, 99),
             },
             AllCharacterData = allCharacterData,
-            LastOnline =TimeManager.Instance.LoginTime
+            LastOnline = TimeManager.Instance.LoginTime,
+            Energy = 20,
+            DailyRewardFlag = false
         };
+        
+       
         OnUserDataLoaded?.Invoke();
-
-
+        
         return UserData;
     }
 
@@ -107,6 +136,62 @@ public class UserManager : MonoBehaviour
     {
         return UserData.AllCharacterData.Find(x => x.CharacterID == id);
     }
+
+    public void RestoreEnergy(int amount)
+    {
+        if (UserData != null)
+        {
+            int oldEnergy = UserData.Energy;
+            UserData.Energy = Mathf.Min(UserData.Energy + amount, maxEnergy);
+            
+            // Only invoke event if energy actually changed
+            if (oldEnergy != UserData.Energy)
+            {
+                Debug.Log($"Energy restored: {oldEnergy} -> {UserData.Energy}");
+                OnEnergyChanged?.Invoke(UserData.Energy);
+            }
+        }
+    }
+    
+    public void ConsumeEnergy(int amount)
+    {
+        if (UserData != null)
+        {
+            int oldEnergy = UserData.Energy;
+            UserData.Energy = Mathf.Max(UserData.Energy - amount, 0);
+            
+            // Only invoke event if energy actually changed
+            if (oldEnergy != UserData.Energy)
+            {
+                Debug.Log($"Energy consumed: {oldEnergy} -> {UserData.Energy}");
+                OnEnergyChanged?.Invoke(UserData.Energy);
+            }
+        }
+    }
+    
+    public bool HasEnoughEnergy(int amount)
+    {
+        return UserData != null && UserData.Energy >= amount;
+    }
+
+    public void ResetDailyGift()
+    {
+        UserData.DailyRewardFlag = false;
+    }
+
+    public void ClaimDailyReward(BoosterID id, int quantity)
+    {
+        for (int i = 0; i < UserData.AvaiableBoosters.Count; i++)
+        {
+            if (UserData.AvaiableBoosters[i].BoosterID == id)
+            {
+                UserData.AvaiableBoosters[i].Quantity += quantity;
+            }
+        }
+        UserData.DailyRewardFlag = true;
+    }
+
+    public bool IsAvailableDailyGift => !UserData.DailyRewardFlag;
 }
 
 [FirestoreData]
@@ -119,7 +204,6 @@ public class CharacterData
     [FirestoreProperty]
     public List<int> Hearts { get; set; }
     
-    
     [FirestoreProperty]
     public int higestLevel { get; set; }
 
@@ -131,7 +215,6 @@ public class CharacterData
         higestLevel = 0;
     }
 
-
     public void SetPassLevel(int index, int start)
     {
         if (higestLevel == index)
@@ -140,7 +223,6 @@ public class CharacterData
         }
         this.Hearts[index] = start;
     }
-
 
     // Non-serialized helper method
     public int TotalHeartPoints()

@@ -23,7 +23,13 @@ public class SpinWheel : MonoBehaviour
 
     public void Spin()
     {
-        Debug.Log("no more chance");
+        if (UserManager.Instance.UserData.DailyRewardFlag)
+        {
+            UIPopupManager.Instance.ShowWarningPopup("No More !");
+            return;
+        }
+        UserManager.Instance.ClaimDailyReward(BoosterID.Hammer,1);
+      
         if (!m_spinning)
             StartCoroutine(DoSpin());
     }

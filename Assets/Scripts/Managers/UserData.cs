@@ -14,7 +14,14 @@ public class UserData
 
     [FirestoreProperty]
     public List<CharacterData> AllCharacterData { get; set; }
+    
+    
+    [FirestoreProperty]
+    public int Energy { get; set; }
 
 
     [FirestoreProperty] public object LastOnline { get; set; }
+     
+    [FirestoreProperty]
+    public bool DailyRewardFlag { get; set; } 
 }

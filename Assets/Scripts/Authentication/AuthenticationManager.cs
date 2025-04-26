@@ -1,9 +1,7 @@
 using UnityEngine;
-using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Firestore;
-using Match3.Shares;
 using Match3;
 
 public class AuthenticationManager : MonoBehaviour
@@ -47,6 +45,7 @@ public class AuthenticationManager : MonoBehaviour
             }
         }
     }
+    
 
 
     public void SignInAnonymous(FirebaseAuth auth, FirebaseFirestore firestore)
@@ -58,14 +57,15 @@ public class AuthenticationManager : MonoBehaviour
                 Debug.LogError($"Anonymous sign-in failed: {task.Exception}");
                 return;
             }
-
             FirebaseUser user = task.Result.User;
             HandlerNewAndOldUserAnonymous(user, firestore);
 
             OnAuthenticationSuccessfully?.Invoke(user);
-            Debug.Log($"Signed in anonymously. User ID: {user.UserId}");
         });
     }
+    
+    
+    
 
     // create new user document in Firestore
     private async void CreateNewUserDocument(string userID)
@@ -118,7 +118,8 @@ public class AuthenticationManager : MonoBehaviour
             {
                 Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
                 TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-                Debug.Log($"Last online: {TimeManager.Instance.LastOnlineTime}");
+                TimeManager.Instance.CalculateOfflineTimeEnergy();
+                TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
             }
             else
             {

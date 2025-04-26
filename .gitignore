@@ -70,6 +70,7 @@ TestResults/
 /[Aa]ssets/StreamingAssets/**/*.bank.meta
 
 /Assets/Firebase
+/Assets/GeneratedLocalRepo
 
 # If the source bank files are kept outside of the StreamingAssets folder then these can be ignored.
 # Log files can be ignored.

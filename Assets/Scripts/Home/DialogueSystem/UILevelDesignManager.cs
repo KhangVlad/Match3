@@ -130,12 +130,22 @@ public class UILevelDesignManager : MonoBehaviour
         if (currentChosenLevel == null)
             return;
         AudioManager.Instance.PlayButtonSfx();
-        LevelManager.Instance.LoadLevelData(characterData.CharacterID, currentChosenLevel.index);
-        UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData,
-            LevelManager.Instance.CurrentLevelIndex);
-        Transform vfxTransform = VfxPool.Instance.GetVfxByName("Energy").gameObject.transform;
-        vfxTransform.position = selectBtn.transform.position;
-        UILevelInfomation.Instance.DisplayCanvas(true);
+
+        if (UserManager.Instance.HasEnoughEnergy(10)) // move to UILevelInformation  later
+        {
+            UserManager.Instance.ConsumeEnergy(10);
+            LevelManager.Instance.LoadLevelData(characterData.CharacterID, currentChosenLevel.index);
+            UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData,
+                LevelManager.Instance.CurrentLevelIndex);
+            Transform vfxTransform = VfxPool.Instance.GetVfxByName("Energy").gameObject.transform;
+            vfxTransform.position = selectBtn.transform.position;
+            UILevelInfomation.Instance.DisplayCanvas(true);
+        }
+        else
+        {
+            UIPopupManager.Instance.ShowWarningPopup("Not Enough Energy");
+        }
+        
     }
 
 
