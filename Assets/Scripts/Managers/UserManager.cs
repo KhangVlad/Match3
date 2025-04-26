@@ -111,7 +111,7 @@ public class UserManager : MonoBehaviour
             },
             AllCharacterData = allCharacterData,
             LastOnline = TimeManager.Instance.LoginTime,
-            Energy = 20,
+            Energy = 80,
             DailyRewardFlag = false
         };
         

@@ -44,7 +44,6 @@ TestResults/
 /Assets/StreamingAssets/
 /Assets/AddressableAssetsData/*/*.bin
 /Assets/AddressableAssetsData/*/*.hash
-/Assets/Firebase
 
 # Logs & System files
 *.log
@@ -71,7 +70,6 @@ TestResults/
 /[Aa]ssets/StreamingAssets/**/*.bank.meta
 
 /Assets/Firebase
-/Assets/GeneratedLocalRepo
 
 # If the source bank files are kept outside of the StreamingAssets folder then these can be ignored.
 # Log files can be ignored.

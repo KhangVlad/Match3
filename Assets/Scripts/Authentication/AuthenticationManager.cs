@@ -2,7 +2,7 @@ using UnityEngine;
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Firestore;
-using Match3;
+using Match3.Shares;
 
 public class AuthenticationManager : MonoBehaviour
 {

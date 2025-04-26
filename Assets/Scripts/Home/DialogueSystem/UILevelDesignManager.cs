@@ -30,8 +30,8 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Image heartImage;
     [SerializeField] private Image heartHeader;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private Image sliderFill;
-    [SerializeField] private Slider slider;
+    [SerializeField] private Slider energySlider;
+    [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private TextMeshProUGUI progressText;
 
     [Header("Warning Panel")] [SerializeField]
@@ -96,17 +96,38 @@ public class UILevelDesignManager : MonoBehaviour
         selectBtn.onClick.AddListener(HandleSelectLevel);
         selectLevelBtn.onClick.AddListener(HandleOpenSelectLevelContainer);
         closeLevelsPanel.onClick.AddListener(HandleCloseLevelsPanel);
+        UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
+        UserManager.Instance.OnUserDataLoaded += InitializeEnergyUI;
     }
 
+    
+    private void InitializeEnergyUI()
+    {
+        if (UserManager.Instance != null && UserManager.Instance.UserData != null)
+        {
+            energySlider.maxValue = 100;
+            UpdateEnergyUI(UserManager.Instance.UserData.Energy);
+        }
+    }
     private void UnregisterEventListeners()
     {
         if (CharacterDisplay.Instance != null)
             CharacterDisplay.Instance.OnLoadVideosComplete -= HandleCharacterInteracted;
-
+        UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
+        UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
         closeButton.onClick.RemoveAllListeners();
         selectBtn.onClick.RemoveAllListeners();
         selectLevelBtn.onClick.RemoveAllListeners();
         closeLevelsPanel.onClick.RemoveAllListeners();
+    }
+    
+    private void UpdateEnergyUI(int currentEnergy)
+    {
+        // Update slider value
+        energySlider.value = currentEnergy;
+        
+        // Update text display
+        energyText.text = $"{currentEnergy}/{100}";
     }
 
     private void HandleCharacterInteracted(CharacterID id)

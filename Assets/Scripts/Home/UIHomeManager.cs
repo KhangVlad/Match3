@@ -29,12 +29,8 @@ public class UIHomeManager : MonoBehaviour
     {
         _dailyGiftbtn.onClick.RemoveAllListeners();
         
-        // Unsubscribe from events
-        if (UserManager.Instance != null)
-        {
-            UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
-            UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
-        }
+        UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
+        UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
     }
     
     private void InitializeEnergyUI()
