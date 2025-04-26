@@ -14,6 +14,7 @@ namespace Match3
         protected ObjectPool<Tile> pool;
 
         protected SpriteRenderer sr;
+        protected SpriteRenderer bloomSR;
         public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
         [SerializeField] protected Sprite _match4Vertical;
@@ -38,11 +39,13 @@ namespace Match3
         private Tween _moveTween;
         private Tween _scaleTween;
         private Tween _tileScaleTween;
+        private Tween _shakeTween;
 
 
         #region Properties
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
+        public bool IsDisplay { get; private set; } = true;
         #endregion
 
 
@@ -53,6 +56,10 @@ namespace Match3
                 TileTransform = transform.Find("Pivot/Tile");
             }
 
+            bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
+            bloomSR.enabled = false;
+            if (bloomSR == null) Debug.LogError("Missing bloom reference !!!");
+            Bloom(false);
             sr = TileTransform.GetComponent<SpriteRenderer>();
             _tileSprite = sr.sprite;
             _propBlock = new MaterialPropertyBlock();
@@ -64,6 +71,7 @@ namespace Match3
             {
                 Initialize();
             }
+            Bloom(false);
         }
 
 
@@ -88,6 +96,11 @@ namespace Match3
             {
                 _tileScaleTween.Kill();
             }
+
+            if (_shakeTween != null && _shakeTween.IsActive())
+            {
+                _shakeTween.Kill();
+            }
         }
 
         public void Display(bool enable)
@@ -100,6 +113,7 @@ namespace Match3
             {
                 sr.color = new Color(255, 255, 255, 0);
             }
+            IsDisplay = enable;
         }
 
         public void PlayAppearAnimation(float duration)
@@ -210,7 +224,6 @@ namespace Match3
             if (_emissiveCoroutine != null)
             {
                 StopCoroutine(_emissiveCoroutine);
-
             }
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
@@ -221,6 +234,7 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
+        public virtual void PlayMatchVFX() { }
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease)
         {
@@ -271,6 +285,11 @@ namespace Match3
             sr.maskInteraction = mask;
         }
 
+        public void Bloom(bool enable)
+        {
+            bloomSR.enabled = enable;
+        }
+
 
         public void Emissive(float duration)
         {
@@ -311,6 +330,15 @@ namespace Match3
         }
 
 
+        public virtual void PlayShaking(float duration)
+        {
+            _shakeTween = transform.DOShakePosition(
+                duration: duration,     // Longer duration = slower overall shake
+                strength: 0.1f,         // Smaller strength = smaller movement
+                vibrato: 5,             // Fewer shakes = slower, less intense
+                randomness: 3f         // Less randomness = more controlled movement
+            );
+        }
         public virtual void PlayScaleTile(float endValue, float duration, Ease ease)
         {
             _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease);
@@ -357,7 +385,7 @@ namespace Match3
 
         public virtual void ReturnToPool(float duration)
         {
-            Invoke(nameof(ReturnToPool), duration); 
+            Invoke(nameof(ReturnToPool), duration);
         }
 
         private void ResetTile()
@@ -375,6 +403,8 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
+
+            Bloom(false);
         }
         #endregion
     }

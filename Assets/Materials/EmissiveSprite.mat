@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -41,10 +41,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _EdgeBlurSize: 1
+    - _EdgeNoiseScale: 10
+    - _EdgeNoiseSpeed: 1
+    - _EdgeNoiseStrength: 0
+    - _EdgeThreshold: 5
     - _EmissionStrength: 0
     - _EnableExternalAlpha: 0
     - _MaskInteraction: 1
     - _MaskLayer: 1
+    - _NormalScale: 1
     - _StencilComp: 0
     - _StencilRef: 24.72
     - _ZWrite: 0

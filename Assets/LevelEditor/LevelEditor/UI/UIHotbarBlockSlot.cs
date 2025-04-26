@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-
+using Match3.Shares;
 
 namespace Match3.LevelEditor
 {

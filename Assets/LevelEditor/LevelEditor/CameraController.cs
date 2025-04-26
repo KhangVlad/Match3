@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Match3.LevelEditor
 {
+    [RequireComponent(typeof(Camera))]
     public class CameraController : MonoBehaviour
     {
         private void Start()
@@ -30,7 +31,7 @@ namespace Match3.LevelEditor
             transform.position += new Vector3(offsetX, offsetY, 0);
 
             float size = Mathf.Max(5, Mathf.Max(width, height) + 0.5f);
-            Camera.main.orthographicSize = size;
+            GetComponent<Camera>().orthographicSize = size;
         }
 
     }

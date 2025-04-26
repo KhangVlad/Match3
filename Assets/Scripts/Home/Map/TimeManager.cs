@@ -148,6 +148,9 @@ public class TimeManager : MonoBehaviour
         set => loginTime.DateTime = value;
     }
 
+    [field: SerializeField] public DateTime LastOnlineTime { get; set; }
+    [field: SerializeField] public DateTime LoginTime { get; set; }
+
     private static readonly Dictionary<DayOfWeek, DayInWeek> DayMapping = new()
     {
         { DayOfWeek.Monday, DayInWeek.Monday },

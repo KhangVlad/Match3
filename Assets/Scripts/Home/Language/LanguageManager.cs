@@ -1,7 +1,7 @@
 using System;
 using Match3;
 using UnityEngine;
-using Match3.Enums;
+using Match3.Shares;
 
 public class LanguageManager : MonoBehaviour
 {

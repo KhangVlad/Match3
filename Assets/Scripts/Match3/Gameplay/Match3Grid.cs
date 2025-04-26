@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using Match3.Enums;
 using Match3.Shares;
+using FMOD.Studio;
 
 namespace Match3
 {
@@ -52,7 +53,9 @@ namespace Match3
         private Queue<Tile> _emissiveTileQueue;
         private HashSet<Vector2Int> _matchThisPlayTurnSet;
         private HashSet<Vector2Int> _unlockThisPlayTurnSet;
-        private List<ColorBurstLine> _cachedColorBurstLine;
+        private List<ColorBurstLineFX> _cachedColorBurstLine;
+        private HashSet<Tile> _activeRowBombSet;
+        private HashSet<Tile> _activeColumnBombSet;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -126,6 +129,9 @@ namespace Match3
             _matchThisPlayTurnSet = new();
             _unlockThisPlayTurnSet = new();
             _cachedColorBurstLine = new();
+            _activeRowBombSet = new();
+            _activeColumnBombSet = new();
+
 
             _tShapes = new List<int[,]>
             {
@@ -428,11 +434,11 @@ namespace Match3
                     Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
                     _tiles[gridPosition.x + gridPosition.y * Width] = null;
 
-                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.RedFlower, BlockID.None);
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
                     newTile.UpdatePosition();
-                    newTile.SetSpecialTile(SpecialTileID.ColorBurst);
+                    newTile.SetSpecialTile(SpecialTileID.RowBomb);
 
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.RedFlower;
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
             if (Input.GetKeyDown(KeyCode.Alpha4))
@@ -443,10 +449,10 @@ namespace Match3
                     Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
                     _tiles[gridPosition.x + gridPosition.y * Width] = null;
 
-                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.YellowFlower, BlockID.None);
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
                     newTile.UpdatePosition();
                     newTile.SetSpecialTile(SpecialTileID.ColumnBomb);
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.YellowFlower;
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
 
@@ -455,7 +461,26 @@ namespace Match3
                 Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
                 {
-                    _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+                    // _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+
+                    _tiles[gridPosition.x + gridPosition.y * Width].transform.localScale = Vector3.zero; // Start invisible
+                    _tiles[gridPosition.x + gridPosition.y * Width].transform.DOScale(Vector3.one, 0.5f) // Scale up to full size
+                        .SetEase(Ease.OutBack);     // Nice bouncy ease
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
+                    _tiles[gridPosition.x + gridPosition.y * Width] = null;
+
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                    newTile.UpdatePosition();
+                    newTile.SetSpecialTile(SpecialTileID.ColorBurst);
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
         }
@@ -671,43 +696,64 @@ namespace Match3
                 _cachedColorBurstLine.Clear();
                 if (_colorBurstParentDictionary.Count > 0)
                 {
+                    float colorBurstDuration = 1f;
+
                     foreach (var e in _colorBurstParentDictionary)
                     {
-                        Tile t = e.Key;       
+                        Tile t = e.Key;
+                        ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                        colorBurstFX.transform.position = t.TileTransform.position;
+                        colorBurstFX.Play(colorBurstDuration);
+                        colorBurstFX.PlayAnimtion();
+
                         //t.PlayScaleTile(0.8f, 0.2f, Ease.OutBack);
-                        for (int i = 0; i < e.Value.Count; i++) 
+                        for (int i = 0; i < e.Value.Count; i++)
                         {
                             Tile nb = e.Value[i];
-                            ColorBurstLine colorBurstLine = (ColorBurstLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLine);
-                            colorBurstLine.transform.position = Vector2.zero;
-                            colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
-                            _cachedColorBurstLine.Add(colorBurstLine);
-                            _cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f,-0.5f));
+                            nb.PlayShaking(colorBurstDuration);
+                            //ColorBurstLineFX colorBurstLine = (ColorBurstLineFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstLineFX);
+                            //colorBurstLine.transform.position = Vector2.zero;
+                            //colorBurstLine.SetLine(t.TileTransform.position, nb.TileTransform.position);
+                            //_cachedColorBurstLine.Add(colorBurstLine);
+                            //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
+
+                            nb.Bloom(true);
+                            Debug.Log("BLoom");
+                            LightningLine lightningLineFX = (LightningLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.LightingLine);
+                            lightningLineFX.transform.position = Vector2.zero;
+                            float reachTaretTime = 0.1f;
+                            lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, reachTaretTime, colorBurstDuration);
+                            //_cachedColorBurstLine.Add(colorBurstLine);
+                            //_cachedColorBurstLine[i].SetTargetTransform(nb.transform, new Vector2(-0.5f, -0.5f));
+
+
+                            EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
+                            endLineColorBurstFX.transform.position = nb.TileTransform.position;
+                            endLineColorBurstFX.Play(colorBurstDuration);
                         }
                     }
-            
+
                     Debug.Log("wait a second");
-                    float colorBurstDuration = 0.5f;
-                    yield return new WaitForSeconds(colorBurstDuration);
 
+                    //yield return new WaitForSeconds(colorBurstDuration);
 
-                    for(int i = 0; i < _cachedColorBurstLine.Count; i++)
-                    {
-                        _cachedColorBurstLine[i].CallbackLine();
-                        _cachedColorBurstLine[i].ReturnToPool(0.5f);
-                    }
-
-                    //foreach (var e in _colorBurstParentDictionary)
+                    //for (int i = 0; i < _cachedColorBurstLine.Count; i++)
                     //{
-                    //    Tile t = e.Key;
-                    //    for (int i = 0; i < e.Value.Count; i++)
-                    //    {
-                    //        Tile nb = e.Value[i];
-                    //        nb.MoveToPosition(t.transform.position, 0.5f, Ease.InBack);
-                    //    }
+                    //    _cachedColorBurstLine[i].CallbackLine();
+                    //    _cachedColorBurstLine[i].ReturnToPool(0.5f);
                     //}
+
                     yield return new WaitForSeconds(colorBurstDuration);
                 }
+
+
+
+                // Handle Match Row Bomb
+                yield return StartCoroutine(HandleAllRowBombCoroutine());
+
+
+                // Handle Match Column Bomb
+                yield return StartCoroutine(HandleAllColumnBombCoroutine());
 
 
                 HandleMatchAndUnlock(ref hasMatched);
@@ -719,7 +765,6 @@ namespace Match3
 
 
                 HandleSpawnSpecialTile();
-
                 yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
 
                 if (_emissiveTileQueue.Count > 0)
@@ -835,6 +880,8 @@ namespace Match3
                     if (currTile.ID == TileID.None) continue;
                     if (currTile.SpecialProperties == SpecialTileID.BlastBomb) continue;
                     if (currTile.SpecialProperties == SpecialTileID.ColorBurst) continue;
+                    if (currTile.SpecialProperties == SpecialTileID.ColumnBomb) continue;
+                    if (currTile.SpecialProperties == SpecialTileID.RowBomb) continue;
                     if (currTile.CurrentBlock is not NoneBlock && currTile.CurrentBlock is not Lock) continue;
                     if (_matchBuffer[x + y * Width] != MatchID.None) continue;
 
@@ -895,6 +942,184 @@ namespace Match3
             yield return null;
             MatchPreviousTilesDifferent();
         }
+        private IEnumerator HandleAllRowBombCoroutine()
+        {
+            if (_activeRowBombSet.Count > 0)
+            {
+                foreach (var tile in _activeRowBombSet)
+                {
+                    int centerX = tile.X;
+                    int y = tile.Y;
+
+                    // Spread out from the center
+                    for (int offset = 0; offset < Width; offset++)
+                    {
+                        int leftX = centerX - offset;
+                        int rightX = centerX + offset;
+
+                        bool leftValid = IsValidGridTile(leftX, y);
+                        bool rightValid = IsValidGridTile(rightX, y);
+
+                        if (leftValid)
+                        {
+                            int index = leftX + y * Width;
+                            if (_tiles[index].IsDisplay)
+                            {
+                                _tiles[index].Display(false);
+                                _tiles[index].PlayMatchVFX();
+                            }
+
+                            if (_activeColumnBombSet.Contains(_tiles[index]))
+                            {
+                                Debug.Log("HERESXCCV");
+                                StartCoroutine(HandleColumnBombCoroutine(_tiles[index]));
+                                _activeColumnBombSet.Remove(_tiles[index]);
+                            }
+                  
+                        }
+
+                        if (rightValid && offset != 0) // Avoid double-playing the center tile
+                        {
+                            int index = rightX + y * Width;
+                            if (_tiles[index].IsDisplay)
+                            {
+                                _tiles[index].Display(false);
+                                _tiles[index].PlayMatchVFX();
+                            }
+                        }
+
+                        if (offset < Width - 1)
+                        {
+                            yield return new WaitForSeconds(0.05f);
+                        }
+                    }
+                }
+            }
+            _activeRowBombSet.Clear();
+        }
+
+        private IEnumerator HandleRowBombCoroutine(Tile tile)
+        {
+            int centerX = tile.X;
+            int y = tile.Y;
+
+            // Spread out from the center
+            for (int offset = 0; offset < Width; offset++)
+            {
+                int leftX = centerX - offset;
+                int rightX = centerX + offset;
+
+                bool leftValid = IsValidGridTile(leftX, y);
+                bool rightValid = IsValidGridTile(rightX, y);
+
+                if (leftValid)
+                {
+                    int index = leftX + y * Width;
+                    if (_tiles[index].IsDisplay)
+                    {
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX();
+                    }
+                }
+
+                if (rightValid && offset != 0) // Avoid double-playing the center tile
+                {
+                    int index = rightX + y * Width;
+                    if (_tiles[index].IsDisplay)
+                    {
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX();
+                    }
+                }
+
+                if (offset < Width - 1)
+                {
+                    yield return new WaitForSeconds(0.05f);
+                }
+            }
+        }
+
+        private IEnumerator HandleAllColumnBombCoroutine()
+        {
+            if (_activeColumnBombSet.Count > 0)
+            {
+                foreach (var tile in _activeColumnBombSet)
+                {
+                    int x = tile.X;
+                    int centerY = tile.Y;
+
+                    for (int offset = 0; offset < Height; offset++)
+                    {
+                        int topY = centerY + offset;
+                        int bottomY = centerY - offset;
+
+                        bool topValid = IsValidGridTile(x, topY);
+                        bool bottomValid = IsValidGridTile(x, bottomY);
+
+                        if (topValid)
+                        {
+                            int index = x + topY * Width;
+                            if (_tiles[index].IsDisplay)
+                            {
+                                _tiles[index].Display(false);
+                                _tiles[index].PlayMatchVFX();
+                            }
+                        }
+
+                        if (bottomValid && offset != 0) // Avoid double-playing the center tile
+                        {
+                            int index = x + bottomY * Width;
+                            if (_tiles[index].IsDisplay)
+                            {
+                                _tiles[index].Display(false);
+                                _tiles[index].PlayMatchVFX();
+                            }
+                        }
+
+                        if (offset < Height - 1)
+                            yield return new WaitForSeconds(0.05f);
+                    }
+                }
+            }
+            _activeColumnBombSet.Clear();
+        }
+        private IEnumerator HandleColumnBombCoroutine(Tile tile)
+        {
+            int x = tile.X;
+            int centerY = tile.Y;
+
+            for (int offset = 0; offset < Height; offset++)
+            {
+                int topY = centerY + offset;
+                int bottomY = centerY - offset;
+
+                bool topValid = IsValidGridTile(x, topY);
+                bool bottomValid = IsValidGridTile(x, bottomY);
+
+                if (topValid)
+                {
+                    int index = x + topY * Width;
+                    if (_tiles[index].IsDisplay)
+                    {
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX();
+                    }
+                }
+
+                if (bottomValid && offset != 0) // Avoid double-playing the center tile
+                {
+                    int index = x + bottomY * Width;
+                    if (_tiles[index].IsDisplay)
+                    {
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX();
+                    }
+                }
+                if (offset < Height - 1)
+                    yield return new WaitForSeconds(0.05f);
+            }
+        }
+
         private bool FindBlastBomb()
         {
             bool FoundBlastBomb(List<int[,]> shapes, int xIndex, int yIndex, out int[,] shape)
@@ -1149,7 +1374,6 @@ namespace Match3
         private void HandleSpecialMatch()
         {
             if (_selectedTile == null || _swappedTile == null) return;
-
             switch (_selectedTile.SpecialProperties)
             {
                 case SpecialTileID.ColumnBomb:
@@ -1162,9 +1386,13 @@ namespace Match3
                         Debug.Log("============= Clear + ==============");
                         EnableVerticalMatchBuffer(_selectedTile.X);
                         EnableHorizontalMatchBuffer(_selectedTile.Y);
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            _activeRowBombSet.Add(_selectedTile);
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            _activeColumnBombSet.Add(_selectedTile);
 
-                        PlayClearVerticalVFX(_selectedTile);
-                        PlayClearHorizontalVFX(_selectedTile);
+                        //PlayClearVerticalVFX(_selectedTile);
+                        //PlayClearHorizontalVFX(_selectedTile);
 
                         _hasMatch4 = true;
                         AudioManager.Instance.PlayMatch4Sfx();
@@ -1175,6 +1403,23 @@ namespace Match3
                         CombineMatch4AndMatch5();
                         _hasColorBurst = true;
                         AudioManager.Instance.PlayMatch5Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.None)
+                    {
+                        if (_selectedTile.SpecialProperties == SpecialTileID.RowBomb)
+                        {
+                            EnableHorizontalMatchBuffer(_selectedTile.Y);
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                                _activeRowBombSet.Add(_selectedTile);
+                            //PlayClearHorizontalVFX(_selectedTile);
+                        }
+                        if (_selectedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                        {
+                            EnableVerticalMatchBuffer(_selectedTile.X);
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                                _activeColumnBombSet.Add(_selectedTile);
+                            //PlayClearVerticalVFX(_selectedTile);
+                        }
                     }
                     break;
                 case SpecialTileID.BlastBomb:
@@ -1256,32 +1501,44 @@ namespace Match3
             {
                 EnableVerticalMatchBuffer(_selectedTile.X);
                 PlayClearVerticalVFX(_selectedTile);
+                if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                    _activeColumnBombSet.Add(_selectedTile);
 
                 if (IsValidGridTile(_selectedTile.X - 1, _selectedTile.Y))
                 {
                     EnableVerticalMatchBuffer(_selectedTile.X - 1);
                     PlayClearVerticalVFX(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
+                    if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X + -+_selectedTile.Y * Width]) == false)
+                        _activeColumnBombSet.Add(_tiles[_selectedTile.X + -+_selectedTile.Y * Width]);
                 }
                 if (IsValidGridTile(_selectedTile.X + 1, _selectedTile.Y))
                 {
                     EnableVerticalMatchBuffer(_selectedTile.X + 1);
                     PlayClearVerticalVFX(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
+                    if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]) == false)
+                        _activeColumnBombSet.Add(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
                 }
 
 
                 EnableHorizontalMatchBuffer(_selectedTile.Y);
                 PlayClearHorizontalVFX(_selectedTile);
+                if (_activeRowBombSet.Contains(_selectedTile) == false)
+                    _activeRowBombSet.Add(_selectedTile);
 
                 if (IsValidGridTile(_selectedTile.X, _selectedTile.Y - 1))
                 {
                     EnableHorizontalMatchBuffer(_selectedTile.Y - 1);
                     PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
+                    if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]) == false)
+                        _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
                 }
 
                 if (IsValidGridTile(_selectedTile.X, _selectedTile.Y + 1))
                 {
                     EnableHorizontalMatchBuffer(_selectedTile.Y + 1);
                     PlayClearHorizontalVFX(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
+                    if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]) == false)
+                        _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
                 }
             }
 
@@ -1294,12 +1551,10 @@ namespace Match3
                         int index = x + y * Width;
                         if (_tiles[index].CurrentBlock is NoneBlock)
                         {
-                            //_matchBuffer[index] = MatchID.Match;
                             SetMatchBuffer(index, MatchID.Match);
                         }
                         else
                         {
-                            //_matchBuffer[index] = MatchID.SpecialMatch;
                             SetMatchBuffer(index, MatchID.SpecialMatch);
                         }
                     }
@@ -1318,9 +1573,7 @@ namespace Match3
             for (int h = 0; h <= sameIDCountInRow; h++) // Loop correctly over sameIDCount
             {
                 int index = (x + h) + y * Width;
-
                 SpecialTileID specialTileID = _tiles[index].SpecialProperties;
-
                 switch (specialTileID)
                 {
                     default:
@@ -1397,15 +1650,18 @@ namespace Match3
                         int frameX = index % Width;
 
                         EnableVerticalMatchBuffer(frameX);
-                        PlayClearVerticalVFX(_tiles[frameX + tile.Y * Width]);
+                        //PlayClearVerticalVFX(_tiles[frameX + tile.Y * Width]);
+                        if (_activeColumnBombSet.Contains(tile) == false)
+                            _activeColumnBombSet.Add(tile);
                     }
                 }
 
                 if (hasMatch4Horizontal)
                 {
                     EnableHorizontalMatchBuffer(y);
-                    PlayClearHorizontalVFX(tile);
-
+                    if (_activeRowBombSet.Contains(tile) == false)
+                        _activeRowBombSet.Add(tile);
+                    //PlayClearHorizontalVFX(tile);
                 }
                 else
                 {
@@ -1425,7 +1681,8 @@ namespace Match3
                             {
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
                                 {
-                                    _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                                    // _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                                    _matchRowBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
                                     foundMatch4Tile = true;
                                 }
                             }
@@ -1453,7 +1710,8 @@ namespace Match3
                             }
                         }
                         originIndex = foundOriginIndex ? originIndex : cachedIndex;
-                        _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[originIndex].ID, originIndex));
+                        // _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[originIndex].ID, originIndex));
+                        _matchRowBombQueue.Enqueue(new SpecialTileQueue(TileID.None, originIndex));
                     }
                 }
             }
@@ -1462,9 +1720,10 @@ namespace Match3
                 if (hasMatch4Horizontal)
                 {
                     _hasMatch4 = true;
-
+                    if (_activeRowBombSet.Contains(tile) == false)
+                        _activeRowBombSet.Add(tile);
                     EnableHorizontalMatchBuffer(y);
-                    PlayClearHorizontalVFX(tile);
+                    //PlayClearHorizontalVFX(tile);
                 }
 
                 if (hasMatch4Vertical)
@@ -1477,7 +1736,9 @@ namespace Match3
                         int index = _clearVerticalColumns[xx];
                         int frameX = index % Width;
                         EnableVerticalMatchBuffer(frameX);
-                        PlayClearVerticalVFX(_tiles[frameX + tile.Y * Width]);
+                        //PlayClearVerticalVFX(_tiles[frameX + tile.Y * Width]);
+                        if (_activeColumnBombSet.Contains(tile) == false)
+                            _activeColumnBombSet.Add(tile);
                     }
                 }
 
@@ -1498,29 +1759,29 @@ namespace Match3
 
             int x = tile.X;
             int y = tile.Y;
-            bool hasMatch4Horizontal = false;
-            bool hasMatch4Vertical = false;
+            //bool hasMatch4Horizontal = false;
+            //bool hasMatch4Vertical = false;
             _clearHorizontalRows.Clear();
 
-            for (int v = 0; v <= sameIDCountInColumn; v++)  // Loop correctly over sameIDCount
-            {
-                int index = x + (y + v) * Width;
+            //for (int v = 0; v <= sameIDCountInColumn; v++)  // Loop correctly over sameIDCount
+            //{
+            //    int index = x + (y + v) * Width;
 
-                SpecialTileID specialTileID = _tiles[index].SpecialProperties;
-                switch (specialTileID)
-                {
-                    default:
-                    case SpecialTileID.None:
-                        break;
-                    case SpecialTileID.RowBomb:
-                        hasMatch4Horizontal = true;
-                        _clearHorizontalRows.Add(index);
-                        break;
-                    case SpecialTileID.ColumnBomb:
-                        hasMatch4Vertical = true;
-                        break;
-                }
-            }
+            //    SpecialTileID specialTileID = _tiles[index].SpecialProperties;
+            //    switch (specialTileID)
+            //    {
+            //        default:
+            //        case SpecialTileID.None:
+            //            break;
+            //        case SpecialTileID.RowBomb:
+            //            hasMatch4Horizontal = true;
+            //            _clearHorizontalRows.Add(index);
+            //            break;
+            //        case SpecialTileID.ColumnBomb:
+            //            hasMatch4Vertical = true;
+            //            break;
+            //    }
+            //}
 
 
             if (sameIDCountInColumn >= 4)
@@ -1566,93 +1827,96 @@ namespace Match3
             else if (sameIDCountInColumn == 3)
             {
                 _hasMatch4 = true;
-                if (hasMatch4Horizontal)
+                //if (hasMatch4Horizontal)
+                //{
+                //    for (int yy = 0; yy < _clearHorizontalRows.Count; yy++)
+                //    {
+                //        int index = _clearHorizontalRows[yy];
+                //        int frameY = index / Width;
+                //        PlayClearHorizontalVFX(_tiles[tile.X + frameY * Width]);
+
+                //        AudioManager.Instance.PlayMatch4Sfx();
+                //    }
+                //}
+
+                //if (hasMatch4Vertical)
+                //{
+                //    EnableVerticalMatchBuffer(x);
+                //    PlayClearVerticalVFX(tile);
+
+                //    AudioManager.Instance.PlayMatch4Sfx();
+                //}
+                //else
+                //{
+                bool foundMatch4Tile = false;
+                if (_selectedTile != null && _swappedTile != null)
                 {
-                    for (int yy = 0; yy < _clearHorizontalRows.Count; yy++)
-                    {
-                        int index = _clearHorizontalRows[yy];
-                        int frameY = index / Width;
-                        PlayClearHorizontalVFX(_tiles[tile.X + frameY * Width]);
-
-                        AudioManager.Instance.PlayMatch4Sfx();
-                    }
-                }
-
-                if (hasMatch4Vertical)
-                {
-                    EnableVerticalMatchBuffer(x);
-                    PlayClearVerticalVFX(tile);
-
-                    AudioManager.Instance.PlayMatch4Sfx();
-                }
-                else
-                {
-                    bool foundMatch4Tile = false;
-                    if (_selectedTile != null && _swappedTile != null)
-                    {
-                        for (int v = 0; v <= 3; v++)
-                        {
-                            int index = x + (y + v) * Width;
-                            if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
-                            {
-                                _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
-                                foundMatch4Tile = true;
-                                break;
-                            }
-                        }
-
-                    }
-
-
                     for (int v = 0; v <= 3; v++)
                     {
                         int index = x + (y + v) * Width;
-
-                        if (foundMatch4Tile == false)
+                        if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
                         {
-                            if (_tiles[index].ID != _prevTileIDs[index])
-                            {
-                                _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
-                                foundMatch4Tile = true;
-                            }
+                            // _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                            _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
+                            foundMatch4Tile = true;
+                            break;
                         }
-
-                        //_matchBuffer[index] = MatchID.Match;
-                        SetMatchBuffer(index, MatchID.Match);
                     }
+
+                }
+
+
+                for (int v = 0; v <= 3; v++)
+                {
+                    int index = x + (y + v) * Width;
 
                     if (foundMatch4Tile == false)
                     {
-                        Debug.Log($"Not found match4 tile oriign");
-                        int index = x + y * Width;
-                        _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                        if (_tiles[index].ID != _prevTileIDs[index])
+                        {
+                            // _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                            _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
+                            foundMatch4Tile = true;
+                        }
                     }
+
+                    //_matchBuffer[index] = MatchID.Match;
+                    SetMatchBuffer(index, MatchID.Match);
                 }
+
+                if (foundMatch4Tile == false)
+                {
+                    Debug.Log($"Not found match4 tile oriign");
+                    int index = x + y * Width;
+                    // _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+                    _match4ColumnBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
+                }
+                //}
             }
             else if (sameIDCountInColumn == 2)
             {
-                if (hasMatch4Vertical)
-                {
-                    _hasMatch4 = true;
-                    EnableVerticalMatchBuffer(x);
-                    PlayClearVerticalVFX(tile);
+                //if (hasMatch4Vertical)
+                //{
+                //    _hasMatch4 = true;
+                //    EnableVerticalMatchBuffer(x);
+                //    PlayClearVerticalVFX(tile);
 
-                    AudioManager.Instance.PlayMatch4Sfx();
-                }
+                //    AudioManager.Instance.PlayMatch4Sfx();
+                //}
 
-                if (hasMatch4Horizontal)
-                {
-                    _hasMatch4 = true;
-                    for (int yy = 0; yy < _clearHorizontalRows.Count; yy++)
-                    {
-                        int index = _clearHorizontalRows[yy];
-                        int frameY = index / Width;
-                        EnableHorizontalMatchBuffer(frameY);
-                        PlayClearHorizontalVFX(_tiles[tile.X + frameY * Width]);
+                //if (hasMatch4Horizontal)
+                //{
+                //    _hasMatch4 = true;
+                //    for (int yy = 0; yy < _clearHorizontalRows.Count; yy++)
+                //    {
+                //        int index = _clearHorizontalRows[yy];
+                //        int frameY = index / Width;
+                //        EnableHorizontalMatchBuffer(frameY);
+                //        PlayClearHorizontalVFX(_tiles[tile.X + frameY * Width]);
 
-                        AudioManager.Instance.PlayMatch4Sfx();
-                    }
-                }
+                //        AudioManager.Instance.PlayMatch4Sfx();
+                //    }
+                //}
 
                 // default
                 for (int v = 0; v <= sameIDCountInColumn; v++) // Loop correctly over sameIDCount
@@ -1671,6 +1935,7 @@ namespace Match3
                 _prevTileIDs[i] = _tiles[i].ID;
             }
         }
+
         // ======================================
 
 
@@ -1872,10 +2137,20 @@ namespace Match3
                 Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: true);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.ColorBurst);
-
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
-                // tile.StopEmissive();
+
+                Utilities.WaitAfter(0.1f, () =>
+                {
+                    tile.Display(false);
+                    ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                    colorBurstFX.transform.position = tile.TileTransform.position;
+                    colorBurstFX.SetTarget(tile.TileTransform);
+                    colorBurstFX.Play(1f);
+                    colorBurstFX.AppearPopupAnimation();
+                });
+
+
             }
 
             // match 5
@@ -2217,12 +2492,17 @@ namespace Match3
                             //Debug.Log("Handle Special Match 4 Horizontal");
                             EnableHorizontalMatchBuffer(tile.Y);
                             PlayClearHorizontalVFX(tile);
+                            if (_activeRowBombSet.Contains(tile) == false)
+                                _activeRowBombSet.Add(tile);
                         }
                         else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
                         {
                             //Debug.Log("Handle Special Match 4 Vertical");
                             EnableVerticalMatchBuffer(tile.X);
                             PlayClearVerticalVFX(tile);
+
+                            if (_activeColumnBombSet.Contains(tile) == false)
+                                _activeColumnBombSet.Add(tile);
                         }
                         else if (tile.SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -2848,6 +3128,7 @@ namespace Match3
         {
             // Tile
             Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
+            tileInstance.Bloom(false);
 
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
@@ -3251,27 +3532,45 @@ namespace Match3
         #region VFX
         private void PlayClearHorizontalVFX(Tile tile)
         {
-            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionHorizontalFX, out BaseVisualEffect vfxPrefab))
-            {
-                var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
-                Destroy(vfxInstance.gameObject, 1f);
-            }
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
+            //if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.HorizontalRocket, out var vfxPrefab))
+            //{
+            //    var instance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
+            //    instance.Play(0.5f);
+            //    Destroy(instance.gameObject, 0.5f);
+            //}
         }
 
         private void PlayClearVerticalVFX(Tile tile)
         {
-            if (GameDataManager.Instance.TryGetVfxByID(VisualEffectID.ExplosionVerticalFX, out BaseVisualEffect vfxPrefab))
-            {
-                var vfxInstance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
-                Destroy(vfxInstance.gameObject, 1f);
-            }
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
+            //if(GameDataManager.Instance.TryGetVfxByID(VisualEffectID.VerticalRocket, out var vfxPrefab))
+            //{
+            //    var instance = Instantiate(vfxPrefab, tile.TileTransform.position, Quaternion.identity);
+            //    instance.Play(0.5f);
+            //    Destroy(instance.gameObject, 0.5f);
+            //}
         }
 
         private void PlayFlashBombVfx(Tile tile)
         {
-            GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
-            if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
-            GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
+            //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
+            //if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
+            //GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
+
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlastBomb);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
+            CameraShakeManager.Instance.Shake(
+                intensity: 0.2f,
+                duration: 0.1f);
         }
 
         private void PlayClearAllTilesVfx()

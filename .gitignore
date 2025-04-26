@@ -44,6 +44,7 @@ TestResults/
 /Assets/StreamingAssets/
 /Assets/AddressableAssetsData/*/*.bin
 /Assets/AddressableAssetsData/*/*.hash
+/Assets/Firebase
 
 # Logs & System files
 *.log

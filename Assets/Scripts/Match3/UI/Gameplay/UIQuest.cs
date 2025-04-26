@@ -50,7 +50,6 @@ namespace Match3
 
         public void PlayCollectAnimation()
         {
-            Debug.Log("PlayCollectAnimation");
             if (_canCollect == false) return;
             _canCollect = false;
             _collectTween = transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack).OnComplete(() =>

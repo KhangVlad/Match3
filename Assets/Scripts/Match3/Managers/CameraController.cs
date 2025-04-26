@@ -5,6 +5,7 @@ namespace Match3
 {
     public class CameraController : MonoBehaviour
     {
+        public static event System.Action<Vector3> OnCameraPositionUpdated;
         private void Start()
         {
             //LevelData levelData = LevelManager.Instance.LevelData;
@@ -47,7 +48,8 @@ namespace Match3
             transform.position += new Vector3(offsetX, offsetY, 0);
 
             float size = Mathf.Max(5, Mathf.Max(width, height) + 0.5f);
-            Camera.main.orthographicSize = size;
+            GetComponent<Camera>().orthographicSize = size;
+            OnCameraPositionUpdated?.Invoke(transform.position);
         }
     }
 }

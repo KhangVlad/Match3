@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Match3;
 using UnityEngine.SceneManagement;
-
+using Match3.Shares;
 
 public class LoadingAnimationController : MonoBehaviour
 {

@@ -5,9 +5,7 @@ public class TownCanvasController : MonoBehaviour
     public static TownCanvasController Instance { get; private set; }
     public UISettingManager uiSettingManager { get; private set; }
     public UILevelDesignManager uiLevelDesignManager { get; private set; }
-
     public UIDailyGiftManager UIDailyGiftManager { get; private set; }
-
     public UIHomeManager uiHomeManager { get; private set; }
 
     private void Awake()

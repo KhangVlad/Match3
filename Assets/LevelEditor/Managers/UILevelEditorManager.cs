@@ -29,6 +29,7 @@ namespace Match3.LevelEditor
         private void Start()
         {
             CloseAll();
+            DisplayUIMenu(true);
             DisplayUIPopupManager(true);
         }
 

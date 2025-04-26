@@ -114,6 +114,7 @@ public class FirebaseManager : MonoBehaviour
 
 }
 
+
 [FirestoreData]
 public struct ServerTimestamp
 {

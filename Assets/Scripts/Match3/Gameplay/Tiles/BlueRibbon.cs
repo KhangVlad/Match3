@@ -6,7 +6,7 @@ namespace Match3
 {
     public class BlueRibbon : Tile
     {
-          public override void Initialize()
+        public override void Initialize()
         {
             base.Initialize();
             this.ID = TileID.BlueRibbon;
@@ -21,7 +21,16 @@ namespace Match3
         {
             base.Match(grid, width);
             if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
-           BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlueRibbonDestroy);
+            if (IsDisplay)
+            {
+                PlayMatchVFX();
+            }
+
+        }
+
+        public override void PlayMatchVFX()
+        {
+            BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlueRibbonDestroy);
             effect.transform.position = TileTransform.position;
             effect.Play();
         }

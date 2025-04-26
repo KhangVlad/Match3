@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using DG.Tweening;
 using TMPro;
+using Match3.Shares;
 
 public class UILoadingMenu : MonoBehaviour
 {

@@ -21,7 +21,16 @@ namespace Match3
         {
             base.Match(grid, width);
             if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
-           BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.GreenCandleDestroy);
+            if (IsDisplay)
+            {
+                PlayMatchVFX();
+            }
+       
+        }
+
+        public override void PlayMatchVFX()
+        {
+            BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.GreenCandleDestroy);
             effect.transform.position = TileTransform.position;
             effect.Play();
         }
