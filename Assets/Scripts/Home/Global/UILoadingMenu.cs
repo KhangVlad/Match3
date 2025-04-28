@@ -8,105 +8,197 @@ using Match3.Shares;
 
 public class UILoadingMenu : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private Button homeButton;
-    [SerializeField] private Slider slider;
-    [SerializeField] private TextMeshProUGUI goHomeText;
-    [SerializeField] private Image bgLoading;
-    public float progress = 0f;
-    private float targetProgress = 1f;
+    [SerializeField] private Slider progressSlider;
+    [SerializeField] private Image backgroundImage;
+    [SerializeField] private UIComic comic;
+    
+    [Header("Loading Settings")]
+    [SerializeField] private float progressSpeed = 1f;
+    [SerializeField] private float initialProgress = 0f;
+    
+    private float _currentProgress;
+    private float _targetProgress;
+    private bool _isLoading = true;
+    
+    // Path constants to avoid typos and make changes easier
+    private const string BACKGROUND_PATH = "Sprites/Backgrounds/";
+    private const string MORNING_BG_1 = BACKGROUND_PATH + "bg_morning_1";
+    private const string MORNING_BG_2 = BACKGROUND_PATH + "bg_morning_2";
+    private const string EVENING_BG_1 = BACKGROUND_PATH + "bg_evening_1";
+    private const string EVENING_BG_2 = BACKGROUND_PATH + "bg_evening_2";
 
+    private void Awake()
+    {
+        // Initialize values
+        _currentProgress = initialProgress;
+        _targetProgress = initialProgress;
+        
+        // Set initial UI state
+        progressSlider.value = _currentProgress;
+        homeButton.interactable = false;
+    }
+    
     private void Start()
     {
-        homeButton.onClick.AddListener(OnHomeClick);
-        SetBgByTime();
-        GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
-        UserManager.Instance.OnUserDataLoaded += OnUserDataLoaded;
-      
-    }
-
-    private void SetBgByTime()
-    {
-        TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
-        Debug.Log("Current Time of Day: " + timeOfDay);
-        switch (timeOfDay)
+        
+        if (GameDataManager.Instance != null)
         {
-            case TimeOfDay.Morning:
-                bgLoading.sprite = Resources.Load<Sprite>("Sprites/backgrounds/bg_morning_1");
-                break;
-            case TimeOfDay.Afternoon:
-                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_morning_2");
-                break;
-            case TimeOfDay.Midday:
-                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_morning_2");
-                break;
-            case TimeOfDay.Evening:
-                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_evening_1");
-                break;
-            case TimeOfDay.Night:
-                bgLoading.sprite = Resources.Load<Sprite>("Sprites/Backgrounds/bg_evening_2");
-                break;
+            GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
         }
+        
+        if (AuthenticationManager.Instance != null)
+        {
+            AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
+        }
+        
+        // Set background based on time of day
+        SetBackgroundByTimeOfDay();
+        
+        // Start loading process
+        _targetProgress += 0.5f; // Initial progress target
     }
 
-    // private void OnEnable()
-    // {
-    //     if (GameDataManager.Instance != null)
-    //     {
-    //         GameDataManager.Instance.OnDataLoaded += OnDataLoaded;
-    //     }
-    //
-    //
-    //     if (GameDataManager.Instance != null)
-    //     {    
-    //         GameDataManager.Instance.OnCharacterDataLoaded += OnCharacterDataLoaded;
-    //     }
-    // }
+    private void OnEnable()
+    {
+        // Start updating progress when enabled
+        StartCoroutine(UpdateProgressRoutine());
+    }
 
     private void OnDestroy()
     {
-        homeButton.onClick.RemoveListener(OnHomeClick);
         if (GameDataManager.Instance != null)
         {
             GameDataManager.Instance.OnDataLoaded -= OnGameDataLoaded;
         }
+        
+        if (AuthenticationManager.Instance != null)
+        {
+            AuthenticationManager.Instance.OnNewUserCreate -= HandleNewUser;
+        }
+        
+        StopAllCoroutines();
+    }
+    
+    private void HandleNewUser(bool isNewUser)
+    {
+        if (!isNewUser)
+        {
+            OnUserDataLoaded();
+        }
+        else
+        {
+            if (comic != null)
+            {
+                comic.OnNewUserCreate();
+            }
+            else
+            {
+                Debug.LogWarning("Comic reference is null. Cannot show new user comic.");
+                OnUserDataLoaded(); // Continue loading process even if comic is missing
+            }
+        }
     }
 
+    private void SetBackgroundByTimeOfDay()
+    {
+        if (backgroundImage == null || TimeManager.Instance == null)
+        {
+            Debug.LogWarning("Background image or TimeManager reference is missing.");
+            return;
+        }
+
+        TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
+        Debug.Log("Current Time of Day: " + timeOfDay);
+        
+        string backgroundPath;
+        
+        switch (timeOfDay)
+        {
+            case TimeOfDay.Morning:
+                backgroundPath = MORNING_BG_1;
+                break;
+            case TimeOfDay.Afternoon:
+            case TimeOfDay.Midday:
+                backgroundPath = MORNING_BG_2;
+                break;
+            case TimeOfDay.Evening:
+                backgroundPath = EVENING_BG_1;
+                break;
+            case TimeOfDay.Night:
+                backgroundPath = EVENING_BG_2;
+                break;
+            default:
+                backgroundPath = MORNING_BG_1;
+                break;
+        }
+        
+        Sprite bgSprite = Resources.Load<Sprite>(backgroundPath);
+        if (bgSprite != null)
+        {
+            backgroundImage.sprite = bgSprite;
+        }
+        else
+        {
+            Debug.LogWarning($"Could not load background sprite at path: {backgroundPath}");
+        }
+    }
+    
     private void OnGameDataLoaded()
     {
-        targetProgress += 0.5f;
-        StartCoroutine(UpdateProgress());
+        _targetProgress += 0.25f;
+        Debug.Log("Game data loaded. Target progress updated to: " + _targetProgress);
     }
     
     private void OnUserDataLoaded()
     {
-        targetProgress += 0.5f;
-        StartCoroutine(UpdateProgress());
+        _targetProgress += 0.25f;
+        Debug.Log("User data loaded. Target progress updated to: " + _targetProgress);
     }
 
-
-    private IEnumerator UpdateProgress()
+    private IEnumerator UpdateProgressRoutine()
     {
-        while (progress < targetProgress)
+        while (_isLoading)
         {
-            progress += Time.deltaTime * 1f; // Adjust the speed as needed
-            slider.value = progress;
+            // Only update if we haven't reached target yet
+            if (_currentProgress < _targetProgress)
+            {
+                _currentProgress = Mathf.MoveTowards(_currentProgress, _targetProgress, 
+                    progressSpeed * Time.deltaTime);
+                
+                // Update UI
+                progressSlider.value = _currentProgress;
+                
+                // Check if loading is complete
+                if (_currentProgress >= 1f && _targetProgress >= 1f)
+                {
+                    CompleteLoading();
+                }
+            }
+            
             yield return null;
         }
-
-        progress = targetProgress;
-        slider.value = progress;
-
-        if (progress >= 1f)
+    }
+    
+    private void CompleteLoading()
+    {
+        _isLoading = false;
+        homeButton.interactable = true;
+        
+        // Optional: Add animation or visual feedback to indicate loading is complete
+        Debug.Log("Loading complete!");
+        
+        // Automatically switch to town scene
+        if (LoadingAnimationController.Instance != null)
         {
-            homeButton.interactable = true;
-            goHomeText.DOFade(0.7f, 1f).SetLoops(-1, LoopType.Yoyo);
+            LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+        }
+        else
+        {
+            Debug.LogWarning("LoadingAnimationController instance is null. Cannot switch scenes.");
         }
     }
-
-    private void OnHomeClick()
-    {
-        AudioManager.Instance.PlayButtonSfx();
-        homeButton.interactable = false;
-        LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-    }
+    
+   
 }

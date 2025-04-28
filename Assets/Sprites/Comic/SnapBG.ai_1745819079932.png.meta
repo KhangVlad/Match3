@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c8ebd6ead5737447da48c23f9679721a
+guid: 4869b0ab3fbf24a86893f153bd687b12
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6191978181173182622
-    second: background_13_0
+      213: 2501460164931856608
+    second: SnapBG.ai_1745819079932_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: background_13_0
+      name: SnapBG.ai_1745819079932_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1080
-        height: 1920
+        x: 3
+        y: 3
+        width: 473
+        height: 700
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e900cc969535ee550800000000000000
-      internalID: 6191978181173182622
+      spriteID: 0e8ad8644c8f6b220800000000000000
+      internalID: 2501460164931856608
       vertices: []
       indices: 
       edges: []
@@ -160,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      background_13_0: 6191978181173182622
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

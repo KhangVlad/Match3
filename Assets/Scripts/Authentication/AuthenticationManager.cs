@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Firebase.Extensions;
 using Firebase.Auth;
@@ -8,6 +9,8 @@ public class AuthenticationManager : MonoBehaviour
 {
     public static AuthenticationManager Instance { get; private set; }
     public event System.Action<FirebaseUser> OnAuthenticationSuccessfully;
+    public event Action<bool> OnNewUserCreate;
+    public bool IsNewUser = false;
 
 
     public bool IsUserDataLoaded;
@@ -59,7 +62,6 @@ public class AuthenticationManager : MonoBehaviour
             }
             FirebaseUser user = task.Result.User;
             HandlerNewAndOldUserAnonymous(user, firestore);
-
             OnAuthenticationSuccessfully?.Invoke(user);
         });
     }
@@ -83,7 +85,9 @@ public class AuthenticationManager : MonoBehaviour
             {
                 Debug.Log("New user document created successfully!");
                 IsUserDataLoaded = true;
-                HandleChangeScene();
+                IsNewUser = true;
+              
+                // HandleChangeScene();
             }
             else
             {
@@ -153,10 +157,12 @@ public class AuthenticationManager : MonoBehaviour
             {
                 Debug.Log("Load level data");
                 LoadUserData(snapShot);
+                OnNewUserCreate?.Invoke(false);
             }
             else
             {
                 CreateNewUserDocument(userID);
+                OnNewUserCreate?.Invoke(true);
                 TimeManager.Instance.LastOnlineTime = TimeManager.Instance.LoginTime;
             }
         }
