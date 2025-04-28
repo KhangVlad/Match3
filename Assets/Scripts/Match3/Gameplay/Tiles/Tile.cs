@@ -403,7 +403,7 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
-
+            Display(true);
             Bloom(false);
         }
         #endregion
