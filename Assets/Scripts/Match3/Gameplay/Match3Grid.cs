@@ -754,15 +754,21 @@ namespace Match3
                     yield return new WaitForSeconds(colorBurstDuration);
                 }
 
-
+                Debug.Log($"00000:  {_activeColumnBombSet.Count}");
 
                 // Handle Match Row Bomb
-                yield return StartCoroutine(HandleAllRowBombCoroutine());
+                //yield return StartCoroutine(HandleAllRowBombCoroutine());
 
 
                 // Handle Match Column Bomb
                 yield return StartCoroutine(HandleAllColumnBombCoroutine());
 
+                _activeColumnBombSet.Clear();
+                _activeRowBombSet.Clear();
+                _singleColumnBombCoroutineKey.Clear();
+                _singleRowBombCoroutineKey.Clear();
+                _singleColumnBombCoroutineDict.Clear();
+                _singleRowBombCoroutineDict.Clear();
 
                 HandleMatchAndUnlock(ref hasMatched);
                 if (hasMatched)
@@ -950,6 +956,7 @@ namespace Match3
             yield return null;
             MatchPreviousTilesDifferent();
         }
+
         private IEnumerator HandleAllRowBombCoroutine()
         {
             if (_activeRowBombSet.Count > 0)
@@ -958,6 +965,24 @@ namespace Match3
                 {
                     int centerX = tile.X;
                     int y = tile.Y;
+
+
+                    bool isCollideWithColumBomb = false;
+                    for (int yy = 0; yy < Height; yy++)
+                    {
+                        if (IsValidGridTile(tile.X, yy) == false) continue;
+                        int index = tile.X + yy * Width;
+                        if (_activeColumnBombSet.Contains(_tiles[index]))
+                        {
+                            isCollideWithColumBomb = true;
+                            break;
+                        }
+                    }
+                    if (isCollideWithColumBomb)
+                    {
+                        Debug.Log("Collide With Colum Bomb");
+                        continue;
+                    }
 
                     // Spread out from the center
                     for (int offset = 0; offset < Width; offset++)
@@ -1021,22 +1046,18 @@ namespace Match3
                     }
                 }
             }
-            _activeRowBombSet.Clear();
             if (_singleColumnBombCoroutineDict.Count > 0)
             {
                 // Wait for each coroutine in the queue to finish
-                _singleColumnBombCoroutineKey.Clear();
                 foreach (var e in _singleColumnBombCoroutineDict.Keys)
                     _singleColumnBombCoroutineKey.Add(e);
-           
+
                 for (int i = 0; i < _singleColumnBombCoroutineKey.Count; i++)
                 {
                     var key = _singleColumnBombCoroutineKey[i];
-                    yield return new WaitUntil(()=>_singleColumnBombCoroutineDict[key]);
+                    yield return new WaitUntil(() => _singleColumnBombCoroutineDict[key]);
                     _singleColumnBombCoroutineDict[key] = true;
                 }
-
-                _singleColumnBombCoroutineDict.Clear();
             }
         }
 
@@ -1045,6 +1066,7 @@ namespace Match3
             int centerX = tile.X;
             int y = tile.Y;
 
+            Debug.Log($"HandleRowBombCoroutine: {tile.X}  {tile.Y}");
             // Spread out from the center
             for (int offset = 0; offset < Width; offset++)
             {
@@ -1053,15 +1075,28 @@ namespace Match3
 
                 bool leftValid = IsValidGridTile(leftX, y);
                 bool rightValid = IsValidGridTile(rightX, y);
-
+                //Debug.Log($"leftX:  {leftX}   {y}    {_tiles[leftX + y * Width] == null} {leftValid}");
                 if (leftValid)
                 {
                     int index = leftX + y * Width;
-                    if (_tiles[index].IsDisplay)
+                    if (_tiles[index].IsDisplay == false) continue;
+
+                    bool isDisplay = offset == Width - 1;
+                    _tiles[index].Display(isDisplay);
+                    _tiles[index].PlayMatchVFX();
+
+                    //Debug.Log($"AA: {index%Width}  {index /Width} {_tiles[index].SpecialProperties}");
+                    if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        bool isDisplay = offset == Width - 1;
-                        _tiles[index].Display(isDisplay);
-                        _tiles[index].PlayMatchVFX();
+                        Debug.Log("ADD A");
+                        Coroutine coroutine = null;
+                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                        {
+                            _singleColumnBombCoroutineDict[coroutine] = true;
+                        }));
+                        _singleColumnBombCoroutineDict.Add(coroutine, false);
+                        //_activeColumnBombSet.Remove(_tiles[index]);
+                        EnableVerticalMatchBuffer(leftX);
                     }
                 }
 
@@ -1074,11 +1109,41 @@ namespace Match3
                         _tiles[index].Display(isDisplay);
                         _tiles[index].PlayMatchVFX();
                     }
+
+                    if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
+                    {
+                        Debug.Log("ADD B");
+                        Coroutine coroutine = null;
+                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                        {
+                            _singleColumnBombCoroutineDict[coroutine] = true;
+                        }));
+                        _singleColumnBombCoroutineDict.Add(coroutine, false);
+                        //_activeColumnBombSet.Remove(_tiles[index]);
+                        EnableVerticalMatchBuffer(rightX);
+                    }
                 }
 
                 if (offset < Width - 1)
                 {
                     yield return new WaitForSeconds(0.05f);
+                }
+            }
+
+
+            //Debug.Log($"This: {_singleColumnBombCoroutineDict.Count}");
+            if (_singleColumnBombCoroutineDict.Count > 0)
+            {
+                // Wait for each coroutine in the queue to finish
+                foreach (var e in _singleColumnBombCoroutineDict.Keys)
+                    _singleColumnBombCoroutineKey.Add(e);
+
+                for (int i = 0; i < _singleColumnBombCoroutineKey.Count; i++)
+                {
+                    var key = _singleColumnBombCoroutineKey[i];
+                    //yield return new WaitUntil(() => _singleColumnBombCoroutineDict[key]);
+                    yield return new WaitForSeconds(0.4f);
+                    _singleColumnBombCoroutineDict[key] = true;
                 }
             }
             onCompleted?.Invoke();
@@ -1109,49 +1174,54 @@ namespace Match3
                         if (topValid)
                         {
                             int index = x + topY * Width;
-                            if (_tiles[index].IsDisplay)
+                            if (_tiles[index].IsDisplay == false) continue;
+                      
+                            _tiles[index].Display(false);
+                            _tiles[index].PlayMatchVFX();
+                            if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                             {
-                                _tiles[index].Display(false);
-                                _tiles[index].PlayMatchVFX();
-                            }
-
-                            if (_activeRowBombSet.Contains(_tiles[index]))
-                            {
-                                //Coroutine coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index]));
-                                //_singleRowBombCoroutineQueue.Enqueue(new System.Tuple<Coroutine, bool>(coroutine,true));
-
-                                bool isCoroutineCompleted = false;
-                                Coroutine coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                                 {
-                                    isCoroutineCompleted = true;
+                                    _singleRowBombCoroutineDict[coroutine] = true;
                                 }));
-                                _singleRowBombCoroutineDict.Add(coroutine, isCoroutineCompleted);
-
-                                _activeRowBombSet.Remove(_tiles[index]);
+                                _singleRowBombCoroutineDict.Add(coroutine, false);
+                                //_activeRowBombSet.Remove(_tiles[index]);
+                                EnableHorizontalMatchBuffer(topY);
                             }
+
+                            //if (_activeRowBombSet.Contains(_tiles[index]))
+                            //{
+                            //    //Coroutine coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index]));
+                            //    //_singleRowBombCoroutineQueue.Enqueue(new System.Tuple<Coroutine, bool>(coroutine,true));
+
+                            //    Debug.Log("Cotain AA");
+                            //}
                         }
 
                         if (bottomValid && offset != 0) // Avoid double-playing the center tile
                         {
                             int index = x + bottomY * Width;
-                            if (_tiles[index].IsDisplay)
-                            {
-                                _tiles[index].Display(false);
-                                _tiles[index].PlayMatchVFX();
-                            }
+                            if (_tiles[index].IsDisplay == false) continue;
+                            _tiles[index].Display(false);
+                            _tiles[index].PlayMatchVFX();
 
-                            if (_activeRowBombSet.Contains(_tiles[index]))
+                            if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                             {
-                                //_singleRowBombCoroutineQueue.Enqueue(StartCoroutine(HandleRowBombCoroutine(_tiles[index])));
-
-                                bool isCoroutineCompleted = false;
-                                Coroutine coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                                 {
-                                    isCoroutineCompleted = true;
+                                    _singleRowBombCoroutineDict[coroutine] = true;
                                 }));
-                                _singleRowBombCoroutineDict.Add(coroutine, isCoroutineCompleted);
-                                _activeRowBombSet.Remove(_tiles[index]);
+                                _singleRowBombCoroutineDict.Add(coroutine, false);
+                                //_activeRowBombSet.Remove(_tiles[index]);
+                                EnableHorizontalMatchBuffer(bottomY);
                             }
+                            //if (_activeRowBombSet.Contains(_tiles[index]))
+                            //{
+                            //    Debug.Log("Cotain BB");
+                            //    //_singleRowBombCoroutineQueue.Enqueue(StartCoroutine(HandleRowBombCoroutine(_tiles[index])));                             
+                            //}
                         }
 
 
@@ -1160,20 +1230,22 @@ namespace Match3
                     }
                 }
             }
-            _activeColumnBombSet.Clear();
 
-            //if(_singleRowBombCoroutineQueue.Count > 0)
-            //{
-            //    // Wait for each coroutine in the queue to finish
-            //    while (_singleRowBombCoroutineQueue.Count > 0)
-            //    {
-            //        Debug.Log("HEHEH");
-            //        var element = _singleRowBombCoroutineQueue.Peek();
-            //        //yield return new WaitUntil(() => currentCoroutine == null);
-            //        yield return new 
-            //        _singleRowBombCoroutineQueue.Dequeue();               
-            //    }
-            //}
+
+            if (_singleRowBombCoroutineDict.Count > 0)
+            {
+                // Wait for each coroutine in the queue to finish
+                foreach (var e in _singleRowBombCoroutineDict.Keys)
+                    _singleRowBombCoroutineKey.Add(e);
+
+                for (int i = 0; i < _singleRowBombCoroutineKey.Count; i++)
+                {
+                    var key = _singleRowBombCoroutineKey[i];
+                    //yield return new WaitUntil(() => _singleRowBombCoroutineDict[key]);
+                    yield return new WaitForSeconds(0.4f);
+                    _singleRowBombCoroutineDict[key] = true;
+                }
+            }
         }
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
@@ -1191,25 +1263,60 @@ namespace Match3
                 if (topValid)
                 {
                     int index = x + topY * Width;
-                    if (_tiles[index].IsDisplay)
+                    if (_tiles[index].IsDisplay == false) continue;
+
+                    _tiles[index].Display(false);
+                    _tiles[index].PlayMatchVFX();
+                    if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX();
+                        Debug.Log("A RowBomb");
+                        Coroutine coroutine = null;
+                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                        {
+                            _singleRowBombCoroutineDict[coroutine] = true;
+                        }));
+                        _singleRowBombCoroutineDict.Add(coroutine, false);
                     }
                 }
 
                 if (bottomValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = x + bottomY * Width;
-                    if (_tiles[index].IsDisplay)
+                    if (_tiles[index].IsDisplay == false) continue;
+
+                    _tiles[index].Display(false);
+                    _tiles[index].PlayMatchVFX();
+
+                    if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX();
+                        Debug.Log("B RowBomb");
+                        Coroutine coroutine = null;
+                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                        {
+                            _singleRowBombCoroutineDict[coroutine] = true;
+                        }));
+                        _singleRowBombCoroutineDict.Add(coroutine, false);
+                        //_activeRowBombSet.Remove(_tiles[index]);
                     }
                 }
                 if (offset < Height - 1)
                     yield return new WaitForSeconds(0.05f);
             }
+
+            //if (_singleRowBombCoroutineDict.Count > 0)
+            //{
+            //    // Wait for each coroutine in the queue to finish
+            //    foreach (var e in _singleRowBombCoroutineDict.Keys)
+            //        _singleRowBombCoroutineKey.Add(e);
+
+            //    for (int i = 0; i < _singleRowBombCoroutineKey.Count; i++)
+            //    {
+            //        var key = _singleRowBombCoroutineKey[i];
+            //        yield return new WaitUntil(() => _singleRowBombCoroutineDict[key]);
+            //        _singleRowBombCoroutineDict[key] = true;
+            //    }
+            //}
+          
 
             onCompleted?.Invoke();
         }
@@ -1506,14 +1613,12 @@ namespace Match3
                             EnableHorizontalMatchBuffer(_selectedTile.Y);
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
                                 _activeRowBombSet.Add(_selectedTile);
-                            //PlayClearHorizontalVFX(_selectedTile);
                         }
                         if (_selectedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                         {
                             EnableVerticalMatchBuffer(_selectedTile.X);
                             if (_activeColumnBombSet.Contains(_selectedTile) == false)
                                 _activeColumnBombSet.Add(_selectedTile);
-                            //PlayClearVerticalVFX(_selectedTile);
                         }
                     }
                     break;
