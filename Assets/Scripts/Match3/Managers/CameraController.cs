@@ -1,3 +1,4 @@
+using Codice.Client.BaseCommands;
 using UnityEngine;
 
 
@@ -6,6 +7,7 @@ namespace Match3
     public class CameraController : MonoBehaviour
     {
         public static event System.Action<Vector3> OnCameraPositionUpdated;
+        private float targetSize;
         private void Start()
         {
             //LevelData levelData = LevelManager.Instance.LevelData;
@@ -33,6 +35,39 @@ namespace Match3
             //Debug.Log("AAAA"+gameObject.name);
 
             UpdateCameraPosition();
+            targetSize = Camera.main.orthographicSize;
+        }
+
+        private void LateUpdate()
+        {
+#if UNITY_EDITOR
+            UpdateCameraScroll();
+#endif
+        }
+
+
+
+        private void UpdateCameraScroll()
+        {
+            int minSize = 5;
+            float maxSize = 50f;
+            float scrollSpeed = 10f;     // How much scroll affects targetSize
+            float smoothSpeed = 5f;      // How quickly camera moves to targetSize
+
+            if (Camera.main == null)
+                return;
+
+            float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+
+            if (scrollInput != 0f)
+            {
+                targetSize -= scrollInput * scrollSpeed;
+                targetSize = Mathf.Clamp(targetSize, minSize, maxSize);
+            }
+
+            // Smoothly move current size toward target size
+            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, targetSize, Time.deltaTime * smoothSpeed);
         }
 
         private void UpdateCameraPosition()

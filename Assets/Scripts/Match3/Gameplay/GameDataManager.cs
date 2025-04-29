@@ -6,6 +6,7 @@ using Match3.Enums;
 using Newtonsoft.Json;
 using System.Linq;
 using UnityEngine.Tilemaps;
+using UnityEngine.Video;
 
 namespace Match3
 {
@@ -363,6 +364,13 @@ namespace Match3
         public ShopItemDataSO GetShopItemDataByID(ShopItemID shopItemID)
         {
             return _shopItemDataDict[shopItemID];
+        }
+
+
+        public VideoClip GetVideoByName(string name, CharacterID id)
+        {
+            string path = $"Characters/{(int)id}/{name}";
+            return Resources.Load<VideoClip>(path);
         }
 
 

@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Match3.Shares;
+using UnityEngine.SceneManagement;
+
 
 namespace Match3
 {
@@ -15,10 +17,13 @@ namespace Match3
         [SerializeField] private Button _closeBtn;
         [SerializeField] private Button _playBtn;
         [SerializeField] private TextMeshProUGUI _levelText;
-
+        [SerializeField] private TextMeshProUGUI _quest;
         [Header("Booster")] [SerializeField] private UIBooster _uiBoosterPrefab;
         [SerializeField] private Transform _boosterContentParent;
+        [SerializeField] private UIQuest uiQuest;
         public UIBooster[] UIBoosters;
+        [SerializeField] private UIQuestRequirement requirementPrefab;
+        [SerializeField] private Transform requirementParent;
         public event Action<Loader.Scene> OnSceneSwitch;
 
         private void Awake()
@@ -46,8 +51,16 @@ namespace Match3
 
             _playBtn.onClick.AddListener(() =>
             {
-                AudioManager.Instance.PlayButtonSfx();
-                Loader.Load(Loader.Scene.GameplayScene);
+                DisplayCanvas(false);
+                // AudioManager.Instance.PlayButtonSfx();
+                // Loader.Load(Loader.Scene.GameplayScene);
+                StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.GameplayScene, LoadSceneMode.Additive, 0f, () =>
+                {
+                    // LevelEditorSceneLoader.Instance.OtherScene = SceneManager.GetSceneByName(Loader.Scene.GameplayScene.ToString());
+                    // LevelEditorSceneLoader.Instance.DisplaySceneObject(false);
+                    LevelManager.Instance.OtherScene =  SceneManager.GetSceneByName(Loader.Scene.GameplayScene.ToString());
+                    LevelManager.Instance.ActiveGameObject(false);
+                }));
             });
 
             LoadUIBoosters();
@@ -99,5 +112,26 @@ namespace Match3
                 }         
             }
         }
+
+
+        public void SetQuest(int[,] quest)
+        {
+            // Clear existing requirements
+            foreach (Transform child in requirementParent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            for (int i = 0; i < quest.GetLength(0); i++)
+            {
+                int id = quest[i, 0];
+                int quantity = quest[i, 1];
+                QuestDataSO questData = GameDataManager.Instance.GetQuestDataByID((QuestID)id);
+                Sprite iconSprite = questData.Icon;
+                UIQuestRequirement req = Instantiate(requirementPrefab, requirementParent);
+                req.Initialize(iconSprite, quantity);
+            }
+        }
+
     }
 }

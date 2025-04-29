@@ -109,7 +109,7 @@ public class CharacterDisplay : MonoBehaviour
 
     private void HandleAngryState()
     {
-        if (Input.GetMouseButtonDown(0) &&!IsRecovering)
+        if (Input.GetMouseButtonDown(0) &&!IsRecovering && !Utilities.IsPointerOverUI())
         {
             Vector2 mouseScreenPos = Input.mousePosition; 
             Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);

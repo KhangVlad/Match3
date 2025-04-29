@@ -46,7 +46,7 @@ Material:
     - _BlendColor: {r: 1, g: 0, b: 0, a: 0.8}
     - _BlendColor1: {r: 1, g: 1, b: 1, a: 0}
     - _BlendColor2: {r: 1, g: 1, b: 1, a: 0.12156863}
-    - _NoiseColor: {r: 0.58592916, g: 0.9339623, b: 0.81674147, a: 0.34901962}
+    - _NoiseColor: {r: 0.9858491, g: 1, b: 0.99523, a: 1}
     - _TintColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

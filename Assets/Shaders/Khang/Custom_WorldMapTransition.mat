@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Custom_HexagonTransition
-  m_Shader: {fileID: 4800000, guid: 75b42bb9c42048cd83c4f3381064c491, type: 3}
+  m_Name: Custom_WorldMapTransition
+  m_Shader: {fileID: 4800000, guid: 9686ae8f881d4d5bad2006ea6400a696, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -27,22 +27,18 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SecondTex:
-        m_Texture: {fileID: 2800000, guid: d8272a3284e68304a90a760767eedd66, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _TransitionTex:
-        m_Texture: {fileID: 2800000, guid: d184232afb846a84f94834db83916933, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6f7b16d6f942a47449cc79337706918f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorIntensity: 2
+    - _ColorIntensity: 1.231
     - _EdgeSmoothing: 0.1
     - _HexSize: 0.5
-    - _Progress: 0.8
+    - _Progress: 0.834
     - _Transparency: 1
     m_Colors:
-    - _GlowColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GlowColor: {r: 0.5, g: 0.2, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

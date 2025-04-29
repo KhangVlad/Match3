@@ -6,7 +6,7 @@ namespace Match3
 {
     public class GreenCandle : Tile
     {
-          public override void Initialize()
+        public override void Initialize()
         {
             base.Initialize();
             this.ID = TileID.GreenCandle;
@@ -20,12 +20,6 @@ namespace Match3
         public override void Match(Tile[] grid, int width)
         {
             base.Match(grid, width);
-            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
-            if (IsDisplay)
-            {
-                PlayMatchVFX();
-            }
-       
         }
 
         public override void PlayMatchVFX()
