@@ -11,8 +11,8 @@ public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
     public RunTimeDialogData characterDialogueSO;
-
     public bool IsActiveCharacter = false;
+    [SerializeField] private GameObject renderTexture;
 
     public CharacterState state;
     public AngryState angryState;
@@ -147,6 +147,7 @@ public class CharacterDisplay : MonoBehaviour
             videoPlayer.Stop();
             videoPlayer.clip = null;
             videoClips.Clear();
+           
         }
     }
 
@@ -241,7 +242,7 @@ public class CharacterDisplay : MonoBehaviour
                 type = VideoType.Angry3Idle;
             videoClips.Add(new VideoClipInfo { videoType = type, videoClip = clip });
         }
-
+        renderTexture.SetActive(true);
         OnLoadVideosComplete?.Invoke(id);
     }
 
@@ -368,6 +369,7 @@ public class CharacterDisplay : MonoBehaviour
         }
         else if (state == CharacterState.Exit)
         {
+            renderTexture.SetActive(false);
             videoPlayer.Stop();
             videoPlayer.clip = null;
             videoClips.Clear();
