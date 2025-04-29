@@ -46,7 +46,7 @@ namespace Match3
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
-        public bool HasTriggeredSpecial {get; private set;} = false;
+        public bool HasTriggeredSpecial { get; private set; } = false;
         #endregion
 
 
@@ -236,13 +236,14 @@ namespace Match3
             {
                 StopCoroutine(_emissiveCoroutine);
             }
-            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID))
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID) == false)
             {
                 if (IsDisplay)
                 {
                     PlayMatchVFX();
                 }
             }
+
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
         }
@@ -347,7 +348,7 @@ namespace Match3
             _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
         }
 
-    
+
         public virtual void SetTriggerSpecial(bool triggered)
         {
             HasTriggeredSpecial = triggered;

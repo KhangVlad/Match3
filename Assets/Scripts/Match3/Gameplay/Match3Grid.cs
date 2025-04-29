@@ -1085,7 +1085,6 @@ namespace Match3
         {
             if (tile.HasTriggeredSpecial) yield break;
             tile.SetTriggerSpecial(true);
-            Debug.Log($"Handle ROW Bomb Coroutine:  {tile.IsDisplay}");
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(0.5f);
