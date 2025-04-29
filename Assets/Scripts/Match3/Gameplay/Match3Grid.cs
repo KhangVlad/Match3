@@ -60,6 +60,8 @@ namespace Match3
         //private Dictionary<Coroutine, bool> _singleColumnBombCoroutineDict;
         //private List<Coroutine> _singleRowBombCoroutineKey;
         //private List<Coroutine> _singleColumnBombCoroutineKey;
+        private Coroutine _handleColumnBombCoroutine = null;
+        private Coroutine _handleRowBombCoroutine = null;
 
         private bool _hasMatch4 = false;
         private bool _hasColorBurst = false;
@@ -746,29 +748,53 @@ namespace Match3
 
                 // Handle Match Column Bomb
                 //yield return StartCoroutine(HandleAllColumnBombCoroutine());
+                #region Handle Row And Column Bomb
 
                 Debug.Log($"Row bomb:  {_activeRowBombSet.Count}");
                 Debug.Log($"Column bomb:  {_activeColumnBombSet.Count}");
 
+                if (_handleColumnBombCoroutine != null) StopCoroutine(_handleColumnBombCoroutine);
+                if (_handleRowBombCoroutine != null) StopCoroutine(_handleRowBombCoroutine);
+
+
+                bool columnDone = false;
+                bool rowDone = false;
                 if (_activeColumnBombSet.Count > 0)
                 {
-                    Debug.Log("Handle start from colum");
-                    yield return StartCoroutine(HandleAllColumnBombCoroutine());
+                    _handleColumnBombCoroutine = StartCoroutine(HandleAllColumnBombCoroutine(() => columnDone = true));
+                }
+                else
+                {
+                    columnDone = true;
                 }
 
 
                 if (_activeRowBombSet.Count > 0)
                 {
-                    yield return StartCoroutine(HandleAllRowBombCoroutine());
+                    _handleRowBombCoroutine = StartCoroutine(HandleAllRowBombCoroutine(() => rowDone = true));
+                }
+                else
+                {
+                    rowDone = true;
                 }
 
+                // Wait until both are done 
+                while (!columnDone || !rowDone)
+                {
+                    yield return null;
+                }
+                Debug.Log("Both bomb coroutines are complete.");
+                #endregion
 
+
+                #region  Handle Match
                 HandleMatchAndUnlock(ref hasMatched);
                 if (hasMatched)
                 {
                     isMatch = true;
                     SwapTileHasMatched = true;
                 }
+                #endregion
 
 
                 HandleSpawnSpecialTile();
@@ -965,7 +991,7 @@ namespace Match3
             MatchPreviousTilesDifferent();
         }
 
-        private IEnumerator HandleAllRowBombCoroutine()
+        private IEnumerator HandleAllRowBombCoroutine(System.Action onComplete)
         {
             if (_activeRowBombSet.Count > 0)
             {
@@ -978,22 +1004,22 @@ namespace Match3
                     int y = tile.Y;
 
 
-                    bool isCollideWithColumBomb = false;
-                    for (int yy = 0; yy < Height; yy++)
-                    {
-                        if (IsValidGridTile(tile.X, yy) == false) continue;
-                        int index = tile.X + yy * Width;
-                        if (_activeColumnBombSet.Contains(_tiles[index]))
-                        {
-                            isCollideWithColumBomb = true;
-                            break;
-                        }
-                    }
-                    if (isCollideWithColumBomb)
-                    {
-                        Debug.Log("Collide With Colum Bomb");
-                        continue;
-                    }
+                    // bool isCollideWithColumBomb = false;
+                    // for (int yy = 0; yy < Height; yy++)
+                    // {
+                    //     if (IsValidGridTile(tile.X, yy) == false) continue;
+                    //     int index = tile.X + yy * Width;
+                    //     if (_activeColumnBombSet.Contains(_tiles[index]))
+                    //     {
+                    //         isCollideWithColumBomb = true;
+                    //         break;
+                    //     }
+                    // }
+                    // if (isCollideWithColumBomb)
+                    // {
+                    //     Debug.Log("Collide With Colum Bomb");
+                    //     continue;
+                    // }
 
                     // Spread out from the center
                     for (int offset = 0; offset < Width; offset++)
@@ -1068,7 +1094,7 @@ namespace Match3
                     }
                 }
             }
-
+            onComplete?.Invoke();
         }
 
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
@@ -1165,7 +1191,7 @@ namespace Match3
             onCompleted?.Invoke();
         }
 
-        private IEnumerator HandleAllColumnBombCoroutine()
+        private IEnumerator HandleAllColumnBombCoroutine(System.Action onComplete)
         {
             var _singleRowBombCoroutineDict = new Dictionary<Coroutine, bool>();
             var _singleRowBombCoroutineKey = new List<Coroutine>();
@@ -1194,7 +1220,7 @@ namespace Match3
                         if (_tiles[index].IsDisplay == false) continue;
 
                         _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX();
+                        // _tiles[index].PlayMatchVFX();
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
                             Coroutine coroutine = null;
@@ -1212,7 +1238,7 @@ namespace Match3
                         int index = x + bottomY * Width;
                         if (_tiles[index].IsDisplay == false) continue;
                         _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX();
+                        // _tiles[index].PlayMatchVFX();
 
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
@@ -1243,7 +1269,10 @@ namespace Match3
                     yield return new WaitUntil(() => _singleRowBombCoroutineDict[key]);
                 }
             }
+
+            onComplete?.Invoke();
         }
+
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
             int x = tile.X;
@@ -2144,6 +2173,7 @@ namespace Match3
                 {
                     _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
                     tile.Match(_tiles, Width);
+                    Debug.Log($"Test special match here: {tile.IsDisplay}");
                     if (_unlockTileSet.Contains(i) == false)
                     {
                         _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));

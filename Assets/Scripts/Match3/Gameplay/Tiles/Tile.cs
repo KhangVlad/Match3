@@ -80,6 +80,16 @@ namespace Match3
             ClearAllTweens();
         }
 
+        protected void OnEnable()
+        {
+
+        }
+
+        protected void Oisable()
+        {
+            Display(true);
+        }
+
         private void ClearAllTweens()
         {
             if (_moveTween != null && _moveTween.IsActive())
@@ -126,7 +136,7 @@ namespace Match3
         {
             TileTransform.localPosition = offset;
         }
-        
+
 
         public void ChangeBlock(BlockID blockID)
         {
@@ -224,6 +234,13 @@ namespace Match3
             if (_emissiveCoroutine != null)
             {
                 StopCoroutine(_emissiveCoroutine);
+            }
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID))
+            {
+                if (IsDisplay)
+                {
+                    PlayMatchVFX();
+                }
             }
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
@@ -379,8 +396,8 @@ namespace Match3
 
         public virtual void ReturnToPool()
         {
-            ResetTile();
             pool?.Release(this);
+            ResetTile();
         }
 
         public virtual void ReturnToPool(float duration)
@@ -403,7 +420,6 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
-            Display(true);
             Bloom(false);
         }
         #endregion
