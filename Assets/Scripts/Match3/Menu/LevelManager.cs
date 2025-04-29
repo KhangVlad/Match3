@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 using Newtonsoft.Json;
 using Match3.Enums;
+using UnityEngine.SceneManagement;
+using Match3.Shares;
 
 namespace Match3
 {
@@ -12,7 +15,9 @@ namespace Match3
         public CharacterLevelDataV2 CharacterLevelData { get; private set; }
         public LevelDataV2 LevelData { get; private set; }
         public int CurrentLevelIndex => _currentLevelIndex;
-
+        [SerializeField] private GameObject sceneGameobjects;
+        public Scene OtherScene;
+        public event Action OnBackScene;
 
         private void Awake()
         {
@@ -21,9 +26,10 @@ namespace Match3
                 Destroy(this.gameObject);
                 return;
             }
-            Instance = this;
-        }
 
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
 
 
         public LevelDataV2 LoadLevelData(int level)
@@ -69,6 +75,23 @@ namespace Match3
         public void SetCharacterLevelData(CharacterLevelDataV2 characterLevelData)
         {
             this.CharacterLevelData = characterLevelData;
+        }
+
+        public void ActiveGameObject(bool a)
+        {
+            sceneGameobjects.SetActive(a);
+            if (a)
+            {
+                OnBackScene?.Invoke();
+            }
+        }
+
+
+        public void ReloadScene()
+        {
+            SceneManager.UnloadSceneAsync(SceneManager.GetSceneByName(Loader.Scene.GameplayScene.ToString()));
+            StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.GameplayScene, LoadSceneMode.Additive, 0f,
+                () => { OtherScene = SceneManager.GetSceneByName(Loader.Scene.GameplayScene.ToString()); }));
         }
     }
 }

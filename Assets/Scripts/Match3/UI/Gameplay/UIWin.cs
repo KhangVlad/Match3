@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Match3.Shares;
+using UnityEngine.SceneManagement;
 
 namespace Match3
 {
@@ -24,8 +25,10 @@ namespace Match3
             _levelText.text =  $"Level  {LevelManager.Instance.CurrentLevelIndex + 1}";
             _homeBtn.onClick.AddListener(() =>
             {
-                AudioManager.Instance.PlayButtonSfx();
-                Loader.Load(Loader.Scene.Town);
+                // AudioManager.Instance.PlayButtonSfx();
+                // Loader.Load(Loader.Scene.Town);
+                LevelManager.Instance.ActiveGameObject(true);
+                SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
             });
 
 #if WEBGL_BUILD

@@ -29,7 +29,6 @@ namespace Match3.Shares
 
         public override void Play(float duration = 1)
         {
-            Debug.Log("Play rocket");
             base.Play(duration);
 
             _sr.enabled = false;

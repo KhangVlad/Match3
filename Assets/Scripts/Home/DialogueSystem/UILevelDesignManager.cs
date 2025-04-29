@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using DG.Tweening;
@@ -48,13 +49,6 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private UILevelDesign nextLevel;
     [Header("Animation Settings")] public LayoutAnimationSettings animationSetting = new();
 
-
-    [Header("Transition Effect")] [SerializeField]
-    private Material panelMaterial; 
-    private float appearThreshHold = 0.8f;
-    private float dissapearTheshHold = 1;
-
-
     private UILevelDesign currentChosenLevel;
     private CharacterID currentCharacterId;
     private CharacterData characterData;
@@ -98,9 +92,10 @@ public class UILevelDesignManager : MonoBehaviour
         closeLevelsPanel.onClick.AddListener(HandleCloseLevelsPanel);
         UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
         UserManager.Instance.OnUserDataLoaded += InitializeEnergyUI;
+        LevelManager.Instance.OnBackScene += ForceUpdateUI;
     }
 
-    
+
     private void InitializeEnergyUI()
     {
         if (UserManager.Instance != null && UserManager.Instance.UserData != null)
@@ -109,23 +104,25 @@ public class UILevelDesignManager : MonoBehaviour
             UpdateEnergyUI(UserManager.Instance.UserData.Energy);
         }
     }
+
     private void UnregisterEventListeners()
     {
-        if (CharacterDisplay.Instance != null)
+        if (CharacterDisplay.Instance != null) 
             CharacterDisplay.Instance.OnLoadVideosComplete -= HandleCharacterInteracted;
         UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
         UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
+        LevelManager.Instance.OnBackScene -= ForceUpdateUI;
         closeButton.onClick.RemoveAllListeners();
         selectBtn.onClick.RemoveAllListeners();
         selectLevelBtn.onClick.RemoveAllListeners();
         closeLevelsPanel.onClick.RemoveAllListeners();
     }
-    
+
     private void UpdateEnergyUI(int currentEnergy)
     {
         // Update slider value
         energySlider.value = currentEnergy;
-        
+
         // Update text display
         energyText.text = $"{currentEnergy}/{100}";
     }
@@ -138,6 +135,16 @@ public class UILevelDesignManager : MonoBehaviour
 
         CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
         TownCanvasController.Instance.ActiveLevelDesign(true);
+    }
+
+
+    private void ForceUpdateUI()
+    {
+        if (characterData != null)
+        {
+            LoadCharacterData(characterData.CharacterID);
+            UpdateUI();
+        }
     }
 
     private void HandleCloseButtonClicked()
@@ -161,12 +168,12 @@ public class UILevelDesignManager : MonoBehaviour
             Transform vfxTransform = VfxPool.Instance.GetVfxByName("Energy").gameObject.transform;
             vfxTransform.position = selectBtn.transform.position;
             UILevelInfomation.Instance.DisplayCanvas(true);
+            UILevelInfomation.Instance.SetQuest(nextLevel.cachedQuest);
         }
         else
         {
             UIPopupManager.Instance.ShowWarningPopup("Not Enough Energy");
         }
-        
     }
 
 
@@ -193,13 +200,12 @@ public class UILevelDesignManager : MonoBehaviour
             typewriterEffect.ResetText();
             currentChosenLevel = levelDesign;
             UpdateDialogueBasedOnLevel(levelDesign);
-            nextLevel.InitializeData(levelDesign.index,false,levelDesign.cachedQuest,levelDesign.totalHeart);
+            nextLevel.InitializeData(levelDesign.index, false, levelDesign.cachedQuest, levelDesign.totalHeart);
         }
         else
         {
-             UIPopupManager.Instance.ShowWarningPopup("Try it later!");
+            UIPopupManager.Instance.ShowWarningPopup("Try it later!");
         }
-       
     }
 
     #endregion
@@ -255,7 +261,6 @@ public class UILevelDesignManager : MonoBehaviour
 
         CharacterDisplay.Instance.TransitionToState(CharacterState.Exit);
         typewriterEffect.ResetText();
-        
     }
 
     private void UpdateHeartUI(bool hasEnoughHearts, int totalHeartPoints, int requiredHearts)
@@ -332,6 +337,7 @@ public class UILevelDesignManager : MonoBehaviour
             Debug.LogWarning($"No level data found for character ID: {id}");
             return;
         }
+
         int h = characterData.higestLevel;
         nextLevel.OnClicked += () => HandleLevelDesignClicked(nextLevel);
         for (int i = 0; i < characterLevelData.Levels.Count; i++)
@@ -342,17 +348,19 @@ public class UILevelDesignManager : MonoBehaviour
             RectTransform rectTransform = levelDesign.GetComponent<RectTransform>();
             if (rectTransform == null)
                 continue;
-            levelDesign.InitializeData(levelIndex, islock,characterLevelData.Levels[i].Quests,characterData.Hearts[i]);
+            levelDesign.InitializeData(levelIndex, islock, characterLevelData.Levels[i].Quests,
+                characterData.Hearts[i]);
             levelDesign.OnClicked += () => HandleLevelDesignClicked(levelDesign);
         }
-        nextLevel.InitializeData(h,false,characterLevelData.Levels[h].Quests ,characterData.Hearts[h]);  // fix this later , get the next level play of user on character
-    
+
+        nextLevel.InitializeData(h, false, characterLevelData.Levels[h].Quests,
+            characterData.Hearts[h]); // fix this later , get the next level play of user on character
     }
-    
+
     private IEnumerator AnimateLayoutItems(Transform layoutTransform, LayoutAnimationSettings settings)
     {
         layoutTransform.gameObject.SetActive(true);
-    
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(layoutTransform.GetComponent<RectTransform>());
         yield return null;
         yield return null;
