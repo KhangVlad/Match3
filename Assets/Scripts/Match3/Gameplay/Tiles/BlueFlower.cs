@@ -19,13 +19,7 @@ namespace Match3
 
         public override void Match(Tile[] grid, int width)
         {
-            base.Match(grid, width);
-            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID)) return;
-            if (IsDisplay)
-            {
-                PlayMatchVFX();
-            }
-          
+            base.Match(grid, width);          
         }
 
         public override void PlayMatchVFX()

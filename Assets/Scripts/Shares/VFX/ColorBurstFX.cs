@@ -43,7 +43,6 @@ namespace Match3.Shares
 
         public void AppearPopupAnimation()
         {
-            Debug.Log("AppearPopupAnimation");
             transform.localScale = Vector3.zero; // Start invisible
             _scaleTween = transform.DOScale(Vector3.one, 0.5f) // Scale up to full size
                    .SetEase(Ease.OutBack);     // Nice bouncy ease

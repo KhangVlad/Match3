@@ -46,6 +46,7 @@ namespace Match3
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
+        public bool HasTriggeredSpecial { get; private set; } = false;
         #endregion
 
 
@@ -78,6 +79,16 @@ namespace Match3
         private void OnDestroy()
         {
             ClearAllTweens();
+        }
+
+        protected void OnEnable()
+        {
+
+        }
+
+        protected void Oisable()
+        {
+            Display(true);
         }
 
         private void ClearAllTweens()
@@ -126,7 +137,7 @@ namespace Match3
         {
             TileTransform.localPosition = offset;
         }
-        
+
 
         public void ChangeBlock(BlockID blockID)
         {
@@ -194,7 +205,6 @@ namespace Match3
         public virtual void SetSpecialTile(SpecialTileID properties)
         {
             if (this.CurrentBlock is not NoneBlock) return;
-
             this.SpecialProperties = properties;
             switch (SpecialProperties)
             {
@@ -225,6 +235,14 @@ namespace Match3
             {
                 StopCoroutine(_emissiveCoroutine);
             }
+            if (GameplayManager.Instance.HasTileQuest(this, out QuestID questID) == false)
+            {
+                if (IsDisplay)
+                {
+                    PlayMatchVFX();
+                }
+            }
+
             CurrentBlock.Match(this, grid, width);
             OnMatched?.Invoke(this);
         }
@@ -330,6 +348,11 @@ namespace Match3
         }
 
 
+        public virtual void SetTriggerSpecial(bool triggered)
+        {
+            HasTriggeredSpecial = triggered;
+        }
+
         public virtual void PlayShaking(float duration)
         {
             _shakeTween = transform.DOShakePosition(
@@ -379,8 +402,8 @@ namespace Match3
 
         public virtual void ReturnToPool()
         {
-            ResetTile();
             pool?.Release(this);
+            ResetTile();
         }
 
         public virtual void ReturnToPool(float duration)
@@ -403,8 +426,8 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
-
             Bloom(false);
+            SetTriggerSpecial(false);
         }
         #endregion
     }
