@@ -7,11 +7,9 @@ namespace Match3
     {
         public static GameManager Instance { get; private set; }
 
-
         private void Awake()
         {
             Instance = this;
-
             Application.targetFrameRate = 60;
         }
     }

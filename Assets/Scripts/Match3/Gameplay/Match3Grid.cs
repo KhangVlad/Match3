@@ -87,6 +87,10 @@ namespace Match3
         private List<int[,]> _lShapes;
 
 
+        [Header("VFX")]
+        [SerializeField] private float _rocketPlayTime = 0.75f;
+
+
         // High Levels Logic
         public bool HandleReswapIfNotMatch { get; set; } = true;
 
@@ -1039,11 +1043,10 @@ namespace Match3
                 {
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
                     vfxPrefab.transform.position = tile.TileTransform.position;
-                    vfxPrefab.Play(0.5f);
+                    vfxPrefab.Play(_rocketPlayTime);
 
                     int centerX = tile.X;
                     int y = tile.Y;
-
                     // Spread out from the center
                     for (int offset = 0; offset < Width; offset++)
                     {
@@ -1063,7 +1066,6 @@ namespace Match3
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
-
 
                             if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                             {
@@ -1126,7 +1128,7 @@ namespace Match3
 
                         if (offset < Width - 1)
                         {
-                            yield return new WaitForSeconds(0.05f);
+                            yield return new WaitForSeconds(_rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
                         }
                     }
 
@@ -1153,7 +1155,7 @@ namespace Match3
             tile.SetTriggerSpecial(true);
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
-            vfxPrefab.Play(0.5f);
+            vfxPrefab.Play(_rocketPlayTime);
 
             int centerX = tile.X;
             int y = tile.Y;
@@ -1240,7 +1242,7 @@ namespace Match3
 
                 if (offset < Width - 1)
                 {
-                    yield return new WaitForSeconds(0.05f);
+                    yield return new WaitForSeconds(_rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
                 }
             }
 
@@ -1277,7 +1279,7 @@ namespace Match3
             {
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
                 vfxPrefab.transform.position = tile.TileTransform.position;
-                vfxPrefab.Play(0.5f);
+                vfxPrefab.Play(_rocketPlayTime);
 
                 int x = tile.X;
                 int centerY = tile.Y;
@@ -1356,7 +1358,7 @@ namespace Match3
                     }
 
                     if (offset < Height - 1)
-                        yield return new WaitForSeconds(0.05f);
+                        yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
                 }
             }
 
@@ -1381,7 +1383,7 @@ namespace Match3
             tile.SetTriggerSpecial(true);
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
-            vfxPrefab.Play(0.5f);
+            vfxPrefab.Play(_rocketPlayTime);
 
             int x = tile.X;
             int centerY = tile.Y;
@@ -1405,7 +1407,6 @@ namespace Match3
                     _tiles[index].PlayMatchVFX();
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Debug.Log("A RowBomb");
                         Coroutine coroutine = null;
                         coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                         {
@@ -1439,7 +1440,6 @@ namespace Match3
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Debug.Log("B RowBomb");
                         Coroutine coroutine = null;
                         coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                         {
@@ -1462,7 +1462,7 @@ namespace Match3
                     SetMatchBuffer(index, MatchID.SpecialMatch);
                 }
                 if (offset < Height - 1)
-                    yield return new WaitForSeconds(0.05f);
+                    yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
             }
 
             onCompleted?.Invoke();

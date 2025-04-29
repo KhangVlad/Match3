@@ -6,6 +6,7 @@ namespace Match3.Shares
 {
     public class HorizontalRocketVfx : BaseVisualEffect
     {
+        public const int MAX_ROCKET_DISTANCE = 10;
         private SpriteRenderer _sr;
         [SerializeField] private Transform _leftRocket;
         [SerializeField] private Transform _rightRocket;
@@ -15,11 +16,11 @@ namespace Match3.Shares
 
         private Tween _leftMoveTween;
         private Tween _rightMoveTween;
-
+        
         private void Awake()
         {
-            _offsetLeftRocket = transform.position - _leftRocket.position;
-            _offsetRightRocket = transform.position - _rightRocket.position;
+            _offsetLeftRocket = _leftRocket.position - transform.position;
+            _offsetRightRocket = _rightRocket.position - transform.position;
             _sr = GetComponent<SpriteRenderer>();
         }
         public override void Initialize()
@@ -32,11 +33,34 @@ namespace Match3.Shares
             base.Play(duration);
 
             _sr.enabled = false;
-            int targetLeft = Mathf.FloorToInt(transform.position.x) - 10;
+            int targetLeft = Mathf.FloorToInt(transform.position.x) - MAX_ROCKET_DISTANCE;
             _leftMoveTween =_leftRocket.DOMoveX(targetLeft, duration).SetEase(Ease.Linear);
 
-            int targetRight = Mathf.FloorToInt(transform.position.x) + 10;
+            int targetRight = Mathf.FloorToInt(transform.position.x) + MAX_ROCKET_DISTANCE;
             _rightMoveTween =_rightRocket.DOMoveX(targetRight, duration).SetEase(Ease.Linear);
+
+            // base.Play(duration);
+
+            // _sr.enabled = false;
+
+            // int targetLeft = Mathf.FloorToInt(transform.position.x) - 10;
+            // int targetRight = Mathf.FloorToInt(transform.position.x) + 10;
+
+            // // Initialize rocket scales to zero (for the "pop-in" effect)
+            // _leftRocket.localScale = Vector3.zero;
+            // _rightRocket.localScale = Vector3.zero;
+
+            // // Animate left rocket: scale in, then launch
+            // _leftRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
+            // {
+            //     _leftMoveTween = _leftRocket.DOMoveX(targetLeft, duration * 0.9f).SetEase(Ease.Linear);
+            // });
+
+            // // Animate right rocket: scale in, then launch
+            // _rightRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
+            // {
+            //     _rightMoveTween = _rightRocket.DOMoveX(targetRight, duration * 0.9f).SetEase(Ease.Linear);
+            // });
         }
 
         public override void ReturnToPool()
