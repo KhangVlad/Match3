@@ -24,4 +24,5 @@ public class UserData
      
     [FirestoreProperty]
     public bool DailyRewardFlag { get; set; } 
+
 }

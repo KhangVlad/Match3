@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using DG.Tweening;
+using UnityEngine.Video;
 
 namespace Match3
 {
@@ -12,25 +13,21 @@ namespace Match3
 
         [SerializeField] private TextMeshProUGUI _turnCountText;
 
-        [Header("Buttons")]
-        [SerializeField] private Button _settingsBtn;
+        [Header("Buttons")] [SerializeField] private Button _settingsBtn;
 
-        [Header("Progress")]
-        [SerializeField] private Slider _progressSlider;
+        [Header("Progress")] [SerializeField] private Slider _progressSlider;
         [SerializeField] private Image _start1;
         [SerializeField] private Image _start2;
         [SerializeField] private Image _start3;
         [SerializeField] private Sprite _activeSprite;
         [SerializeField] private Sprite _unactiveSprite;
+        [SerializeField] private VideoPlayer _videoPlayer;
 
-
-        [Header("Boosters")]
-        [SerializeField] private UIGameplayBooster _uiGameplayBoosterPrefab;
+        [Header("Boosters")] [SerializeField] private UIGameplayBooster _uiGameplayBoosterPrefab;
         [SerializeField] private Transform _boosterContentParent;
 
 
-        [Header("Avatars")]
-        [SerializeField] private Image _characterAvatar;
+        [Header("Avatars")] [SerializeField] private Image _characterAvatar;
 
 
         private void Awake()
@@ -40,7 +37,10 @@ namespace Match3
 
         private void Start()
         {
-            _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataSOByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
+            // _characterAvatar.sprite = GameDataManager.Instance.GetCharacterDataSOByID(LevelManager.Instance.CharacterLevelData.CharacterID).sprite;
+            _videoPlayer.clip =
+                GameDataManager.Instance.GetVideoByName("idle_1", LevelManager.Instance.CharacterLevelData.CharacterID);
+            _videoPlayer.isLooping = true;
             _turnCountText.text = GameplayManager.Instance.TurnRemainingCount.ToString();
             LoadUIBoosters();
 
@@ -57,7 +57,6 @@ namespace Match3
 
             GameplayManager.Instance.OnTurnRemaingChanged += OnTurnRemaingChanged_UpdateUI;
             UIGameplayBoosterManager.OnUIGameplayBoosterManagerDisplay += OnUIGameplayBoosterManagerDisplay_UpdateUI;
-
         }
 
 
@@ -85,6 +84,7 @@ namespace Match3
                 uiBooster.SetBoosterData(booster);
             }
         }
+
         private void OnTurnRemaingChanged_UpdateUI(int value)
         {
             _turnCountText.text = value.ToString();
@@ -95,5 +95,4 @@ namespace Match3
             _settingsBtn.interactable = !enable;
         }
     }
-
 }

@@ -112,12 +112,8 @@ public class UserManager : MonoBehaviour
             AllCharacterData = allCharacterData,
             LastOnline = TimeManager.Instance.LoginTime,
             Energy = 80,
-            DailyRewardFlag = false
+            DailyRewardFlag = false,
         };
-        
-       
-        OnUserDataLoaded?.Invoke();
-        
         return UserData;
     }
 

@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using Match3.Shares;
-
+using UnityEngine.SceneManagement;
 namespace Match3
 {
     public class UIGameover : MonoBehaviour
@@ -21,22 +22,33 @@ namespace Match3
         {
             _homeBtn.onClick.AddListener(() =>
             {
-                AudioManager.Instance.PlayButtonSfx();
-
-                Loader.Load(Loader.Scene.Town);
+                LevelManager.Instance.ActiveGameObject(true);
+                SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
             });
 
             _replayBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
-
-                Loader.Load(Loader.Scene.GameplayScene);
+                // Loader.Load(Loader.Scene.GameplayScene);
+                // SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
+                // // StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.GameplayScene, LoadSceneMode.Additive, 0f,
+                // //     () => { }));
+                LevelManager.Instance.ReloadScene();
             });
 
-#if WEBGL_BUILD
+#if WEBGL_BUILD 
             _homeBtn.gameObject.SetActive(false);
             _replayBtn.gameObject.SetActive(false);
 #endif
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                Debug.Log("U");
+                SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
+            }
         }
 
         private void OnDestroy()

@@ -63,7 +63,6 @@ public class UILevelDesign : MonoBehaviour
 
         string result = "";
         int questCount = quest.GetLength(0);
-
         for (int i = 0; i < questCount; i++)
         {
             int questId = quest[i, 0];
