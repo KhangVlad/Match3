@@ -978,6 +978,8 @@ namespace Match3
         private void HandleBlastBomb(Tile tile)
         {
             PlayFlashBombVfx(tile);
+            Dictionary<int, int> highestBombTileDict = new();
+            List<Tile> aboveTiles = new();
             for (int y = 0; y < _blastBombPattern.GetLength(1); y++)
             {
                 for (int x = 0; x < _blastBombPattern.GetLength(0); x++)
@@ -992,7 +994,34 @@ namespace Match3
                             int index = xx + yy * Width;
                             _tiles[index].Display(false);
                             SetMatchBuffer(index, MatchID.SpecialMatch);
+
+                            if (highestBombTileDict.ContainsKey(xx) == false)
+                            {
+                                highestBombTileDict.Add(xx, yy);
+                            }
+                            else
+                            {
+                                highestBombTileDict[xx] = yy;
+                            }
                         }
+                    }
+                }
+            }
+
+            // Slightly bounce up
+            foreach (var e in highestBombTileDict)
+            {
+                int tileX = e.Key;
+                int tileY = e.Value;
+
+                for (int y = tileY + 1; y < Height; y++)
+                {
+                    if (IsValidGridTile(tileX, y))
+                    {
+                        int index = tileX + y * Width;
+                        Vector2 bouncePosition = (Vector2)_tiles[index].transform.position + new Vector2(0, 0.5f);
+                        float bounceTime = 0.1f;
+                        _tiles[index].MoveToPosition(bouncePosition, bounceTime, Ease.OutBack);
                     }
                 }
             }
@@ -1238,8 +1267,8 @@ namespace Match3
             onCompleted?.Invoke();
         }
 
-        Dictionary<Coroutine, bool> _singleAllRowBombCoroutineDict = new Dictionary<Coroutine, bool>();
-        List<Coroutine> _singleAllRowBombCoroutineKey = new List<Coroutine>();
+        private Dictionary<Coroutine, bool> _singleAllRowBombCoroutineDict = new Dictionary<Coroutine, bool>();
+        private List<Coroutine> _singleAllRowBombCoroutineKey = new List<Coroutine>();
         private IEnumerator HandleAllColumnBombCoroutine(System.Action onComplete)
         {
             _singleAllRowBombCoroutineDict.Clear();
