@@ -997,13 +997,15 @@ namespace Match3
                 }
             }
         }
+
+        private Dictionary<Coroutine, bool> _singleAllColumnBombCoroutineDict = new Dictionary<Coroutine, bool>();
+        private List<Coroutine> _singleAllColumnBombCoroutineKey = new List<Coroutine>();
         private IEnumerator HandleAllRowBombCoroutine(System.Action onComplete)
         {
+            _singleAllColumnBombCoroutineDict.Clear();
+            _singleAllColumnBombCoroutineKey.Clear();
             if (_activeRowBombSet.Count > 0)
             {
-                var _singleColumnBombCoroutineDict = new Dictionary<Coroutine, bool>();
-                var _singleColumnBombCoroutineKey = new List<Coroutine>();
-
                 foreach (var tile in _activeRowBombSet)
                 {
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
@@ -1039,9 +1041,9 @@ namespace Match3
                                 Coroutine coroutine = null;
                                 coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
                                 {
-                                    _singleColumnBombCoroutineDict[coroutine] = true;
+                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
                                 }));
-                                _singleColumnBombCoroutineDict.Add(coroutine, false);
+                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                             {
@@ -1074,9 +1076,9 @@ namespace Match3
                                 Coroutine coroutine = null;
                                 coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
                                 {
-                                    _singleColumnBombCoroutineDict[coroutine] = true;
+                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
                                 }));
-                                _singleColumnBombCoroutineDict.Add(coroutine, false);
+                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                             {
@@ -1100,17 +1102,17 @@ namespace Match3
                     }
 
                 }
-                if (_singleColumnBombCoroutineDict.Count > 0)
+                if (_singleAllColumnBombCoroutineDict.Count > 0)
                 {
                     // Wait for each coroutine in the queue to finish
-                    foreach (var e in _singleColumnBombCoroutineDict.Keys)
-                        _singleColumnBombCoroutineKey.Add(e);
+                    foreach (var e in _singleAllColumnBombCoroutineDict.Keys)
+                        _singleAllColumnBombCoroutineKey.Add(e);
 
-                    for (int i = 0; i < _singleColumnBombCoroutineKey.Count; i++)
+                    for (int i = 0; i < _singleAllColumnBombCoroutineKey.Count; i++)
                     {
-                        var key = _singleColumnBombCoroutineKey[i];
-                        yield return new WaitUntil(() => _singleColumnBombCoroutineDict[key]);
-                        _singleColumnBombCoroutineDict[key] = true;
+                        var key = _singleAllColumnBombCoroutineKey[i];
+                        yield return new WaitUntil(() => _singleAllColumnBombCoroutineDict[key]);
+                        _singleAllColumnBombCoroutineDict[key] = true;
                     }
                 }
             }
@@ -1236,11 +1238,12 @@ namespace Match3
             onCompleted?.Invoke();
         }
 
+        Dictionary<Coroutine, bool> _singleAllRowBombCoroutineDict = new Dictionary<Coroutine, bool>();
+        List<Coroutine> _singleAllRowBombCoroutineKey = new List<Coroutine>();
         private IEnumerator HandleAllColumnBombCoroutine(System.Action onComplete)
         {
-            var _singleRowBombCoroutineDict = new Dictionary<Coroutine, bool>();
-            var _singleRowBombCoroutineKey = new List<Coroutine>();
-
+            _singleAllRowBombCoroutineDict.Clear();
+            _singleAllRowBombCoroutineKey.Clear();
             foreach (var tile in _activeColumnBombSet)
             {
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
@@ -1272,9 +1275,9 @@ namespace Match3
                             Coroutine coroutine = null;
                             coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                             {
-                                _singleRowBombCoroutineDict[coroutine] = true;
+                                _singleAllRowBombCoroutineDict[coroutine] = true;
                             }));
-                            _singleRowBombCoroutineDict.Add(coroutine, false);
+                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -1304,9 +1307,9 @@ namespace Match3
                             Coroutine coroutine = null;
                             coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                             {
-                                _singleRowBombCoroutineDict[coroutine] = true;
+                                _singleAllRowBombCoroutineDict[coroutine] = true;
                             }));
-                            _singleRowBombCoroutineDict.Add(coroutine, false);
+                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -1328,16 +1331,16 @@ namespace Match3
                 }
             }
 
-            if (_singleRowBombCoroutineDict.Count > 0)
+            if (_singleAllRowBombCoroutineDict.Count > 0)
             {
                 // Wait for each coroutine in the queue to finish
-                foreach (var e in _singleRowBombCoroutineDict.Keys)
-                    _singleRowBombCoroutineKey.Add(e);
+                foreach (var e in _singleAllRowBombCoroutineDict.Keys)
+                    _singleAllRowBombCoroutineKey.Add(e);
 
-                for (int i = 0; i < _singleRowBombCoroutineKey.Count; i++)
+                for (int i = 0; i < _singleAllRowBombCoroutineKey.Count; i++)
                 {
-                    var key = _singleRowBombCoroutineKey[i];
-                    yield return new WaitUntil(() => _singleRowBombCoroutineDict[key]);
+                    var key = _singleAllRowBombCoroutineKey[i];
+                    yield return new WaitUntil(() => _singleAllRowBombCoroutineDict[key]);
                 }
             }
 
@@ -2330,7 +2333,7 @@ namespace Match3
                 int x = e.Index % Width;
                 int y = e.Index / Width;
 
-                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
+                Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.BlastBomb);
 
@@ -2349,7 +2352,7 @@ namespace Match3
                 int y = e.Index / Width;
 
 
-                Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
+                Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
                 tile.UpdatePosition();
                 tile.Display(true);
                 tile.SetSpecialTile(SpecialTileID.RowBomb);

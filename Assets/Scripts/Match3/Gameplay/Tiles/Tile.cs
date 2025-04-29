@@ -205,7 +205,6 @@ namespace Match3
         public virtual void SetSpecialTile(SpecialTileID properties)
         {
             if (this.CurrentBlock is not NoneBlock) return;
-
             this.SpecialProperties = properties;
             switch (SpecialProperties)
             {
