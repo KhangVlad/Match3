@@ -426,13 +426,12 @@ namespace Match3
                     Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
                     _tiles[gridPosition.x + gridPosition.y * Width] = null;
 
-                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.BlueFlower, BlockID.None);
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
                     newTile.UpdatePosition();
-                    // newTile.SetSpecialTile(SpecialTileID.RowBomb);
+                    newTile.SetSpecialTile(SpecialTileID.BlastBomb);
                     //newTile.SetSpecialTile(SpecialTileID.Match5);
                     //newTile.SetSpecialTile(SpecialTileID.Match6);
-
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.BlueFlower;
+                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
 
@@ -696,12 +695,15 @@ namespace Match3
                 bool hasMatched = false;
                 _unlockTileSet.Clear();
 
+
+
                 yield return StartCoroutine(HandleMatchCoroutine());
                 HandleTriggerAllSpecialTiles();
 
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
 
+                #region ColorBurst
                 // Color burst
                 _cachedColorBurstLine.Clear();
                 if (_colorBurstParentDictionary.Count > 0)
@@ -740,18 +742,10 @@ namespace Match3
                     Debug.Log("wait a second");
                     yield return new WaitForSeconds(colorBurstDuration);
                 }
+                #endregion
 
 
-                // Handle Match Row Bomb
-                //yield return StartCoroutine(HandleAllRowBombCoroutine());
-
-
-                // Handle Match Column Bomb
-                //yield return StartCoroutine(HandleAllColumnBombCoroutine());
                 #region Handle Row And Column Bomb
-
-                Debug.Log($"Row bomb:  {_activeRowBombSet.Count}");
-                Debug.Log($"Column bomb:  {_activeColumnBombSet.Count}");
 
                 if (_handleColumnBombCoroutine != null) StopCoroutine(_handleColumnBombCoroutine);
                 if (_handleRowBombCoroutine != null) StopCoroutine(_handleRowBombCoroutine);
@@ -783,7 +777,6 @@ namespace Match3
                 {
                     yield return null;
                 }
-                Debug.Log("Both bomb coroutines are complete.");
                 #endregion
 
 
@@ -918,7 +911,6 @@ namespace Match3
         {
             FindBlastBomb();
             HandleSpecialMatch();
-            // Debug.Log("CheckMatch3");
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -1000,26 +992,12 @@ namespace Match3
 
                 foreach (var tile in _activeRowBombSet)
                 {
+                    BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+                    vfxPrefab.transform.position = tile.TileTransform.position;
+                    vfxPrefab.Play(0.5f);
+
                     int centerX = tile.X;
                     int y = tile.Y;
-
-
-                    // bool isCollideWithColumBomb = false;
-                    // for (int yy = 0; yy < Height; yy++)
-                    // {
-                    //     if (IsValidGridTile(tile.X, yy) == false) continue;
-                    //     int index = tile.X + yy * Width;
-                    //     if (_activeColumnBombSet.Contains(_tiles[index]))
-                    //     {
-                    //         isCollideWithColumBomb = true;
-                    //         break;
-                    //     }
-                    // }
-                    // if (isCollideWithColumBomb)
-                    // {
-                    //     Debug.Log("Collide With Colum Bomb");
-                    //     continue;
-                    // }
 
                     // Spread out from the center
                     for (int offset = 0; offset < Width; offset++)
@@ -1034,6 +1012,9 @@ namespace Match3
                         {
                             int index = leftX + y * Width;
                             if (_tiles[index].IsDisplay == false) continue;
+                            // if (_tiles[index].HasTriggeredSpecial) continue;
+                            // _tiles[index].SetTriggerSpecial(true);
+
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
@@ -1056,6 +1037,9 @@ namespace Match3
                         {
                             int index = rightX + y * Width;
                             if (_tiles[index].IsDisplay == false) continue;
+                            // if (_tiles[index].HasTriggeredSpecial) continue;
+                            // _tiles[index].SetTriggerSpecial(true);
+
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
@@ -1099,13 +1083,19 @@ namespace Match3
 
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
         {
+            if (tile.HasTriggeredSpecial) yield break;
+            tile.SetTriggerSpecial(true);
+            Debug.Log($"Handle ROW Bomb Coroutine:  {tile.IsDisplay}");
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
             int centerX = tile.X;
             int y = tile.Y;
 
             var singleColumnBombCoroutineDict = new Dictionary<Coroutine, bool>();
             var _singleColumnBombCoroutineKey = new List<Coroutine>();
 
-            Debug.Log($"HandleRowBombCoroutine: {tile.X}  {tile.Y}");
             // Spread out from the center
             for (int offset = 0; offset < Width; offset++)
             {
@@ -1119,7 +1109,6 @@ namespace Match3
                 {
                     int index = leftX + y * Width;
                     if (_tiles[index].IsDisplay == false) continue;
-
                     bool isDisplay = offset == Width - 1;
                     _tiles[index].Display(false);
                     _tiles[index].PlayMatchVFX();
@@ -1127,7 +1116,6 @@ namespace Match3
                     //Debug.Log($"AA: {index%Width}  {index /Width} {_tiles[index].SpecialProperties}");
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Debug.Log("ADD A");
                         Coroutine coroutine = null;
                         coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
                         {
@@ -1150,7 +1138,6 @@ namespace Match3
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Debug.Log("ADD B");
                         Coroutine coroutine = null;
                         coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
                         {
@@ -1198,10 +1185,9 @@ namespace Match3
 
             foreach (var tile in _activeColumnBombSet)
             {
-                Debug.Log("VFX");
-                //BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
-                //vfxPrefab.transform.position = tile.TileTransform.position;
-                //vfxPrefab.Play(0.5f);
+                BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+                vfxPrefab.transform.position = tile.TileTransform.position;
+                vfxPrefab.Play(0.5f);
 
                 int x = tile.X;
                 int centerY = tile.Y;
@@ -1218,9 +1204,11 @@ namespace Match3
                     {
                         int index = x + topY * Width;
                         if (_tiles[index].IsDisplay == false) continue;
+                        // if (_tiles[index].HasTriggeredSpecial) continue;
+                        // _tiles[index].SetTriggerSpecial(true);
 
                         _tiles[index].Display(false);
-                        // _tiles[index].PlayMatchVFX();
+                        _tiles[index].PlayMatchVFX();
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
                             Coroutine coroutine = null;
@@ -1237,9 +1225,10 @@ namespace Match3
                     {
                         int index = x + bottomY * Width;
                         if (_tiles[index].IsDisplay == false) continue;
-                        _tiles[index].Display(false);
-                        // _tiles[index].PlayMatchVFX();
+                        // if (_tiles[index].HasTriggeredSpecial) continue;
+                        // _tiles[index].SetTriggerSpecial(true);
 
+                        _tiles[index].Display(false);
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
                             Coroutine coroutine = null;
@@ -1275,6 +1264,12 @@ namespace Match3
 
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
+            if (tile.HasTriggeredSpecial) yield break;
+            tile.SetTriggerSpecial(true);
+            BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+            vfxPrefab.transform.position = tile.TileTransform.position;
+            vfxPrefab.Play(0.5f);
+
             int x = tile.X;
             int centerY = tile.Y;
 
@@ -2173,7 +2168,6 @@ namespace Match3
                 {
                     _matchThisPlayTurnSet.Add(new Vector2Int(x, y));
                     tile.Match(_tiles, Width);
-                    Debug.Log($"Test special match here: {tile.IsDisplay}");
                     if (_unlockTileSet.Contains(i) == false)
                     {
                         _unlockThisPlayTurnSet.Add(new Vector2Int(x, y));

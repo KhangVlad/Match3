@@ -46,6 +46,7 @@ namespace Match3
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
+        public bool HasTriggeredSpecial {get; private set;} = false;
         #endregion
 
 
@@ -346,6 +347,11 @@ namespace Match3
             _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
         }
 
+    
+        public virtual void SetTriggerSpecial(bool triggered)
+        {
+            HasTriggeredSpecial = triggered;
+        }
 
         public virtual void PlayShaking(float duration)
         {
@@ -421,6 +427,7 @@ namespace Match3
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
             Bloom(false);
+            SetTriggerSpecial(false);
         }
         #endregion
     }
