@@ -81,20 +81,18 @@ public class ScreenInteraction : MonoBehaviour
 
         Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 1000, characterLayerMask);
-        VfxGameObject a = VfxPool.Instance.GetVfxByName("Ripple");
-        a.gameObject.transform.position = PreviouseMousePos; 
+        // VfxGameObject a = VfxPool.Instance.GetVfxByName("Ripple");
+        // a.gameObject.transform.position = PreviouseMousePos; 
         if (hit.collider is not null)
         {
             if (hit.collider.TryGetComponent(out CharacterBubble character))
             {
-                Debug.Log("Character Bubble Clicked");
                 if (TimeLineManager.Instance.IsCreatingNewActivity) return;
                 AudioManager.Instance.PlayButtonSfx();
                 OnCharacterInteracted?.Invoke(character.characterID);
             }
             else if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
             {
-                Debug.Log("Character Arrow Clicked");
                 AudioManager.Instance.PlayButtonSfx();
                 StartCoroutine(MoveCameraToCharacter(arrow));
             }
