@@ -30,37 +30,38 @@ namespace Match3.Shares
 
         public override void Play(float duration = 1)
         {
-            base.Play(duration);
-
-            _sr.enabled = false;
-            int targetLeft = Mathf.FloorToInt(transform.position.x) - MAX_ROCKET_DISTANCE;
-            _leftMoveTween =_leftRocket.DOMoveX(targetLeft, duration).SetEase(Ease.Linear);
-
-            int targetRight = Mathf.FloorToInt(transform.position.x) + MAX_ROCKET_DISTANCE;
-            _rightMoveTween =_rightRocket.DOMoveX(targetRight, duration).SetEase(Ease.Linear);
-
             // base.Play(duration);
 
             // _sr.enabled = false;
+            // int targetLeft = Mathf.FloorToInt(transform.position.x) - MAX_ROCKET_DISTANCE;
+            // _leftMoveTween =_leftRocket.DOMoveX(targetLeft, duration).SetEase(Ease.Linear);
 
-            // int targetLeft = Mathf.FloorToInt(transform.position.x) - 10;
-            // int targetRight = Mathf.FloorToInt(transform.position.x) + 10;
+            // int targetRight = Mathf.FloorToInt(transform.position.x) + MAX_ROCKET_DISTANCE;
+            // _rightMoveTween =_rightRocket.DOMoveX(targetRight, duration).SetEase(Ease.Linear);
 
-            // // Initialize rocket scales to zero (for the "pop-in" effect)
-            // _leftRocket.localScale = Vector3.zero;
-            // _rightRocket.localScale = Vector3.zero;
 
-            // // Animate left rocket: scale in, then launch
-            // _leftRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
-            // {
-            //     _leftMoveTween = _leftRocket.DOMoveX(targetLeft, duration * 0.9f).SetEase(Ease.Linear);
-            // });
+            base.Play(duration);
 
-            // // Animate right rocket: scale in, then launch
-            // _rightRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
-            // {
-            //     _rightMoveTween = _rightRocket.DOMoveX(targetRight, duration * 0.9f).SetEase(Ease.Linear);
-            // });
+            _sr.enabled = false;
+
+            int targetLeft = Mathf.FloorToInt(transform.position.x) - 10;
+            int targetRight = Mathf.FloorToInt(transform.position.x) + 10;
+
+            // Initialize rocket scales to zero (for the "pop-in" effect)
+            _leftRocket.localScale = Vector3.zero;
+            _rightRocket.localScale = Vector3.zero;
+
+            // Animate left rocket: scale in, then launch
+            _leftRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                _leftMoveTween = _leftRocket.DOMoveX(targetLeft, duration * 0.9f).SetEase(Ease.Linear);
+            });
+
+            // Animate right rocket: scale in, then launch
+            _rightRocket.DOScale(Vector3.one, duration * 0.1f).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                _rightMoveTween = _rightRocket.DOMoveX(targetRight, duration * 0.9f).SetEase(Ease.Linear);
+            });
         }
 
         public override void ReturnToPool()

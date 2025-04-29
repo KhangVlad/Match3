@@ -1128,10 +1128,10 @@ namespace Match3
 
                         if (offset < Width - 1)
                         {
-                            yield return new WaitForSeconds(_rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
+                            float linearTime = _rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE;
+                            yield return new WaitForSeconds(linearTime);
                         }
                     }
-
                 }
                 if (_singleAllColumnBombCoroutineDict.Count > 0)
                 {
@@ -1149,6 +1149,7 @@ namespace Match3
             }
             onComplete?.Invoke();
         }
+
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
         {
             if (tile.HasTriggeredSpecial) yield break;
