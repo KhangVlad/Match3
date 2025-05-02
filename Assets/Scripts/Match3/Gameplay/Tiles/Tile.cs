@@ -254,9 +254,12 @@ namespace Match3
 
         public virtual void PlayMatchVFX() { }
 
-        public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease)
+        public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {
-            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease);
+            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease).OnComplete(()=>
+            {
+                onCompleted?.Invoke();
+            });
         }
 
         public void MoveToGridPosition(float moveTime = TileAnimationExtensions.TILE_MOVE_TIME)

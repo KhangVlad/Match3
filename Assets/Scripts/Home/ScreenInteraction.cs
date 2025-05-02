@@ -6,6 +6,7 @@ using Match3;
 using Match3.Enums;
 using Match3.Shares;
 
+#if !UNITY_WEBGL
 public class ScreenInteraction : MonoBehaviour
 {
     public static ScreenInteraction Instance { get; private set; }
@@ -200,3 +201,4 @@ public class ScreenInteraction : MonoBehaviour
 
 #endif
 }
+#endif

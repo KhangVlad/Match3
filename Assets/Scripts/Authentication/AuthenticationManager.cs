@@ -1,12 +1,15 @@
 using System;
 using UnityEngine;
+using Match3.Shares;
+#if !UNITY_WEBGL
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Firestore;
-using Match3.Shares;
+#endif
 
 public class AuthenticationManager : MonoBehaviour
 {
+    #if !UNITY_WEBGL
     public static AuthenticationManager Instance { get; private set; }
     public event System.Action<FirebaseUser> OnAuthenticationSuccessfully;
     public event Action<bool> OnNewUserCreate;
@@ -171,4 +174,5 @@ public class AuthenticationManager : MonoBehaviour
             Debug.LogError($"Error: Error checking or creating document: {e.Message}");
         }
     }
+    #endif
 }

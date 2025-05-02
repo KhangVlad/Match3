@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if !UNITY_WEBGL
 public class UIDailyGiftManager : MonoBehaviour
 {
     private Canvas canvas;
@@ -29,3 +30,4 @@ public class UIDailyGiftManager : MonoBehaviour
         canvas.enabled = active;
     }
 }
+#endif

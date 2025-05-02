@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using Match3.Enums;
 using Match3.Shares;
 
+#if !UNITY_WEBGL
 public class UILevelDesignManager : MonoBehaviour
 {
     [Header("Main References")] [SerializeField]
@@ -397,3 +398,4 @@ public class UILevelDesignManager : MonoBehaviour
 
     #endregion
 }
+#endif

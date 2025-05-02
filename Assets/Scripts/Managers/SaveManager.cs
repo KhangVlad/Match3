@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
-using Firebase.Firestore;
-using System.Threading.Tasks;
+#if !UNITY_WEBGL
 using Firebase.Extensions;
-
+using Firebase.Firestore;
+#endif
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
@@ -22,7 +22,9 @@ public class SaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+#if !UNITY_WEBGL
         SaveAndUploadUserDataToFirebase();
+#endif
         // SaveAndUploadShopDataToFirebase();
     }
 
@@ -34,7 +36,7 @@ public class SaveManager : MonoBehaviour
     #region USERDATA
 
 
-
+#if !UNITY_WEBGL
     public void SaveUserData(UserData userData)
     {
         string json = JsonUtility.ToJson(userData);
@@ -50,11 +52,12 @@ public class SaveManager : MonoBehaviour
     }
 
 
+
     public void SaveAndUploadUserDataToFirebase()
     {
         Debug.Log("Save And Upload User Data To Firebase");
         UserManager.Instance.UserData.LastOnline = FieldValue.ServerTimestamp;
-
+        
         string userID = FirebaseManager.Instance.User.UserId;
         Firebase.Firestore.DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("users")
             .Document(userID);
@@ -70,23 +73,6 @@ public class SaveManager : MonoBehaviour
             }
         });
     }
-
-    // public void SaveAndUploadShopDataToFirebase()
-    // {
-    //     string userID = FirebaseManager.Instance.User.UserId;
-    //     DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("shops").Document(userID);
-    //     docRef.SetAsync(ShopManager.Instance.Market).ContinueWithOnMainThread(task =>
-    //     {
-    //         if (task.IsCompleted)
-    //         {
-    //             Debug.Log("Save Shop complete");
-    //         }
-    //         else
-    //         {
-    //             Debug.LogError("Error : " + task.Exception);
-    //         }
-    //     });
-    // }
-
+#endif
     #endregion
 }

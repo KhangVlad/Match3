@@ -89,6 +89,7 @@ namespace Match3
 
         [Header("VFX")]
         [SerializeField] private float _rocketPlayTime = 0.75f;
+        private bool _isBlastBombTriggered = false;
 
 
         // High Levels Logic
@@ -822,6 +823,11 @@ namespace Match3
                     // float waitFillTime = _activeRowBombSet.Count > 0 || _activeColumnBombSet.Count > 0 ? 1 : 0.05f;
                     //yield return new WaitForSeconds(0.05f);
                     // yield return new WaitForSeconds(0.05f);
+
+                    if (_isBlastBombTriggered)
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
 
@@ -836,6 +842,7 @@ namespace Match3
 
                 _activeColumnBombSet.Clear();
                 _activeRowBombSet.Clear();
+                _isBlastBombTriggered = false;
                 //_singleColumnBombCoroutineKey.Clear();
                 //_singleRowBombCoroutineKey.Clear();
                 //_singleColumnBombCoroutineDict.Clear();
@@ -980,9 +987,9 @@ namespace Match3
 
         private void HandleBlastBomb(Tile tile)
         {
+            _isBlastBombTriggered = true;
             PlayFlashBombVfx(tile);
             Dictionary<int, int> highestBombTileDict = new();
-            List<Tile> aboveTiles = new();
             for (int y = 0; y < _blastBombPattern.GetLength(1); y++)
             {
                 for (int x = 0; x < _blastBombPattern.GetLength(0); x++)
@@ -1022,9 +1029,13 @@ namespace Match3
                     if (IsValidGridTile(tileX, y))
                     {
                         int index = tileX + y * Width;
+                        Vector2 cachedTilePosition = (Vector2)_tiles[index].transform.position;
                         Vector2 bouncePosition = (Vector2)_tiles[index].transform.position + new Vector2(0, 0.5f);
                         float bounceTime = 0.1f;
-                        _tiles[index].MoveToPosition(bouncePosition, bounceTime, Ease.OutBack);
+                        _tiles[index].MoveToPosition(bouncePosition, bounceTime, Ease.OutBack, () =>
+                        {
+                            _tiles[index].MoveToPosition(cachedTilePosition, bounceTime, Ease.OutBack);
+                        });
                     }
                 }
             }
@@ -2249,8 +2260,6 @@ namespace Match3
                         float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-
-
                         nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
                     }
                 }
@@ -2390,10 +2399,16 @@ namespace Match3
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
 
-                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
+                Utilities.WaitAfter(0.1f, () =>
                 {
-                    tile.Display(false);
-                }
+                    HorizontalRocketVfx vfx = (HorizontalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+                    vfx.transform.position = tile.TileTransform.position;
+                    vfx.PlayAnimtion();
+                    Utilities.WaitAfter(0.25f, () =>
+                    {
+                        vfx.ReturnToPool();
+                    });
+                });
             }
 
 

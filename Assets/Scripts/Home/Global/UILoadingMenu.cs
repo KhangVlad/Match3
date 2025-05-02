@@ -6,6 +6,7 @@ using DG.Tweening;
 using TMPro;
 using Match3.Shares;
 
+#if !UNITY_WEBGL
 public class UILoadingMenu : MonoBehaviour
 {
     [Header("UI References")]
@@ -48,10 +49,12 @@ public class UILoadingMenu : MonoBehaviour
             GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
         }
         
+        #if !UNITY_WEBGL
         if (AuthenticationManager.Instance != null)
         {
             AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
         }
+        #endif
         
         // Set background based on time of day
         SetBackgroundByTimeOfDay();
@@ -73,10 +76,12 @@ public class UILoadingMenu : MonoBehaviour
             GameDataManager.Instance.OnDataLoaded -= OnGameDataLoaded;
         }
         
+        #if !UNITY_WEBGL
         if (AuthenticationManager.Instance != null)
         {
             AuthenticationManager.Instance.OnNewUserCreate -= HandleNewUser;
         }
+        #endif
         
         StopAllCoroutines();
     }
@@ -199,6 +204,5 @@ public class UILoadingMenu : MonoBehaviour
             Debug.LogWarning("LoadingAnimationController instance is null. Cannot switch scenes.");
         }
     }
-    
-   
 }
+#endif

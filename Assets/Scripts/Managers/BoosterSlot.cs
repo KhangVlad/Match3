@@ -1,4 +1,5 @@
-﻿using Match3;
+﻿#if !UNITY_WEBGL
+using Match3;
 using Firebase.Firestore;
 
 [FirestoreData]
@@ -20,3 +21,4 @@ public class BoosterSlot
         Quantity = quantity;
     }
 }
+#endif

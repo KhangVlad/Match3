@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using UnityEngine;
 using Firebase;
 using Firebase.Extensions;
@@ -5,11 +6,9 @@ using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Firestore;
 
-
 public class FirebaseManager : MonoBehaviour
 {
     public static FirebaseManager Instance { get; private set; }
-
 
     public FirebaseUser User {get; private set; }
     public FirebaseApp App { get; private set; }
@@ -120,3 +119,4 @@ public struct ServerTimestamp
 {
     [FirestoreProperty] public object UTCNow { get; set; }
 }
+#endif

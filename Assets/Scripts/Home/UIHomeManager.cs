@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if !UNITY_WEBGL
 public class UIHomeManager : MonoBehaviour
 {
     private Canvas _canvas;
@@ -59,3 +60,4 @@ public class UIHomeManager : MonoBehaviour
         _canvas.enabled = active;
     }
 }
+#endif

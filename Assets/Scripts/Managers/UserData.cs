@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+
+#if !UNITY_WEBGL
 using Firebase.Firestore;
 
 [FirestoreData]
@@ -24,5 +26,5 @@ public class UserData
      
     [FirestoreProperty]
     public bool DailyRewardFlag { get; set; } 
-
 }
+#endif

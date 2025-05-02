@@ -7,6 +7,7 @@ using Match3;
 using Match3.Enums;
 using Match3.Shares;
 
+#if !UNITY_WEBGL
 public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
@@ -471,3 +472,4 @@ public enum AngryState
     Medium = 2,
     High = 3,
 }
+#endif
