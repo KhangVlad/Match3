@@ -6,6 +6,7 @@ namespace Match3.Shares
 {
     public class VerticalRocketVfx : BaseVisualEffect
     {
+            public const int MAX_ROCKET_DISTANCE = 10;
         private SpriteRenderer _sr;
         [SerializeField] private Transform _upRocket;
         [SerializeField] private Transform _downRocket;
@@ -32,10 +33,10 @@ namespace Match3.Shares
             base.Play(duration);
 
             _sr.enabled = false;
-            int targetUp = Mathf.FloorToInt(transform.position.y) + 10;
+            int targetUp = Mathf.FloorToInt(transform.position.y) + MAX_ROCKET_DISTANCE;
             _upMoveTween = _upRocket.DOMoveY(targetUp, duration).SetEase(Ease.Linear);
 
-            int downTarget = Mathf.FloorToInt(transform.position.y) - 10;
+            int downTarget = Mathf.FloorToInt(transform.position.y) - MAX_ROCKET_DISTANCE;
             _downMoveTween = _downRocket.DOMoveY(downTarget, duration).SetEase(Ease.Linear);
         }
 

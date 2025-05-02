@@ -27,14 +27,13 @@ public class UILevelDesignManager : MonoBehaviour
 
     [Header("Character Info")] [SerializeField]
     private RectTransform heart;
-
     [SerializeField] private Image heartImage;
     [SerializeField] private Image heartHeader;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private Slider energySlider;
     [SerializeField] private TextMeshProUGUI energyText;
     [SerializeField] private TextMeshProUGUI progressText;
-
+    [SerializeField] private Button teaseBtn;
     [Header("Warning Panel")] [SerializeField]
     private Transform warningPanel;
 
@@ -93,6 +92,7 @@ public class UILevelDesignManager : MonoBehaviour
         UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
         UserManager.Instance.OnUserDataLoaded += InitializeEnergyUI;
         LevelManager.Instance.OnBackScene += ForceUpdateUI;
+        teaseBtn.onClick.AddListener(CharacterDisplay.Instance.Tease);
     }
 
 
@@ -116,6 +116,7 @@ public class UILevelDesignManager : MonoBehaviour
         selectBtn.onClick.RemoveAllListeners();
         selectLevelBtn.onClick.RemoveAllListeners();
         closeLevelsPanel.onClick.RemoveAllListeners();
+        teaseBtn.onClick.RemoveAllListeners();
     }
 
     private void UpdateEnergyUI(int currentEnergy)
@@ -192,6 +193,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void HandleLevelDesignClicked(UILevelDesign levelDesign)
     {
+  
         AudioManager.Instance.PlayButtonSfx();
         if (!levelDesign.Islocked)
         {

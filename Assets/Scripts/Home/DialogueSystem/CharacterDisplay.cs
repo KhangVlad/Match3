@@ -11,8 +11,8 @@ public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
     public RunTimeDialogData characterDialogueSO;
-
     public bool IsActiveCharacter = false;
+    [SerializeField] private GameObject renderTexture;
 
     public CharacterState state;
     public AngryState angryState;
@@ -80,7 +80,7 @@ public class CharacterDisplay : MonoBehaviour
 
     private void LoadCharacterDialogue(CharacterID id)
     {
-        characterDialogueSO = GameDataManager.Instance.ReadDialogueData(id,LanguageManager.Instance.currentLanguage);
+        characterDialogueSO = GameDataManager.Instance.ReadDialogueData(id, LanguageManager.Instance.currentLanguage);
     }
 
     public void TransitionToState(CharacterState newState)
@@ -92,13 +92,6 @@ public class CharacterDisplay : MonoBehaviour
 
     private void Update()
     {
-        // if (!IsActiveCharacter || state == CharacterState.Entry) return;
-        // HandleAngryState();
-
-        if (!IsActiveCharacter || state == CharacterState.Entry) return;
-        HandleAngryState();
-
-        // Check if it's time to start decreasing anger
         if (Time.time - lastInteractionTime > TimeToDecreaseAngryPoint)
         {
             IsRecovering = true;
@@ -106,20 +99,17 @@ public class CharacterDisplay : MonoBehaviour
         }
     }
 
+    public void Tease()
+    {
+        if (!IsActiveCharacter || state == CharacterState.Entry) return;
+        HandleAngryState();
+    }
 
     private void HandleAngryState()
     {
-        if (Input.GetMouseButtonDown(0) &&!IsRecovering && !Utilities.IsPointerOverUI())
-        {
-            Vector2 mouseScreenPos = Input.mousePosition; 
-            Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-            VfxGameObject a = VfxPool.Instance.GetVfxByName("Ripple");
-            a.gameObject.transform.position = mouseWorldPos;
-            IncreaseAnger(5);
-            IsRecovering = false;
-            lastInteractionTime = Time.time; // Reset interaction timer
-        }
-
+        IncreaseAnger(5);
+        IsRecovering = false;
+        lastInteractionTime = Time.time;
         if (IsAngry && IsRecovering)
         {
             AngryState previousState = angryState;
@@ -131,6 +121,8 @@ public class CharacterDisplay : MonoBehaviour
             }
         }
     }
+    
+    
 
     private void PlayCurrentState()
     {
@@ -147,13 +139,14 @@ public class CharacterDisplay : MonoBehaviour
             videoPlayer.Stop();
             videoPlayer.clip = null;
             videoClips.Clear();
+           
         }
     }
 
 
     private void IncreaseAnger(float amount)
     {
-        if (AngryPoint >= AngryThreshold[3] +20) return;
+        if (AngryPoint >= AngryThreshold[3] + 20) return;
         AngryPoint += amount;
         AngryState previousState = angryState;
 
@@ -163,9 +156,6 @@ public class CharacterDisplay : MonoBehaviour
             state = CharacterState.Angry;
             TransitionToState(CharacterState.Angry);
         }
-
-
-        // Clamp the value to the maximum threshold
     }
 
     private void DecreaseAnger(float amount)
@@ -241,7 +231,7 @@ public class CharacterDisplay : MonoBehaviour
                 type = VideoType.Angry3Idle;
             videoClips.Add(new VideoClipInfo { videoType = type, videoClip = clip });
         }
-
+        renderTexture.SetActive(true);
         OnLoadVideosComplete?.Invoke(id);
     }
 
@@ -352,7 +342,8 @@ public class CharacterDisplay : MonoBehaviour
                 VideoClipInfo ae2 = videoClips.Find(x => x.videoType == VideoType.Angry2End);
                 VideoClipInfo start = videoClips.Find(x => x.videoType == VideoType.Angry1Start);
                 VideoClipInfo idle1 = videoClips.Find(x => x.videoType == VideoType.Angry1Idle);
-                InitializeVideoPlayer(ae2, () => InitializeVideoPlayer(start, (() => InitializeVideoPlayer(idle1,null))));
+                InitializeVideoPlayer(ae2,
+                    () => InitializeVideoPlayer(start, (() => InitializeVideoPlayer(idle1, null))));
             }
             else if (ang + 1 == AngryState.Low)
             {
@@ -368,6 +359,7 @@ public class CharacterDisplay : MonoBehaviour
         }
         else if (state == CharacterState.Exit)
         {
+            renderTexture.SetActive(false);
             videoPlayer.Stop();
             videoPlayer.clip = null;
             videoClips.Clear();
