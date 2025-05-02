@@ -3359,7 +3359,11 @@ namespace Match3
 
             tileInstance.Display(display);
             tileInstance.SetSpecialTile(SpecialTileID.None);
+#if UNITY_WEBGL
+            tileInstance.SetInteractionMask(SpriteMaskInteraction.None);
+#else
             tileInstance.SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
+#endif
             tileInstance.SetGridPosition(x, y);
             _tiles[x + y * Width] = tileInstance;
 

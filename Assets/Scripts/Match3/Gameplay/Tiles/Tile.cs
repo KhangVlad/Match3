@@ -17,12 +17,17 @@ namespace Match3
         protected SpriteRenderer bloomSR;
         public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
+
+        [Space(20)]
+        public Transform TilePivot;
+        public Transform TileTransform;
+
+        [Header("Only used for None Tile")]
         [SerializeField] protected Sprite _match4Vertical;
         [SerializeField] protected Sprite _match4Horizontal;
         [SerializeField] protected Sprite _match5;
         [SerializeField] protected Sprite _match6;
-        public Transform TilePivot;
-        public Transform TileTransform;
+
 
 
         // mask interaction

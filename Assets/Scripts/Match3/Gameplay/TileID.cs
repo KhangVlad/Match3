@@ -19,6 +19,26 @@
         BlueRibbon = 14,
         PurpleRibbon = 15,
         MagnifyingGlass = 16,
+        BlueFeather = 17,
+        GreenFeather = 18,
+        PurpleFeather = 19,
+        RedFeather = 20,
+        WhiteFeather = 21,
+        YellowFeather = 22,
+        BlueMushroom = 23,
+        GreenMushroom = 24,
+        PurpleMushroom = 25,
+        RedMushroom = 26,
+        YellowMushroom = 27,
+        GreenBut = 28,
+        PurpleBut = 29,
+        RedBut = 30,
+        WhiteBut = 31,
+        YellowBut = 32,
+        RedBug = 33,
+        YellowBug = 34,
+        Rock = 35,
+
     }
 
     public enum SpecialTileID 

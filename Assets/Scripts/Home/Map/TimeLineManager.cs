@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using System.Collections.Generic;
 using Match3;
@@ -473,3 +474,4 @@ public class IconWithPosition
     public bool isOut;
     public CharacterDirectionArrow directionArrow;
 }
+#endif
