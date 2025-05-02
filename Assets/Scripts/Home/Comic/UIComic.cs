@@ -1,7 +1,7 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening; // Add DOTween namespace
 
 public class UIComic : MonoBehaviour
 {
@@ -12,40 +12,25 @@ public class UIComic : MonoBehaviour
     [SerializeField] private Button skip;
 
     [SerializeField] private float fadeDuration = 1f;
-    
-    private int currentFrameIndex = 0;
-    private Image[] frames;
-    private bool isAnimating = false;
+    [SerializeField] private float delayBetweenFrames = 0.5f;
+    [SerializeField] private float skipButtonAnimDuration = 0.5f; // Duration for skip button animation
 
     private void Start()
     {
-        
-        // Initialize frames array
-        frames = new Image[] { frame1, frame2, frame3 };
-        
-        // Initially hide all frames
-        foreach (var frame in frames)
-        {
-            SetFrameAlpha(frame, 0f);
-        }
+        SetFrameAlpha(frame1, 0f);
+        SetFrameAlpha(frame2, 0f);
+        SetFrameAlpha(frame3, 0f);
         
         // Set up skip button
         if (skip != null)
         {
             skip.onClick.AddListener(OnSkipButtonClicked);
-        }
-        
-        // Initially hide the comic
-        if (comic != null)
-        {
-            comic.gameObject.SetActive(false);
+            skip.gameObject.SetActive(false);
         }
     }
 
     private void OnDestroy()
     {
-        
-        // Unsubscribe from skip button
         if (skip != null)
         {
             skip.onClick.RemoveListener(OnSkipButtonClicked);
@@ -54,68 +39,72 @@ public class UIComic : MonoBehaviour
 
     public void OnNewUserCreate()
     {
-        if (comic != null)
-        {
-            comic.gameObject.SetActive(true);
-        }
-        
-        // Reset to first frame
-        currentFrameIndex = 0;
-        
-        // Start fading in the first frame
-        StartCoroutine(FadeInCurrentFrame());
+        // Start the frame fade-in sequence
+        StartCoroutine(FadeInFramesSequentially());
     }
 
     private void OnSkipButtonClicked()
     {
-        // If animation is in progress, wait for it to finish
-        if (isAnimating)
-            return;
-            
-        // Advance to the next frame
-        AdvanceToNextFrame();
-    }
-    
-    private void AdvanceToNextFrame()
-    {
-        // Move to next frame index
-        currentFrameIndex++;
-        
-        // If we've shown all frames, load the next scene
-        if (currentFrameIndex >= frames.Length)
-        {
-            LoadScene();
-            return;
-        }
-        
-        // Otherwise, fade in the next frame
-        StartCoroutine(FadeInCurrentFrame());
+        StopAllCoroutines();
+        SetFrameAlpha(frame1, 1f);
+        SetFrameAlpha(frame2, 1f);
+        SetFrameAlpha(frame3, 1f);
+        StartCoroutine(LoadAfterDelay(0.5f));
     }
 
-    private IEnumerator FadeInCurrentFrame()
+    private IEnumerator FadeInFramesSequentially()
     {
-        isAnimating = true;
+        yield return StartCoroutine(FadeInFrame(frame1));
+        yield return new WaitForSeconds(delayBetweenFrames);
         
-        // Get the current frame
-        Image currentFrame = frames[currentFrameIndex];
+        yield return StartCoroutine(FadeInFrame(frame2));
+        yield return new WaitForSeconds(delayBetweenFrames);
         
+        yield return StartCoroutine(FadeInFrame(frame3));
+        yield return new WaitForSeconds(delayBetweenFrames);
+        
+        // Animate skip button appearance using DOTween
+        AnimateSkipButtonAppearance();
+    }
+
+    private void AnimateSkipButtonAppearance()
+    {
+        if (skip != null)
+        {
+            skip.gameObject.SetActive(true);
+            
+            // Reset initial state
+            skip.transform.localScale = Vector3.zero;
+            
+            // Use DOTween to scale the button from 0 to 1
+            skip.transform.DOScale(Vector3.one, skipButtonAnimDuration)
+                .SetEase(Ease.OutBack) // Add a bouncy effect
+                .OnComplete(() => {
+                    // Optional: Add a subtle pulsing effect after appearance
+                    skip.transform.DOScale(1.05f, 0.5f)
+                        .SetLoops(-1, LoopType.Yoyo) // Infinite loop with back-and-forth
+                        .SetEase(Ease.InOutSine);
+                });
+        }
+    }
+
+    private IEnumerator FadeInFrame(Image frame)
+    {
         float elapsedTime = 0f;
-        SetFrameAlpha(currentFrame, 0f);
+        
+        // Start with alpha = 0
+        SetFrameAlpha(frame, 0f);
         
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Clamp01(elapsedTime / fadeDuration);
             
-            SetFrameAlpha(currentFrame, alpha);
+            SetFrameAlpha(frame, alpha);
             
             yield return null;
         }
-        
-        // Ensure the frame is fully visible
-        SetFrameAlpha(currentFrame, 1f);
-        
-        isAnimating = false;
+        SetFrameAlpha(frame, 1f);
     }
 
     private void SetFrameAlpha(Image image, float alpha)
@@ -126,6 +115,12 @@ public class UIComic : MonoBehaviour
             color.a = alpha;
             image.color = color;
         }
+    }
+
+    private IEnumerator LoadAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        LoadScene();
     }
 
     private void LoadScene()
