@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 0a4beb5abcfa048c795fd17d1590e177
+guid: 6a796c87323bf4b10993e26f46dc44c1
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3316956274502769685
-    second: unscreen-030_0
+      213: 6770958674253653605
+    second: unscreen-040_0
   - first:
-      213: -1851843443940255325
-    second: unscreen-030_1
+      213: -8569429445980880804
+    second: unscreen-040_1
   - first:
-      213: 393100959565303771
-    second: unscreen-030_2
+      213: -6359918959920073958
+    second: unscreen-040_2
   - first:
-      213: -9111868862957289772
-    second: unscreen-030_3
+      213: -7901393443060286183
+    second: unscreen-040_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -131,17 +131,30 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: unscreen-030_0
+      name: unscreen-040_0
       rect:
         serializedVersion: 2
-        x: 12
+        x: 63
         y: 61
-        width: 313
-        height: 235
+        width: 257
+        height: 232
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -150,14 +163,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 51c9d3d5822380e20800000000000000
-      internalID: 3316956274502769685
+      spriteID: 5662db74a0747fd50800000000000000
+      internalID: 6770958674253653605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: unscreen-030_1
+      name: unscreen-040_1
       rect:
         serializedVersion: 2
         x: 221
@@ -172,14 +185,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3a91e40033eec46e0800000000000000
-      internalID: -1851843443940255325
+      spriteID: c5089885255431980800000000000000
+      internalID: -8569429445980880804
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: unscreen-030_2
+      name: unscreen-040_2
       rect:
         serializedVersion: 2
         x: 259
@@ -194,14 +207,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: bdf41cf6d33947500800000000000000
-      internalID: 393100959565303771
+      spriteID: a1331b9f6670db7a0800000000000000
+      internalID: -6359918959920073958
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: unscreen-030_3
+      name: unscreen-040_3
       rect:
         serializedVersion: 2
         x: 259
@@ -216,8 +229,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4defc7fbb832c8180800000000000000
-      internalID: -9111868862957289772
+      spriteID: 91d7ac3e68c985290800000000000000
+      internalID: -7901393443060286183
       vertices: []
       indices: 
       edges: []
@@ -236,10 +249,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      unscreen-030_0: 3316956274502769685
-      unscreen-030_1: -1851843443940255325
-      unscreen-030_2: 393100959565303771
-      unscreen-030_3: -9111868862957289772
+      unscreen-040_0: 6770958674253653605
+      unscreen-040_1: -8569429445980880804
+      unscreen-040_2: -6359918959920073958
+      unscreen-040_3: -7901393443060286183
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

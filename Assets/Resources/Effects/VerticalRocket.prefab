@@ -9791,6 +9791,7 @@ GameObject:
   - component: {fileID: 4950430131157384322}
   - component: {fileID: 8985348350141336034}
   - component: {fileID: 1014069182457245024}
+  - component: {fileID: 3112006747989290350}
   m_Layer: 0
   m_Name: VerticalRocket
   m_TagString: Untagged
@@ -9884,6 +9885,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _upRocket: {fileID: 6555862808547401647}
   _downRocket: {fileID: 3669478317790165634}
+--- !u!95 &3112006747989290350
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2355988349195169349}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1541f3ec233284e93baa21445a0b63ba, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2790128096179122505
 GameObject:
   m_ObjectHideFlags: 0

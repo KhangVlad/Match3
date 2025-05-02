@@ -2392,8 +2392,8 @@ namespace Match3
 
                 Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
                 tile.UpdatePosition();
-                tile.Display(true);
                 tile.SetSpecialTile(SpecialTileID.RowBomb);
+                tile.Display(false);
 
                 // tile.StopEmissive();
                 tile.Emissive(0.1f);
@@ -2407,6 +2407,7 @@ namespace Match3
                     Utilities.WaitAfter(0.25f, () =>
                     {
                         vfx.ReturnToPool();
+                        tile.Display(true);
                     });
                 });
             }
@@ -2422,16 +2423,25 @@ namespace Match3
 
                 Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
                 tile.UpdatePosition();
-                tile.Display(true);
                 tile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                tile.Display(false);
 
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
 
-                if (GameplayManager.Instance.HasTileQuest(tile, out var questID))
-                {
-                    tile.Display(false);
-                }
+                Transform cachedTileTransform = tile.transform;
+                Utilities.WaitAfter(0.1f, () =>
+                 {
+                     VerticalRocketVfx vfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+                     vfx.transform.position = tile.TileTransform.position;
+                     vfx.PlayAnimtion();
+                     vfx.SetTargetTransform(cachedTileTransform);
+                     Utilities.WaitAfter(0.25f, () =>
+                     {
+                         vfx.ReturnToPool();
+                         tile.Display(true);
+                     });
+                 });
             }
 
         }
