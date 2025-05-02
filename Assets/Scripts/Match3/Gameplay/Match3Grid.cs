@@ -199,7 +199,6 @@ namespace Match3
                 }
             };
 
-
             OnAfterPlayerMatchInput += OnAfterPlayerMatchInput_ImplementGameLogic;
             GameplayUserManager.Instance.OnSelectGameplayBooster += OnSelectGameplayBooster_UpdateLogic;
             LoadGridLevel();
@@ -390,22 +389,7 @@ namespace Match3
             }
 
 
-
-            //if (Input.GetKeyDown(KeyCode.S))
-            //{
-            //    ShuffleGrid();
-            //}
-
-            //if (Input.GetKeyDown(KeyCode.M))
-            //{
-            //    Debug.Log($"Can match: {CanMatch()}");
-            //}
-
-            //if (Input.GetKeyDown(KeyCode.W))
-            //{
-            //    StartCoroutine(ImplementGameLogicCoroutine());
-            //}
-
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
@@ -493,6 +477,7 @@ namespace Match3
                     _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
+#endif
         }
 
         #region LOADER
@@ -614,6 +599,8 @@ namespace Match3
                     int randomTileIndex = Random.Range(0, _tiles.Length);
                     int x = randomTileIndex % Width;
                     int y = randomTileIndex / Width;
+
+
                     if (IsvalidPlaceBoosterTiles(x, y))
                     {
                         switch (booster.BoosterID)
@@ -621,17 +608,29 @@ namespace Match3
                             case BoosterID.AxisBomb:
                                 if (Random.Range(0, 2) == 0)
                                 {
+                                    _tiles[randomTileIndex].ReturnToPool();
+                                    AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                    _tiles[randomTileIndex].UpdatePosition();
                                     _tiles[randomTileIndex].SetSpecialTile(SpecialTileID.RowBomb);
                                 }
                                 else
                                 {
+                                    _tiles[randomTileIndex].ReturnToPool();
+                                    AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                    _tiles[randomTileIndex].UpdatePosition();
                                     _tiles[randomTileIndex].SetSpecialTile(SpecialTileID.ColumnBomb);
                                 }
                                 break;
                             case BoosterID.BlastBomb:
+                                _tiles[randomTileIndex].ReturnToPool();
+                                AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                _tiles[randomTileIndex].UpdatePosition();
                                 _tiles[randomTileIndex].SetSpecialTile(SpecialTileID.BlastBomb);
                                 break;
                             case BoosterID.ColorBurst:
+                                _tiles[randomTileIndex].ReturnToPool();
+                                AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                _tiles[randomTileIndex].UpdatePosition();
                                 _tiles[randomTileIndex].SetSpecialTile(SpecialTileID.ColorBurst);
                                 break;
                             default:
