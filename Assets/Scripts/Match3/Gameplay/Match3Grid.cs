@@ -2429,11 +2429,12 @@ namespace Match3
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
 
-                Transform cachedTileTransform = tile.transform;
+                Transform cachedTileTransform = tile.TileTransform;
                 Utilities.WaitAfter(0.1f, () =>
                  {
                      VerticalRocketVfx vfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
                      vfx.transform.position = tile.TileTransform.position;
+                     
                      vfx.PlayAnimtion();
                      vfx.SetTargetTransform(cachedTileTransform);
                      Utilities.WaitAfter(0.25f, () =>
@@ -2445,7 +2446,6 @@ namespace Match3
             }
 
         }
-
         #endregion
 
 

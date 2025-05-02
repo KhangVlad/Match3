@@ -11,7 +11,7 @@ namespace Match3
         // LOW LEVEL
         public static event System.Action OnStateChanged;
         public static event System.Action OnPlaying;
-        public static event System.Action<CharacterID,int> OnWin;
+        public static event System.Action<CharacterID, int> OnWin;
         public static event System.Action OnGameOver;
 
 
@@ -119,7 +119,7 @@ namespace Match3
                 case GameState.WIN:
                     AudioManager.Instance.PlayWinSfx();
                     UIGameplayManager.Instance.DisplayUIWin(true);
-                  
+
                     break;
                 case GameState.GAMEOVER:
                     AudioManager.Instance.PlayGameoverSfx();
@@ -144,8 +144,8 @@ namespace Match3
         private void OnEndOfTurn_UpdateTurnCount()
         {
             // Debug.Log($"End of turn: {Match3Grid.Instance.UseBoosterThisTurn}");
-            if(Match3Grid.Instance.UseBoosterThisTurn) return;
-            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
+            if (Match3Grid.Instance.UseBoosterThisTurn) return;
+            if (Match3Grid.Instance.SwapTileHasMatched == false) return;
             TurnRemainingCount--;
             if (TurnRemainingCount <= 0)
                 TurnRemainingCount = 0;
@@ -302,6 +302,82 @@ namespace Match3
                         break;
                     case QuestID.MaxTurn:
                         break;
+                    case QuestID.BlueFeather:
+                        if (tile is BlueFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenFeather:
+                        if (tile is GreenFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleFeather:
+                        if (tile is PurpleFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedFeather:
+                        if (tile is RedFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteFeather:
+                        if (tile is WhiteFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowFeather:
+                        if (tile is YellowFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.BlueMushroom:
+                        if (tile is BlueMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenMushroom:
+                        if (tile is GreenMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleMushroom:
+                        if (tile is PurpleMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedMushroom:
+                        if (tile is RedMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowMushroom:
+                        if (tile is YellowMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenBut:
+                        if (tile is GreenBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleBut:
+                        if (tile is PurpleBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedBut:
+                        if (tile is RedBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteBut:
+                        if (tile is WhiteBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowBut:
+                        if (tile is YellowBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedBug:
+                        if (tile is RedBug)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowBug:
+                        if (tile is YellowBug)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Rock:
+                        if (tile is Rock)
+                            Quests[i].Quantity--;
+                        break;
                     default:
                         Debug.LogError($"Case not found !!! {Quests[i].QuestID}");
                         break;
@@ -312,7 +388,7 @@ namespace Match3
 
         private void OnEndOfTurnQuestTriggered()
         {
-            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
+            if (Match3Grid.Instance.SwapTileHasMatched == false) return;
             for (int i = 0; i < Quests.Length; i++)
             {
                 if (Quests[i].QuestID == QuestID.MaxTurn)
