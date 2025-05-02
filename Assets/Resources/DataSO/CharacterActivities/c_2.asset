@@ -25,24 +25,24 @@ MonoBehaviour:
     dayOfWeek: 3
   - startTime: 21
     endTime: 24
-    appearPosition: {x: 2121, y: 2119}
+    appearPosition: {x: 2174, y: 2201}
     dayOfWeek: 4
   - startTime: 7
     endTime: 9
-    appearPosition: {x: 2121, y: 2119}
+    appearPosition: {x: 2161, y: 2164}
     dayOfWeek: 5
   - startTime: 7
     endTime: 9
-    appearPosition: {x: 2121, y: 2119}
+    appearPosition: {x: 2186, y: 2244}
     dayOfWeek: 6
   - startTime: 7
     endTime: 9
-    appearPosition: {x: 2121, y: 2119}
+    appearPosition: {x: 2378, y: 2775}
     dayOfWeek: 7
   - startTime: 7
     endTime: 9
-    appearPosition: {x: 2121, y: 2119}
-    dayOfWeek: 7
-  homePosition: {x: 2000, y: 2431}
+    appearPosition: {x: 2189, y: 2244}
+    dayOfWeek: 8
+  homePosition: {x: 1962, y: 2542}
   dayOff: 0
   sympathyRequired: 

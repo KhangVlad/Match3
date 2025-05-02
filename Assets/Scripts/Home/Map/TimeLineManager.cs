@@ -7,7 +7,6 @@ using UnityEditor;
 #endif
 using Match3.Enums;
 using Match3.Shares;
-using UnityEngine.Serialization;
 
 
 public class TimeLineManager : MonoBehaviour
@@ -30,7 +29,8 @@ public class TimeLineManager : MonoBehaviour
     private Dictionary<CharacterID, IconWithPosition> pairDict = new();
     private Camera mainCamera;
 
-    [Header("Create New Activity Info")] public bool IsCreatingNewActivity;
+    [Header("Create New Activity Info")] 
+    public bool IsCreatingNewActivity;
     public CharacterID EditorCharacterID;
     public CharacterBubble simulatedBubble;
     public int StartTime;
@@ -316,36 +316,73 @@ public class TimeLineManager : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-        CheckCharacterOutOfBound();
-        UpdateAllDirectionArrows();
-    }
 
-    private bool IsPositionVisible(Vector3 worldPosition)
+    private bool IsPositionVisible(Vector2 worldPosition)
     {
-        Vector3 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
-        float buffer = padding / 100f; // Convert padding to normalized viewport space
-
-        // Check if the point is within the visible area with padding
+        Vector2 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
+        float buffer = padding / 100f;
         return viewportPosition.x >= (0 + buffer) &&
                viewportPosition.x <= (1 - buffer) &&
                viewportPosition.y >= (0 + buffer) &&
-               viewportPosition.y <= (1 - buffer) &&
-               viewportPosition.z > 0; // In front of camera
+               viewportPosition.y <= (1 - buffer);
     }
+
+
+    // private void CheckCharacterOutOfBound()
+    // {
+    //     float minDistanceToCharPos;
+    //     foreach (var entry in pairDict)
+    //     {
+    //         IconWithPosition iconWithPosition = entry.Value;
+    //         bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
+    //         if (isOut != iconWithPosition.isOut)
+    //         {
+    //             iconWithPosition.isOut = isOut;
+    //             if (isOut)
+    //             {
+    //                 if (iconWithPosition.directionArrow == null)
+    //                 {
+    //                     InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
+    //                 }
+    //
+    //                 iconWithPosition.directionArrow.gameObject.SetActive(true);
+    //             }
+    //             else
+    //             {
+    //                 iconWithPosition.directionArrow?.gameObject.SetActive(false);
+    //             }
+    //         }
+    //     }
+    // }
 
     private void CheckCharacterOutOfBound()
     {
+        float minDistanceToShow = 3.0f; // Add a minimum distance threshold before showing arrows
+    
         foreach (var entry in pairDict)
         {
             IconWithPosition iconWithPosition = entry.Value;
-            bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
-            if (isOut != iconWithPosition.isOut)
+            bool isOutOfView = !IsPositionVisible(iconWithPosition.bubble.transform.position);
+        
+            // Calculate distance between camera and bubble
+            float distanceToBubble = Vector2.Distance(mainCamera.transform.position, iconWithPosition.bubble.transform.position);
+        
+            // Set arrow to false if distance is less than threshold, regardless of visibility
+            if (distanceToBubble < minDistanceToShow)
             {
-                iconWithPosition.isOut = isOut;
-
-                if (isOut)
+                if (iconWithPosition.directionArrow != null)
+                {
+                    iconWithPosition.directionArrow.gameObject.SetActive(false);
+                }
+                iconWithPosition.isOut = false;
+                continue; // Skip the rest of processing for this entry
+            }
+        
+            // Only update arrow visibility if state has changed
+            if (isOutOfView != iconWithPosition.isOut)
+            {
+                iconWithPosition.isOut = isOutOfView;
+                if (isOutOfView)
                 {
                     if (iconWithPosition.directionArrow == null)
                     {
@@ -355,12 +392,14 @@ public class TimeLineManager : MonoBehaviour
                 }
                 else
                 {
-                    iconWithPosition.directionArrow?.gameObject.SetActive(false);
+                    if (iconWithPosition.directionArrow != null)
+                    {
+                        iconWithPosition.directionArrow.gameObject.SetActive(false);
+                    }
                 }
             }
         }
     }
-
     private void UpdateAllDirectionArrows()
     {
         foreach (var entry in pairDict)
@@ -378,58 +417,36 @@ public class TimeLineManager : MonoBehaviour
         Vector3 bubblePosition = iconWithPosition.bubble.transform.position;
         Vector3 viewportPosition = mainCamera.WorldToViewportPoint(bubblePosition);
         Vector3 arrowPosition;
-
-        // Get normalized direction from center of screen to bubble
         Vector2 direction = new Vector2(viewportPosition.x - 0.5f, viewportPosition.y - 0.5f).normalized;
-
-        // Calculate intersection with screen edge
-        float bufferSpace = padding / 100f; // Convert padding to normalized viewport space
+        float bufferSpace = padding / 100f;
         float maxX = 1f - bufferSpace;
         float maxY = 1f - bufferSpace;
         float minX = bufferSpace;
         float minY = bufferSpace;
-
-        // Determine which screen edge to place the arrow on
         float m = direction.y / direction.x; // Slope
-
-        // Intersection with right or left edge
         float x, y;
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
         {
-            // Intersects with left or right edge
             x = direction.x > 0 ? maxX : minX;
             y = 0.5f + m * (x - 0.5f);
 
-            // Clamp y value to be within screen bounds
             y = Mathf.Clamp(y, minY, maxY);
         }
         else
         {
-            // Intersects with top or bottom edge
             y = direction.y > 0 ? maxY : minY;
             x = 0.5f + (y - 0.5f) / m;
-
-            // Handle division by zero (vertical direction)
             if (float.IsNaN(x) || float.IsInfinity(x))
             {
                 x = 0.5f;
             }
 
-            // Clamp x value to be within screen bounds
-            x = Mathf.Clamp(x, minX, maxX);
+            // x = Mathf.Clamp(x, minX, maxX);
         }
 
-        // Convert viewport position back to world position
-        arrowPosition = mainCamera.ViewportToWorldPoint(new Vector3(x, y, bubblePosition.z));
-        arrowPosition.z = iconWithPosition.directionArrow.transform.position.z; // Maintain original z position
-
-        // Update arrow position
-        iconWithPosition.directionArrow.transform.position = arrowPosition;
-
-        // // Update arrow rotation to point toward character
-        // Vector2 pointDirection = (Vector2)bubblePosition - (Vector2)arrowPosition;
-        // float angle = Mathf.Atan2(pointDirection.y, pointDirection.x) * Mathf.Rad2Deg;
-        // iconWithPosition.directionArrow.transform.rotation = Quaternion.Euler(0, 0, angle);
+        // arrowPosition = mainCamera.ViewportToWorldPoint(new Vector3(x, y, bubblePosition.z));
+        // arrowPosition.z = iconWithPosition.directionArrow.transform.position.z; // Maintain original z position
+        // iconWithPosition.directionArrow.transform.position = arrowPosition;
     }
 
     private void InstantiateAndPositionIcon(IconWithPosition iconWithPosition, Vector2 originPos)
