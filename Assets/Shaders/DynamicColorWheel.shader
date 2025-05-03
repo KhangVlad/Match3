@@ -1,3 +1,4 @@
+
 //Shader "Custom/ColorSegmentShader"
 //{
 //    Properties
@@ -24,6 +25,7 @@
 //        _CenterX ("Center X", Range(0, 1)) = 0.5
 //        _CenterY ("Center Y", Range(0, 1)) = 0.5
 //        _Rotation ("Rotation", Range(0, 360)) = 0
+//        _StartAngleOffset ("Start Angle Offset", Range(0, 360)) = 0
 //    }
 //    
 //    SubShader
@@ -72,6 +74,7 @@
 //            float _CenterX;
 //            float _CenterY;
 //            float _Rotation;
+//            float _StartAngleOffset;
 //            
 //            v2f vert (appdata v)
 //            {
@@ -122,6 +125,9 @@
 //                float angle = atan2(rotatedDir.y, rotatedDir.x) * 180 / UNITY_PI;
 //                if (angle < 0) angle += 360;
 //                
+//                // Apply start angle offset
+//                angle = (angle + _StartAngleOffset) % 360;
+//                
 //                // Determine which segment this angle belongs to
 //                int segmentIndex = (int)(angle / (360.0 / _SegmentCount)) % _SegmentCount;
 //                
@@ -143,11 +149,12 @@
 //    CustomEditor "ColorSegmentShaderEditor"
 //}
 
-Shader "Custom/ColorSegmentShader"
+Shader "Custom/ColorSegmentShader_UI"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        [PerRendererData] _MainTex ("Texture", 2D) = "white" {}
+        _Color ("Tint", Color) = (1,1,1,1)
         _SegmentCount ("Segment Count", Range(2, 16)) = 8
         [HideInInspector] _ColorCount ("Color Count", Float) = 8
         [HDR] _Color0 ("Color 0", Color) = (1, 0, 0.5, 1)
@@ -170,6 +177,15 @@ Shader "Custom/ColorSegmentShader"
         _CenterY ("Center Y", Range(0, 1)) = 0.5
         _Rotation ("Rotation", Range(0, 360)) = 0
         _StartAngleOffset ("Start Angle Offset", Range(0, 360)) = 0
+        
+        // UI specific properties
+        _StencilComp ("Stencil Comparison", Float) = 8
+        _Stencil ("Stencil ID", Float) = 0
+        _StencilOp ("Stencil Operation", Float) = 0
+        _StencilWriteMask ("Stencil Write Mask", Float) = 255
+        _StencilReadMask ("Stencil Read Mask", Float) = 255
+        _ColorMask ("Color Mask", Float) = 15
+        [Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
     }
     
     SubShader
@@ -179,25 +195,44 @@ Shader "Custom/ColorSegmentShader"
             "Queue" = "Transparent" 
             "RenderType" = "Transparent" 
             "PreviewType" = "Plane"
+            "CanUseSpriteAtlas" = "True"
+            "IgnoreProjector" = "True"
+        }
+        
+        Stencil
+        {
+            Ref [_Stencil]
+            Comp [_StencilComp]
+            Pass [_StencilOp]
+            ReadMask [_StencilReadMask]
+            WriteMask [_StencilWriteMask]
         }
         
         Cull Off
         Lighting Off
         ZWrite Off
+        ZTest [unity_GUIZTestMode]
         Blend SrcAlpha OneMinusSrcAlpha
+        ColorMask [_ColorMask]
         
         Pass
         {
+            Name "Default"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma multi_compile_instancing
+            #pragma target 2.0
             
             #include "UnityCG.cginc"
+            #include "UnityUI.cginc"
+            
+            #pragma multi_compile_local _ UNITY_UI_CLIP_RECT
+            #pragma multi_compile_local _ UNITY_UI_ALPHACLIP
             
             struct appdata
             {
                 float4 vertex : POSITION;
+                float4 color : COLOR;
                 float2 uv : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
@@ -206,11 +241,14 @@ Shader "Custom/ColorSegmentShader"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float4 color : COLOR;
+                float4 worldPosition : TEXCOORD1;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
             
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float4 _Color;
             float _SegmentCount;
             float _ColorCount;
             float4 _Color0, _Color1, _Color2, _Color3, _Color4, _Color5, _Color6, _Color7;
@@ -219,14 +257,19 @@ Shader "Custom/ColorSegmentShader"
             float _CenterY;
             float _Rotation;
             float _StartAngleOffset;
+            float4 _ClipRect;
+            float _UIMaskSoftnessX;
+            float _UIMaskSoftnessY;
             
             v2f vert (appdata v)
             {
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.worldPosition = v.vertex;
+                o.vertex = UnityObjectToClipPos(o.worldPosition);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.color = v.color * _Color;
                 return o;
             }
             
@@ -280,8 +323,17 @@ Shader "Custom/ColorSegmentShader"
                 int colorIndex = segmentIndex % max(1, (int)_ColorCount);
                 float4 segmentColor = GetColorByIndex(colorIndex);
                 
-                // Combine the texture color with the segment color
-                fixed4 finalColor = texColor * segmentColor;
+                // Combine the texture color with the segment color and vertex color (for CanvasGroup support)
+                fixed4 finalColor = texColor * segmentColor * i.color;
+                
+                // Support for UI mask and clipping
+                #ifdef UNITY_UI_CLIP_RECT
+                finalColor.a *= UnityGet2DClipping(i.worldPosition.xy, _ClipRect);
+                #endif
+                
+                #ifdef UNITY_UI_ALPHACLIP
+                clip (finalColor.a - 0.001);
+                #endif
                 
                 return finalColor;
             }
@@ -289,6 +341,6 @@ Shader "Custom/ColorSegmentShader"
         }
     }
     
-    FallBack "Sprites/Default"
+    FallBack "UI/Default"
     CustomEditor "ColorSegmentShaderEditor"
 }

@@ -134,9 +134,11 @@ public class UILevelDesignManager : MonoBehaviour
         currentCharacterId = id;
         LoadCharacterData(id);
         UpdateUI();
-
         CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
-        TownCanvasController.Instance.ActiveLevelDesign(true);
+        Utilities.WaitAfter(0.2f, () =>
+        {
+            TownCanvasController.Instance.ActiveLevelDesign(true);
+        });
     }
 
 
