@@ -33,6 +33,7 @@ namespace Match3.Enums
         VerticalRocket = 57,
         HorizontalRocket = 58,
         BlastBomb = 59,
+        BlastBombAppear = 60,
 
         Slash = 100,
     }

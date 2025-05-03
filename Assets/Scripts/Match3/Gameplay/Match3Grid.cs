@@ -2375,7 +2375,6 @@ namespace Match3
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.BlastBomb);
 
-                // tile.StopEmissive();
                 tile.Emissive(0.1f);
                 _emissiveTileQueue.Enqueue(tile);
             }

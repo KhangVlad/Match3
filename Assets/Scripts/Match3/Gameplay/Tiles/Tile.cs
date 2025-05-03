@@ -18,9 +18,7 @@ namespace Match3
         public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
 
-        [Space(20)]
-        public Transform TilePivot;
-        public Transform TileTransform;
+
 
         [Header("Only used for None Tile")]
         [SerializeField] protected Sprite _match4Vertical;
@@ -52,15 +50,17 @@ namespace Match3
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
         public bool HasTriggeredSpecial { get; private set; } = false;
+        public Transform TilePivot { get; private set; }
+        public Transform TileTransform { get; private set; }
         #endregion
 
 
         public virtual void Initialize()
         {
-            if (TileTransform == null)
-            {
-                TileTransform = transform.Find("Pivot/Tile");
-            }
+            TilePivot = transform.Find("Pivot");
+            if (TilePivot == null) Debug.LogError("Missing Tile Pivot reference !!!");
+            TileTransform = transform.Find("Pivot/Tile");
+            if (TileTransform == null) Debug.LogError("Missing Tile Transform reference !!!");
 
             bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
             bloomSR.enabled = false;
@@ -73,6 +73,7 @@ namespace Match3
 
         protected virtual void Awake()
         {
+
             if (sr == null)
             {
                 Initialize();
@@ -261,7 +262,7 @@ namespace Match3
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {
-            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease).OnComplete(()=>
+            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease).OnComplete(() =>
             {
                 onCompleted?.Invoke();
             });
