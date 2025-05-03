@@ -252,8 +252,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21230c7d886af4211b82745de19ffd83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TilePivot: {fileID: 3599604274499044979}
-  TileTransform: {fileID: 4791999783449816151}
   _match4Vertical: {fileID: 0}
   _match4Horizontal: {fileID: 0}
   _match5: {fileID: 0}

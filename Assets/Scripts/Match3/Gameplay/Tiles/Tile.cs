@@ -73,7 +73,6 @@ namespace Match3
 
         protected virtual void Awake()
         {
-
             if (sr == null)
             {
                 Initialize();
