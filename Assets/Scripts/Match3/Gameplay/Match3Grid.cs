@@ -1641,21 +1641,6 @@ namespace Match3
                     if (found)
                     {
                         bool foundBlashBombTile = false;
-                        // for (int y = 0; y < h; y++)
-                        // {
-                        //     for (int x = 0; x < w; x++)
-                        //     {
-                        //         if (shapes[i][x, y] == 0) continue;
-                        //         int offsetX = xIndex + x;
-                        //         int offsetY = yIndex + y;
-                        //         int index = offsetX + offsetY * Width;
-                        //         if (IsValidMatchTile(offsetX, offsetY))
-                        //         {
-                        //             SetMatchBuffer(index, MatchID.Match);
-                        //         }
-                        //     }
-                        // }
-
                         for (int y = 0; y < h && !foundBlashBombTile; y++)
                         {
                             for (int x = 0; x < w; x++)
@@ -1689,6 +1674,7 @@ namespace Match3
                                     {
                                         foundBlashBombTile = true;
                                         Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles);
+                                        Debug.Log(bfsTiles.Count);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1807,7 +1793,6 @@ namespace Match3
                 case SpecialTileID.BlastBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
-                        Debug.Log("Blast Bomb");
                         AudioManager.Instance.PlayMatch5Sfx();
                         PlayFlashBombVfx(_selectedTile);
                         HandleBlastBomb(_selectedTile);
@@ -2457,6 +2442,7 @@ namespace Match3
         #region HANDLE TILES AFTER TURN FINISHED
         private void HandleBushGrowth()
         {
+            int growthTurn = 3;
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -2470,7 +2456,7 @@ namespace Match3
                         {
                             Bush01 bush = ((Bush01)tile.CurrentBlock);
                             bush.ExistTurnCount++;
-                            if (bush.ExistTurnCount >= 2)
+                            if (bush.ExistTurnCount >= growthTurn)
                             {
                                 tile.ChangeBlock(BlockID.Bush_02);
                             }
@@ -2479,7 +2465,7 @@ namespace Match3
                         {
                             Bush02 bush = ((Bush02)tile.CurrentBlock);
                             bush.ExistTurnCount++;
-                            if (bush.ExistTurnCount >= 2)
+                            if (bush.ExistTurnCount >= growthTurn)
                             {
                                 tile.ChangeBlock(BlockID.Bush_03);
                             }
@@ -2990,7 +2976,6 @@ namespace Match3
 
             if (foundOriginIndex == false)
             {
-                Debug.Log("Not found origin indexxxx");
                 int cachedIndex = originIndex;
                 for (int v = 0; v <= sameIDCountInColumn; v++)
                 {
