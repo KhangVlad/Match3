@@ -45,16 +45,17 @@ public class UISettingManager : MonoBehaviour
 
     private void OnDayAndNightToggle()
     {
-        if (_timeOfDay == TimeOfDay.Morning)
-        {
-            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Night);
-            _timeOfDay = TimeOfDay.Night;
-        }
-        else
-        {
-            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Morning);
-            _timeOfDay = TimeOfDay.Morning;
-        }
+        // if (_timeOfDay == TimeOfDay.Morning)
+        // {
+        //     TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Night);
+        //     _timeOfDay = TimeOfDay.Night;
+        // }
+        // else
+        // {
+        //     TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Morning);
+        //     _timeOfDay = TimeOfDay.Morning;
+        // }
+        LightManager.Instance.ToggleDayNight();
     }
 
     private void OnLanguageChange(int value)

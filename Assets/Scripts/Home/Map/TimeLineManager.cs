@@ -19,8 +19,8 @@ public class TimeLineManager : MonoBehaviour
     [SerializeField] private SpriteRenderer map;
     [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
     [SerializeField] private float padding = 10f; // Padding from screen edges in pixels
-    [SerializeField] private GameObject _lightingManager2D;
-    [SerializeField] private GameObject _nightGameobjects;
+   
+ 
     private List<CharacterActivitySO> activeInDay = new();
     private List<CharacterID> homeIds = new();
     private List<CharacterID> activeIds = new();
@@ -114,7 +114,6 @@ public class TimeLineManager : MonoBehaviour
         Instance = this;
         currentDay = TimeManager.Instance.GetCurrentDayInWeek();
         GetCurrentHour();
-        CheckDayAndNight();
         mainCamera = Camera.main;
     }
 
@@ -152,21 +151,6 @@ public class TimeLineManager : MonoBehaviour
         UpdateTimeChange();
         GetCharactersInTime(activeInDay);
     }
-
-    public void ChangeTimeOfDay(TimeOfDay t)
-    {
-        // if (t == TimeOfDay.Morning || t == TimeOfDay.Midday || t == TimeOfDay.Afternoon)
-        // {
-        //     _lightingManager2D.SetActive(false);
-        //     _nightGameobjects.SetActive(false);
-        // }
-        // else
-        // {
-        //     _lightingManager2D.SetActive(true);
-        //     _nightGameobjects.SetActive(true);
-        // }
-    }
-
     private void UpdateTimeChange()
     {
         bool isNewDay = false;
@@ -186,24 +170,10 @@ public class TimeLineManager : MonoBehaviour
 
         if (isNewDay) CheckNewDay();
 
-        CheckDayAndNight();
         lastCheckedHour = currentHour;
     }
 
 
-    private void CheckDayAndNight()
-    {
-        // if (IsNight())
-        // {
-        //     _lightingManager2D.SetActive(true);
-        //     _nightGameobjects.SetActive(true);
-        // }
-        // else
-        // {
-        //     _lightingManager2D.SetActive(false);
-        //     _nightGameobjects.SetActive(false);
-        // }
-    }
 
     private bool IsNight()
     {

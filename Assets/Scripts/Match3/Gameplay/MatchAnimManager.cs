@@ -1,3 +1,4 @@
+    using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
@@ -14,6 +15,7 @@ namespace Match3
         private Vector3[] _path = new Vector3[3];
         private List<Tile> _animatedTiles;
         private float TILE_MOVE_PATH_TIME = 1f;
+        public event Action OnCollect;
 
         private void Awake()
         {
@@ -51,7 +53,7 @@ namespace Match3
                 }
                 if (hasTile == false)
                     Match3TileDict[key].Add(value);
-
+                
                 //Match3TileDict[key].Add(value);
             }
         }
@@ -84,6 +86,7 @@ namespace Match3
         {
             yield return StartCoroutine(PlayCollectMatch3AnimCoroutine());
             yield return StartCoroutine(PlayCollectAnotherMatchAnimCoroutine());
+            OnCollect?.Invoke();
         }
 
 
@@ -258,4 +261,3 @@ namespace Match3
         }
     }
 }
-

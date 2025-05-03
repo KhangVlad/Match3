@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,8 @@ namespace Match3
         [SerializeField] private UIQuest _uiQuestPrefab;
         [SerializeField] private Transform _questContentParent;
         [SerializeField] private UIQuest[] _uiQuestSlots;
-
-
+        public event Action OnCollect;
+    
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -94,6 +95,7 @@ namespace Match3
                 return;
             }
             _uiQuestSlots[questIndex].PlayCollectAnimation();
+            OnCollect?.Invoke();
         }
     }
 }
