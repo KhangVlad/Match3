@@ -52,6 +52,7 @@ namespace Match3
         public bool HasTriggeredSpecial { get; private set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
+        public Transform BloomTransform {get; private set;}
         #endregion
 
 
@@ -61,6 +62,9 @@ namespace Match3
             if (TilePivot == null) Debug.LogError("Missing Tile Pivot reference !!!");
             TileTransform = transform.Find("Pivot/Tile");
             if (TileTransform == null) Debug.LogError("Missing Tile Transform reference !!!");
+            BloomTransform = TileTransform.Find("Bloom");
+            if(BloomTransform == null) Debug.LogError("Missing Bloom Transform reference !!!");
+            BloomTransform.GetComponent<SpriteRenderer>().sprite = TileTransform.GetComponent<SpriteRenderer>().sprite;
 
             bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
             bloomSR.enabled = false;

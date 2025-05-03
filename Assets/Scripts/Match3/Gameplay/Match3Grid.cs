@@ -1670,7 +1670,7 @@ namespace Match3
                                     if (_selectedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _selectedTile.ID, ref bfsTiles);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1688,7 +1688,7 @@ namespace Match3
                                     else if (_swappedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _swappedTile.ID, ref bfsTiles);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1966,7 +1966,6 @@ namespace Match3
                         {
                             if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
                             {
-                                // _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
                                 _matchRowBombQueue.Enqueue(new SpecialTileQueue(TileID.None, index));
                                 foundMatch4Tile = true;
                             }
