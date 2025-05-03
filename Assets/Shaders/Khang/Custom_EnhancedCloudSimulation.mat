@@ -35,25 +35,77 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LightPollutionMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 365e6e38e84124d05a55f5e85d84a694, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarsTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AmbientLight: 0.022
     - _Brightness: 2
-    - _CloudOpacity: 0.3
+    - _CloudOpacity: 0.176
+    - _ColorMask: 15
+    - _DayBrightness: 1.2
+    - _DayCloudOpacity: 0.7
+    - _DayDensity: 0.5
+    - _DayDetailSpeed: 0.04
+    - _DayEdgeSoftness: 0.2
+    - _DayShadowStrength: 0.3
+    - _DayWindSpeed: 0.02
     - _Density: 0.977
-    - _DetailSpeed: 0.0333
-    - _DistortionStrength: 0.0452
+    - _DetailSpeed: 0.0379
+    - _DistortionStrength: 0.0132
     - _EdgeSoftness: 0
+    - _LightIntensity: 1
+    - _LightPollutionStrength: 0.265
+    - _MoonlightStrength: 0.248
+    - _NightBrightness: 0.9
+    - _NightCloudOpacity: 0.8
+    - _NightDensity: 0.6
+    - _NightDetailSpeed: 0.03
+    - _NightEdgeSoftness: 0.3
+    - _NightMode: 0
+    - _NightShadowStrength: 0.2
+    - _NightWindSpeed: 0.015
     - _NoiseScale1: 3.55
     - _NoiseScale2: 6.1
     - _ShadowStrength: 0
-    - _WindSpeed: 0.0803
+    - _StarsIntensity: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _TimeBlend: 1
+    - _WindSpeed: 0.1
     m_Colors:
-    - _CloudColor: {r: 0.5855287, g: 0.8113208, b: 0.76670146, a: 1}
-    - _ShadowColor: {r: 0.4309808, g: 0.4309808, b: 0.6132076, a: 1}
+    - _CloudColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DayCloudColor: {r: 1, g: 1, b: 1, a: 0.7}
+    - _DayShadowColor: {r: 0.7, g: 0.7, b: 0.8, a: 0.5}
+    - _LightPollutionColor: {r: 1, g: 0, b: 0, a: 1}
+    - _MoonlightColor: {r: 0.8, g: 0.85, b: 1, a: 1}
+    - _MoonlightDirection: {r: 0.5, g: -0.5, b: 0, a: 0}
+    - _NightCloudColor: {r: 0.5, g: 0.6, b: 0.8, a: 0.7}
+    - _NightShadowColor: {r: 0.19999996, g: 0.29999998, b: 0.39999998, a: 0.5}
+    - _NightTint: {r: 0.09999997, g: 0.14999998, b: 0.29999998, a: 1}
+    - _ShadowColor: {r: 0.43098077, g: 0.43098077, b: 0.6132076, a: 1}
     - _WindDirection: {r: 1, g: 3, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

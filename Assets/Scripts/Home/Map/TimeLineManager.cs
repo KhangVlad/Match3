@@ -29,8 +29,7 @@ public class TimeLineManager : MonoBehaviour
     private Dictionary<CharacterID, IconWithPosition> pairDict = new();
     private Camera mainCamera;
 
-    [Header("Create New Activity Info")] 
-    public bool IsCreatingNewActivity;
+    [Header("Create New Activity Info")] public bool IsCreatingNewActivity;
     public CharacterID EditorCharacterID;
     public CharacterBubble simulatedBubble;
     public int StartTime;
@@ -156,16 +155,16 @@ public class TimeLineManager : MonoBehaviour
 
     public void ChangeTimeOfDay(TimeOfDay t)
     {
-        if (t == TimeOfDay.Morning || t == TimeOfDay.Midday || t == TimeOfDay.Afternoon)
-        {
-            _lightingManager2D.SetActive(false);
-            _nightGameobjects.SetActive(false);
-        }
-        else
-        {
-            _lightingManager2D.SetActive(true);
-            _nightGameobjects.SetActive(true);
-        }
+        // if (t == TimeOfDay.Morning || t == TimeOfDay.Midday || t == TimeOfDay.Afternoon)
+        // {
+        //     _lightingManager2D.SetActive(false);
+        //     _nightGameobjects.SetActive(false);
+        // }
+        // else
+        // {
+        //     _lightingManager2D.SetActive(true);
+        //     _nightGameobjects.SetActive(true);
+        // }
     }
 
     private void UpdateTimeChange()
@@ -194,16 +193,16 @@ public class TimeLineManager : MonoBehaviour
 
     private void CheckDayAndNight()
     {
-        if (IsNight())
-        {
-            _lightingManager2D.SetActive(true);
-            _nightGameobjects.SetActive(true);
-        }
-        else
-        {
-            _lightingManager2D.SetActive(false);
-            _nightGameobjects.SetActive(false);
-        }
+        // if (IsNight())
+        // {
+        //     _lightingManager2D.SetActive(true);
+        //     _nightGameobjects.SetActive(true);
+        // }
+        // else
+        // {
+        //     _lightingManager2D.SetActive(false);
+        //     _nightGameobjects.SetActive(false);
+        // }
     }
 
     private bool IsNight()
@@ -299,7 +298,7 @@ public class TimeLineManager : MonoBehaviour
                 bubble = characterBubble,
                 originPosition = characterBubble.transform.position
             };
-        }
+        }   
     }
 
     private void UnregisterCharacterIcon(CharacterID id)
@@ -321,85 +320,41 @@ public class TimeLineManager : MonoBehaviour
     {
         Vector2 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
         float buffer = padding / 100f;
-        return viewportPosition.x >= (0 + buffer) &&
-               viewportPosition.x <= (1 - buffer) &&
-               viewportPosition.y >= (0 + buffer) &&
-               viewportPosition.y <= (1 - buffer);
+    
+        float extraMargin = 0.2f; // adjust to fixd padding from world to view port point
+        return viewportPosition.x >= (0 + buffer - extraMargin) &&
+               viewportPosition.x <= (1 - buffer + extraMargin) &&
+               viewportPosition.y >= (0 + buffer - extraMargin) &&
+               viewportPosition.y <= (1 - buffer + extraMargin);
     }
 
 
-    // private void CheckCharacterOutOfBound()
-    // {
-    //     float minDistanceToCharPos;
-    //     foreach (var entry in pairDict)
-    //     {
-    //         IconWithPosition iconWithPosition = entry.Value;
-    //         bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
-    //         if (isOut != iconWithPosition.isOut)
-    //         {
-    //             iconWithPosition.isOut = isOut;
-    //             if (isOut)
-    //             {
-    //                 if (iconWithPosition.directionArrow == null)
-    //                 {
-    //                     InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
-    //                 }
-    //
-    //                 iconWithPosition.directionArrow.gameObject.SetActive(true);
-    //             }
-    //             else
-    //             {
-    //                 iconWithPosition.directionArrow?.gameObject.SetActive(false);
-    //             }
-    //         }
-    //     }
-    // }
-
     private void CheckCharacterOutOfBound()
     {
-        float minDistanceToShow = 3.0f; // Add a minimum distance threshold before showing arrows
-    
         foreach (var entry in pairDict)
         {
             IconWithPosition iconWithPosition = entry.Value;
-            bool isOutOfView = !IsPositionVisible(iconWithPosition.bubble.transform.position);
-        
-            // Calculate distance between camera and bubble
-            float distanceToBubble = Vector2.Distance(mainCamera.transform.position, iconWithPosition.bubble.transform.position);
-        
-            // Set arrow to false if distance is less than threshold, regardless of visibility
-            if (distanceToBubble < minDistanceToShow)
+            bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
+            if (isOut != iconWithPosition.isOut)
             {
-                if (iconWithPosition.directionArrow != null)
-                {
-                    iconWithPosition.directionArrow.gameObject.SetActive(false);
-                }
-                iconWithPosition.isOut = false;
-                continue; // Skip the rest of processing for this entry
-            }
-        
-            // Only update arrow visibility if state has changed
-            if (isOutOfView != iconWithPosition.isOut)
-            {
-                iconWithPosition.isOut = isOutOfView;
-                if (isOutOfView)
+                iconWithPosition.isOut = isOut;
+                if (isOut)
                 {
                     if (iconWithPosition.directionArrow == null)
                     {
                         InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
                     }
+
                     iconWithPosition.directionArrow.gameObject.SetActive(true);
                 }
                 else
                 {
-                    if (iconWithPosition.directionArrow != null)
-                    {
-                        iconWithPosition.directionArrow.gameObject.SetActive(false);
-                    }
+                    iconWithPosition.directionArrow?.gameObject.SetActive(false);
                 }
             }
         }
     }
+
     private void UpdateAllDirectionArrows()
     {
         foreach (var entry in pairDict)
@@ -441,12 +396,12 @@ public class TimeLineManager : MonoBehaviour
                 x = 0.5f;
             }
 
-            // x = Mathf.Clamp(x, minX, maxX);
+            x = Mathf.Clamp(x, minX, maxX);
         }
 
-        // arrowPosition = mainCamera.ViewportToWorldPoint(new Vector3(x, y, bubblePosition.z));
-        // arrowPosition.z = iconWithPosition.directionArrow.transform.position.z; // Maintain original z position
-        // iconWithPosition.directionArrow.transform.position = arrowPosition;
+        arrowPosition = mainCamera.ViewportToWorldPoint(new Vector3(x, y, bubblePosition.z));
+        arrowPosition.z = iconWithPosition.directionArrow.transform.position.z; // Maintain original z position
+        iconWithPosition.directionArrow.transform.position = arrowPosition;
     }
 
     private void InstantiateAndPositionIcon(IconWithPosition iconWithPosition, Vector2 originPos)
