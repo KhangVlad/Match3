@@ -172,7 +172,15 @@ namespace Match3
                 if (TurnRemainingCount == 0)
                 {
                     Debug.Log($"Game over: {star}");
-                    ChangeGameState(GameState.GAMEOVER);
+                    if(star == 0)
+                    {
+                        ChangeGameState(GameState.GAMEOVER);
+                    }
+                    else
+                    {
+                        ChangeGameState(GameState.WIN);
+                    }
+                   
                 }
             }
         }
