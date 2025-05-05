@@ -45,5 +45,10 @@ namespace Match3
             return block is NoneBlock ||
                     block is Lock;
         }
+
+        public static bool CanFillDownThrough(this Block block)
+        {
+            return block is NoneBlock;
+        }
     }
 }

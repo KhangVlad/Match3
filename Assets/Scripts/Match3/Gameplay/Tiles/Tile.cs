@@ -280,7 +280,7 @@ namespace Match3
         {
             Vector3 targetPosition = this.GetWorldPosition();
 
-            _moveTween = transform.DOMove(targetPosition, moveTime * 0.8f)
+            _moveTween = transform.DOMove(targetPosition, moveTime)
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
