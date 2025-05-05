@@ -779,7 +779,6 @@ namespace Match3
                         }
                     }
 
-                    Debug.Log("wait a second");
                     yield return new WaitForSeconds(colorBurstDuration);
 
                     foreach (var e in _colorBurstParentDictionary)
@@ -790,7 +789,6 @@ namespace Match3
                             if (GameplayManager.Instance.HasTileQuest(nb.ID))
                             {
                                 MatchAnimManager.Instance.Collect(nb.transform.position, nb.ID);
-                                Debug.Log("Count");
                             }
                         }
                     }
@@ -905,7 +903,7 @@ namespace Match3
 
             if (triggerEvent)
             {
-                if (UseBoosterThisTurn == false)
+                if (UseBoosterThisTurn == false && isMatch)
                 {
                     HandleSpiderNetSpreading();
                     HandleBushGrowth();
