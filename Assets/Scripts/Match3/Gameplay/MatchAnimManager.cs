@@ -162,13 +162,10 @@ namespace Match3
 
             foreach (var tileInfo in AnotherMatchSet)
             {
-                // Tile tilePrefab = GameDataManager.Instance.GetTileByID(tileInfo.ID);
-                // Tile tileInstance = Instantiate(tilePrefab, tileInfo.Position, Quaternion.identity);
-
                 Tile tileInstance = TilePoolManager.Instance.GetTile(tileInfo.ID);
                 tileInstance.transform.position = tileInfo.Position;
+                tileInstance.Display(true);
 
-                // tileInstance.transform.localScale = new Vector3(0.2f,0.2f,1f);
                 tileInstance.StopEmissive(5, 0, 1f);
                 tileInstance.SetRenderOrder(100);
                 tileInstance.SetInteractionMask(SpriteMaskInteraction.None);
@@ -207,6 +204,40 @@ namespace Match3
             AnotherMatchSet.Clear();
             _animatedTiles.Clear();
             yield return null;
+        }
+
+        public void Collect(Vector2 position, TileID tileID)
+        {
+            //Debug.Log("Collect");
+            //Tile tileInstance = Instantiate(GameDataManager.Instance.GetTileByID(tileID), position, Quaternion.identity);
+
+            Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
+            tileInstance.transform.position = position;
+            tileInstance.SetRenderOrder(100);
+            tileInstance.SetInteractionMask(SpriteMaskInteraction.None);
+            tileInstance.Display(true);
+
+
+            QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileID);
+            if (GameplayManager.Instance.TryGetQuestIndex(questID, out int questIndex))
+            {
+                Vector2 ssPosition = UIQuestManager.Instance.GetUIQuestSSPosition(questIndex) - new Vector2(0.5f, 0.5f);
+                Vector3 startPos = tileInstance.transform.position;
+                Vector3 endPos = ssPosition;
+                // Control point: this will determine the curve arch
+                Vector3 controlPoint = startPos + new Vector3((endPos.x - startPos.x) * 0.5f, -0.5f, 0f); // goes downward first
+                _path[0] = startPos;
+                _path[1] = controlPoint;
+                _path[2] = endPos;
+                tileInstance.MovePath(_path, TILE_MOVE_PATH_TIME, PathType.CatmullRom, Ease.InOutQuad, oncompleted: () =>
+                {
+                    UIQuestManager.Instance.PlayQuestCollectAnimation(questIndex);
+                    tileInstance.ReturnToPool();
+                    //Destroy(tileInstance.gameObject);
+                });
+
+                tileInstance.PlayScaleTile(0.7f, TILE_MOVE_PATH_TIME, Ease.InBack);
+            }
         }
 
 

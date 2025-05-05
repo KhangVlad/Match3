@@ -11,7 +11,7 @@ namespace Match3
             HashSet<int> visited = new HashSet<int>(); // Use index to track visited tiles
             validNeighbors.Clear();
             queue.Enqueue(new Vector2Int(startX, startY));
-
+            validNeighbors.Add(tiles[startX + startY * w]);
             while (queue.Count > 0)
             {
                 Vector2Int pos = queue.Dequeue();
@@ -56,10 +56,19 @@ namespace Match3
 
         public static Tile GetMedianTile(List<Tile> tiles)
         {
-            if (tiles == null || tiles.Count == 0)
+            if (tiles == null)
+            {
+                throw new System.ArgumentException("tiles list is null");
+            }
+
+            if (tiles.Count == 0)
             {
                 throw new System.ArgumentException("Point list is empty");
             }
+            //if (tiles == null || tiles.Count == 0)
+            //{
+            //    throw new System.ArgumentException("Point list is empty");
+            //}
 
             var sortedX = tiles.Select(p => p.X).OrderBy(x => x).ToList();
             var sortedY = tiles.Select(p => p.Y).OrderBy(y => y).ToList();

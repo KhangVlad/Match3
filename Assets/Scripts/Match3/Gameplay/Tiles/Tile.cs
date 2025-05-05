@@ -128,6 +128,7 @@ namespace Match3
             if (enable)
             {
                 sr.color = Color.white;
+                sr.enabled = true;
             }
             else
             {

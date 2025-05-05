@@ -636,6 +636,12 @@ namespace Match3
             return false;
         }
 
+        public bool HasTileQuest(TileID tileID)
+        {
+            QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileID);
+            return TryGetQuestIndex(questID, out int questIndex);  
+        }
+
         public QuestID GetQuestByTileID(TileID tileID)
         {
             switch (tileID)

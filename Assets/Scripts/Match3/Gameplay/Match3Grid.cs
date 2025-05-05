@@ -5,7 +5,6 @@ using DG.Tweening;
 using System.Linq;
 using Match3.Enums;
 using Match3.Shares;
-using FMOD.Studio;
 
 namespace Match3
 {
@@ -775,11 +774,26 @@ namespace Match3
                             EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
                             endLineColorBurstFX.transform.position = nb.TileTransform.position;
                             endLineColorBurstFX.Play(colorBurstDuration);
+
+                          
                         }
                     }
 
                     Debug.Log("wait a second");
                     yield return new WaitForSeconds(colorBurstDuration);
+
+                    foreach (var e in _colorBurstParentDictionary)
+                    {
+                        for (int i = 0; i < e.Value.Count; i++)
+                        {
+                            Tile nb = e.Value[i];
+                            if (GameplayManager.Instance.HasTileQuest(nb.ID))
+                            {
+                                MatchAnimManager.Instance.Collect(nb.transform.position, nb.ID);
+                                Debug.Log("Count");
+                            }
+                        }
+                    }
                 }
                 #endregion
 
@@ -980,6 +994,11 @@ namespace Match3
                             _tiles[index].Display(false);
                             SetMatchBuffer(index, MatchID.SpecialMatch);
 
+                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                            {
+                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                            }
+
                             if (highestBombTileDict.ContainsKey(xx) == false)
                             {
                                 highestBombTileDict.Add(xx, yy);
@@ -1044,13 +1063,17 @@ namespace Match3
                         if (leftValid)
                         {
                             int index = leftX + y * Width;
-                            if (_tiles[index].IsDisplay == false) continue;
-                            // if (_tiles[index].HasTriggeredSpecial) continue;
-                            // _tiles[index].SetTriggerSpecial(true);
-
+                            if (_tiles[index] == null) continue;
+                            if (_tiles[index].IsDisplay == false) continue;          
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
+
+                            // Collect
+                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                            {
+                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                            }
 
                             if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                             {
@@ -1079,13 +1102,18 @@ namespace Match3
                         if (rightValid && offset != 0) // Avoid double-playing the center tile
                         {
                             int index = rightX + y * Width;
+                            if (_tiles[index] == null) continue;
                             if (_tiles[index].IsDisplay == false) continue;
-                            // if (_tiles[index].HasTriggeredSpecial) continue;
-                            // _tiles[index].SetTriggerSpecial(true);
-
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
+
+
+                            // Collect
+                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                            {
+                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                            }
 
                             if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                             {
@@ -1161,10 +1189,18 @@ namespace Match3
                 if (leftValid)
                 {
                     int index = leftX + y * Width;
+                    if (_tiles[index] == null) continue;
                     if (_tiles[index].IsDisplay == false) continue;
                     bool isDisplay = offset == Width - 1;
                     _tiles[index].Display(false);
                     _tiles[index].PlayMatchVFX();
+
+                    // Collect FX
+                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    {
+                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                    }
+
 
                     //Debug.Log($"AA: {index%Width}  {index /Width} {_tiles[index].SpecialProperties}");
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
@@ -1194,12 +1230,20 @@ namespace Match3
                 if (rightValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = rightX + y * Width;
+                    if (_tiles[index] == null) continue;
                     if (_tiles[index].IsDisplay)
                     {
                         bool isDisplay = offset == Width - 1;
                         _tiles[index].Display(false);
                         _tiles[index].PlayMatchVFX();
                     }
+
+                    // Collect FX
+                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    {
+                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                    }
+
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
@@ -1281,12 +1325,17 @@ namespace Match3
                     if (topValid)
                     {
                         int index = x + topY * Width;
-                        if (_tiles[index].IsDisplay == false) continue;
-                        // if (_tiles[index].HasTriggeredSpecial) continue;
-                        // _tiles[index].SetTriggerSpecial(true);
-
+                        if (_tiles[index] == null) continue;
+                        if (_tiles[index].IsDisplay == false) continue;     
                         _tiles[index].Display(false);
                         _tiles[index].PlayMatchVFX();
+
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                        {
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                        }
+
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
                             Coroutine coroutine = null;
@@ -1314,11 +1363,16 @@ namespace Match3
                     if (bottomValid && offset != 0) // Avoid double-playing the center tile
                     {
                         int index = x + bottomY * Width;
-                        if (_tiles[index].IsDisplay == false) continue;
-                        // if (_tiles[index].HasTriggeredSpecial) continue;
-                        // _tiles[index].SetTriggerSpecial(true);
-
+                        if (_tiles[index] == null) continue;
+                        if (_tiles[index].IsDisplay == false) continue;            
                         _tiles[index].Display(false);
+
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                        {
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                        }
+
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
                             Coroutine coroutine = null;
@@ -1387,10 +1441,18 @@ namespace Match3
                 if (topValid)
                 {
                     int index = x + topY * Width;
+                    if (_tiles[index] == null) continue;
                     if (_tiles[index].IsDisplay == false) continue;
-
                     _tiles[index].Display(false);
                     _tiles[index].PlayMatchVFX();
+
+                    // Collect FX
+                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    {
+                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                    }
+
+
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
                         Coroutine coroutine = null;
@@ -1419,10 +1481,16 @@ namespace Match3
                 if (bottomValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = x + bottomY * Width;
+                    if (_tiles[index] == null) continue;
                     if (_tiles[index].IsDisplay == false) continue;
-
                     _tiles[index].Display(false);
                     _tiles[index].PlayMatchVFX();
+
+                    // Collect FX
+                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    {
+                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
+                    }
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
@@ -1600,7 +1668,7 @@ namespace Match3
                             {
                                 int offsetX = xIndex + x;
                                 int offsetY = yIndex + y;
-                                if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
+                                if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width] != null && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
                                 {
                                     targetTileID = _tiles[offsetX + offsetY * Width].ID;
                                     foundFirstValidTile = true;
@@ -2207,7 +2275,7 @@ namespace Match3
                         float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
+                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);                  
                     }
                 }
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
@@ -3390,24 +3458,7 @@ namespace Match3
                                 _tiles[x + y * Width].FallDownToGridPosition();
                             }
                         }
-                        //if (currTile == null)
-                        //{
-                        //    for (int yy = y + 1; yy < Height - 1; yy++)
-                        //    {
-                        //        Tile aboveTile = _tiles[x + yy * Width];
 
-                        //        if (aboveTile != null && aboveTile.CurrentBlock.CanFillDownThrough())
-                        //        {
-                        //            _tiles[x + y * Width] = _tiles[x + yy * Width];
-                        //            _tiles[x + y * Width].SetGridPosition(x, y);
-                        //            _tiles[x + yy * Width] = null;
-                        //            _tileHasMove = true;
-
-                        //            _tiles[x + y * Width].MoveToGridPosition();
-                        //            break;
-                        //        }
-                        //    }
-                        //}
                     }
                 }
 
@@ -3421,71 +3472,10 @@ namespace Match3
                 }
             }
             //Debug.Log($"attempts:  {attempts}");
-
-
-            yield break;
-            _fillDownDictionary.Clear();
-            for (int i = 0; i < _fillBlockIndices.Count; i++)
-            {
-                int index = _fillBlockIndices[i];
-                int x = index % Width;
-                int y = index / Width;
-
-                for (int yy = 0; yy < y; yy++)
-                {
-                    if (_tiles[x + yy * Width] == null)
-                    {
-                        // _prevTileIDs[x + yy * Width] = TileID.None;
-
-                        TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
-                        Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
-                        if (_fillDownDictionary.ContainsKey(x) == false)
-                        {
-                            _fillDownDictionary.Add(x, 1);
-                        }
-                        else
-                        {
-                            _fillDownDictionary[x]++;
-                        }
-                        int offsetFillY = Height - yy + _fillDownDictionary[x] - 2;    // 2: 1 fill block + sizeY = height - 1
-                        newTile.UpdatePosition(0, offsetFillY);
-                        newTile.Display(true);
-                    }
-                }
-            }
-
-
-            for (int y = 0; y < Height; y++)
-            {
-                bool hasFilledTile = false;
-                for (int x = 0; x < Width; x++)
-                {
-                    int i = x + y * Width;
-                    if (_tiles[i] != null)
-                    {
-                        _tiles[i].Display(true);
-                        if (_tiles[i].IsCorrectPosition(out float distance) == false)
-                        {
-                            _tiles[i].FallDownToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME * distance);
-                            hasFilledTile = true;
-                        }
-                    }
-                }
-            }
-
-            if (_fillBlockIndices.Count > 0)
-            {
-                int maxColumnFillCount = 1;
-                foreach (var e in _fillDownDictionary)
-                {
-                    if (e.Value > maxColumnFillCount)
-                        maxColumnFillCount = e.Value;
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME * maxColumnFillCount);
-            }
-
-            yield return null;
         }
+
+
+      
 
 
 
