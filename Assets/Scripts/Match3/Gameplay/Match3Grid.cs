@@ -1985,6 +1985,7 @@ namespace Match3
                     for (int x = 0; x < Width; x++)
                     {
                         int index = x + y * Width;
+                        if (_tiles[index] == null) continue;
                         if (_tiles[index].CurrentBlock is NoneBlock)
                         {
                             SetMatchBuffer(index, MatchID.Match);
@@ -2823,7 +2824,8 @@ namespace Match3
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
             // yield return StartCoroutine(FillGridCoroutineVersion1());
-            yield return StartCoroutine(FillGridCoroutineVersion2());
+            // yield return StartCoroutine(FillGridCoroutineVersion2());
+            yield return StartCoroutine(FillGridCoroutineVersion3());
             onCompleted?.Invoke();
         }
 
@@ -3480,7 +3482,7 @@ namespace Match3
                                     }
                                 }
                             }
-                            else  if (fillType == -1)
+                            else if (fillType == -1)
                             {
                                 if (IsValidGridTile(x - 1, y + 1))
                                 {
@@ -3500,7 +3502,7 @@ namespace Match3
                             }
                             else
                             {
-                                Debug.Log("==========  CASE NOT FOUND !!!! ==============");
+                                Debug.Log($"==========  CASE NOT FOUND !!!! ==============:  {fillType}");
                             }
                         }
                     }
@@ -3547,6 +3549,143 @@ namespace Match3
 
             }
 
+            Debug.Log($"attempts:  {attempts}");
+        }
+
+
+        private IEnumerator FillGridCoroutineVersion3()
+        {
+
+            void SwapTile(int x, int y, int xx, int yy)
+            {
+                var temp = _tiles[x + y * Width];
+                _tiles[x + y * Width] = _tiles[xx + yy * Width];
+                _tiles[xx + yy * Width] = temp;
+            }
+            
+            _tileHasMove = false;
+            int attempts = 0;
+            while (true)
+            {
+                if (attempts++ > Height)
+                {
+                    Debug.LogError("=========== something went wrong ===========");
+                    break;
+                }
+
+                _tileHasMove = false;
+                for (int y = 1; y < Height - 1; y++)
+                {
+                    for (int x = 0; x < Width; x++)
+                    {
+                        Tile currTile = _tiles[x + y * Width];
+                        if (currTile != null)
+                        {
+                            if (currTile.CurrentBlock is not NoneBlock) continue;
+                            for (int yy = y - 1; yy >= 0; yy--)
+                            {
+                                if (IsValidFillTile(x, yy))
+                                {
+                                    _tileHasMove = true;
+                                    SwapTile(x, yy, x, y);
+                                    _tiles[x + yy * Width].SetGridPosition(x, yy);
+                                    int offsetY = y - yy;
+                                    float totalMoveTime = TileAnimationExtensions.TILE_MOVE_TIME * offsetY;
+                                    _tiles[x + yy * Width].FallDownToGridPosition(totalMoveTime);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                // yield break;
+
+                for (int i = 0; i < _fillBlockIndices.Count; i++)
+                {
+                    int index = _fillBlockIndices[i];
+                    int x = index % Width;
+                    int y = index / Width;
+
+                    Tile fillBlockTile = _tiles[x + y * Width];
+                    if (IsValidGridTile(x, y - 1))
+                    {
+                        Tile tileBelow = _tiles[x + (y - 1) * Width];
+                        if (tileBelow == null)
+                        {
+                            _tileHasMove = true;
+                            TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
+                            Tile newTile = AddTile(x, y - 1, randomTileID, BlockID.None, display: true);
+                            newTile.SetTileVisualizePosition(x, y);
+                            newTile.MoveToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                        }
+                        else
+                        {
+                            tileBelow.FallDownScaleAnimation();
+                        }
+                    }
+                }
+
+                for (int y = 1; y < Height - 1; y++)
+                {
+                    for (int x = 0; x < Width; x++)
+                    {
+                        Tile currTile = _tiles[x + y * Width];
+                        if (currTile == null)
+                        {
+                            int fillType = GetFillType(x, y);
+                            Debug.Log($"fillType:  {fillType}");
+                            if (fillType == 1)
+                            {
+                                if (IsValidGridTile(x + 1, y + 1))
+                                {
+                                    if (_tiles[x + 1 + (y + 1) * Width] != null)
+                                    {
+                                        if (_tiles[x + 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
+                                        {
+                                            Debug.Log("Take tile from right neighbors");
+
+                                            _tileHasMove = true;
+                                            SwapTile(x + 1, (y + 1), x, y);
+                                            _tiles[x + y * Width].SetGridPosition(x, y);
+                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (fillType == -1)
+                            {
+                                if (IsValidGridTile(x - 1, y + 1))
+                                {
+                                    if (_tiles[x - 1 + (y + 1) * Width] != null)
+                                    {
+                                        if (_tiles[x - 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
+                                        {
+                                            Debug.Log("Take tile from left neighbors");
+
+                                            _tileHasMove = true;
+                                            SwapTile(x - 1, (y + 1), x, y);
+                                            _tiles[x + y * Width].SetGridPosition(x, y);
+                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Debug.Log($"==========  CASE NOT FOUND !!!! ==============:  {fillType}");
+                            }
+                        }
+                    }
+                    yield return new WaitForSeconds(0.25f);
+                }
+
+
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                if (_tileHasMove == false)
+                {
+                    break;
+                }
+            }
             Debug.Log($"attempts:  {attempts}");
         }
 
@@ -3985,10 +4124,12 @@ namespace Match3
                 int xx = _fillBlockIndices[i] % Width;
                 int yy = _fillBlockIndices[i] / Width;
 
+                // Debug.Log($"_fillBlockIndices  {i}  {x}  {y}");
+
                 // Exact vertical match case
                 if (y < yy && x == xx)
                 {
-                    // Debug.Log("case A - exact vertical match");
+                    Debug.Log("case A - exact vertical match");
                     return 0;
                 }
 
@@ -4031,7 +4172,7 @@ namespace Match3
                     // If equal distance, you could return either - here we choose left
                     // Debug.Log($"case D - equal distance, choosing left");
                     // return closestLeft ?? closestRight;
-                    return 0;
+                    return -1;
                 }
             }
 
