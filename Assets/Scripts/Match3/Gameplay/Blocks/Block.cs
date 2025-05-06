@@ -48,7 +48,7 @@ namespace Match3
 
         public static bool CanFillDownThrough(this Block block)
         {
-            return block is NoneBlock;
+            return block is NoneBlock || block is VoidBlock;
         }
     }
 }

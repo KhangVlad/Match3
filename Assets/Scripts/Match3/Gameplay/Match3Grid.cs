@@ -775,7 +775,7 @@ namespace Match3
                             endLineColorBurstFX.transform.position = nb.TileTransform.position;
                             endLineColorBurstFX.Play(colorBurstDuration);
 
-                          
+
                         }
                     }
 
@@ -1062,7 +1062,7 @@ namespace Match3
                         {
                             int index = leftX + y * Width;
                             if (_tiles[index] == null) continue;
-                            if (_tiles[index].IsDisplay == false) continue;          
+                            if (_tiles[index].IsDisplay == false) continue;
                             bool isDisplay = offset == Width - 1;
                             _tiles[index].Display(isDisplay);
                             _tiles[index].PlayMatchVFX();
@@ -1324,7 +1324,7 @@ namespace Match3
                     {
                         int index = x + topY * Width;
                         if (_tiles[index] == null) continue;
-                        if (_tiles[index].IsDisplay == false) continue;     
+                        if (_tiles[index].IsDisplay == false) continue;
                         _tiles[index].Display(false);
                         _tiles[index].PlayMatchVFX();
 
@@ -1362,7 +1362,7 @@ namespace Match3
                     {
                         int index = x + bottomY * Width;
                         if (_tiles[index] == null) continue;
-                        if (_tiles[index].IsDisplay == false) continue;            
+                        if (_tiles[index].IsDisplay == false) continue;
                         _tiles[index].Display(false);
 
                         // Collect FX
@@ -2273,7 +2273,7 @@ namespace Match3
                         float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);                  
+                        nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
                     }
                 }
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
@@ -2819,8 +2819,8 @@ namespace Match3
         }
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            //yield return StartCoroutine(FillGridCoroutine());
-            yield return StartCoroutine(FillGridCoroutineVersion2());
+            yield return StartCoroutine(FillGridCoroutineVersion1());
+            // yield return StartCoroutine(FillGridCoroutineVersion2());
             onCompleted?.Invoke();
         }
 
@@ -3259,7 +3259,8 @@ namespace Match3
         //}
 
         private bool _tileHasMove;
-        private IEnumerator FillGridCoroutine()
+
+        private IEnumerator FillGridCoroutineVersion1()
         {
             _tileHasMove = false;
             int attempts = 0;
@@ -3282,11 +3283,10 @@ namespace Match3
                             for (int yy = y + 1; yy < Height - 1; yy++)
                             {
                                 Tile aboveTile = _tiles[x + yy * Width];
-
-                                if (aboveTile != null && aboveTile.CurrentBlock is NoneBlock)
+                                if (aboveTile == null) continue;
+                                if (aboveTile.CurrentBlock.CanFillDownThrough() == false) break;
+                                if (aboveTile.CurrentBlock is NoneBlock)
                                 {
-                                    // _prevTileIDs[x + yy * Width] = _tiles[x + yy * Width].ID;
-
                                     _tiles[x + y * Width] = _tiles[x + yy * Width];
                                     _tiles[x + y * Width].SetGridPosition(x, y);
                                     _tiles[x + yy * Width] = null;
@@ -3304,52 +3304,56 @@ namespace Match3
                 }
             }
 
-            //float maxMoveY = 0;
-            //for (int y = 0; y < Height; y++)
-            //{
-            //    for (int x = 0; x < Width; x++)
-            //    {
-            //        Tile currTile = _tiles[x + y * Width];
-            //        if (currTile == null || currTile.CurrentBlock is not NoneBlock)
-            //        {
-            //            continue;
-            //        }
-            //        float moveY = (currTile.transform.position.y - currTile.GetWorldPosition().y) / 1.5f;
-            //        //currTile.MoveToGridPosition(AnimationExtensions.TILE_MOVE_TIME * moveY);
-            //        if (maxMoveY < moveY)
-            //        {
-            //            maxMoveY = moveY;
-            //        }
-            //    }
-            //}
-
-
             _fillDownDictionary.Clear();
+
             for (int i = 0; i < _fillBlockIndices.Count; i++)
             {
                 int index = _fillBlockIndices[i];
                 int x = index % Width;
                 int y = index / Width;
 
-                for (int yy = 0; yy < y; yy++)
+                int fillLength = 1;
+                for (int yy = y; yy >= 0; yy--)
                 {
-                    if (_tiles[x + yy * Width] == null)
+                    Tile currTile = _tiles[x + yy * Width];
+                    if (currTile == null)
                     {
-                        // _prevTileIDs[x + yy * Width] = TileID.None;
+                        if (IsValidGridTile(x, yy + 1))
+                        {
+                            Tile aboveTile = _tiles[x + (yy + 1) * Width];
+                            if (aboveTile != null && aboveTile.CurrentBlock is not NoneBlock && aboveTile.CurrentBlock is not FillBlock && aboveTile.CurrentBlock is not VoidBlock) break;
+                            fillLength++;
+                        }
+                    }
+                }
+                // Debug.Log($"Fill Length:    {x}     {fillLength}");
 
-                        TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
-                        Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
-                        if (_fillDownDictionary.ContainsKey(x) == false)
+                for (int yy = y; yy >= 0; yy--)
+                {
+                    Tile currTile = _tiles[x + yy * Width];
+                    if (currTile == null)
+                    {
+                        if (IsValidGridTile(x, yy + 1))
                         {
-                            _fillDownDictionary.Add(x, 1);
+                            Tile aboveTile = _tiles[x + (yy + 1) * Width];
+                            // Debug.Log($"AAA:   {x}  {yy}");
+                            if (aboveTile != null && aboveTile.CurrentBlock is not NoneBlock && aboveTile.CurrentBlock is not FillBlock && aboveTile.CurrentBlock is not VoidBlock) break;
+                            // Debug.Log($"BBB:   {x}  {yy}");
+                            TileID randomTileID = _levelData.AvaiableTiles[UnityEngine.Random.Range(0, _levelData.AvaiableTiles.Length)];
+                            Tile newTile = AddTile(x, yy, randomTileID, BlockID.None, display: false);
+                            if (_fillDownDictionary.ContainsKey(x) == false)
+                            {
+                                _fillDownDictionary.Add(x, 1);
+                            }
+                            else
+                            {
+                                _fillDownDictionary[x]++;
+                            }
+                            // int offsetFillY = Height - yy + _fillDownDictionary[x] - 2;    // 2: 1 fill block + sizeY = height - 1
+                            newTile.SetTileVisualizePosition(newTile.X, (y - 1) + fillLength - _fillDownDictionary[x]);
+                            newTile.Display(true);
                         }
-                        else
-                        {
-                            _fillDownDictionary[x]++;
-                        }
-                        int offsetFillY = Height - yy + _fillDownDictionary[x] - 2;    // 2: 1 fill block + sizeY = height - 1
-                        newTile.UpdatePosition(0, offsetFillY);
-                        newTile.Display(true);
+
                     }
                 }
             }
@@ -3357,7 +3361,6 @@ namespace Match3
 
             for (int y = 0; y < Height; y++)
             {
-                bool hasFilledTile = false;
                 for (int x = 0; x < Width; x++)
                 {
                     int i = x + y * Width;
@@ -3367,7 +3370,6 @@ namespace Match3
                         if (_tiles[i].IsCorrectPosition(out float distance) == false)
                         {
                             _tiles[i].FallDownToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME * distance);
-                            hasFilledTile = true;
                         }
                     }
                 }
@@ -3388,6 +3390,7 @@ namespace Match3
 
             yield return null;
         }
+
 
         private IEnumerator FillGridCoroutineVersion2()
         {
@@ -3420,13 +3423,13 @@ namespace Match3
                                     {
                                         TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
                                         Tile newTile = AddTile(x, y - 1, randomTileID, BlockID.None, display: false);
-                                        newTile.UpdatePosition(0, 1);                           
+                                        newTile.UpdatePosition(0, 1);
                                         newTile.Display(true);
                                         _tileHasMove = true;
 
-                                        if(IsValidGridTile(x, y-2))
+                                        if (IsValidGridTile(x, y - 2))
                                         {
-                                            Tile belowOfBelowTile = _tiles[x + (y-2) * Width];
+                                            Tile belowOfBelowTile = _tiles[x + (y - 2) * Width];
                                             if (belowOfBelowTile == null)
                                             {
                                                 newTile.MoveToGridPosition();
@@ -3446,17 +3449,30 @@ namespace Match3
                         }
                         else
                         {
-                            Tile aboveTile = _tiles[x + (y + 1) * Width];
-                            if (aboveTile != null && aboveTile.CurrentBlock.CanFillDownThrough())
+                            for (int yy = y + 1; yy < Height - 1; yy++)
                             {
-                                _tiles[x + y * Width] = _tiles[x + (y + 1) * Width];
-                                _tiles[x + y * Width].SetGridPosition(x, y);
-                                _tiles[x + (y + 1) * Width] = null;
-                                _tileHasMove = true;
-                                _tiles[x + y * Width].FallDownToGridPosition();
+                                Tile aboveTile = _tiles[x + yy * Width];
+                                if (aboveTile != null && aboveTile.CurrentBlock is NoneBlock)
+                                {
+                                    _tiles[x + y * Width] = _tiles[x + yy * Width];
+                                    _tiles[x + y * Width].SetGridPosition(x, y);
+                                    _tiles[x + yy * Width] = null;
+                                    _tileHasMove = true;
+                                    _tiles[x + y * Width].FallDownToGridPosition();
+                                    break;
+                                }
                             }
-                        }
 
+                            // Tile aboveTile = _tiles[x + (y + 1) * Width];
+                            // if (aboveTile != null && aboveTile.CurrentBlock.CanFillDownThrough())
+                            // {
+                            //     _tiles[x + y * Width] = _tiles[x + (y + 1) * Width];
+                            //     _tiles[x + y * Width].SetGridPosition(x, y);
+                            //     _tiles[x + (y + 1) * Width] = null;
+                            //     _tileHasMove = true;
+                            //     _tiles[x + y * Width].FallDownToGridPosition();
+                            // }
+                        }
                     }
                 }
 
@@ -3471,9 +3487,6 @@ namespace Match3
             }
             //Debug.Log($"attempts:  {attempts}");
         }
-
-
-      
 
 
 

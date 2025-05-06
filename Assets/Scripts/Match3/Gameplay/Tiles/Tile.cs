@@ -52,7 +52,7 @@ namespace Match3
         public bool HasTriggeredSpecial { get; private set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
-        public Transform BloomTransform {get; private set;}
+        public Transform BloomTransform { get; private set; }
         #endregion
 
 
@@ -63,7 +63,7 @@ namespace Match3
             TileTransform = transform.Find("Pivot/Tile");
             if (TileTransform == null) Debug.LogError("Missing Tile Transform reference !!!");
             BloomTransform = TileTransform.Find("Bloom");
-            if(BloomTransform == null) Debug.LogError("Missing Bloom Transform reference !!!");
+            if (BloomTransform == null) Debug.LogError("Missing Bloom Transform reference !!!");
             BloomTransform.GetComponent<SpriteRenderer>().sprite = TileTransform.GetComponent<SpriteRenderer>().sprite;
 
             bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
@@ -303,6 +303,13 @@ namespace Match3
 
         public void UpdatePosition(int offsetX = 0, int offsetY = 0)
         {
+            transform.position = this.GetWorldPosition(offsetX, offsetY);
+        }
+
+        public void SetTileVisualizePosition(int x, int y)
+        {
+            int offsetX = x - this.X;
+            int offsetY =  y - this.Y;
             transform.position = this.GetWorldPosition(offsetX, offsetY);
         }
 
