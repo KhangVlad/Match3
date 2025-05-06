@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using Match3.Enums;
 using Match3.Shares;
+#if !UNITY_WEBGL
 #if UNITY_EDITOR
 [CustomEditor(typeof(TimeLineManager))]
 public class CharacterTimelineEditorInspector : Editor
@@ -73,4 +74,5 @@ public class CharacterTimelineEditorInspector : Editor
         }
     }
 }
+#endif
 #endif

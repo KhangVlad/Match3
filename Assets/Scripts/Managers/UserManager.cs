@@ -3,9 +3,10 @@ using UnityEngine;
 using System.Collections.Generic;
 using Match3.Enums;
 using Match3;
-using Firebase.Firestore;
 using System.Threading.Tasks;
 
+#if !UNITY_WEBGL
+using Firebase.Firestore;
 public class UserManager : MonoBehaviour
 {
     public static UserManager Instance { get; private set; }
@@ -233,6 +234,7 @@ public class UserManager : MonoBehaviour
 // }
 
 
+
 [FirestoreData]
 [System.Serializable]
 public class CharacterData
@@ -300,3 +302,4 @@ public class CharacterData
         return totalHeartPoints;
     }
 }
+#endif

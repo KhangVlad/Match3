@@ -12,7 +12,7 @@ namespace Match3
         // LOW LEVEL
         public static event System.Action OnStateChanged;
         public static event System.Action OnPlaying;
-        public static event System.Action<CharacterID,int> OnWin;
+        public static event System.Action<CharacterID, int> OnWin;
         public static event System.Action OnGameOver;
 
 
@@ -121,7 +121,7 @@ namespace Match3
                 case GameState.WIN:
                     AudioManager.Instance.PlayWinSfx();
                     UIGameplayManager.Instance.DisplayUIWin(true);
-                  
+
                     break;
                 case GameState.GAMEOVER:
                     AudioManager.Instance.PlayGameoverSfx();
@@ -146,8 +146,8 @@ namespace Match3
         private void OnEndOfTurn_UpdateTurnCount()
         {
             // Debug.Log($"End of turn: {Match3Grid.Instance.UseBoosterThisTurn}");
-            if(Match3Grid.Instance.UseBoosterThisTurn) return;
-            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
+            if (Match3Grid.Instance.UseBoosterThisTurn) return;
+            if (Match3Grid.Instance.SwapTileHasMatched == false) return;
             TurnRemainingCount--;
             if (TurnRemainingCount <= 0)
                 TurnRemainingCount = 0;
@@ -174,7 +174,15 @@ namespace Match3
                 if (TurnRemainingCount == 0)
                 {
                     Debug.Log($"Game over: {star}");
-                    ChangeGameState(GameState.GAMEOVER);
+                    if(star == 0)
+                    {
+                        ChangeGameState(GameState.GAMEOVER);
+                    }
+                    else
+                    {
+                        ChangeGameState(GameState.WIN);
+                    }
+                   
                 }
             }
         }
@@ -304,6 +312,236 @@ namespace Match3
                         break;
                     case QuestID.MaxTurn:
                         break;
+                    case QuestID.BlueFeather:
+                        if (tile is BlueFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenFeather:
+                        if (tile is GreenFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleFeather:
+                        if (tile is PurpleFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedFeather:
+                        if (tile is RedFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteFeather:
+                        if (tile is WhiteFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowFeather:
+                        if (tile is YellowFeather)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.BlueMushroom:
+                        if (tile is BlueMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenMushroom:
+                        if (tile is GreenMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleMushroom:
+                        if (tile is PurpleMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedMushroom:
+                        if (tile is RedMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowMushroom:
+                        if (tile is YellowMushroom)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.GreenBut:
+                        if (tile is GreenBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.PurpleBut:
+                        if (tile is PurpleBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedBut:
+                        if (tile is RedBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.WhiteBut:
+                        if (tile is WhiteBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowBut:
+                        if (tile is YellowBut)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.RedBug:
+                        if (tile is RedBug)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.YellowBug:
+                        if (tile is YellowBug)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Rock:
+                        if (tile is Rock)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Bell:
+                        if (tile is Bell)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.BlueBallon:
+                        if (tile is BlueBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.BlueWool:
+                        if (tile is BlueWool)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.BrownMushRoom:
+                        if (tile is BrownMushRoom)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.BrownRock:
+                        if (tile is BrownRock)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Charcoal:
+                        if (tile is Charcoal)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Flyfire:
+                        if (tile is Flyfire)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.GreenBallon:
+                        if (tile is GreenBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.GreenWool:
+                        if (tile is GreenWool)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Lantern:
+                        if (tile is Lantern)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Onion:
+                        if (tile is Onion)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.PurpleBallon:
+                        if (tile is PurpleBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.PurpleWool:
+                        if (tile is PurpleWool)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.RedBallon:
+                        if (tile is RedBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.RedWool:
+                        if (tile is RedWool)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_1:
+                        if (tile is Shushi_1)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_2:
+                        if (tile is Shushi_2)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_3:
+                        if (tile is Shushi_3)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_4:
+                        if (tile is Shushi_4)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_5:
+                        if (tile is Shushi_5)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_6:
+                        if (tile is Shushi_6)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_7:
+                        if (tile is Shushi_7)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_Otc:
+                        if (tile is Shushi_Otc)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_Rice:
+                        if (tile is Shushi_Rice)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Shushi_Shrimp:
+                        if (tile is Shushi_Shrimp)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.Tape:
+                        if (tile is Tape)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.WhiteBallon:
+                        if (tile is WhiteBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.WhiteWool:
+                        if (tile is WhiteWool)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.WoodLog:
+                        if (tile is WoodLog)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.YellowBallon:
+                        if (tile is YellowBallon)
+                            Quests[i].Quantity--;
+                        break;
+
+                    case QuestID.YellowWool:
+                        if (tile is YellowWool)
+                            Quests[i].Quantity--;
+                        break;
                     default:
                         Debug.LogError($"Case not found !!! {Quests[i].QuestID}");
                         break;
@@ -314,7 +552,7 @@ namespace Match3
 
         private void OnEndOfTurnQuestTriggered()
         {
-            if(Match3Grid.Instance.SwapTileHasMatched == false) return;
+            if (Match3Grid.Instance.SwapTileHasMatched == false) return;
             for (int i = 0; i < Quests.Length; i++)
             {
                 if (Quests[i].QuestID == QuestID.MaxTurn)
@@ -406,6 +644,12 @@ namespace Match3
             }
             index = -1;
             return false;
+        }
+
+        public bool HasTileQuest(TileID tileID)
+        {
+            QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileID);
+            return TryGetQuestIndex(questID, out int questIndex);  
         }
 
         public QuestID GetQuestByTileID(TileID tileID)

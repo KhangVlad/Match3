@@ -1,6 +1,7 @@
 ﻿using Match3.Enums;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Playables;
 
 namespace Match3.Shares
 {
@@ -8,6 +9,7 @@ namespace Match3.Shares
     {
         public const int MAX_ROCKET_DISTANCE = 10;
         private SpriteRenderer _sr;
+        private Animator _anim;
         [SerializeField] private Transform _leftRocket;
         [SerializeField] private Transform _rightRocket;
 
@@ -16,12 +18,13 @@ namespace Match3.Shares
 
         private Tween _leftMoveTween;
         private Tween _rightMoveTween;
-        
+
         private void Awake()
         {
             _offsetLeftRocket = _leftRocket.position - transform.position;
             _offsetRightRocket = _rightRocket.position - transform.position;
             _sr = GetComponent<SpriteRenderer>();
+            _anim = GetComponent<Animator>();
         }
         public override void Initialize()
         {
@@ -37,13 +40,11 @@ namespace Match3.Shares
             // _leftMoveTween =_leftRocket.DOMoveX(targetLeft, duration).SetEase(Ease.Linear);
 
             // int targetRight = Mathf.FloorToInt(transform.position.x) + MAX_ROCKET_DISTANCE;
-            // _rightMoveTween =_rightRocket.DOMoveX(targetRight, duration).SetEase(Ease.Linear);
-
-
+            // _rightMoveTween =_rightRocket.DOMoveX(targetRight, duration).SetEase(Ease.Linear);     
             base.Play(duration);
-
             _sr.enabled = false;
-
+            _leftRocket.gameObject.SetActive(true);
+            _rightRocket.gameObject.SetActive(true);
             int targetLeft = Mathf.FloorToInt(transform.position.x) - 10;
             int targetRight = Mathf.FloorToInt(transform.position.x) + 10;
 
@@ -66,6 +67,7 @@ namespace Match3.Shares
 
         public override void ReturnToPool()
         {
+            StopAnimation();
             base.ReturnToPool();
 
             // Reset
@@ -81,6 +83,18 @@ namespace Match3.Shares
             _leftRocket.transform.position = (Vector2)transform.position + _offsetLeftRocket;
             _rightRocket.transform.position = (Vector2)transform.position + _offsetRightRocket;
             _sr.enabled = true;
+        }
+
+           public void PlayAnimtion()
+        {
+            _leftRocket.gameObject.SetActive(false);
+            _rightRocket.gameObject.SetActive(false);
+            _anim?.SetBool("Rotate", true);
+        }
+
+        public void StopAnimation()
+        {
+            _anim?.SetBool("Rotate", false);
         }
     }
 }

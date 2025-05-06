@@ -92,7 +92,11 @@ namespace Match3
             for (int i = 0; i < Tiles.Length; i++)
             {
                 Tiles[i].Initialize();
+#if UNITY_WEBGL
+                Tiles[i].SetInteractionMask(SpriteMaskInteraction.None);
+#else
                 Tiles[i].SetInteractionMask(SpriteMaskInteraction.VisibleInsideMask);
+#endif
             }
 
             _tileDict = new();
@@ -285,9 +289,9 @@ namespace Match3
                 if (columns.Length >= 5)
                 {
                     int level = int.Parse(columns[0].Trim());
-                    string dialog = columns[2].Trim(); 
+                    string dialog = columns[2].Trim();
                     string greeting = columns[3].Trim();
-                    string lowSympathy = columns[4].Trim(); 
+                    string lowSympathy = columns[4].Trim();
 
                     // Store greeting dialogue
                     if (!string.IsNullOrEmpty(greeting))

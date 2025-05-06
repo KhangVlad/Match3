@@ -224,8 +224,6 @@ MonoBehaviour:
   _match4Horizontal: {fileID: 834455494, guid: 311db2dee1320a044babfb3b7b843580, type: 3}
   _match5: {fileID: 21300000, guid: 42e07a801324844acbd0f74adace83ad, type: 3}
   _match6: {fileID: 21300000, guid: b0b1f280d89564c7b9e6795c9563f2fd, type: 3}
-  TilePivot: {fileID: 7727959396738784114}
-  TileTransform: {fileID: 1914898965646831192}
   CurrentBlock: {fileID: 0}
   SpecialProperties: 0
   X: 0

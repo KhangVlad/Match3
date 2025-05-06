@@ -1,5 +1,6 @@
 using UnityEngine;
 
+#if !UNITY_WEBGL
 public class TownCanvasController : MonoBehaviour
 {
     public static TownCanvasController Instance { get; private set; }
@@ -53,3 +54,4 @@ public class TownCanvasController : MonoBehaviour
         // uiHomeManager.ActiveCanvas(!active);
     }
 }
+#endif

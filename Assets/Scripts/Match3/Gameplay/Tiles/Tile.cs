@@ -17,12 +17,15 @@ namespace Match3
         protected SpriteRenderer bloomSR;
         public TileID ID { get; protected set; }
         protected Sprite _tileSprite;
+
+
+
+        [Header("Only used for None Tile")]
         [SerializeField] protected Sprite _match4Vertical;
         [SerializeField] protected Sprite _match4Horizontal;
         [SerializeField] protected Sprite _match5;
         [SerializeField] protected Sprite _match6;
-        public Transform TilePivot;
-        public Transform TileTransform;
+
 
 
         // mask interaction
@@ -47,15 +50,21 @@ namespace Match3
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
         public bool HasTriggeredSpecial { get; private set; } = false;
+        public Transform TilePivot { get; private set; }
+        public Transform TileTransform { get; private set; }
+        public Transform BloomTransform { get; private set; }
         #endregion
 
 
         public virtual void Initialize()
         {
-            if (TileTransform == null)
-            {
-                TileTransform = transform.Find("Pivot/Tile");
-            }
+            TilePivot = transform.Find("Pivot");
+            if (TilePivot == null) Debug.LogError("Missing Tile Pivot reference !!!");
+            TileTransform = transform.Find("Pivot/Tile");
+            if (TileTransform == null) Debug.LogError("Missing Tile Transform reference !!!");
+            BloomTransform = TileTransform.Find("Bloom");
+            if (BloomTransform == null) Debug.LogError("Missing Bloom Transform reference !!!");
+            BloomTransform.GetComponent<SpriteRenderer>().sprite = TileTransform.GetComponent<SpriteRenderer>().sprite;
 
             bloomSR = TileTransform.GetChild(0).GetComponent<SpriteRenderer>();
             bloomSR.enabled = false;
@@ -119,6 +128,7 @@ namespace Match3
             if (enable)
             {
                 sr.color = Color.white;
+                sr.enabled = true;
             }
             else
             {
@@ -254,9 +264,12 @@ namespace Match3
 
         public virtual void PlayMatchVFX() { }
 
-        public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease)
+        public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {
-            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease);
+            _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease).OnComplete(() =>
+            {
+                onCompleted?.Invoke();
+            });
         }
 
         public void MoveToGridPosition(float moveTime = TileAnimationExtensions.TILE_MOVE_TIME)
@@ -268,17 +281,28 @@ namespace Match3
         {
             Vector3 targetPosition = this.GetWorldPosition();
 
-            _moveTween = transform.DOMove(targetPosition, moveTime * 0.8f)
+            _moveTween = transform.DOMove(targetPosition, moveTime)
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
-                    TilePivot.transform.DOScaleX(1.2f, 0.2f);
-                    TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
-                    {
-                        TilePivot.transform.DOScaleX(1.0f, 0.2f);
-                        TilePivot.transform.DOScaleY(1.0f, 0.2f);
-                    });
+                    // TilePivot.transform.DOScaleX(1.2f, 0.2f);
+                    // TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
+                    // {
+                    //     TilePivot.transform.DOScaleX(1.0f, 0.2f);
+                    //     TilePivot.transform.DOScaleY(1.0f, 0.2f);
+                    // });
+                    FallDownScaleAnimation();
                 });
+        }
+
+        public void FallDownScaleAnimation()
+        {
+            TilePivot.transform.DOScaleX(1.2f, 0.2f);
+            TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
+            {
+                TilePivot.transform.DOScaleX(1.0f, 0.2f);
+                TilePivot.transform.DOScaleY(1.0f, 0.2f);
+            });
         }
 
 
@@ -290,6 +314,13 @@ namespace Match3
 
         public void UpdatePosition(int offsetX = 0, int offsetY = 0)
         {
+            transform.position = this.GetWorldPosition(offsetX, offsetY);
+        }
+
+        public void SetTileVisualizePosition(int x, int y)
+        {
+            int offsetX = x - this.X;
+            int offsetY = y - this.Y;
             transform.position = this.GetWorldPosition(offsetX, offsetY);
         }
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+#if !UNITY_WEBGL
 public class UIDailyGiftManager : MonoBehaviour
 {
     private Canvas canvas;
@@ -40,3 +41,4 @@ public class UIDailyGiftManager : MonoBehaviour
         }
     }
 }
+#endif

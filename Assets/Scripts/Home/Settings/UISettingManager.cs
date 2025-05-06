@@ -4,6 +4,7 @@ using System.Collections;
 using Match3;
 using TMPro;
 
+#if !UNITY_WEBGL
 public class UISettingManager : MonoBehaviour
 {
     public Color backgroundColor = new Color(10.0f / 255.0f, 10.0f / 255.0f, 10.0f / 255.0f, 0.6f);
@@ -168,3 +169,4 @@ public class UISettingManager : MonoBehaviour
         _canvas.enabled = active;
     }
 }
+#endif

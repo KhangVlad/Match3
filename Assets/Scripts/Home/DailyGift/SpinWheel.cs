@@ -3,6 +3,7 @@ using System.Collections;
 using Match3;
 using UnityEngine.UI;
 
+#if !UNITY_WEBGL
 public class SpinWheel : MonoBehaviour
 {
     public AnimationCurve AnimationCurve;
@@ -124,3 +125,4 @@ public class SpinWheel : MonoBehaviour
         }
     }
 }
+#endif

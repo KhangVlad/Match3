@@ -2,8 +2,11 @@ using Match3;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using DG.Tweening;
+using TMPro;
 using Match3.Shares;
 
+#if !UNITY_WEBGL
 public class UILoadingMenu : MonoBehaviour
 {
     [Header("UI References")]
@@ -46,10 +49,12 @@ public class UILoadingMenu : MonoBehaviour
             GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
         }
         
+        #if !UNITY_WEBGL
         if (AuthenticationManager.Instance != null)
         {
             AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
         }
+        #endif
         
         // Set background based on time of day
         SetBackgroundByTimeOfDay();
@@ -71,10 +76,13 @@ public class UILoadingMenu : MonoBehaviour
             GameDataManager.Instance.OnDataLoaded -= OnGameDataLoaded;
         }
         
+        #if !UNITY_WEBGL
         if (AuthenticationManager.Instance != null)
         {
             AuthenticationManager.Instance.OnNewUserCreate -= HandleNewUser;
         }
+        #endif
+        
         StopAllCoroutines();
     }
     
@@ -86,10 +94,18 @@ public class UILoadingMenu : MonoBehaviour
         }
         else
         {
-            comic.gameObject.SetActive(true);
-            comic.OnNewUserCreate();
+            if (comic != null)
+            {
+                comic.OnNewUserCreate();
+            }
+            else
+            {
+                Debug.LogWarning("Comic reference is null. Cannot show new user comic.");
+                OnUserDataLoaded(); // Continue loading process even if comic is missing
+            }
         }
     }
+
     private void SetBackgroundByTimeOfDay()
     {
         if (backgroundImage == null || TimeManager.Instance == null)
@@ -99,7 +115,10 @@ public class UILoadingMenu : MonoBehaviour
         }
 
         TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
+        Debug.Log("Current Time of Day: " + timeOfDay);
+        
         string backgroundPath;
+        
         switch (timeOfDay)
         {
             case TimeOfDay.Morning:
@@ -146,11 +165,16 @@ public class UILoadingMenu : MonoBehaviour
     {
         while (_isLoading)
         {
+            // Only update if we haven't reached target yet
             if (_currentProgress < _targetProgress)
             {
                 _currentProgress = Mathf.MoveTowards(_currentProgress, _targetProgress, 
                     progressSpeed * Time.deltaTime);
+                
+                // Update UI
                 progressSlider.value = _currentProgress;
+                
+                // Check if loading is complete
                 if (_currentProgress >= 1f && _targetProgress >= 1f)
                 {
                     CompleteLoading();
@@ -165,6 +189,11 @@ public class UILoadingMenu : MonoBehaviour
     {
         _isLoading = false;
         homeButton.interactable = true;
+        
+        // Optional: Add animation or visual feedback to indicate loading is complete
+        Debug.Log("Loading complete!");
+        
+        // Automatically switch to town scene
         if (LoadingAnimationController.Instance != null)
         {
             LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
@@ -174,5 +203,5 @@ public class UILoadingMenu : MonoBehaviour
             Debug.LogWarning("LoadingAnimationController instance is null. Cannot switch scenes.");
         }
     }
-   
 }
+#endif
