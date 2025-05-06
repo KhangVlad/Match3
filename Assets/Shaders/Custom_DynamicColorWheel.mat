@@ -37,17 +37,25 @@ Material:
     - _CenterX: 0.5
     - _CenterY: 0.5
     - _ColorCount: 8
+    - _ColorMask: 15
     - _GradientSmoothing: 0.05
     - _HighlightIntensity: 0.2
     - _HighlightSegment: -1
     - _InnerRadius: 0.4
-    - _Rotation: 72
+    - _Rotation: 70
     - _SegmentCount: 5
     - _StartAngleOffset: 160
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _UseGradient: 1
+    - _UseUIAlphaClip: 0
     m_Colors:
-    - _Color0: {r: 1, g: 0, b: 0.5, a: 1}
-    - _Color1: {r: 1, g: 0.5, b: 0, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color0: {r: 1, g: 0.8, b: 1, a: 1}
+    - _Color1: {r: 0.9056604, g: 0.5801353, b: 0.252047, a: 1}
     - _Color10: {r: 0, g: 0, b: 1, a: 1}
     - _Color11: {r: 1, g: 1, b: 1, a: 1}
     - _Color12: {r: 0.5, g: 0.5, b: 0.5, a: 1}

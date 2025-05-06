@@ -140,7 +140,6 @@ public class UILoadingMenu : MonoBehaviour
     private void OnUserDataLoaded()
     {
         _targetProgress += 0.25f;
-        Debug.Log("User data loaded. Target progress updated to: " + _targetProgress);
     }
 
     private IEnumerator UpdateProgressRoutine()

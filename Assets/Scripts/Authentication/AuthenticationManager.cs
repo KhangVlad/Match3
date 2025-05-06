@@ -24,6 +24,7 @@ public class AuthenticationManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+
         Instance = this;
 
         IsUserDataLoaded = false;
@@ -33,7 +34,6 @@ public class AuthenticationManager : MonoBehaviour
 
     private void Start()
     {
-
     }
 
 
@@ -48,7 +48,6 @@ public class AuthenticationManager : MonoBehaviour
             }
         }
     }
-    
 
 
     public void SignInAnonymous(FirebaseAuth auth, FirebaseFirestore firestore)
@@ -60,14 +59,13 @@ public class AuthenticationManager : MonoBehaviour
                 Debug.LogError($"Anonymous sign-in failed: {task.Exception}");
                 return;
             }
+
             FirebaseUser user = task.Result.User;
             HandlerNewAndOldUserAnonymous(user, firestore);
             OnAuthenticationSuccessfully?.Invoke(user);
         });
     }
-    
-    
-    
+
 
     // create new user document in Firestore
     private async void CreateNewUserDocument(string userID)
@@ -83,10 +81,9 @@ public class AuthenticationManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log("New user document created successfully!");
                 IsUserDataLoaded = true;
                 IsNewUser = true;
-              
+
                 // HandleChangeScene();
             }
             else
@@ -114,15 +111,16 @@ public class AuthenticationManager : MonoBehaviour
 
     private void LoadUserData(DocumentSnapshot snapshot)
     {
-        Debug.Log("LoadUserData");
         if (snapshot.Exists)
         {
-            UserManager.Instance.UserData = snapshot.ConvertTo<UserData>();
+            UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+            UserData cloud = snapshot.ConvertTo<UserData>();
             if (snapshot.ContainsField("LastOnline"))
             {
                 Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
                 TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-                TimeManager.Instance.CalculateOfflineTimeEnergy();
+                // TimeManager.Instance.CalculateOfflineTimeEnergy();
+                cloud.Energy = localData.Energy + TimeManager.Instance.CalculateOfflineTimeEnergy();
                 TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
             }
             else
@@ -130,6 +128,7 @@ public class AuthenticationManager : MonoBehaviour
                 Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
             }
 
+            UserManager.Instance.UserData = cloud;
 
             // Match3.Shares.Utilities.WaitAfterEndOfFrame(() =>
             // {
@@ -137,9 +136,9 @@ public class AuthenticationManager : MonoBehaviour
             //     IsUserDataLoaded = true;
             //     HandleChangeScene();
             // });
-
         }
     }
+
     private async void HandlerNewAndOldUserAnonymous(FirebaseUser user, FirebaseFirestore firestore)
     {
         Debug.Log("HandlerNewAndOldUserAnonymous");
@@ -155,7 +154,6 @@ public class AuthenticationManager : MonoBehaviour
             DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
             if (snapShot.Exists)
             {
-                Debug.Log("Load level data");
                 LoadUserData(snapShot);
                 OnNewUserCreate?.Invoke(false);
             }
@@ -170,5 +168,27 @@ public class AuthenticationManager : MonoBehaviour
         {
             Debug.LogError($"Error: Error checking or creating document: {e.Message}");
         }
+    }
+
+    public void SignInWithOutInternet()
+    {
+        Debug.Log("Signing in without internet connection");
+        UserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
+        if (data == null)
+        {
+            data = UserManager.Instance.InitializeNewUserData();
+            UserManager.Instance.UserData = data;
+            IsNewUser = true;
+        }
+        else
+        {
+            Debug.Log("Found local user data. Loading offline mode.");
+            IsNewUser = false;
+        }
+
+        UserManager.Instance.UserData = data;
+        IsUserDataLoaded = true;
+        OnNewUserCreate?.Invoke(IsNewUser);
+        HandleChangeScene();
     }
 }

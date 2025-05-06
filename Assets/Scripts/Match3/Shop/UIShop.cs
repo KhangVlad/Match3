@@ -27,8 +27,6 @@ namespace Match3
                 AudioManager.Instance.PlayButtonSfx();
                 DisplayCanvas(false);
             });
-
-
             LoadShopPacks();
         }
 

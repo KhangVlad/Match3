@@ -58,12 +58,12 @@ public class ScreenInteraction : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonDown(0) && !Utilities.IsPointerOverUI())
+        if (Input.GetMouseButtonDown(0) && !Utilities.IsPointerOverUIElement())
         {
             OnMouseDown();
         }
 
-        if (Input.GetMouseButton(0) && FirstMouseClick)
+        if (Input.GetMouseButton(0) && FirstMouseClick && !Utilities.IsPointerOverUIElement())
         {
             OnMouseDrag();
         }

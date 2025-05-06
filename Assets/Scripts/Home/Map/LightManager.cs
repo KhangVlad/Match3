@@ -29,7 +29,7 @@ public class LightManager : MonoBehaviour
     
     private bool IsNight()
     {
-        return currentHour >= 12 || currentHour < 6;
+        return currentHour >= 9;
     }
 
     private void Start()

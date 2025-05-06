@@ -1,4 +1,4 @@
-
+//
 //Shader "Custom/ColorSegmentShader"
 //{
 //    Properties

@@ -42,7 +42,6 @@ public class UILevelDesignManager : MonoBehaviour
 
     [Header("Levels Panel")] [SerializeField]
     private Transform levelsPanel;
-
     [SerializeField] private Button selectLevelBtn;
     [SerializeField] private Button closeLevelsPanel;
     [SerializeField] private UILevelDesign nextLevel;
@@ -161,7 +160,6 @@ public class UILevelDesignManager : MonoBehaviour
         if (currentChosenLevel == null)
             return;
         AudioManager.Instance.PlayButtonSfx();
-
         if (UserManager.Instance.HasEnoughEnergy(10)) // move to UILevelInformation  later
         {
             UserManager.Instance.ConsumeEnergy(10);
@@ -230,7 +228,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void ShowCanvas()
     {
-        int totalHeartPoints = characterData.TotalHeartPoints();
+        int totalHeartPoints = UserManager.Instance.GetTotalHeart();
         int requiredHearts = characterDataSO.TotalHeartToUnlock;
         bool hasEnoughHearts = totalHeartPoints >= requiredHearts;
         UpdateHeartUI(hasEnoughHearts, totalHeartPoints, requiredHearts);

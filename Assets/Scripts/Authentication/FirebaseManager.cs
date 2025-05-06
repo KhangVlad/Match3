@@ -4,6 +4,7 @@ using Firebase.Extensions;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Firestore;
+using Match3.Shares;
 
 
 public class FirebaseManager : MonoBehaviour
@@ -37,6 +38,8 @@ public class FirebaseManager : MonoBehaviour
     {
         AuthenticationManager.Instance.OnAuthenticationSuccessfully -= OnAuthenticationSuccessfully_SetUser;
     }
+    
+    
 
    
   
@@ -49,8 +52,17 @@ public class FirebaseManager : MonoBehaviour
                 App = FirebaseApp.DefaultInstance;
                 Auth = FirebaseAuth.DefaultInstance;
                 Firestore = FirebaseFirestore.DefaultInstance;
+                if (Utilities.IsConnectedToInternet())
+                {
+                    AuthenticationManager.Instance.SignInAnonymous(Auth, Firestore);
+                }
+                else
+                { 
+                    Debug.Log("AAAA");
+                    AuthenticationManager.Instance.SignInWithOutInternet();
+                }
 
-                AuthenticationManager.Instance.SignInAnonymous(Auth, Firestore);
+                
                 //FetchServerTime();
                 Debug.Log("Firebase initialized successfully!");
             }
