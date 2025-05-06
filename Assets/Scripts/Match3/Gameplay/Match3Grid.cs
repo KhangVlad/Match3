@@ -989,6 +989,7 @@ namespace Match3
                         if (IsValidGridTile(xx, yy))
                         {
                             int index = xx + yy * Width;
+                            if (_tiles[index] == null) continue;
                             _tiles[index].Display(false);
                             SetMatchBuffer(index, MatchID.SpecialMatch);
 
@@ -1021,6 +1022,7 @@ namespace Match3
                     if (IsValidGridTile(tileX, y))
                     {
                         int index = tileX + y * Width;
+                        if (_tiles[index] == null) continue;
                         Vector2 cachedTilePosition = (Vector2)_tiles[index].transform.position;
                         Vector2 bouncePosition = (Vector2)_tiles[index].transform.position + new Vector2(0, 0.5f);
                         float bounceTime = 0.1f;
@@ -2740,6 +2742,7 @@ namespace Match3
             for (int i = 0; i < _matchBuffer.Length; i++)
             {
                 Tile tile = _tiles[i];
+                if (tile == null) continue;
                 MatchID matchID = _matchBuffer[i];
 
                 if (matchID.IsSpecialMatch())
@@ -2819,8 +2822,9 @@ namespace Match3
         }
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            yield return StartCoroutine(FillGridCoroutineVersion1());
+            // yield return StartCoroutine(FillGridCoroutineVersion1());
             // yield return StartCoroutine(FillGridCoroutineVersion2());
+            yield return StartCoroutine(FillGridCoroutineVersion3());
             onCompleted?.Invoke();
         }
 
@@ -3305,7 +3309,6 @@ namespace Match3
             }
 
             _fillDownDictionary.Clear();
-
             for (int i = 0; i < _fillBlockIndices.Count; i++)
             {
                 int index = _fillBlockIndices[i];
@@ -3405,6 +3408,7 @@ namespace Match3
                 }
 
                 _tileHasMove = false;
+                float maxTotalMovetime = 0f;
                 for (int y = 0; y < Height; y++)
                 {
                     for (int x = 0; x < Width; x++)
@@ -3414,10 +3418,8 @@ namespace Match3
                         {
                             if (currTile.CurrentBlock is FillBlock)
                             {
-                                //Debug.Log($"{x}  {y}  is fill block");
                                 if (IsValidGridTile(x, y - 1))
                                 {
-                                    //Debug.Log($"Below: {x}  {y - 1}");
                                     Tile belowTile = _tiles[x + (y - 1) * Width];
                                     if (belowTile == null)
                                     {
@@ -3427,21 +3429,23 @@ namespace Match3
                                         newTile.Display(true);
                                         _tileHasMove = true;
 
+                                        float unitMoveTime = 0.1f;
+                                        if (maxTotalMovetime < unitMoveTime) maxTotalMovetime = unitMoveTime;
                                         if (IsValidGridTile(x, y - 2))
                                         {
                                             Tile belowOfBelowTile = _tiles[x + (y - 2) * Width];
                                             if (belowOfBelowTile == null)
                                             {
-                                                newTile.MoveToGridPosition();
+                                                newTile.MoveToGridPosition(unitMoveTime);
                                             }
                                             else
                                             {
-                                                newTile.FallDownToGridPosition();
+                                                newTile.FallDownToGridPosition(unitMoveTime);
                                             }
                                         }
                                         else
                                         {
-                                            newTile.MoveToGridPosition();
+                                            newTile.MoveToGridPosition(unitMoveTime);
                                         }
                                     }
                                 }
@@ -3458,20 +3462,15 @@ namespace Match3
                                     _tiles[x + y * Width].SetGridPosition(x, y);
                                     _tiles[x + yy * Width] = null;
                                     _tileHasMove = true;
-                                    _tiles[x + y * Width].FallDownToGridPosition();
+
+                                    float unitMoveTime = 0.1f;
+                                    int offsetY = yy - y;
+                                    float totalMoveTime = unitMoveTime * offsetY;
+                                    _tiles[x + y * Width].FallDownToGridPosition(totalMoveTime);
+                                    if (maxTotalMovetime < totalMoveTime) maxTotalMovetime = totalMoveTime;
                                     break;
                                 }
                             }
-
-                            // Tile aboveTile = _tiles[x + (y + 1) * Width];
-                            // if (aboveTile != null && aboveTile.CurrentBlock.CanFillDownThrough())
-                            // {
-                            //     _tiles[x + y * Width] = _tiles[x + (y + 1) * Width];
-                            //     _tiles[x + y * Width].SetGridPosition(x, y);
-                            //     _tiles[x + (y + 1) * Width] = null;
-                            //     _tileHasMove = true;
-                            //     _tiles[x + y * Width].FallDownToGridPosition();
-                            // }
                         }
                     }
                 }
@@ -3482,13 +3481,92 @@ namespace Match3
                 }
                 else
                 {
-                    yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                    // yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
             //Debug.Log($"attempts:  {attempts}");
         }
 
+        private IEnumerator FillGridCoroutineVersion3()
+        {
+            _tileHasMove = false;
+            int attempts = 0;
+            while (true)
+            {
+                if (attempts++ > Height)
+                {
+                    Debug.LogError("=========== something went wrong ===========");
+                    break;
+                }
 
+                _tileHasMove = false;
+                for (int y = 0; y < Height - 1; y++)
+                {
+                    for (int x = 0; x < Width; x++)
+                    {
+                        Tile currTile = _tiles[x + y * Width];
+                        if (currTile == null)
+                        {
+                            for (int yy = y + 1; yy < Height - 1; yy++)
+                            {
+                                Tile aboveTile = _tiles[x + yy * Width];
+                                if (aboveTile == null) continue;
+                                if (aboveTile.CurrentBlock.CanFillDownThrough() == false) break;
+                                if (aboveTile.CurrentBlock is NoneBlock)
+                                {
+                                    _tiles[x + y * Width] = _tiles[x + yy * Width];
+                                    _tiles[x + y * Width].SetGridPosition(x, y);
+                                    _tiles[x + yy * Width] = null;
+                                    _tileHasMove = true;
+
+                                    int offsetY = yy - y;
+                                    float totalMoveTime = TileAnimationExtensions.TILE_MOVE_TIME * offsetY;
+                                    _tiles[x + y * Width].FallDownToGridPosition(totalMoveTime);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // yield break;
+
+                for (int i = 0; i < _fillBlockIndices.Count; i++)
+                {
+                    int index = _fillBlockIndices[i];
+                    int x = index % Width;
+                    int y = index / Width;
+
+                    Tile fillBlockTile = _tiles[x + y * Width];
+                    if (IsValidGridTile(x, y - 1))
+                    {
+                        Tile tileBelow = _tiles[x + (y - 1) * Width];
+                        if (tileBelow == null)
+                        {
+                            _tileHasMove = true;
+                            TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
+                            Tile newTile = AddTile(x, y - 1, randomTileID, BlockID.None, display: true);
+                            newTile.SetTileVisualizePosition(x, y);
+                            newTile.MoveToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                        }
+                        else
+                        {
+                            tileBelow.FallDownScaleAnimation();
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
+                if (_tileHasMove == false)
+                {
+                    break;
+                }
+            }
+
+            Debug.Log($"attempts:  {attempts}");
+        }
+
+      
 
         #region Utilities
 

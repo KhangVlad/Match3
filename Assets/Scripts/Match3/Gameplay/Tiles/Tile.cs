@@ -285,13 +285,24 @@ namespace Match3
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>
                 {
-                    TilePivot.transform.DOScaleX(1.2f, 0.2f);
-                    TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
-                    {
-                        TilePivot.transform.DOScaleX(1.0f, 0.2f);
-                        TilePivot.transform.DOScaleY(1.0f, 0.2f);
-                    });
+                    // TilePivot.transform.DOScaleX(1.2f, 0.2f);
+                    // TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
+                    // {
+                    //     TilePivot.transform.DOScaleX(1.0f, 0.2f);
+                    //     TilePivot.transform.DOScaleY(1.0f, 0.2f);
+                    // });
+                    FallDownScaleAnimation();
                 });
+        }
+
+        public void FallDownScaleAnimation()
+        {
+            TilePivot.transform.DOScaleX(1.2f, 0.2f);
+            TilePivot.transform.DOScaleY(0.8f, 0.2f).OnComplete(() =>
+            {
+                TilePivot.transform.DOScaleX(1.0f, 0.2f);
+                TilePivot.transform.DOScaleY(1.0f, 0.2f);
+            });
         }
 
 
@@ -309,7 +320,7 @@ namespace Match3
         public void SetTileVisualizePosition(int x, int y)
         {
             int offsetX = x - this.X;
-            int offsetY =  y - this.Y;
+            int offsetY = y - this.Y;
             transform.position = this.GetWorldPosition(offsetX, offsetY);
         }
 
