@@ -2827,11 +2827,11 @@ namespace Match3
         }
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            if(_fillType == FillType.Dropdown)
+            if (_fillType == FillType.Dropdown)
             {
                 yield return StartCoroutine(DropdDownFillGridCoroutine());
             }
-            else if(_fillType == FillType.SandFalling)
+            else if (_fillType == FillType.SandFalling)
             {
                 yield return StartCoroutine(SandFallingFillGridCoroutine());
             }
@@ -3404,7 +3404,7 @@ namespace Match3
         }
 
 
-     
+
         private IEnumerator SandFallingFillGridCoroutine()
         {
 
@@ -3479,9 +3479,9 @@ namespace Match3
 
 
 
-                for (int y = 1; y < Height - 1; y++)
+                for (int x = 0; x < Width; x++)
                 {
-                    for (int x = 0; x < Width; x++)
+                    for (int y = 1; y < Height - 1; y++)
                     {
                         Tile currTile = _tiles[x + y * Width];
                         if (currTile != null)
@@ -3495,11 +3495,12 @@ namespace Match3
                             // Check bottom
                             if (IsValidGridTile(x, y - 1) && _tiles[x + (y - 1) * Width] == null)
                             {
-                                hasFilled = true;
-                                _tileHasMove = true;
-                                SwapTile(x, y - 1, x, y);
-                                _tiles[x + (y - 1) * Width].SetGridPosition(x, y - 1);
-                                _tiles[x + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                //hasFilled = true;
+                                //_tileHasMove = true;
+                                //SwapTile(x, y - 1, x, y);
+                                //_tiles[x + (y - 1) * Width].SetGridPosition(x, y - 1);
+                                //_tiles[x + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                break;
                             }
                             else
                             {
@@ -3527,6 +3528,7 @@ namespace Match3
                                     directionX *= -1;
                                 }
 
+
                                 //// Check bottom-left
                                 //if (botLeftFillType == 1 && hasFilled == false)
                                 //{
@@ -3553,9 +3555,9 @@ namespace Match3
                             }
                         }
                     }
-                    //yield return new WaitForSeconds(0.1f);
                 }
 
+                //yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 if (_tileHasMove == false)
                 {
