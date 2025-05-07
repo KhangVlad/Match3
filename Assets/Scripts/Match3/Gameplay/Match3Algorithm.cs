@@ -5,54 +5,105 @@ namespace Match3
 {
     public static class Match3Algorithm
     {
-        public static void FloodFillBFS(Tile[] tiles, int startX, int startY, int w, int h, TileID targetTile, ref List<Tile> validNeighbors)
+        //public static void FloodFillBFS(Tile[] tiles, int startX, int startY, int w, int h, TileID targetTile, ref List<Tile> validNeighbors)
+        //{
+        //    Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        //    HashSet<int> visited = new HashSet<int>(); // Use index to track visited tiles
+        //    validNeighbors.Clear();
+        //    queue.Enqueue(new Vector2Int(startX, startY));
+        //    while (queue.Count > 0)
+        //    {
+        //        Vector2Int pos = queue.Dequeue();
+        //        int x = pos.x;
+        //        int y = pos.y;
+
+        //        // Boundary checks
+        //        if (x < 0 || x >= w || y < 0 || y >= h)
+        //        {
+        //            continue;
+        //        }
+
+        //        int index = x + y * w;
+
+        //        if (visited.Contains(index))
+        //            continue;
+        //        visited.Add(index);
+
+        //        if (tiles[index] == null)
+        //        {
+        //            continue;
+        //        }
+        //        if (tiles[index].CurrentBlock is not NoneBlock)
+        //        {
+        //            continue;
+        //        }
+        //        if (tiles[index].ID != targetTile)
+        //        {
+        //            continue;
+        //        }
+
+
+        //        validNeighbors.Add(tiles[index]);
+
+        //        // Enqueue neighbors
+        //        queue.Enqueue(new Vector2Int(x + 1, y));
+        //        queue.Enqueue(new Vector2Int(x - 1, y));
+        //        queue.Enqueue(new Vector2Int(x, y + 1));
+        //        queue.Enqueue(new Vector2Int(x, y - 1));
+        //    }
+        //}
+
+        public static void FloodFillBFS(
+            Tile[] tiles,
+            int startX,
+            int startY,
+            int w,
+            int h,
+            TileID targetTile,
+            ref List<Tile> validNeighbors,
+            ref List<int> steps 
+        )
         {
-            Queue<Vector2Int> queue = new Queue<Vector2Int>();
-            HashSet<int> visited = new HashSet<int>(); // Use index to track visited tiles
+            Queue<(Vector2Int pos, int step)> queue = new();
+            HashSet<int> visited = new();
             validNeighbors.Clear();
-            queue.Enqueue(new Vector2Int(startX, startY));
-            validNeighbors.Add(tiles[startX + startY * w]);
+            steps.Clear();
+
+            Vector2Int start = new(startX, startY);
+            queue.Enqueue((start, 1));
+
             while (queue.Count > 0)
             {
-                Vector2Int pos = queue.Dequeue();
+                var (pos, step) = queue.Dequeue();
                 int x = pos.x;
                 int y = pos.y;
 
-                // Boundary checks
                 if (x < 0 || x >= w || y < 0 || y >= h)
-                {
                     continue;
-                }
 
                 int index = x + y * w;
-
                 if (visited.Contains(index))
                     continue;
                 visited.Add(index);
 
-                if (tiles[index] == null)
-                {
+                Tile tile = tiles[index];
+                if (tile == null)
                     continue;
-                }
-                if (tiles[index].CurrentBlock is not NoneBlock)
-                {
+                if (tile.CurrentBlock is not NoneBlock)
                     continue;
-                }
-                if (tiles[index].ID != targetTile)
-                {
+                if (tile.ID != targetTile)
                     continue;
-                }
 
+                validNeighbors.Add(tile);
+                steps.Add(step);
 
-                validNeighbors.Add(tiles[index]);
-
-                // Enqueue neighbors
-                queue.Enqueue(new Vector2Int(x + 1, y));
-                queue.Enqueue(new Vector2Int(x - 1, y));
-                queue.Enqueue(new Vector2Int(x, y + 1));
-                queue.Enqueue(new Vector2Int(x, y - 1));
+                queue.Enqueue((new Vector2Int(x + 1, y), step + 1));
+                queue.Enqueue((new Vector2Int(x - 1, y), step + 1));
+                queue.Enqueue((new Vector2Int(x, y + 1), step + 1));
+                queue.Enqueue((new Vector2Int(x, y - 1), step + 1));
             }
         }
+
 
         public static Tile GetMedianTile(List<Tile> tiles)
         {

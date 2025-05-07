@@ -60,6 +60,7 @@ namespace Match3
         private HashSet<Tile> _activeRowBombSet;
         private HashSet<Tile> _activeColumnBombSet;
         private List<Tile> _bfsTiles;
+        private List<int> _bfsSteps;
         //private Dictionary<Coroutine, bool> _singleRowBombCoroutineDict;
         //private Dictionary<Coroutine, bool> _singleColumnBombCoroutineDict;
         //private List<Coroutine> _singleRowBombCoroutineKey;
@@ -146,6 +147,7 @@ namespace Match3
             _activeRowBombSet = new();
             _activeColumnBombSet = new();
             _bfsTiles = new();
+            _bfsSteps = new();
             //_singleRowBombCoroutineDict = new();
             //_singleColumnBombCoroutineDict = new();
             //_singleRowBombCoroutineKey = new();
@@ -1586,12 +1588,12 @@ namespace Match3
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equals(index))
                                 {
                                     foundColorBurstTile = true;
-                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
 
                                     // Effect
-                                    PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                                    PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1601,13 +1603,13 @@ namespace Match3
                         {
                             // Debug.Log($"Not found match5 tile oriign");
                             int index = x + y * Width;
-                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
                             // Effect
-                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1629,12 +1631,12 @@ namespace Match3
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
                                 {
                                     foundColorBurstTile = true;
-                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles,ref _bfsSteps);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
 
                                     // Effect
-                                    PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                                    PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1643,13 +1645,13 @@ namespace Match3
                         if (foundColorBurstTile == false)
                         {
                             int index = x + y * Width;
-                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
                             // Effect
-                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1743,7 +1745,7 @@ namespace Match3
                                     if (_selectedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1761,8 +1763,7 @@ namespace Match3
                                     else if (_swappedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles);
-                                        Debug.Log(bfsTiles.Count);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1786,7 +1787,7 @@ namespace Match3
                         {
                             int offsetX = xIndex + xxx;
                             int offsetY = yIndex + yyy;
-                            Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _tiles[offsetX + offsetY * Width].ID, ref bfsTiles);
+                            Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _tiles[offsetX + offsetY * Width].ID, ref bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                             _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1826,7 +1827,7 @@ namespace Match3
                         if (FoundBlastBomb(_tShapes, tile.X, tile.Y, ref _bfsTiles))
                         {
                             // Effect
-                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                             return true;
                         }
                         else
@@ -1834,7 +1835,7 @@ namespace Match3
                             if (FoundBlastBomb(_lShapes, tile.X, tile.Y, ref _bfsTiles))
                             {
                                 // Effect
-                                PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
+                                PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                 return true;
                             }
                         }
@@ -4120,14 +4121,14 @@ namespace Match3
             //}
         }
 
-        private void PlayTilesEffect(List<Tile> tiles, VisualEffectID visualEffectID)
+        private void PlayTilesEffect(List<Tile> tiles, List<int> steps, VisualEffectID visualEffectID)
         {
             for (int i = 0; i < tiles.Count; i++)
             {
                 if (tiles[i] == null) continue;
                 var vfx = VFXPoolManager.Instance.GetEffect(visualEffectID);
                 vfx.transform.position = tiles[i].TileTransform.position;
-                vfx.Play();
+                vfx.Play(1f/ steps[i]);
             }
         }
         private void PlayFlashBombVfx(Tile tile)
