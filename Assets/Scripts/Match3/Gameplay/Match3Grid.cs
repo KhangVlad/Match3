@@ -15,6 +15,9 @@ namespace Match3
         public event System.Action OnAfterPlayerMatchInput;
         public static event System.Action OnEndOfTurn;
 
+        [Header("Fill Type")]
+        [SerializeField] private FillType _fillType;
+
         [Header("~Runtime")]
         public int Width;
         public int Height;
@@ -114,6 +117,7 @@ namespace Match3
                 return;
             }
             Instance = this;
+            _fillType = FillType.SandFalling;
         }
 
         private void Start()
@@ -2823,12 +2827,16 @@ namespace Match3
         }
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            // yield return StartCoroutine(FillGridCoroutineVersion1());
-            // yield return StartCoroutine(FillGridCoroutineVersion2());
-            yield return StartCoroutine(FillGridCoroutineVersion3());
+            if(_fillType == FillType.Dropdown)
+            {
+                yield return StartCoroutine(DropdDownFillGridCoroutine());
+            }
+            else if(_fillType == FillType.SandFalling)
+            {
+                yield return StartCoroutine(SandFallingFillGridCoroutine());
+            }
             onCompleted?.Invoke();
         }
-
 
         private void SetMatchBuffer(int index, MatchID matchID)
         {
@@ -3265,7 +3273,7 @@ namespace Match3
 
         private bool _tileHasMove;
 
-        private IEnumerator FillGridCoroutineVersion1()
+        private IEnumerator DropdDownFillGridCoroutine()
         {
             _tileHasMove = false;
             int attempts = 0;
@@ -3396,164 +3404,8 @@ namespace Match3
         }
 
 
-        private IEnumerator FillGridCoroutineVersion2()
-        {
-            _tileHasMove = false;
-            int attempts = 0;
-            while (true)
-            {
-                if (attempts++ > Height)
-                {
-                    Debug.LogError("=========== something went wrong ===========");
-                    break;
-                }
-
-                _tileHasMove = false;
-                // for (int y = 0; y < Height - 1; y++) 
-                // {
-                //     for (int x = 0; x < Width; x++)
-                //     {
-                //         Tile currTile = _tiles[x + y * Width];
-                //         if (currTile == null)
-                //         {
-                //             for (int yy = y + 1; yy < Height - 1; yy++)
-                //             {
-                //                 Tile aboveTile = _tiles[x + yy * Width];
-                //                 if (aboveTile == null) continue;
-                //                 if (aboveTile.CurrentBlock.CanFillDownThrough() == false) break;
-                //                 if (aboveTile.CurrentBlock is NoneBlock)
-                //                 {
-                //                     _tiles[x + y * Width] = _tiles[x + yy * Width];
-                //                     _tiles[x + y * Width].SetGridPosition(x, y);
-                //                     _tiles[x + yy * Width] = null;
-                //                     _tileHasMove = true;
-
-                //                     int offsetY = yy - y;
-                //                     float totalMoveTime = TileAnimationExtensions.TILE_MOVE_TIME * offsetY;
-                //                     _tiles[x + y * Width].FallDownToGridPosition(totalMoveTime);
-                //                     break;
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-
-                for (int y = 1; y < Height - 1; y++)
-                {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        Tile currTile = _tiles[x + y * Width];
-                        if (currTile != null)
-                        {
-                            if (currTile.CurrentBlock is not NoneBlock) continue;
-                            for (int yy = y - 1; yy >= 0; yy--)
-                            {
-                                if (IsValidFillTile(x, yy))
-                                {
-                                    _tileHasMove = true;
-                                    SwapTile(x, yy, x, y);
-                                    _tiles[x + yy * Width].SetGridPosition(x, yy);
-                                    int offsetY = y - yy;
-                                    float totalMoveTime = TileAnimationExtensions.TILE_MOVE_TIME * offsetY;
-                                    _tiles[x + yy * Width].FallDownToGridPosition(totalMoveTime);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            int fillType = GetFillType(x, y);
-                            Debug.Log($"fillType:  {fillType}");
-                            if (fillType == 1)
-                            {
-                                if (IsValidGridTile(x + 1, y + 1))
-                                {
-                                    if (_tiles[x + 1 + (y + 1) * Width] != null)
-                                    {
-                                        if (_tiles[x + 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
-                                        {
-                                            Debug.Log("Take tile from right neighbors");
-
-                                            _tileHasMove = true;
-                                            SwapTile(x + 1, (y + 1), x, y);
-                                            _tiles[x + y * Width].SetGridPosition(x, y);
-                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
-                                        }
-                                    }
-                                }
-                            }
-                            else if (fillType == -1)
-                            {
-                                if (IsValidGridTile(x - 1, y + 1))
-                                {
-                                    if (_tiles[x - 1 + (y + 1) * Width] != null)
-                                    {
-                                        if (_tiles[x - 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
-                                        {
-                                            Debug.Log("Take tile from left neighbors");
-
-                                            _tileHasMove = true;
-                                            SwapTile(x - 1, (y + 1), x, y);
-                                            _tiles[x + y * Width].SetGridPosition(x, y);
-                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log($"==========  CASE NOT FOUND !!!! ==============:  {fillType}");
-                            }
-                        }
-                    }
-                }
-                // yield break;
-
-                for (int i = 0; i < _fillBlockIndices.Count; i++)
-                {
-                    int index = _fillBlockIndices[i];
-                    int x = index % Width;
-                    int y = index / Width;
-
-                    Tile fillBlockTile = _tiles[x + y * Width];
-                    if (IsValidGridTile(x, y - 1))
-                    {
-                        Tile tileBelow = _tiles[x + (y - 1) * Width];
-                        if (tileBelow == null)
-                        {
-                            _tileHasMove = true;
-                            TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
-                            Tile newTile = AddTile(x, y - 1, randomTileID, BlockID.None, display: true);
-                            newTile.SetTileVisualizePosition(x, y);
-                            newTile.MoveToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME);
-                        }
-                        else
-                        {
-                            tileBelow.FallDownScaleAnimation();
-                        }
-                    }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
-                if (_tileHasMove == false)
-                {
-                    break;
-                }
-
-            }
-            yield return null;
-            void SwapTile(int x, int y, int xx, int yy)
-            {
-                var temp = _tiles[x + y * Width];
-                _tiles[x + y * Width] = _tiles[xx + yy * Width];
-                _tiles[xx + yy * Width] = temp;
-
-            }
-
-            Debug.Log($"attempts:  {attempts}");
-        }
-
-
-        private IEnumerator FillGridCoroutineVersion3()
+     
+        private IEnumerator SandFallingFillGridCoroutine()
         {
 
             void SwapTile(int x, int y, int xx, int yy)
@@ -3562,12 +3414,12 @@ namespace Match3
                 _tiles[x + y * Width] = _tiles[xx + yy * Width];
                 _tiles[xx + yy * Width] = temp;
             }
-            
+
             _tileHasMove = false;
             int attempts = 0;
             while (true)
             {
-                if (attempts++ > Height)
+                if (attempts++ > Width * Height)
                 {
                     Debug.LogError("=========== something went wrong ===========");
                     break;
@@ -3625,60 +3477,84 @@ namespace Match3
                     }
                 }
 
+
+
                 for (int y = 1; y < Height - 1; y++)
                 {
                     for (int x = 0; x < Width; x++)
                     {
                         Tile currTile = _tiles[x + y * Width];
-                        if (currTile == null)
+                        if (currTile != null)
                         {
                             int fillType = GetFillType(x, y);
-                            Debug.Log($"fillType:  {fillType}");
-                            if (fillType == 1)
-                            {
-                                if (IsValidGridTile(x + 1, y + 1))
-                                {
-                                    if (_tiles[x + 1 + (y + 1) * Width] != null)
-                                    {
-                                        if (_tiles[x + 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
-                                        {
-                                            Debug.Log("Take tile from right neighbors");
+                            int botLeftFillType = GetFillType(x - 1, y - 1);
+                            int botRightFillType = GetFillType(x + 1, y - 1);
 
-                                            _tileHasMove = true;
-                                            SwapTile(x + 1, (y + 1), x, y);
-                                            _tiles[x + y * Width].SetGridPosition(x, y);
-                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
-                                        }
-                                    }
-                                }
-                            }
-                            else if (fillType == -1)
+                            if (IsValidMoveTile(x, y) == false) continue;
+                            bool hasFilled = false;
+                            // Check bottom
+                            if (IsValidGridTile(x, y - 1) && _tiles[x + (y - 1) * Width] == null)
                             {
-                                if (IsValidGridTile(x - 1, y + 1))
-                                {
-                                    if (_tiles[x - 1 + (y + 1) * Width] != null)
-                                    {
-                                        if (_tiles[x - 1 + (y + 1) * Width].CurrentBlock is NoneBlock)
-                                        {
-                                            Debug.Log("Take tile from left neighbors");
-
-                                            _tileHasMove = true;
-                                            SwapTile(x - 1, (y + 1), x, y);
-                                            _tiles[x + y * Width].SetGridPosition(x, y);
-                                            _tiles[x + y * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
-                                        }
-                                    }
-                                }
+                                hasFilled = true;
+                                _tileHasMove = true;
+                                SwapTile(x, y - 1, x, y);
+                                _tiles[x + (y - 1) * Width].SetGridPosition(x, y - 1);
+                                _tiles[x + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
                             }
                             else
                             {
-                                Debug.Log($"==========  CASE NOT FOUND !!!! ==============:  {fillType}");
+                                int directionX = Random.value < 0.5f ? -1 : 1;
+
+                                for (int i = 0; i < 2 && !hasFilled; i++)
+                                {
+                                    int dx = directionX;
+                                    int expectedFill = directionX == -1 ? 1 : -1;
+
+                                    int checkX = x + dx;
+                                    int checkY = y - 1;
+
+                                    if (GetFillType(checkX, checkY) == expectedFill && IsValidFillTile(checkX, checkY))
+                                    {
+                                        hasFilled = true;
+                                        _tileHasMove = true;
+                                        SwapTile(checkX, checkY, x, y);
+                                        _tiles[checkX + checkY * Width].SetGridPosition(checkX, checkY);
+                                        _tiles[checkX + checkY * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                        break;
+                                    }
+
+                                    // Flip direction for the second check
+                                    directionX *= -1;
+                                }
+
+                                //// Check bottom-left
+                                //if (botLeftFillType == 1 && hasFilled == false)
+                                //{
+                                //    if (IsValidFillTile(x - 1, y - 1))
+                                //    {
+                                //        hasFilled = true;
+                                //        _tileHasMove = true;
+                                //        SwapTile(x - 1, y - 1, x, y);
+                                //        _tiles[x - 1 + (y - 1) * Width].SetGridPosition(x - 1, y - 1);
+                                //        _tiles[x - 1 + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                //    }
+                                //}
+                                //if (botRightFillType == -1 && hasFilled == false)
+                                //{
+                                //    if (IsValidFillTile(x + 1, y - 1))
+                                //    {
+                                //        hasFilled = true;
+                                //        _tileHasMove = true;
+                                //        SwapTile(x + 1, y - 1, x, y);
+                                //        _tiles[x + 1 + (y - 1) * Width].SetGridPosition(x + 1, y - 1);
+                                //        _tiles[x + 1 + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                //    }
+                                //}
                             }
                         }
                     }
-                    yield return new WaitForSeconds(0.25f);
+                    //yield return new WaitForSeconds(0.1f);
                 }
-
 
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 if (_tileHasMove == false)
@@ -3975,6 +3851,11 @@ namespace Match3
             return IsValidGridTile(x, y) && _tiles[x + y * Width] == null;
         }
 
+        private bool IsValidMoveTile(int x, int y)
+        {
+            return IsValidGridTile(x, y) && _tiles[x + y * Width] != null && _tiles[x + y * Width].CurrentBlock is NoneBlock;
+        }
+
         private bool IsValidMatchTile(int x, int y)
         {
             return !(x < 0 || x >= Width || y < 0 || y >= Height) &&
@@ -4129,7 +4010,7 @@ namespace Match3
                 // Exact vertical match case
                 if (y < yy && x == xx)
                 {
-                    Debug.Log("case A - exact vertical match");
+                    //Debug.Log("case A - exact vertical match");
                     return 0;
                 }
 
