@@ -1589,6 +1589,9 @@ namespace Match3
                                     Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+
+                                    // Effect
+                                    PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1599,10 +1602,12 @@ namespace Match3
                             // Debug.Log($"Not found match5 tile oriign");
                             int index = x + y * Width;
                             Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
-                            Debug.Log($"Count: {_bfsTiles.Count}");
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1627,6 +1632,9 @@ namespace Match3
                                     Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+
+                                    // Effect
+                                    PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1639,6 +1647,9 @@ namespace Match3
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1788,6 +1799,7 @@ namespace Match3
                                     _blastBombDictionary.Add(t, medianTile);
                                 }
                             }
+                            return true;
                         }
                         else
                         {
@@ -1813,12 +1825,16 @@ namespace Match3
                         if (tile == null) continue;
                         if (FoundBlastBomb(_tShapes, tile.X, tile.Y, ref _bfsTiles))
                         {
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                             return true;
                         }
                         else
                         {
                             if (FoundBlastBomb(_lShapes, tile.X, tile.Y, ref _bfsTiles))
                             {
+                                // Effect
+                                PlayTilesEffect(_bfsTiles, VisualEffectID.SpecialTileMergeGhostFX);
                                 return true;
                             }
                         }
@@ -2016,6 +2032,11 @@ namespace Match3
                 {
                     int index = (x + h) + y * Width;
                     SetMatchBuffer(index, MatchID.Match);
+
+                    // Effect
+                    var vfx = VFXPoolManager.Instance.GetEffect(VisualEffectID.SpecialTileMergeGhostFX);
+                    vfx.transform.position = _tiles[index].TileTransform.position;
+                    vfx.Play();
                 }
 
                 if (_selectedTile != null && _swappedTile != null)
@@ -2055,7 +2076,6 @@ namespace Match3
                         }
                     }
                     originIndex = foundOriginIndex ? originIndex : cachedIndex;
-                    // _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[originIndex].ID, originIndex));
                     _matchRowBombQueue.Enqueue(new SpecialTileQueue(TileID.None, originIndex));
                 }
             }
@@ -2080,7 +2100,6 @@ namespace Match3
 
             if (sameIDCountInColumn == 3)
             {
-
                 bool foundMatch4Tile = false;
                 if (_selectedTile != null && _swappedTile != null)
                 {
@@ -2110,8 +2129,12 @@ namespace Match3
                             foundMatch4Tile = true;
                         }
                     }
-
                     SetMatchBuffer(index, MatchID.Match);
+
+                    // Effect
+                    var vfx = VFXPoolManager.Instance.GetEffect(VisualEffectID.SpecialTileMergeGhostFX);
+                    vfx.transform.position = _tiles[index].TileTransform.position;
+                    vfx.Play();
                 }
 
                 if (foundMatch4Tile == false)
@@ -3557,14 +3580,13 @@ namespace Match3
                     }
                 }
 
-                //yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 if (_tileHasMove == false)
                 {
                     break;
                 }
             }
-            Debug.Log($"attempts:  {attempts}");
+            //Debug.Log($"attempts:  {attempts}");
         }
 
 
@@ -4098,6 +4120,16 @@ namespace Match3
             //}
         }
 
+        private void PlayTilesEffect(List<Tile> tiles, VisualEffectID visualEffectID)
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                if (tiles[i] == null) continue;
+                var vfx = VFXPoolManager.Instance.GetEffect(visualEffectID);
+                vfx.transform.position = tiles[i].TileTransform.position;
+                vfx.Play();
+            }
+        }
         private void PlayFlashBombVfx(Tile tile)
         {
             //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
