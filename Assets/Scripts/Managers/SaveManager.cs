@@ -302,20 +302,20 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // private void OnApplicationQuit()
-    // {
-    //     if (UserManager.Instance == null || UserManager.Instance.UserData == null) return;
-    //     
-    //     if (Utilities.IsConnectedToInternet())
-    //     {
-    //         SaveAndUploadUserDataToFirebase();
-    //         SaveUserDataToLocalJson();
-    //     }
-    //     else
-    //     {
-    //         SaveUserDataToLocalJson();
-    //     }
-    // }
+    private void OnApplicationQuit()
+    {
+        if (UserManager.Instance == null || UserManager.Instance.UserData == null) return;
+        
+        if (Utilities.IsConnectedToInternet())
+        {
+            SaveAndUploadUserDataToFirebase();
+            SaveUserDataToLocalJson();
+        }
+        else
+        {
+            SaveUserDataToLocalJson();
+        }
+    }
 
     // private void OnApplicationFocus(bool focusStatus)
     // {
@@ -337,21 +337,21 @@ public class SaveManager : MonoBehaviour
     //     // #endif
     // }
 
-    private void OnApplicationPause(bool pauseStatus)
-    {
-        if (pauseStatus) // Save when app is paused
-        {
-            if (Utilities.IsConnectedToInternet())
-            {
-                SaveAndUploadUserDataToFirebase();
-                SaveUserDataToLocalJson();
-            }
-            else
-            {
-                SaveUserDataToLocalJson();
-            }
-        }
-    }
+    // private void OnApplicationPause(bool pauseStatus)
+    // {
+    //     if (pauseStatus) // Save when app is paused
+    //     {
+    //         if (Utilities.IsConnectedToInternet())
+    //         {
+    //             SaveAndUploadUserDataToFirebase();
+    //             SaveUserDataToLocalJson();
+    //         }
+    //         else
+    //         {
+    //             SaveUserDataToLocalJson();
+    //         }
+    //     }
+    // }
 
     #region Encryption and Checksum Methods
 
@@ -478,17 +478,7 @@ public class SaveManager : MonoBehaviour
 
     public void SaveAndUploadUserDataToFirebase()
     {
-        Debug.Log("Save And Upload User Data To Firebase");
-        
-        if (FirebaseManager.Instance == null || 
-            FirebaseManager.Instance.User == null || 
-            UserManager.Instance == null || 
-            UserManager.Instance.UserData == null)
-        {
-            Debug.LogError("Cannot save to Firebase: Required instances are null");
-            return;
-        }
-        
+       
         UserManager.Instance.UserData.LastOnline = FieldValue.ServerTimestamp;
         string userID = FirebaseManager.Instance.User.UserId;
         Firebase.Firestore.DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("users")

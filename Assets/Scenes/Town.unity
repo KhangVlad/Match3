@@ -4640,6 +4640,7 @@ GameObject:
   m_Component:
   - component: {fileID: 260785976}
   - component: {fileID: 260785977}
+  - component: {fileID: 260785978}
   m_Layer: 5
   m_Name: Handle
   m_TagString: Untagged
@@ -4676,6 +4677,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 260785975}
   m_CullTransparentMesh: 0
+--- !u!95 &260785978
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 260785975}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a8d36c41391714b61bb6bde3fba33125, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &263847856
 GameObject:
   m_ObjectHideFlags: 0
@@ -11960,7 +11983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6415094, g: 0.5900676, b: 0.5900676, a: 0.08627451}
+  m_Color: {r: 0.26415092, g: 0.242969, b: 0.242969, a: 0.56078434}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -29070,7 +29093,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -425}
-  m_SizeDelta: {x: 260, y: 100}
+  m_SizeDelta: {x: 300, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!82 &1093134705
 AudioSource:
@@ -34389,11 +34412,13 @@ MonoBehaviour:
     m_RotationOrder: 4
   spinWheelTransform: {fileID: 1490835433}
   spinButton: {fileID: 1093134707}
+  handle_bar_anim: {fileID: 260785978}
   itemPrefab: {fileID: 8063493696224559528, guid: 8220a7feebe6c4e659deebb5940c92a6, type: 3}
   ItemCount: 5
-  resultIndex: 1
+  resultIndex: 2
   rewardPanel: {fileID: 43751101}
   rewardImage: {fileID: 557958218}
+  timeNextSpin: {fileID: 893752570}
 --- !u!114 &1397689332
 MonoBehaviour:
   m_ObjectHideFlags: 0

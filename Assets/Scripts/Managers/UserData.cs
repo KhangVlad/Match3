@@ -41,38 +41,41 @@ public class UserData
     [SerializeField] private List<CharacterData> allCharacterData;
     [SerializeField] private int energy;
     [SerializeField] private bool dailyRewardFlag;
-    
+
     // Non-serialized field for Firebase timestamp
-    [System.NonSerialized]
-    private object lastOnline;
+    [System.NonSerialized] private object lastOnline;
+
+
+    [System.NonSerialized] private object lastSpinTime;
+
 
     // Firebase properties mapped to serializable fields
     [FirestoreProperty]
-    public List<BoosterSlot> AvaiableBoosters 
-    { 
-        get => avaiableBoosters; 
-        set => avaiableBoosters = value; 
+    public List<BoosterSlot> AvaiableBoosters
+    {
+        get => avaiableBoosters;
+        set => avaiableBoosters = value;
     }
 
     [FirestoreProperty]
-    public List<BoosterSlot> EquipBooster 
-    { 
-        get => equipBooster; 
-        set => equipBooster = value; 
+    public List<BoosterSlot> EquipBooster
+    {
+        get => equipBooster;
+        set => equipBooster = value;
     }
 
     [FirestoreProperty]
-    public List<CharacterData> AllCharacterData 
-    { 
-        get => allCharacterData; 
-        set => allCharacterData = value; 
+    public List<CharacterData> AllCharacterData
+    {
+        get => allCharacterData;
+        set => allCharacterData = value;
     }
-    
+
     [FirestoreProperty]
-    public int Energy 
-    { 
-        get => energy; 
-        set 
+    public int Energy
+    {
+        get => energy;
+        set
         {
             if (value > 100)
                 energy = 100;
@@ -82,19 +85,28 @@ public class UserData
                 energy = value;
         }
     }
-    [FirestoreProperty] 
-    public object LastOnline 
-    { 
-        get => lastOnline; 
-        set => lastOnline = value; 
-    }
-     
+
     [FirestoreProperty]
-    public bool DailyRewardFlag 
-    { 
-        get => dailyRewardFlag; 
-        set => dailyRewardFlag = value; 
+    public object LastOnline
+    {
+        get => lastOnline;
+        set => lastOnline = value;
     }
+
+    [FirestoreProperty]
+    public object LastSpinTime
+    {
+        get => lastSpinTime;
+        set => lastSpinTime = value;
+    }
+
+    [FirestoreProperty]
+    public bool DailyRewardFlag
+    {
+        get => dailyRewardFlag;
+        set => dailyRewardFlag = value;
+    }
+
 
     // Constructor to initialize lists
     public UserData()

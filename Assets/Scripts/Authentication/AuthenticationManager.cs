@@ -150,10 +150,13 @@ public class AuthenticationManager : MonoBehaviour
         {
             UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
             UserData cloud = snapshot.ConvertTo<UserData>();
+            TimeManager.Instance.LastSpinTime = cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
+
             if (snapshot.ContainsField("LastOnline"))
             {
                 Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
                 TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
+              
                 var serverTime = await FirebaseManager.Instance.FetchServerTime();
 
                 DateTime loginTime = serverTime.ToDateTime();

@@ -45,7 +45,6 @@ public class TimeManager : MonoBehaviour
     public static TimeManager Instance { get; private set; }
     [SerializeField] private int currentHour = 25;
     [SerializeField] private int maxEnergy = 25; // Maximum energy cap
-
     private TimeOfDay currentTimeOfDay;
     public event Action OnTimeChanged;
 
@@ -56,6 +55,13 @@ public class TimeManager : MonoBehaviour
 
     [SerializeField] private SerializableDateTime lastOnlineTime = new SerializableDateTime();
     [SerializeField] private SerializableDateTime loginTime = new SerializableDateTime();
+    [SerializeField] private SerializableDateTime lastSpinTime = new();
+
+    public DateTime LastSpinTime
+    {
+        get => lastSpinTime.DateTime;
+        set => lastSpinTime.DateTime = value;
+    }
 
     public DateTime LastOnlineTime
     {
@@ -110,14 +116,12 @@ public class TimeManager : MonoBehaviour
             totalRegenEnergy = minutesPassed;
             if (minutesPassed > 0)
             {
-                
                 Debug.Log($"Restoring {minutesPassed} energy from offline time");
                 UserManager.Instance.RestoreEnergy(minutesPassed);
             }
         }
 
         return totalRegenEnergy;
-
     }
 
     public void CheckNewDay(Timestamp serverTimestamp)
@@ -144,12 +148,12 @@ public class TimeManager : MonoBehaviour
 
     private void Update()
     {
-        
         if (Input.GetKeyDown(KeyCode.P))
         {
             Debug.Log("AAAA");
             UserManager.Instance.ConsumeEnergy(10);
         }
+
         if (!Utilities.IsConnectedToInternet()) return;
         minuteCounter += Time.deltaTime;
         if (minuteCounter >= DispatchInterval)
@@ -166,7 +170,6 @@ public class TimeManager : MonoBehaviour
                 OnTimeChanged?.Invoke();
             }
         }
-
     }
 
     public TimeOfDay GetCurrentTimeOfDay()

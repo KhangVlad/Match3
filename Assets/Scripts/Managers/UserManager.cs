@@ -111,6 +111,7 @@ public class UserManager : MonoBehaviour
             },
             AllCharacterData = allCharacterData,
             LastOnline = TimeManager.Instance.LoginTime,
+            LastSpinTime = DateTime.Now,
             Energy = 80,
             DailyRewardFlag = false,
         };
