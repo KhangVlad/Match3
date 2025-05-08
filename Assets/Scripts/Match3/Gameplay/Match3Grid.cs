@@ -919,10 +919,6 @@ namespace Match3
 
 
         // ================== Handle match logic ====================
-        private IEnumerator HandleRocketCoroutine()
-        {
-            yield return null;
-        }
         private IEnumerator HandleMatchCoroutine()
         {
             HandleFindColorBurst();
@@ -1040,7 +1036,6 @@ namespace Match3
         {
             _singleAllColumnBombCoroutineDict.Clear();
             _singleAllColumnBombCoroutineKey.Clear();
-            Debug.Log($"_activeRowBombSet:  {_activeRowBombSet.Count}");
             if (_activeRowBombSet.Count > 0)
             {
                 foreach (var tile in _activeRowBombSet)
@@ -1909,12 +1904,51 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        CombineMatch4AndMatch5();
+                        Debug.Log("Here");
+        
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            _activeColumnBombSet.Add(_selectedTile);
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            _activeRowBombSet.Add(_selectedTile);
+                        // _swappedTile.HasTriggererColumnBomb = true;
+
+
+                        // PlayClearVerticalVFX(_selectedTile);
+                        // if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        //     _activeColumnBombSet.Add(_selectedTile);
+
+                        // if (IsValidGridTile(_selectedTile.X - 1, _selectedTile.Y))
+                        // {
+                        //     PlayClearVerticalVFX(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
+                        //     if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]) == false)
+                        //         _activeColumnBombSet.Add(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
+                        // }
+                        // if (IsValidGridTile(_selectedTile.X + 1, _selectedTile.Y))
+                        // {
+                        //     PlayClearVerticalVFX(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
+                        //     if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]) == false)
+                        //         _activeColumnBombSet.Add(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
+                        // }
+
+                        // if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        //     _activeRowBombSet.Add(_selectedTile);
+
+                        // if (IsValidGridTile(_selectedTile.X, _selectedTile.Y - 1))
+                        // {
+                        //     if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]) == false)
+                        //         _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
+                        // }
+
+                        // if (IsValidGridTile(_selectedTile.X, _selectedTile.Y + 1))
+                        // {
+                        //     if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]) == false)
+                        //         _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
+                        // }
+
                         AudioManager.Instance.PlayMatch5Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
-                        Debug.Log("???");
                         if (_selectedTile.SpecialProperties == SpecialTileID.RowBomb)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)

@@ -1,7 +1,6 @@
 ﻿using Match3.Enums;
 using UnityEngine;
 using DG.Tweening;
-using UnityEngine.Playables;
 
 namespace Match3.Shares
 {
@@ -33,7 +32,6 @@ namespace Match3.Shares
 
         public override void Play(float duration = 1)
         {
-            Debug.Log("Horizontal Rocket Play");
             // base.Play(duration);
 
             // _sr.enabled = false;
