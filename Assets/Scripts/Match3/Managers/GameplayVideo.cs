@@ -136,7 +136,7 @@ namespace Match3
         {
             if (IsPlaying)
             {
-                Debug.Log("Video is already playing. Ignoring OnCollectQuest.");
+                // Debug.Log("Video is already playing. Ignoring OnCollectQuest.");
                 return;
             }
 

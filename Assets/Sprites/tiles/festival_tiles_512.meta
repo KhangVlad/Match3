@@ -1,6 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-auth-unity/12.7.0/firebase-auth-unity-12.7.0.pom.meta
+guid: 2719d3736059e4440aa1ac731321bac9
+labels:
+- gpsr
+========
 guid: a68b7dcea2f3b43a888f4c7bcb431659
 folderAsset: yes
+>>>>>>>> main:Assets/Sprites/tiles/festival_tiles_512.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

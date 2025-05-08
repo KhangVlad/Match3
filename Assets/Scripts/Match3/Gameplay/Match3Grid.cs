@@ -15,6 +15,9 @@ namespace Match3
         public event System.Action OnAfterPlayerMatchInput;
         public static event System.Action OnEndOfTurn;
 
+        [Header("Fill Type")]
+        [SerializeField] private FillType _fillType;
+
         [Header("~Runtime")]
         public int Width;
         public int Height;
@@ -25,7 +28,7 @@ namespace Match3
         private List<Tile> _getTileList = new();
         private Vector2 _mouseDownPosition;
         private Vector2 _mouseUpPosition;
-        private float _dragThreshold = 25f;
+        private float _dragThreshold = 15f;
 
         private MatchID[] _matchBuffer;        // 0: default
                                                // 1: normal match
@@ -39,8 +42,6 @@ namespace Match3
         private Queue<SpecialTileQueue> _matchBlastBombQueue;
         private Queue<SpecialTileQueue> _match4ColumnBombQueue;
         private Queue<SpecialTileQueue> _matchRowBombQueue;
-        private List<int> _clearVerticalColumns;
-        private List<int> _clearHorizontalRows;
 
         private HashSet<int> _triggeredMatch5Set;
         private Dictionary<Tile, List<Tile>> _colorBurstParentDictionary;
@@ -57,6 +58,7 @@ namespace Match3
         private HashSet<Tile> _activeRowBombSet;
         private HashSet<Tile> _activeColumnBombSet;
         private List<Tile> _bfsTiles;
+        private List<int> _bfsSteps;
         //private Dictionary<Coroutine, bool> _singleRowBombCoroutineDict;
         //private Dictionary<Coroutine, bool> _singleColumnBombCoroutineDict;
         //private List<Coroutine> _singleRowBombCoroutineKey;
@@ -114,6 +116,8 @@ namespace Match3
                 return;
             }
             Instance = this;
+            // _fillType = FillType.Dropdown;
+            _fillType = FillType.SandFalling;
         }
 
         private void Start()
@@ -123,11 +127,7 @@ namespace Match3
             _matchBlastBombQueue = new();
             _match4ColumnBombQueue = new();
             _matchRowBombQueue = new();
-
             _triggeredMatch5Set = new();
-
-            _clearVerticalColumns = new();
-            _clearHorizontalRows = new();
             _spiderSpreadingList = new();
             _colorBurstParentDictionary = new();
             _match3Dictionary = new();
@@ -142,10 +142,7 @@ namespace Match3
             _activeRowBombSet = new();
             _activeColumnBombSet = new();
             _bfsTiles = new();
-            //_singleRowBombCoroutineDict = new();
-            //_singleColumnBombCoroutineDict = new();
-            //_singleRowBombCoroutineKey = new();
-            //_singleColumnBombCoroutineKey = new();
+            _bfsSteps = new();
 
 
             _tShapes = new List<int[,]>
@@ -513,11 +510,11 @@ namespace Match3
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Void:
-                            newTile = AddTile(x, y, tileID, BlockID.Void);
+                            newTile = AddTile(x, y, TileID.None, BlockID.Void);
                             newTile.UpdatePosition();
                             break;
                         case BlockID.Fill:
-                            newTile = AddTile(x, y, tileID, BlockID.Fill);
+                            newTile = AddTile(x, y, TileID.None, BlockID.Fill);
                             newTile.UpdatePosition();
 
                             _fillBlockIndices.Add(x + y * Width);
@@ -802,6 +799,9 @@ namespace Match3
                 {
                     isMatch = true;
                     SwapTileHasMatched = true;
+
+                    _selectedTile = null;
+                    _swappedTile = null;
                 }
                 #endregion
 
@@ -897,9 +897,8 @@ namespace Match3
             _selectedTile = null;
             _swappedTile = null;
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.1f);
             _canPlay = true;
-
 
             if (triggerEvent)
             {
@@ -1582,9 +1581,12 @@ namespace Match3
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equals(index))
                                 {
                                     foundColorBurstTile = true;
-                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+
+                                    // Effect
+                                    PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1594,11 +1596,13 @@ namespace Match3
                         {
                             // Debug.Log($"Not found match5 tile oriign");
                             int index = x + y * Width;
-                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
-                            Debug.Log($"Count: {_bfsTiles.Count}");
+                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1620,9 +1624,12 @@ namespace Match3
                                 if (_selectedTile.Equal(_tiles[index]) || _swappedTile.Equal(_tiles[index]))
                                 {
                                     foundColorBurstTile = true;
-                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                                    Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                                     HandleCollectAnimation(_tiles[index], _bfsTiles);
                                     _matchColorBurstQueue.Enqueue(new SpecialTileQueue(_tiles[index].ID, index));
+
+                                    // Effect
+                                    PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                     break;
                                 }
                             }
@@ -1631,10 +1638,13 @@ namespace Match3
                         if (foundColorBurstTile == false)
                         {
                             int index = x + y * Width;
-                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles);
+                            Match3Algorithm.FloodFillBFS(_tiles, _tiles[index].X, _tiles[index].Y, Width, Height, _tiles[index].ID, ref _bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(_bfsTiles);
                             HandleCollectAnimation(medianTile, _bfsTiles);
                             _matchColorBurstQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                         }
 
                         for (int i = 0; i < _bfsTiles.Count; i++)
@@ -1728,26 +1738,32 @@ namespace Match3
                                     if (_selectedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
-                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
-
-                                        for (int j = 0; j < bfsTiles.Count; j++)
+                                        if (bfsTiles.Count > 0)
                                         {
-                                            Tile t = bfsTiles[j];
-                                            SetMatchBuffer(t.X + t.Y * Width, MatchID.Match);
-                                            if (_blastBombDictionary.ContainsKey(t) == false)
+                                            _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+                                            for (int j = 0; j < bfsTiles.Count; j++)
                                             {
-                                                _blastBombDictionary.Add(t, medianTile);
+                                                Tile t = bfsTiles[j];
+                                                SetMatchBuffer(t.X + t.Y * Width, MatchID.Match);
+                                                if (_blastBombDictionary.ContainsKey(t) == false)
+                                                {
+                                                    _blastBombDictionary.Add(t, medianTile);
+                                                }
                                             }
+                                            return true;
                                         }
-                                        return true;
+                                        else
+                                        {
+                                            Debug.Log($"Why bfs tiles count == {_bfsTiles.Count}???");
+                                        }
+
                                     }
                                     else if (_swappedTile.Equal(_tiles[index]))
                                     {
                                         foundBlashBombTile = true;
-                                        Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles);
-                                        Debug.Log(bfsTiles.Count);
+                                        Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1771,7 +1787,7 @@ namespace Match3
                         {
                             int offsetX = xIndex + xxx;
                             int offsetY = yIndex + yyy;
-                            Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _tiles[offsetX + offsetY * Width].ID, ref bfsTiles);
+                            Match3Algorithm.FloodFillBFS(_tiles, offsetX, offsetY, Width, Height, _tiles[offsetX + offsetY * Width].ID, ref bfsTiles, ref _bfsSteps);
                             Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                             _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
 
@@ -1784,6 +1800,7 @@ namespace Match3
                                     _blastBombDictionary.Add(t, medianTile);
                                 }
                             }
+                            return true;
                         }
                         else
                         {
@@ -1809,12 +1826,16 @@ namespace Match3
                         if (tile == null) continue;
                         if (FoundBlastBomb(_tShapes, tile.X, tile.Y, ref _bfsTiles))
                         {
+                            // Effect
+                            PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                             return true;
                         }
                         else
                         {
                             if (FoundBlastBomb(_lShapes, tile.X, tile.Y, ref _bfsTiles))
                             {
+                                // Effect
+                                PlayTilesEffect(_bfsTiles, _bfsSteps, VisualEffectID.SpecialTileMergeGhostFX);
                                 return true;
                             }
                         }
@@ -1985,6 +2006,7 @@ namespace Match3
                     for (int x = 0; x < Width; x++)
                     {
                         int index = x + y * Width;
+                        if (_tiles[index] == null) continue;
                         if (_tiles[index].CurrentBlock is NoneBlock)
                         {
                             SetMatchBuffer(index, MatchID.Match);
@@ -2011,6 +2033,11 @@ namespace Match3
                 {
                     int index = (x + h) + y * Width;
                     SetMatchBuffer(index, MatchID.Match);
+
+                    // Effect
+                    var vfx = VFXPoolManager.Instance.GetEffect(VisualEffectID.SpecialTileMergeGhostFX);
+                    vfx.transform.position = _tiles[index].TileTransform.position;
+                    vfx.Play();
                 }
 
                 if (_selectedTile != null && _swappedTile != null)
@@ -2050,7 +2077,6 @@ namespace Match3
                         }
                     }
                     originIndex = foundOriginIndex ? originIndex : cachedIndex;
-                    // _matchRowBombQueue.Enqueue(new SpecialTileQueue(_tiles[originIndex].ID, originIndex));
                     _matchRowBombQueue.Enqueue(new SpecialTileQueue(TileID.None, originIndex));
                 }
             }
@@ -2075,7 +2101,6 @@ namespace Match3
 
             if (sameIDCountInColumn == 3)
             {
-
                 bool foundMatch4Tile = false;
                 if (_selectedTile != null && _swappedTile != null)
                 {
@@ -2105,8 +2130,12 @@ namespace Match3
                             foundMatch4Tile = true;
                         }
                     }
-
                     SetMatchBuffer(index, MatchID.Match);
+
+                    // Effect
+                    var vfx = VFXPoolManager.Instance.GetEffect(VisualEffectID.SpecialTileMergeGhostFX);
+                    vfx.transform.position = _tiles[index].TileTransform.position;
+                    vfx.Play();
                 }
 
                 if (foundMatch4Tile == false)
@@ -2822,12 +2851,17 @@ namespace Match3
         }
         private IEnumerator AutoFillCoroutine(System.Action onCompleted = null)
         {
-            // yield return StartCoroutine(FillGridCoroutineVersion1());
-            // yield return StartCoroutine(FillGridCoroutineVersion2());
-            yield return StartCoroutine(FillGridCoroutineVersion3());
+            // Debug.Log("AutoFillCoroutine");
+            if (_fillType == FillType.Dropdown)
+            {
+                yield return StartCoroutine(DropdDownFillGridCoroutine());
+            }
+            else if (_fillType == FillType.SandFalling)
+            {
+                yield return StartCoroutine(SandFallingFillGridCoroutine());
+            }
             onCompleted?.Invoke();
         }
-
 
         private void SetMatchBuffer(int index, MatchID matchID)
         {
@@ -3264,7 +3298,7 @@ namespace Match3
 
         private bool _tileHasMove;
 
-        private IEnumerator FillGridCoroutineVersion1()
+        private IEnumerator DropdDownFillGridCoroutine()
         {
             _tileHasMove = false;
             int attempts = 0;
@@ -3376,8 +3410,6 @@ namespace Match3
                         }
                     }
                 }
-                //if (hasFilledTile)
-                //    yield return new WaitForSeconds(0.1f);
             }
 
             if (_fillBlockIndices.Count > 0)
@@ -3395,143 +3427,91 @@ namespace Match3
         }
 
 
-        private IEnumerator FillGridCoroutineVersion2()
+
+        private IEnumerator SandFallingFillGridCoroutine()
         {
+
+            void SwapTile(int x, int y, int xx, int yy)
+            {
+                var temp = _tiles[x + y * Width];
+                _tiles[x + y * Width] = _tiles[xx + yy * Width];
+                _tiles[xx + yy * Width] = temp;
+            }
+
             _tileHasMove = false;
             int attempts = 0;
+
+            // Drop down avaiable tiles
             while (true)
             {
-                if (attempts++ > Height)
+                if (attempts++ > Width * Height)
                 {
                     Debug.LogError("=========== something went wrong ===========");
                     break;
                 }
 
                 _tileHasMove = false;
-                float maxTotalMovetime = 0f;
-                for (int y = 0; y < Height; y++)
+                for (int y = 1; y < Height - 1; y++)
                 {
                     for (int x = 0; x < Width; x++)
                     {
                         Tile currTile = _tiles[x + y * Width];
                         if (currTile != null)
                         {
-                            if (currTile.CurrentBlock is FillBlock)
+                            if (IsValidMoveTile(x, y) == false)
                             {
-                                if (IsValidGridTile(x, y - 1))
-                                {
-                                    Tile belowTile = _tiles[x + (y - 1) * Width];
-                                    if (belowTile == null)
-                                    {
-                                        TileID randomTileID = _levelData.AvaiableTiles[Random.Range(0, _levelData.AvaiableTiles.Length)];
-                                        Tile newTile = AddTile(x, y - 1, randomTileID, BlockID.None, display: false);
-                                        newTile.UpdatePosition(0, 1);
-                                        newTile.Display(true);
-                                        _tileHasMove = true;
+                                // Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot move:   {x}  {y}");
+                                continue;
+                            }
+                            if (currTile.CurrentBlock.CanFillDownThrough() == false)
+                            {
+                                // Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot drop down:   {x}  {y}");
+                                continue;
+                            }
 
-                                        float unitMoveTime = 0.1f;
-                                        if (maxTotalMovetime < unitMoveTime) maxTotalMovetime = unitMoveTime;
-                                        if (IsValidGridTile(x, y - 2))
+                            // Check below tiles
+                            for (int yy = y - 1; yy >= 0; yy--)
+                            {
+                                // Debug.Log($"Loop:  ({x}   {y})       ({x}   {yy})");
+                                if (IsValidGridTile(x, yy))
+                                {
+                                    if (_tiles[x + yy * Width] != null)
+                                    {
+                                        // if (_tiles[x + yy * Width].CurrentBlock is not VoidBlock &&
+                                        //    _tiles[x + yy * Width].CurrentBlock is not NoneBlock)
+                                        // {
+                                        //     Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
+                                        //     break;
+                                        // }
+
+                                        if (_tiles[x + yy * Width].CurrentBlock is NoneBlock)
                                         {
-                                            Tile belowOfBelowTile = _tiles[x + (y - 2) * Width];
-                                            if (belowOfBelowTile == null)
-                                            {
-                                                newTile.MoveToGridPosition(unitMoveTime);
-                                            }
-                                            else
-                                            {
-                                                newTile.FallDownToGridPosition(unitMoveTime);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            newTile.MoveToGridPosition(unitMoveTime);
+                                            // Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
+                                            break;
                                         }
                                     }
                                 }
-                            }
-                        }
-                        else
-                        {
-                            for (int yy = y + 1; yy < Height - 1; yy++)
-                            {
-                                Tile aboveTile = _tiles[x + yy * Width];
-                                if (aboveTile != null && aboveTile.CurrentBlock is NoneBlock)
+
+                                if (IsValidFillTile(x, yy))
                                 {
-                                    _tiles[x + y * Width] = _tiles[x + yy * Width];
-                                    _tiles[x + y * Width].SetGridPosition(x, y);
-                                    _tiles[x + yy * Width] = null;
                                     _tileHasMove = true;
-
-                                    float unitMoveTime = 0.1f;
-                                    int offsetY = yy - y;
-                                    float totalMoveTime = unitMoveTime * offsetY;
-                                    _tiles[x + y * Width].FallDownToGridPosition(totalMoveTime);
-                                    if (maxTotalMovetime < totalMoveTime) maxTotalMovetime = totalMoveTime;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (_tileHasMove == false)
-                {
-                    break;
-                }
-                else
-                {
-                    // yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
-                    yield return new WaitForSeconds(0.1f);
-                }
-            }
-            //Debug.Log($"attempts:  {attempts}");
-        }
-
-        private IEnumerator FillGridCoroutineVersion3()
-        {
-            _tileHasMove = false;
-            int attempts = 0;
-            while (true)
-            {
-                if (attempts++ > Height)
-                {
-                    Debug.LogError("=========== something went wrong ===========");
-                    break;
-                }
-
-                _tileHasMove = false;
-                for (int y = 0; y < Height - 1; y++)
-                {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        Tile currTile = _tiles[x + y * Width];
-                        if (currTile == null)
-                        {
-                            for (int yy = y + 1; yy < Height - 1; yy++)
-                            {
-                                Tile aboveTile = _tiles[x + yy * Width];
-                                if (aboveTile == null) continue;
-                                if (aboveTile.CurrentBlock.CanFillDownThrough() == false) break;
-                                if (aboveTile.CurrentBlock is NoneBlock)
-                                {
-                                    _tiles[x + y * Width] = _tiles[x + yy * Width];
-                                    _tiles[x + y * Width].SetGridPosition(x, y);
-                                    _tiles[x + yy * Width] = null;
-                                    _tileHasMove = true;
-
-                                    int offsetY = yy - y;
+                                    SwapTile(x, yy, x, y);
+                                    _tiles[x + yy * Width].SetGridPosition(x, yy);
+                                    int offsetY = y - yy;
                                     float totalMoveTime = TileAnimationExtensions.TILE_MOVE_TIME * offsetY;
-                                    _tiles[x + y * Width].FallDownToGridPosition(totalMoveTime);
+                                    _tiles[x + yy * Width].FallDownToGridPosition(totalMoveTime);
                                     break;
                                 }
                             }
                         }
                     }
+                    // yield return new WaitForSeconds(0.5f);
+                    // Debug.Log(" ------------ ");
                 }
 
-                // yield break;
 
+
+                // New tiles
                 for (int i = 0; i < _fillBlockIndices.Count; i++)
                 {
                     int index = _fillBlockIndices[i];
@@ -3556,22 +3536,102 @@ namespace Match3
                         }
                     }
                 }
+
+
+#if true   // Sand falling style fill
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        Tile currTile = _tiles[x + y * Width];
+                        if (currTile != null)
+                        {
+                            if (IsValidMoveTile(x, y) == false) continue;
+                            bool hasFilled = false;
+                            // Check bottom
+                            if (IsValidGridTile(x, y - 1) && _tiles[x + (y - 1) * Width] == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                int directionX = Random.value < 0.5f ? -1 : 1;
+                                for (int i = 0; i < 2 && !hasFilled; i++)
+                                {
+                                    int dx = directionX;
+                                    int expectedFill = directionX == -1 ? 1 : -1;
+
+                                    int checkX = x + dx;
+                                    int checkY = y - 1;
+
+                                    if (GetFillType(checkX, checkY) == expectedFill && IsValidFillTile(checkX, checkY))
+                                    {
+                                        hasFilled = true;
+                                        _tileHasMove = true;
+                                        SwapTile(checkX, checkY, x, y);
+                                        _tiles[checkX + checkY * Width].SetGridPosition(checkX, checkY);
+                                        _tiles[checkX + checkY * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                        break;
+                                    }
+
+                                    // Flip direction for the second check
+                                    directionX *= -1;
+                                }
+
+                                // int fillType = GetFillType(x, y);
+                                // int botLeftFillType = GetFillType(x - 1, y - 1);
+                                // int botRightFillType = GetFillType(x + 1, y - 1);
+                                // // Check bottom-left
+                                // if (botLeftFillType == 1 && hasFilled == false)
+                                // {
+                                //     if (IsValidFillTile(x - 1, y - 1))
+                                //     {
+                                //         Debug.Log("Fill Left");
+                                //         hasFilled = true;
+                                //         _tileHasMove = true;
+                                //         SwapTile(x - 1, y - 1, x, y);
+                                //         _tiles[x - 1 + (y - 1) * Width].SetGridPosition(x - 1, y - 1);
+                                //         _tiles[x - 1 + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                //     }
+                                // }
+                                // if (botRightFillType == -1 && hasFilled == false)
+                                // {
+                                //     if (IsValidFillTile(x + 1, y - 1))
+                                //     {
+                                //         Debug.Log($"({x + 1}  {y - 1})     ({x}  {y})   ");
+                                //         Debug.Log("Fill right");
+                                //         hasFilled = true;
+                                //         _tileHasMove = true;
+                                //         SwapTile(x + 1, y - 1, x, y);
+                                //         _tiles[x + 1 + (y - 1) * Width].SetGridPosition(x + 1, y - 1);
+                                //         _tiles[x + 1 + (y - 1) * Width].FallDownToGridPosition(TileAnimationExtensions.TILE_MOVE_TIME);
+                                //     }
+                                // }
+                            }
+                        }
+                    }
+                }
+#endif
+
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                 if (_tileHasMove == false)
                 {
                     break;
                 }
             }
-
-            Debug.Log($"attempts:  {attempts}");
+            //Debug.Log($"attempts:  {attempts}");
         }
 
-      
+
+
+
+
 
         #region Utilities
 
         private Tile AddTile(int x, int y, TileID tileID, BlockID blockID, bool display = true)
         {
+            // Debug.Log($"AddTile:  {x}  {y}  {tileID}");
             // Tile
             Tile tileInstance = TilePoolManager.Instance.GetTile(tileID);
             tileInstance.Bloom(false);
@@ -3847,6 +3907,15 @@ namespace Match3
         {
             return !(x < 0 || x >= Width || y < 0 || y >= Height);
         }
+        private bool IsValidFillTile(int x, int y)
+        {
+            return IsValidGridTile(x, y) && _tiles[x + y * Width] == null;
+        }
+
+        private bool IsValidMoveTile(int x, int y)
+        {
+            return IsValidGridTile(x, y) && _tiles[x + y * Width] != null && _tiles[x + y * Width].CurrentBlock is NoneBlock;
+        }
 
         private bool IsValidMatchTile(int x, int y)
         {
@@ -3983,6 +4052,75 @@ namespace Match3
             if (_matchBuffer[tile.X + tile.Y * Width] != MatchID.None) return false;
             return true;
         }
+
+
+        private int GetFillType(int x, int y)
+        {
+            Tile closestLeft = null;
+            Tile closestRight = null;
+            int minLeftDistance = int.MaxValue;
+            int minRightDistance = int.MaxValue;
+
+            for (int i = 0; i < _fillBlockIndices.Count; i++)
+            {
+                int xx = _fillBlockIndices[i] % Width;
+                int yy = _fillBlockIndices[i] / Width;
+
+                // Debug.Log($"_fillBlockIndices  {i}  {x}  {y}");
+
+                // Exact vertical match case
+                if (y < yy && x == xx)
+                {
+                    //Debug.Log("case A - exact vertical match");
+                    return 0;
+                }
+
+                // Check for potential left/right candidates
+                if (y < yy)
+                {
+                    int horizontalDistance = Mathf.Abs(xx - x);
+
+                    // Check left side (xx < x)
+                    if (xx < x && horizontalDistance < minLeftDistance)
+                    {
+                        minLeftDistance = horizontalDistance;
+                        closestLeft = _tiles[xx + yy * Width];
+                    }
+                    // Check right side (xx > x)
+                    else if (xx > x && horizontalDistance < minRightDistance)
+                    {
+                        minRightDistance = horizontalDistance;
+                        closestRight = _tiles[xx + yy * Width];
+                    }
+                }
+            }
+
+            // Determine which candidate to return
+            if (closestLeft != null || closestRight != null)
+            {
+                // Prefer the closer one, or left if equal distance
+                if (minLeftDistance < minRightDistance)
+                {
+                    // Debug.Log($"case B - nearest left (distance: {minLeftDistance})");
+                    return -1;
+                }
+                else if (minRightDistance < minLeftDistance)
+                {
+                    // Debug.Log($"case C - nearest right (distance: {minRightDistance})");
+                    return 1;
+                }
+                else
+                {
+                    // If equal distance, you could return either - here we choose left
+                    // Debug.Log($"case D - equal distance, choosing left");
+                    // return closestLeft ?? closestRight;
+                    return -1;
+                }
+            }
+
+            Debug.Log("NOt FOUND CASE");
+            return 0;
+        }
         #endregion
 
 
@@ -4019,6 +4157,16 @@ namespace Match3
             //}
         }
 
+        private void PlayTilesEffect(List<Tile> tiles, List<int> steps, VisualEffectID visualEffectID)
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                if (tiles[i] == null) continue;
+                var vfx = VFXPoolManager.Instance.GetEffect(visualEffectID);
+                vfx.transform.position = tiles[i].TileTransform.position;
+                vfx.Play(1f / steps[i]);
+            }
+        }
         private void PlayFlashBombVfx(Tile tile)
         {
             //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");

@@ -1,6 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-app-unity/12.7.0/firebase-app-unity-12.7.0.pom.meta
+guid: 399cba80e3f614be5bacca1e2316c2ee
+labels:
+- gpsr
+========
 guid: 19ebd02edea844133bca23242e617f5b
 folderAsset: yes
+>>>>>>>> main:Assets/Shaders/Khang/Stencil.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

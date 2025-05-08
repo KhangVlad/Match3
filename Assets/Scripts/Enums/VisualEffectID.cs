@@ -34,6 +34,8 @@ namespace Match3.Enums
         HorizontalRocket = 58,
         BlastBomb = 59,
         BlastBombAppear = 60,
+        SpecialTileMergeGhostFX = 61,
+
 
         Slash = 100,
     }

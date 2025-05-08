@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -186,3 +187,4 @@ public class ScreenInteraction : MonoBehaviour
         OnInteractAbleTriggered?.Invoke();
     }
 }
+#endif

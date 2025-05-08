@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using UnityEngine;
 using Firebase.Extensions;
@@ -244,3 +245,4 @@ public class AuthenticationManager : MonoBehaviour
         HandleChangeScene();
     }
 }
+#endif

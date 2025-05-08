@@ -1,6 +1,13 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-firestore-unity/12.7.0/firebase-firestore-unity-12.7.0.pom.meta
+guid: f23ab09997be14c88b3722a1a37d0c95
+labels:
+- gpsr
+DefaultImporter:
+========
 guid: ae1cf4f8fd153486184e91bcadcfa484
 NativeFormatImporter:
+>>>>>>>> main:Assets/Shaders/Khang/New Material.mat.meta
   externalObjects: {}
   mainObjectFileID: 2100000
   userData: 

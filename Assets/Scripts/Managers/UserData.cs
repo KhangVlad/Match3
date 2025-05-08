@@ -27,6 +27,7 @@
 //
 // }
 
+#if !UNITY_WEBGL
 using UnityEngine;
 using System.Collections.Generic;
 using Firebase.Firestore;
@@ -118,3 +119,4 @@ public class UserData
         dailyRewardFlag = false;
     }
 }
+#endif

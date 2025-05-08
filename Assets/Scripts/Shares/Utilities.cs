@@ -60,38 +60,38 @@ namespace Match3.Shares
         {
             return UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
         }
-          public static Vector2Int ImagePixelToWorld(this SpriteRenderer image, Vector2 pixel)
-    {
-        Bounds bounds = image.bounds;
+        public static Vector2Int ImagePixelToWorld(this SpriteRenderer image, Vector2 pixel)
+        {
+            Bounds bounds = image.bounds;
 
-        int imgWidth = image.sprite.texture.width;
-        int imgHeight = image.sprite.texture.height;
+            int imgWidth = image.sprite.texture.width;
+            int imgHeight = image.sprite.texture.height;
 
-        // Normalize coordinates (bottom-left origin in Unity)
-        float normalizedX = pixel.x / imgWidth;
-        float normalizedY = pixel.y / imgHeight; // No need to invert Y
+            // Normalize coordinates (bottom-left origin in Unity)
+            float normalizedX = pixel.x / imgWidth;
+            float normalizedY = pixel.y / imgHeight; // No need to invert Y
 
-        float worldX = Mathf.Lerp(bounds.min.x, bounds.max.x, normalizedX);
-        float worldY = Mathf.Lerp(bounds.min.y, bounds.max.y, normalizedY);
-        return Vector2Int.RoundToInt(new Vector2(worldX, worldY));
-    }
+            float worldX = Mathf.Lerp(bounds.min.x, bounds.max.x, normalizedX);
+            float worldY = Mathf.Lerp(bounds.min.y, bounds.max.y, normalizedY);
+            return Vector2Int.RoundToInt(new Vector2(worldX, worldY));
+        }
 
-    public static Vector2Int WorldPositionToImagePixel(this SpriteRenderer image, Vector2 worldPosition)
-    {
-        Bounds bounds = image.bounds;
+        public static Vector2Int WorldPositionToImagePixel(this SpriteRenderer image, Vector2 worldPosition)
+        {
+            Bounds bounds = image.bounds;
 
-        int imgWidth = image.sprite.texture.width;
-        int imgHeight = image.sprite.texture.height;
+            int imgWidth = image.sprite.texture.width;
+            int imgHeight = image.sprite.texture.height;
 
-        float normalizedX = Mathf.InverseLerp(bounds.min.x, bounds.max.x, worldPosition.x);
-        float normalizedY = Mathf.InverseLerp(bounds.min.y, bounds.max.y, worldPosition.y);
+            float normalizedX = Mathf.InverseLerp(bounds.min.x, bounds.max.x, worldPosition.x);
+            float normalizedY = Mathf.InverseLerp(bounds.min.y, bounds.max.y, worldPosition.y);
 
-        float pixelX = Mathf.Lerp(0, imgWidth, normalizedX);
-        float pixelY = Mathf.Lerp(0, imgHeight, normalizedY);
+            float pixelX = Mathf.Lerp(0, imgWidth, normalizedX);
+            float pixelY = Mathf.Lerp(0, imgHeight, normalizedY);
 
-        return new Vector2Int(Mathf.RoundToInt(pixelX), Mathf.RoundToInt(pixelY));
-    }
-    
+            return new Vector2Int(Mathf.RoundToInt(pixelX), Mathf.RoundToInt(pixelY));
+        }
+
 
         public static void SetNativeSize(this Image image)
         {
@@ -134,6 +134,15 @@ namespace Match3.Shares
                 }
             }
         }
+
+#if UNITY_EDITOR
+        public static void ClearEdiorLog()
+        {
+            var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
+            var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            clearMethod.Invoke(null, null);
+        }
+#endif
 
         public static void ScaleIcon(this RectTransform target, float refWidth, float refHeight)
         {
