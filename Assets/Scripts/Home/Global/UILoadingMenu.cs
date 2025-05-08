@@ -88,15 +88,12 @@ public class UILoadingMenu : MonoBehaviour
     
     private void HandleNewUser(bool isNewUser)
     {
-        Debug.Log("AAAAA");
         if (!isNewUser)
         {
-            Debug.Log("BBBBB");
             OnUserDataLoaded();
         }
         else
         {
-            Debug.Log("CCCCC");
             comic.gameObject.SetActive(true);
             comic.OnNewUserCreate();
         }
