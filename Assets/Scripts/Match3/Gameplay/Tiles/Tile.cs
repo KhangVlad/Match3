@@ -266,6 +266,11 @@ namespace Match3
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {
+            if (_moveTween != null && _moveTween.IsActive())
+            {
+                _moveTween.Kill();
+            }
+
             _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(ease).OnComplete(() =>
             {
                 onCompleted?.Invoke();
@@ -274,13 +279,22 @@ namespace Match3
 
         public void MoveToGridPosition(float moveTime = TileAnimationExtensions.TILE_MOVE_TIME)
         {
+            if (_moveTween != null && _moveTween.IsActive())
+            {
+                _moveTween.Kill();
+            }
+
             Vector3 targetPosition = this.GetWorldPosition();
             _moveTween = transform.DOMove(targetPosition, moveTime).SetEase(Ease.Linear);
         }
         public void FallDownToGridPosition(float moveTime = TileAnimationExtensions.TILE_FALLDOWN_TIME)
         {
-            Vector3 targetPosition = this.GetWorldPosition();
+            if (_moveTween != null && _moveTween.IsActive())
+            {
+                _moveTween.Kill();
+            }
 
+            Vector3 targetPosition = this.GetWorldPosition();
             _moveTween = transform.DOMove(targetPosition, moveTime)
                 .SetEase(Ease.Linear)
                 .OnComplete(() =>

@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using System;
 using UnityEngine;
 using System.Collections.Generic;
@@ -204,3 +205,4 @@ public enum TimeOfDay
     Evening, //from 18:00 to 21:00
     Night //from 21:00 to 6:00
 }
+#endif

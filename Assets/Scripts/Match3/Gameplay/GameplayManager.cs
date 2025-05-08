@@ -1,4 +1,5 @@
 using System;
+using FMOD.Studio;
 using Match3.Enums;
 using Match3.Shares;
 using UnityEngine;
@@ -69,6 +70,13 @@ namespace Match3
                     Quantity = LevelManager.Instance.LevelData.Quests[i, 1]
                 };
             }
+
+#if UNITY_EDITOR
+            Utilities.WaitAfter(0.2f, () =>
+            {
+                Utilities.ClearEdiorLog();
+            });
+#endif
         }
 
 
@@ -83,7 +91,7 @@ namespace Match3
             Ice.OnIceUnlocked += OnIceUnlockedTriggered;
             Tile.OnMatched += OnTileMatchedTriggered;
             GameplayVideo.Instance.InitializeCharacterVideo(LevelManager.Instance.CharacterLevelData.CharacterID); //khang add
-          
+
         }
 
 
@@ -174,7 +182,7 @@ namespace Match3
                 if (TurnRemainingCount == 0)
                 {
                     Debug.Log($"Game over: {star}");
-                    if(star == 0)
+                    if (star == 0)
                     {
                         ChangeGameState(GameState.GAMEOVER);
                     }
@@ -182,7 +190,7 @@ namespace Match3
                     {
                         ChangeGameState(GameState.WIN);
                     }
-                   
+
                 }
             }
         }
@@ -649,7 +657,7 @@ namespace Match3
         public bool HasTileQuest(TileID tileID)
         {
             QuestID questID = GameplayManager.Instance.GetQuestByTileID(tileID);
-            return TryGetQuestIndex(questID, out int questIndex);  
+            return TryGetQuestIndex(questID, out int questIndex);
         }
 
         public QuestID GetQuestByTileID(TileID tileID)
