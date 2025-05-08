@@ -72,9 +72,16 @@ public class UserData
     public int Energy 
     { 
         get => energy; 
-        set => energy = value; 
+        set 
+        {
+            if (value > 100)
+                energy = 100;
+            else if (value < 0)
+                energy = 0;
+            else
+                energy = value;
+        }
     }
-
     [FirestoreProperty] 
     public object LastOnline 
     { 

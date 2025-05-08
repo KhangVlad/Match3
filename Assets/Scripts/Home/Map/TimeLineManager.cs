@@ -291,14 +291,16 @@ public class TimeLineManager : MonoBehaviour
     {
         Vector2 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
         float buffer = padding / 100f;
-    
-        float extraMargin = 0.2f; // adjust to fixd padding from world to view port point
-        return viewportPosition.x >= (0 + buffer - extraMargin) &&
-               viewportPosition.x <= (1 - buffer + extraMargin) &&
-               viewportPosition.y >= (0 + buffer - extraMargin) &&
-               viewportPosition.y <= (1 - buffer + extraMargin);
-    }
 
+        float extraMarginTop = 0.2f;
+        float extraMarginLeft = 0.2f;
+        float extraMarginRight = 0.2f;
+    
+        return viewportPosition.x >= (0 + buffer - extraMarginLeft) &&
+               viewportPosition.x <= (1 - buffer + extraMarginRight) &&
+               viewportPosition.y >= (0 + buffer - 0) &&
+               viewportPosition.y <= (1 - buffer + extraMarginTop);
+    }
 
     private void CheckCharacterOutOfBound()
     {

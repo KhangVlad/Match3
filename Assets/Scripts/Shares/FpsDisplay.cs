@@ -5,10 +5,6 @@ namespace Match3.Shares
     public class FpsDisplay : MonoBehaviour
     {
         float deltaTime = 0.0f;
-        private void Awake()
-        {
-            Application.targetFrameRate = 60;
-        }
         private void Update()
         {
             deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;

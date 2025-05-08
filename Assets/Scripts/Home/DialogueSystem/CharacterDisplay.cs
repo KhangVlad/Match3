@@ -65,14 +65,14 @@ public class CharacterDisplay : MonoBehaviour
     {
         lastInteractionTime = Time.time;
         ScreenInteraction.Instance.OnCharacterInteracted += LoadCharacterDialogue;
-        ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
+        // ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
     }
 
     private void OnDestroy()
     {
         ScreenInteraction.Instance.OnCharacterInteracted -= LoadCharacterDialogue;
-        ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
-    }
+        // ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
+    }   
 
 
     #region State
@@ -80,6 +80,8 @@ public class CharacterDisplay : MonoBehaviour
     private void LoadCharacterDialogue(CharacterID id)
     {
         characterDialogueSO = GameDataManager.Instance.ReadDialogueData(id, LanguageManager.Instance.currentLanguage);
+        InitializeCharacterVideo(id);
+       
     }
 
     public void TransitionToState(CharacterState newState)
@@ -233,7 +235,9 @@ public class CharacterDisplay : MonoBehaviour
             videoClips.Add(new VideoClipInfo { videoType = type, videoClip = clip });
         }
         renderTexture.SetActive(true);
+        TransitionToState(CharacterState.Entry);
         OnLoadVideosComplete?.Invoke(id);
+        LoadingAnimationController.Instance.SetActive(false);
     }
 
     private void OnCharacterStateChanged(CharacterState state, AngryState ang)
