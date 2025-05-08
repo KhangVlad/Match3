@@ -155,93 +155,90 @@ public class AuthenticationManager : MonoBehaviour
     //         // });
     //     }
     // }
-    
+
     private async void LoadUserData(DocumentSnapshot snapshot)
-{
-    if (snapshot == null)
     {
-        Debug.LogError("Snapshot is null in LoadUserData");
-        return;
-    }
-
-    if (snapshot.Exists)
-    {
-        try
+        if (snapshot == null)
         {
-            UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
-            if (localData == null)
-            {
-                Debug.LogWarning("Local data is null, initializing new user data");
-                localData = UserManager.Instance.InitializeNewUserData();
-            }
+            Debug.LogError("Snapshot is null in LoadUserData");
+            return;
+        }
 
-            UserData cloud = snapshot.ConvertTo<UserData>();
-            if (cloud == null)
+        if (snapshot.Exists)
+        {
+            try
             {
-                Debug.LogError("Failed to convert snapshot to UserData");
-                return;
-            }
-
-            TimeManager.Instance.LastSpinTime = cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
-
-            if (snapshot.ContainsField("LastOnline"))
-            {
-                try
+                UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+                if (localData == null)
                 {
-                    Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
-                    if (lastOnlineTimestamp != null)
+                    Debug.LogWarning("Local data is null, initializing new user data");
+                    localData = UserManager.Instance.InitializeNewUserData();
+                }
+
+                UserData cloud = snapshot.ConvertTo<UserData>();
+                if (cloud == null)
+                {
+                    Debug.LogError("Failed to convert snapshot to UserData");
+                    return;
+                }
+
+                TimeManager.Instance.LastSpinTime =
+                    cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
+
+                if (snapshot.ContainsField("LastOnline"))
+                {
+                    try
                     {
-                        TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-                        var serverTime = await FirebaseManager.Instance.FetchServerTime();
-                        
-                        if (serverTime != null)
+                        Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
+                        if (lastOnlineTimestamp != null)
                         {
-                            DateTime loginTime = serverTime.ToDateTime();
+                            TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
+                            var serverTime = await FirebaseManager.Instance.FetchServerTime();
 
-                            // Fix: Ensure cloud.LastOnline is properly converted to DateTime
-                            DateTime lastOnlineTime = cloud.LastOnline is DateTime
-                                ? (DateTime)cloud.LastOnline
-                                : lastOnlineTimestamp.ToDateTime();
+                            if (serverTime != null)
+                            {
+                                DateTime loginTime = serverTime.ToDateTime();
 
-                            TimeSpan timeDifference = loginTime - lastOnlineTime;
-                            int minutesPassed = (int)timeDifference.TotalMinutes;
+                                // Fix: Ensure cloud.LastOnline is properly converted to DateTime
+                                DateTime lastOnlineTime = cloud.LastOnline is DateTime
+                                    ? (DateTime)cloud.LastOnline
+                                    : lastOnlineTimestamp.ToDateTime();
 
-                            cloud.Energy = localData.Energy + minutesPassed;
-                            cloud.AvaiableBoosters = localData.AvaiableBoosters;
-                            cloud.AllCharacterData = localData.AllCharacterData;
-                            TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
-                        }
-                        else
-                        {
-                            Debug.LogWarning("Failed to fetch server time");
+                                TimeSpan timeDifference = loginTime - lastOnlineTime;
+                                int minutesPassed = (int)timeDifference.TotalMinutes;
+
+                                cloud.Energy = localData.Energy + minutesPassed;
+                                cloud.AvaiableBoosters = localData.AvaiableBoosters;
+                                cloud.AllCharacterData = localData.AllCharacterData;
+                                TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Error processing LastOnline: {e.Message}");
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.LogError($"Error processing LastOnline: {e.Message}");
+                    Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
                 }
+
+                UserManager.Instance.UserData = cloud;
+
+                IsUserDataLoaded = true;
+                HandleChangeScene();
             }
-            else
+            catch (Exception ex)
             {
-                Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
+                Debug.LogError($"Error in LoadUserData: {ex.Message}");
             }
-
-            UserManager.Instance.UserData = cloud;
-
-            IsUserDataLoaded = true;
-            HandleChangeScene();
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogError($"Error in LoadUserData: {ex.Message}");
+            Debug.LogWarning("User document doesn't exist in Firestore");
         }
     }
-    else
-    {
-        Debug.LogWarning("User document doesn't exist in Firestore");
-    }
-}
 
     private async void HandlerNewAndOldUserAnonymous(FirebaseUser user, FirebaseFirestore firestore)
     {
