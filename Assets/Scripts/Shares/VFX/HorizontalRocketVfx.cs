@@ -33,6 +33,7 @@ namespace Match3.Shares
 
         public override void Play(float duration = 1)
         {
+            Debug.Log("Horizontal Rocket Play");
             // base.Play(duration);
 
             // _sr.enabled = false;
@@ -85,7 +86,7 @@ namespace Match3.Shares
             _sr.enabled = true;
         }
 
-           public void PlayAnimtion()
+        public void PlayAnimtion()
         {
             _leftRocket.gameObject.SetActive(false);
             _rightRocket.gameObject.SetActive(false);

@@ -15,5 +15,4 @@ namespace Match3
             Debug.Log("TrgetFrameRate = 60");
         }
     }
-
 }

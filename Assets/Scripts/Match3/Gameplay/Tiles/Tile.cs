@@ -49,10 +49,12 @@ namespace Match3
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
-        public bool HasTriggeredSpecial { get; private set; } = false;
+        public bool HasTriggeredRowBomb { get; set; } = false;
+        public bool HasTriggererColumnBomb { get; set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
         public Transform BloomTransform { get; private set; }
+
         #endregion
 
 
@@ -393,11 +395,6 @@ namespace Match3
         }
 
 
-        public virtual void SetTriggerSpecial(bool triggered)
-        {
-            HasTriggeredSpecial = triggered;
-        }
-
         public virtual void PlayShaking(float duration)
         {
             _shakeTween = transform.DOShakePosition(
@@ -467,12 +464,13 @@ namespace Match3
             ClearAllTweens();
             ChangeBlock(BlockID.None);
             SpecialProperties = SpecialTileID.None;
+            HasTriggeredRowBomb = false;
+            HasTriggererColumnBomb = false;
 
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
             Bloom(false);
-            SetTriggerSpecial(false);
         }
         #endregion
     }

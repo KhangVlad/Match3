@@ -1040,13 +1040,18 @@ namespace Match3
         {
             _singleAllColumnBombCoroutineDict.Clear();
             _singleAllColumnBombCoroutineKey.Clear();
+            Debug.Log($"_activeRowBombSet:  {_activeRowBombSet.Count}");
             if (_activeRowBombSet.Count > 0)
             {
                 foreach (var tile in _activeRowBombSet)
                 {
+                    if (tile.HasTriggeredRowBomb) continue;
+                    tile.HasTriggeredRowBomb = true;
+
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
                     vfxPrefab.transform.position = tile.TileTransform.position;
                     vfxPrefab.Play(_rocketPlayTime);
+
 
                     int centerX = tile.X;
                     int y = tile.Y;
@@ -1076,12 +1081,15 @@ namespace Match3
 
                             if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                if (_tiles[index].HasTriggererColumnBomb == false)
                                 {
-                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                }));
-                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                    {
+                                        _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                    }));
+                                    _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                }
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                             {
@@ -1114,14 +1122,18 @@ namespace Match3
                                 MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                             }
 
+
                             if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                if (_tiles[index].HasTriggererColumnBomb == false)
                                 {
-                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                }));
-                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                    {
+                                        _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                    }));
+                                    _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                }
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                             {
@@ -1164,8 +1176,9 @@ namespace Match3
 
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
         {
-            if (tile.HasTriggeredSpecial) yield break;
-            tile.SetTriggerSpecial(true);
+            if (tile.HasTriggeredRowBomb) yield break;
+            tile.HasTriggeredRowBomb = true;
+
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(_rocketPlayTime);
@@ -1204,12 +1217,15 @@ namespace Match3
                     //Debug.Log($"AA: {index%Width}  {index /Width} {_tiles[index].SpecialProperties}");
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Coroutine coroutine = null;
-                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                        if (_tiles[index].HasTriggererColumnBomb == false)
                         {
-                            singleColumnBombCoroutineDict[coroutine] = true;
-                        }));
-                        singleColumnBombCoroutineDict.Add(coroutine, false);
+                            Coroutine coroutine = null;
+                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                            {
+                                singleColumnBombCoroutineDict[coroutine] = true;
+                            }));
+                            singleColumnBombCoroutineDict.Add(coroutine, false);
+                        }
                     }
                     else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -1246,13 +1262,16 @@ namespace Match3
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Coroutine coroutine = null;
-                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                        if (_tiles[index].HasTriggererColumnBomb == false)
                         {
-                            if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
-                                singleColumnBombCoroutineDict[coroutine] = true;
-                        }));
-                        singleColumnBombCoroutineDict.Add(coroutine, false);
+                            Coroutine coroutine = null;
+                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                            {
+                                if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
+                                    singleColumnBombCoroutineDict[coroutine] = true;
+                            }));
+                            singleColumnBombCoroutineDict.Add(coroutine, false);
+                        }
                     }
                     else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -1306,6 +1325,9 @@ namespace Match3
             _singleAllRowBombCoroutineKey.Clear();
             foreach (var tile in _activeColumnBombSet)
             {
+                if (tile.HasTriggererColumnBomb) continue;
+                tile.HasTriggererColumnBomb = true;
+
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
                 vfxPrefab.transform.position = tile.TileTransform.position;
                 vfxPrefab.Play(_rocketPlayTime);
@@ -1337,12 +1359,15 @@ namespace Match3
 
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                            if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                _singleAllRowBombCoroutineDict[coroutine] = true;
-                            }));
-                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                {
+                                    _singleAllRowBombCoroutineDict[coroutine] = true;
+                                }));
+                                _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                            }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -1374,12 +1399,15 @@ namespace Match3
 
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                            if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                _singleAllRowBombCoroutineDict[coroutine] = true;
-                            }));
-                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                {
+                                    _singleAllRowBombCoroutineDict[coroutine] = true;
+                                }));
+                                _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                            }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -1418,8 +1446,9 @@ namespace Match3
         }
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
-            if (tile.HasTriggeredSpecial) yield break;
-            tile.SetTriggerSpecial(true);
+            if (tile.HasTriggererColumnBomb) yield break;
+            tile.HasTriggererColumnBomb = true;
+
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(_rocketPlayTime);
@@ -1454,12 +1483,15 @@ namespace Match3
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Coroutine coroutine = null;
-                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                        if (_tiles[index].HasTriggeredRowBomb == false)
                         {
-                            _singleRowBombCoroutineDict[coroutine] = true;
-                        }));
-                        _singleRowBombCoroutineDict.Add(coroutine, false);
+                            Coroutine coroutine = null;
+                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                            {
+                                _singleRowBombCoroutineDict[coroutine] = true;
+                            }));
+                            _singleRowBombCoroutineDict.Add(coroutine, false);
+                        }
                     }
                     else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -1493,12 +1525,15 @@ namespace Match3
 
                     if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Coroutine coroutine = null;
-                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                        if (_tiles[index].HasTriggeredRowBomb == false)
                         {
-                            _singleRowBombCoroutineDict[coroutine] = true;
-                        }));
-                        _singleRowBombCoroutineDict.Add(coroutine, false);
+                            Coroutine coroutine = null;
+                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                            {
+                                _singleRowBombCoroutineDict[coroutine] = true;
+                            }));
+                            _singleRowBombCoroutineDict.Add(coroutine, false);
+                        }
                     }
                     else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
                     {
@@ -1847,18 +1882,28 @@ namespace Match3
         private void HandleSpecialMatch()
         {
             if (_selectedTile == null || _swappedTile == null) return;
+            // if (_matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.None ||
+            //     _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.Match) return;
             switch (_selectedTile.SpecialProperties)
             {
                 case SpecialTileID.ColumnBomb:
-                case SpecialTileID.RowBomb:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
-                        _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Debug.Log("============= Clear + ==============");
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
-                            _activeRowBombSet.Add(_selectedTile);
+                        _swappedTile.HasTriggeredRowBomb = true;
                         if (_activeColumnBombSet.Contains(_selectedTile) == false)
                             _activeColumnBombSet.Add(_selectedTile);
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            _activeRowBombSet.Add(_selectedTile);
+
+                        AudioManager.Instance.PlayMatch4Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    {
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            _activeColumnBombSet.Add(_selectedTile);
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            _activeRowBombSet.Add(_selectedTile);
+                        _swappedTile.HasTriggererColumnBomb = true;
 
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
@@ -1869,6 +1914,55 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
+                        Debug.Log("???");
+                        if (_selectedTile.SpecialProperties == SpecialTileID.RowBomb)
+                        {
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                                _activeRowBombSet.Add(_selectedTile);
+                        }
+                        if (_selectedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                        {
+                            //EnableVerticalMatchBuffer(_selectedTile.X);
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                                _activeColumnBombSet.Add(_selectedTile);
+                        }
+                    }
+                    break;
+                case SpecialTileID.RowBomb:
+                    if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
+                    {
+                        _swappedTile.HasTriggeredRowBomb = true;
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeRowBombSet.Add(_selectedTile);
+                        }
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeColumnBombSet.Add(_selectedTile);
+                        }
+                        AudioManager.Instance.PlayMatch4Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    {
+                        _swappedTile.HasTriggererColumnBomb = true;
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeRowBombSet.Add(_selectedTile);
+                        }
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeColumnBombSet.Add(_selectedTile);
+                        }
+                        AudioManager.Instance.PlayMatch4Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        CombineMatch4AndMatch5();
+                        AudioManager.Instance.PlayMatch5Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.None)
+                    {
+                        Debug.Log("???");
                         if (_selectedTile.SpecialProperties == SpecialTileID.RowBomb)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)

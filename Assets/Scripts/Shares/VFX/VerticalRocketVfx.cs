@@ -42,6 +42,7 @@ namespace Match3.Shares
 
         public override void Play(float duration = 1)
         {
+            Debug.Log("Vertical Rocket Play");
             base.Play(duration);
             _sr.enabled = false;
             _upRocket.gameObject.SetActive(true);
