@@ -498,21 +498,15 @@ namespace Match3
                             Quests[i].Quantity--;
                         break;
 
-                    case QuestID.Shushi_Otc:
-                        if (tile is Shushi_Otc)
+                    case QuestID.Shushi_9:
+                        if (tile is Shushi_9)
                             Quests[i].Quantity--;
                         break;
 
-                    case QuestID.Shushi_Rice:
-                        if (tile is Shushi_Rice)
+                    case QuestID.Shushi_8:
+                        if (tile is Shushi_8)
                             Quests[i].Quantity--;
                         break;
-
-                    case QuestID.Shushi_Shrimp:
-                        if (tile is Shushi_Shrimp)
-                            Quests[i].Quantity--;
-                        break;
-
                     case QuestID.Tape:
                         if (tile is Tape)
                             Quests[i].Quantity--;
@@ -540,6 +534,58 @@ namespace Match3
 
                     case QuestID.YellowWool:
                         if (tile is YellowWool)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Meat_Ball:
+                        if (tile is MeatBall)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Cheese:
+                        if (tile is Cheese)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Fish:
+                        if (tile is Fish)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Corn:
+                        if (tile is Corn)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Duck:
+                        if (tile is Duck)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Fire:
+                        if (tile is Fire)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Raw_Meat:
+                        if (tile is RawMeat)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Red_Chillie:
+                        if (tile is RedChilie)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Tomato:
+                        if (tile is Tomato)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Soap:
+                        if (tile is Soap)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Cookie:
+                        if (tile is Cookie)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Egg:
+                        if (tile is Egg)
+                            Quests[i].Quantity--;
+                        break;
+                    case QuestID.Green_Vegetable:
+                        if (tile is GreenVegetable)
                             Quests[i].Quantity--;
                         break;
                     default:

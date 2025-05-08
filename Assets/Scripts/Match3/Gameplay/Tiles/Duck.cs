@@ -3,12 +3,12 @@ using Match3.Enums;
 
 namespace Match3
 {
-     public class Shushi_Rice : Tile
+    public class Duck : Tile
     {
         public override void Initialize()
         {
             base.Initialize();
-            this.ID = TileID.Shushi_Rice;
+            this.ID = TileID.Duck;
         }
 
         protected override void Awake()
@@ -23,9 +23,7 @@ namespace Match3
 
         public override void PlayMatchVFX()
         {
-            BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.YellowCandleDestroy);
-            effect.transform.position = TileTransform.position;
-            effect.Play();
+           
         }
     }
 }
