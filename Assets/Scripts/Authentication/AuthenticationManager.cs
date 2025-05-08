@@ -166,7 +166,6 @@ public class AuthenticationManager : MonoBehaviour
 
         if (snapshot.Exists)
         {
-
             try
             {
                 UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
