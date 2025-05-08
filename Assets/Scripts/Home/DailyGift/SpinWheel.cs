@@ -234,7 +234,7 @@ public class SpinWheel : MonoBehaviour
 
     private void CheckSpinAvailability()
     {
-        TimeSpan timeSinceLastSpin = DateTime.Now - (DateTime)UserManager.Instance.UserData.LastSpinTime;
+        TimeSpan timeSinceLastSpin = DateTime.Now - TimeManager.Instance.LastSpinTime;
         canSpin = timeSinceLastSpin.TotalHours >= HOURS_BETWEEN_SPINS;
         spinButton.interactable = canSpin && !m_spinning;
     }
