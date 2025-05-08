@@ -20,8 +20,8 @@ public class TimeLineManager : MonoBehaviour
     [SerializeField] private SpriteRenderer map;
     [SerializeField] private CharacterDirectionArrow directionArrowPrefab;
     [SerializeField] private float padding = 10f; // Padding from screen edges in pixels
-    [SerializeField] private GameObject _lightingManager2D;
-    [SerializeField] private GameObject _nightGameobjects;
+   
+ 
     private List<CharacterActivitySO> activeInDay = new();
     private List<CharacterID> homeIds = new();
     private List<CharacterID> activeIds = new();
@@ -115,7 +115,6 @@ public class TimeLineManager : MonoBehaviour
         Instance = this;
         currentDay = TimeManager.Instance.GetCurrentDayInWeek();
         GetCurrentHour();
-        CheckDayAndNight();
         mainCamera = Camera.main;
     }
 
@@ -153,21 +152,6 @@ public class TimeLineManager : MonoBehaviour
         UpdateTimeChange();
         GetCharactersInTime(activeInDay);
     }
-
-    public void ChangeTimeOfDay(TimeOfDay t)
-    {
-        // if (t == TimeOfDay.Morning || t == TimeOfDay.Midday || t == TimeOfDay.Afternoon)
-        // {
-        //     _lightingManager2D.SetActive(false);
-        //     _nightGameobjects.SetActive(false);
-        // }
-        // else
-        // {
-        //     _lightingManager2D.SetActive(true);
-        //     _nightGameobjects.SetActive(true);
-        // }
-    }
-
     private void UpdateTimeChange()
     {
         bool isNewDay = false;
@@ -187,24 +171,10 @@ public class TimeLineManager : MonoBehaviour
 
         if (isNewDay) CheckNewDay();
 
-        CheckDayAndNight();
         lastCheckedHour = currentHour;
     }
 
 
-    private void CheckDayAndNight()
-    {
-        // if (IsNight())
-        // {
-        //     _lightingManager2D.SetActive(true);
-        //     _nightGameobjects.SetActive(true);
-        // }
-        // else
-        // {
-        //     _lightingManager2D.SetActive(false);
-        //     _nightGameobjects.SetActive(false);
-        // }
-    }
 
     private bool IsNight()
     {
@@ -321,14 +291,16 @@ public class TimeLineManager : MonoBehaviour
     {
         Vector2 viewportPosition = mainCamera.WorldToViewportPoint(worldPosition);
         float buffer = padding / 100f;
-    
-        float extraMargin = 0.2f; // adjust to fixd padding from world to view port point
-        return viewportPosition.x >= (0 + buffer - extraMargin) &&
-               viewportPosition.x <= (1 - buffer + extraMargin) &&
-               viewportPosition.y >= (0 + buffer - extraMargin) &&
-               viewportPosition.y <= (1 - buffer + extraMargin);
-    }
 
+        float extraMarginTop = 0.2f;
+        float extraMarginLeft = 0.2f;
+        float extraMarginRight = 0.2f;
+    
+        return viewportPosition.x >= (0 + buffer - extraMarginLeft) &&
+               viewportPosition.x <= (1 - buffer + extraMarginRight) &&
+               viewportPosition.y >= (0 + buffer - 0) &&
+               viewportPosition.y <= (1 - buffer + extraMarginTop);
+    }
 
     private void CheckCharacterOutOfBound()
     {

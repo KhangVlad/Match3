@@ -88,21 +88,17 @@ public class UILoadingMenu : MonoBehaviour
     
     private void HandleNewUser(bool isNewUser)
     {
+        Debug.Log("AAAAA");
         if (!isNewUser)
         {
+            Debug.Log("BBBBB");
             OnUserDataLoaded();
         }
         else
         {
-            if (comic != null)
-            {
-                comic.OnNewUserCreate();
-            }
-            else
-            {
-                Debug.LogWarning("Comic reference is null. Cannot show new user comic.");
-                OnUserDataLoaded(); // Continue loading process even if comic is missing
-            }
+            Debug.Log("CCCCC");
+            comic.gameObject.SetActive(true);
+            comic.OnNewUserCreate();
         }
     }
 
@@ -159,7 +155,6 @@ public class UILoadingMenu : MonoBehaviour
     private void OnUserDataLoaded()
     {
         _targetProgress += 0.25f;
-        Debug.Log("User data loaded. Target progress updated to: " + _targetProgress);
     }
 
     private IEnumerator UpdateProgressRoutine()

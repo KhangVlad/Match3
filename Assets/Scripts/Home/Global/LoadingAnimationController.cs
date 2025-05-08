@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Match3;
+using Match3.Enums;
 using UnityEngine.SceneManagement;
 using Match3.Shares;
 
@@ -9,6 +10,7 @@ public class LoadingAnimationController : MonoBehaviour
     public static LoadingAnimationController Instance { get; private set; }
     [SerializeField] private Animator anim;
     [SerializeField] private Canvas canvas;
+    public bool IsActive = false;
 
     private void Awake()
     {
@@ -44,16 +46,17 @@ public class LoadingAnimationController : MonoBehaviour
         Utilities.WaitAfter(1f, () => SetActive(false));
     }
 
-    private void SetActive(bool active)
+    public void SetActive(bool active, Action ondoneAnination = null)
     {
+        IsActive = active;
         if (active)
         {
             canvas.enabled = active;
         }
-        else
-        {
-            Utilities.WaitAfter(0.5f, () => canvas.enabled = active);
-        }
+        // else
+        // {
+        //     Utilities.WaitAfter(0.5f, () => canvas.enabled = active);
+        // }
 
         anim.SetBool("IsLoad", active);
 
@@ -61,5 +64,7 @@ public class LoadingAnimationController : MonoBehaviour
         {
             anim.SetTrigger("UnLoad");
         }
+
+        Utilities.WaitAfter(1f, () => ondoneAnination?.Invoke());
     }
 }

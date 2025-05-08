@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 247dfebba5494adfb52f758bd60a1d13, type: 3}
+  m_Name: c_2
+  m_EditorClassIdentifier: 
+  id: 11
+  sprite: {fileID: 21300000, guid: ce73da1cea7e14bb18d10ffcd942c746, type: 3}
+  activityInfos:
+  - startTime: 16
+    endTime: 20
+    appearPosition: {x: 1740, y: 2340}
+    dayOfWeek: 2
+  - startTime: 21
+    endTime: 24
+    appearPosition: {x: 2398, y: 2493}
+    dayOfWeek: 3
+  - startTime: 21
+    endTime: 24
+    appearPosition: {x: 2225, y: 2261}
+    dayOfWeek: 4
+  - startTime: 7
+    endTime: 9
+    appearPosition: {x: 2291, y: 2190}
+    dayOfWeek: 5
+  - startTime: 7
+    endTime: 9
+    appearPosition: {x: 2215, y: 2217}
+    dayOfWeek: 6
+  - startTime: 7
+    endTime: 9
+    appearPosition: {x: 2121, y: 2119}
+    dayOfWeek: 7
+  - startTime: 7
+    endTime: 9
+    appearPosition: {x: 2338, y: 2119}
+    dayOfWeek: 8
+  homePosition: {x: 1987, y: 2545}
+  dayOff: 0
+  sympathyRequired: 

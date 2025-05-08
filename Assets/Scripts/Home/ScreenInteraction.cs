@@ -6,7 +6,6 @@ using Match3;
 using Match3.Enums;
 using Match3.Shares;
 
-#if !UNITY_WEBGL
 public class ScreenInteraction : MonoBehaviour
 {
     public static ScreenInteraction Instance { get; private set; }
@@ -18,8 +17,9 @@ public class ScreenInteraction : MonoBehaviour
     [SerializeField] private CinemachineCamera virtualCamera;
 
     public float CameraSpeed = 0.1f;
-    private bool IsDragging;
-    private bool FirstMouseClick;
+    public bool IsDragging;
+    public bool FirstMouseClick;
+    public bool SecondMouseClick;
     private Vector2 PreviouseMousePos;
 
 
@@ -59,15 +59,16 @@ public class ScreenInteraction : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonDown(0) && !Utilities.IsPointerOverUI())
+        if (Input.GetMouseButtonDown(0) && !Utilities.IsPointerOverUIElement())
         {
             OnMouseDown();
         }
 
-        if (Input.GetMouseButton(0) && FirstMouseClick)
+        if (Input.GetMouseButton(0) && FirstMouseClick && !Utilities.IsPointerOverUIElement())
         {
             OnMouseDrag();
         }
+
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -88,7 +89,8 @@ public class ScreenInteraction : MonoBehaviour
             {
                 if (TimeLineManager.Instance.IsCreatingNewActivity) return;
                 AudioManager.Instance.PlayButtonSfx();
-                OnCharacterInteracted?.Invoke(character.characterID);
+                PlayCloudAnimation(
+                    () => { OnCharacterInteracted?.Invoke(character.characterID); });
             }
             else if (hit.collider.TryGetComponent(out CharacterDirectionArrow arrow))
             {
@@ -100,6 +102,11 @@ public class ScreenInteraction : MonoBehaviour
                 lightStreet.Toggle();
             }
         }
+    }
+
+    private void PlayCloudAnimation(Action onAnimationComplete)
+    {
+        LoadingAnimationController.Instance.SetActive(true, () => { onAnimationComplete?.Invoke(); });
     }
 
     private IEnumerator MoveCameraToCharacter(CharacterDirectionArrow character)
@@ -125,7 +132,8 @@ public class ScreenInteraction : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        if (Vector2.Distance(PreviouseMousePos, mainCamera.ScreenToWorldPoint(Input.mousePosition)) > 0.1f)
+        float distanc = Vector2.Distance(PreviouseMousePos, mainCamera.ScreenToWorldPoint(Input.mousePosition));
+        if (distanc > 0.1f && distanc < 1f)
         {
             IsDragging = true;
         }
@@ -138,6 +146,7 @@ public class ScreenInteraction : MonoBehaviour
             PreviouseMousePos = mousePosition;
         }
     }
+
 
     private void OnMouseUp()
     {
@@ -156,14 +165,13 @@ public class ScreenInteraction : MonoBehaviour
     }
 
 
-
     private IEnumerator InitializeCameraPos()
     {
         float duration = 1.5f;
         float startOrthoSize = 20;
         float endOrthoSize = 8;
         float elapsedTime = 0f;
-    
+
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
@@ -171,32 +179,10 @@ public class ScreenInteraction : MonoBehaviour
             virtualCamera.Lens.OrthographicSize = Mathf.Lerp(startOrthoSize, endOrthoSize, t);
             yield return null;
         }
-    
-    
+
+
         mainCamera.orthographicSize = endOrthoSize;
         InteractAble = true;
         OnInteractAbleTriggered?.Invoke();
     }
-    
- 
-
-
-#if UNITY_EDITOR
-    // private void OnDrawGizmos()
-    // {
-    //     if (map != null)
-    //     {
-    //         Vector2 pixelPos = Utilities.WorldPositionToImagePixel(map, PreviouseMousePos);
-    //         Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-    //
-    //         GUIStyle style = new GUIStyle();
-    //         style.fontSize = 16; // Set the font size
-    //         style.normal.textColor = Color.black; // Set the text color to black
-    //
-    //         UnityEditor.Handles.Label(mousePos, $"({pixelPos.x}, {pixelPos.y})", style);
-    //     }
-    // }
-
-#endif
 }
-#endif

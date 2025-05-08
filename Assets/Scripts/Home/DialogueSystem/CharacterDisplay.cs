@@ -22,8 +22,6 @@ public class CharacterDisplay : MonoBehaviour
     private readonly int[] AngryThreshold = { 1, 20, 50, 70 };
     private const float AngryDecayRate = 2f;
     private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
-
-
     public float TimeToDecreaseAngryPoint = 10; //after 10s not touch, decrease angry point
     private float lastInteractionTime; // Track last interaction time
 
@@ -67,14 +65,14 @@ public class CharacterDisplay : MonoBehaviour
     {
         lastInteractionTime = Time.time;
         ScreenInteraction.Instance.OnCharacterInteracted += LoadCharacterDialogue;
-        ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
+        // ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
     }
 
     private void OnDestroy()
     {
         ScreenInteraction.Instance.OnCharacterInteracted -= LoadCharacterDialogue;
-        ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
-    }
+        // ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
+    }   
 
 
     #region State
@@ -82,6 +80,8 @@ public class CharacterDisplay : MonoBehaviour
     private void LoadCharacterDialogue(CharacterID id)
     {
         characterDialogueSO = GameDataManager.Instance.ReadDialogueData(id, LanguageManager.Instance.currentLanguage);
+        InitializeCharacterVideo(id);
+       
     }
 
     public void TransitionToState(CharacterState newState)
@@ -230,10 +230,14 @@ public class CharacterDisplay : MonoBehaviour
                 type = VideoType.Angry2Idle;
             else if (clipName.StartsWith("angry_3_idle"))
                 type = VideoType.Angry3Idle;
+            else if (clipName.StartsWith("Success"))
+                type = VideoType.Success;
             videoClips.Add(new VideoClipInfo { videoType = type, videoClip = clip });
         }
         renderTexture.SetActive(true);
+        TransitionToState(CharacterState.Entry);
         OnLoadVideosComplete?.Invoke(id);
+        LoadingAnimationController.Instance.SetActive(false);
     }
 
     private void OnCharacterStateChanged(CharacterState state, AngryState ang)

@@ -1,15 +1,12 @@
 using System;
 using UnityEngine;
-using Match3.Shares;
-#if !UNITY_WEBGL
 using Firebase.Extensions;
 using Firebase.Auth;
 using Firebase.Firestore;
-#endif
+using Match3.Shares;
 
 public class AuthenticationManager : MonoBehaviour
 {
-    #if !UNITY_WEBGL
     public static AuthenticationManager Instance { get; private set; }
     public event System.Action<FirebaseUser> OnAuthenticationSuccessfully;
     public event Action<bool> OnNewUserCreate;
@@ -27,6 +24,7 @@ public class AuthenticationManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+
         Instance = this;
 
         IsUserDataLoaded = false;
@@ -36,7 +34,6 @@ public class AuthenticationManager : MonoBehaviour
 
     private void Start()
     {
-
     }
 
 
@@ -51,7 +48,6 @@ public class AuthenticationManager : MonoBehaviour
             }
         }
     }
-    
 
 
     public void SignInAnonymous(FirebaseAuth auth, FirebaseFirestore firestore)
@@ -63,14 +59,13 @@ public class AuthenticationManager : MonoBehaviour
                 Debug.LogError($"Anonymous sign-in failed: {task.Exception}");
                 return;
             }
+
             FirebaseUser user = task.Result.User;
             HandlerNewAndOldUserAnonymous(user, firestore);
             OnAuthenticationSuccessfully?.Invoke(user);
         });
     }
-    
-    
-    
+
 
     // create new user document in Firestore
     private async void CreateNewUserDocument(string userID)
@@ -86,10 +81,9 @@ public class AuthenticationManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log("New user document created successfully!");
                 IsUserDataLoaded = true;
                 IsNewUser = true;
-              
+
                 // HandleChangeScene();
             }
             else
@@ -115,17 +109,66 @@ public class AuthenticationManager : MonoBehaviour
         // });
     }
 
-    private void LoadUserData(DocumentSnapshot snapshot)
+    // private async void LoadUserData(DocumentSnapshot snapshot)
+    // {
+    //     if (snapshot.Exists)
+    //     {
+    //         UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+    //         UserData cloud = snapshot.ConvertTo<UserData>();
+    //         if (snapshot.ContainsField("LastOnline"))
+    //         {
+    //             Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
+    //             TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
+    //             var serverTime = await FirebaseManager.Instance.FetchServerTime();
+    //             // TimeManager.Instance.CalculateOfflineTimeEnergy();
+    //             DateTime loginTime = serverTime.ToDateTime();
+    //             TimeSpan timeDifference = loginTime - cloud.LastOnline;
+    //             int minutesPassed = (int)timeDifference.TotalMinutes;
+    //             cloud.Energy = localData.Energy + minutesPassed;
+    //             cloud.AvaiableBoosters = localData.AvaiableBoosters;
+    //             cloud.AllCharacterData = localData.AllCharacterData;
+    //             TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
+    //         }
+    //         else
+    //         {
+    //             Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
+    //         }
+    //
+    //         UserManager.Instance.UserData = cloud;
+    //
+    //         // Match3.Shares.Utilities.WaitAfterEndOfFrame(() =>
+    //         // {
+    //         //     UserManager.Instance.LoadUserCardDataSO(UserManager.Instance.UserData);
+    //         //     IsUserDataLoaded = true;
+    //         //     HandleChangeScene();
+    //         // });
+    //     }
+    // }
+    private async void LoadUserData(DocumentSnapshot snapshot)
     {
-        Debug.Log("LoadUserData");
         if (snapshot.Exists)
         {
-            UserManager.Instance.UserData = snapshot.ConvertTo<UserData>();
+            UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+            UserData cloud = snapshot.ConvertTo<UserData>();
             if (snapshot.ContainsField("LastOnline"))
             {
                 Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
                 TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-                TimeManager.Instance.CalculateOfflineTimeEnergy();
+                var serverTime = await FirebaseManager.Instance.FetchServerTime();
+
+                DateTime loginTime = serverTime.ToDateTime();
+
+                // Fix: Ensure cloud.LastOnline is properly converted to DateTime
+                DateTime lastOnlineTime = cloud.LastOnline is DateTime
+                    ? (DateTime)cloud.LastOnline
+                    : lastOnlineTimestamp.ToDateTime();
+
+                TimeSpan timeDifference = loginTime - lastOnlineTime;
+                int minutesPassed = (int)timeDifference.TotalMinutes;
+
+                cloud.Energy = localData.Energy + minutesPassed;
+                cloud.AvaiableBoosters = localData.AvaiableBoosters;
+                cloud.AllCharacterData = localData.AllCharacterData;
                 TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
             }
             else
@@ -133,6 +176,7 @@ public class AuthenticationManager : MonoBehaviour
                 Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
             }
 
+            UserManager.Instance.UserData = cloud;
 
             // Match3.Shares.Utilities.WaitAfterEndOfFrame(() =>
             // {
@@ -140,9 +184,9 @@ public class AuthenticationManager : MonoBehaviour
             //     IsUserDataLoaded = true;
             //     HandleChangeScene();
             // });
-
         }
     }
+
     private async void HandlerNewAndOldUserAnonymous(FirebaseUser user, FirebaseFirestore firestore)
     {
         Debug.Log("HandlerNewAndOldUserAnonymous");
@@ -158,13 +202,13 @@ public class AuthenticationManager : MonoBehaviour
             DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
             if (snapShot.Exists)
             {
-                Debug.Log("Load level data");
                 LoadUserData(snapShot);
                 OnNewUserCreate?.Invoke(false);
             }
             else
             {
                 CreateNewUserDocument(userID);
+                Debug.Log("PPPP");
                 OnNewUserCreate?.Invoke(true);
                 TimeManager.Instance.LastOnlineTime = TimeManager.Instance.LoginTime;
             }
@@ -174,5 +218,26 @@ public class AuthenticationManager : MonoBehaviour
             Debug.LogError($"Error: Error checking or creating document: {e.Message}");
         }
     }
-    #endif
+
+    public void SignInWithOutInternet()
+    {
+        Debug.Log("Signing in without internet connection");
+        UserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
+        if (data == null)
+        {
+            data = UserManager.Instance.InitializeNewUserData();
+            UserManager.Instance.UserData = data;
+            IsNewUser = true;
+        }
+        else
+        {
+            Debug.Log("Found local user data. Loading offline mode.");
+            IsNewUser = false;
+        }
+
+        UserManager.Instance.UserData = data;
+        IsUserDataLoaded = true;
+        OnNewUserCreate?.Invoke(IsNewUser);
+        HandleChangeScene();
+    }
 }

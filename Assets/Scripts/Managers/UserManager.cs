@@ -13,8 +13,8 @@ public class UserManager : MonoBehaviour
     public event Action OnUserDataLoaded;
     public event Action<int> OnEnergyChanged; // New event for energy changes
 
-     private int maxEnergy = 100; // Maximum energy cap
-    
+    private int maxEnergy = 100; // Maximum energy cap
+
     public UserData UserData { get; set; }
     public int TotalHeart => GetTotalHeart();
 
@@ -27,14 +27,13 @@ public class UserManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
         GameplayManager.OnWin += OnWinEvent;
-        
+
         // Subscribe to minute elapsed event for energy regeneration
         if (TimeManager.Instance != null)
         {
@@ -45,13 +44,13 @@ public class UserManager : MonoBehaviour
     private void OnDestroy()
     {
         GameplayManager.OnWin -= OnWinEvent;
-        
+
         if (TimeManager.Instance != null)
         {
             TimeManager.Instance.OnMinuteElapsed -= OnMinuteElapsed;
         }
     }
-    
+
     private void OnMinuteElapsed()
     {
         // Regenerate 1 energy per minute if not at max
@@ -70,7 +69,7 @@ public class UserManager : MonoBehaviour
             data.SetPassLevel(LevelManager.Instance.CurrentLevelIndex, heart);
         }
     }
-    
+
     public UserData InitializeNewUserData()
     {
         List<CharacterData> allCharacterData = new List<CharacterData>();
@@ -140,7 +139,7 @@ public class UserManager : MonoBehaviour
         {
             int oldEnergy = UserData.Energy;
             UserData.Energy = Mathf.Min(UserData.Energy + amount, maxEnergy);
-            
+
             // Only invoke event if energy actually changed
             if (oldEnergy != UserData.Energy)
             {
@@ -149,14 +148,14 @@ public class UserManager : MonoBehaviour
             }
         }
     }
-    
+
     public void ConsumeEnergy(int amount)
     {
         if (UserData != null)
         {
             int oldEnergy = UserData.Energy;
             UserData.Energy = Mathf.Max(UserData.Energy - amount, 0);
-            
+
             // Only invoke event if energy actually changed
             if (oldEnergy != UserData.Energy)
             {
@@ -165,7 +164,7 @@ public class UserManager : MonoBehaviour
             }
         }
     }
-    
+
     public bool HasEnoughEnergy(int amount)
     {
         return UserData != null && UserData.Energy >= amount;
@@ -185,51 +184,121 @@ public class UserManager : MonoBehaviour
                 UserData.AvaiableBoosters[i].Quantity += quantity;
             }
         }
+
         UserData.DailyRewardFlag = true;
     }
 
     public bool IsAvailableDailyGift => !UserData.DailyRewardFlag;
 }
+//
+// [FirestoreData]
+// [System.Serializable]
+// public class CharacterData
+// {
+//     [FirestoreProperty]
+//     public CharacterID CharacterID { get; set; }
+//
+//     [FirestoreProperty]
+//     public List<int> Hearts { get; set; }
+//     
+//     [FirestoreProperty]
+//     public int higestLevel { get; set; }
+//
+//     // Parameterless constructor required by Firestore
+//     public CharacterData()
+//     {
+//         CharacterID = CharacterID.None;
+//         Hearts = new();
+//         higestLevel = 0;
+//     }
+//
+//     public void SetPassLevel(int index, int start)
+//     {
+//         if (higestLevel == index)
+//         {
+//             higestLevel++;
+//         }
+//         this.Hearts[index] = start;
+//     }
+//
+//     // Non-serialized helper method
+//     public int TotalHeartPoints()
+//     {
+//         int totalHeartPoints = 0;
+//         for (int i = 0; i < Hearts.Count; i++)
+//         {
+//             totalHeartPoints += Hearts[i];
+//         }
+//         return totalHeartPoints;
+//     }
+// }
+
 
 
 [FirestoreData]
 [System.Serializable]
 public class CharacterData
 {
+    // Serializable fields for Unity
+    [SerializeField] private CharacterID characterId;
+    [SerializeField] private List<int> hearts;
+    [SerializeField] private int highestLevel;
+
+    // Firebase properties mapped to serializable fields
     [FirestoreProperty]
-    public CharacterID CharacterID { get; set; }
+    public CharacterID CharacterID
+    {
+        get => characterId;
+        set => characterId = value;
+    }
 
     [FirestoreProperty]
-    public List<int> Hearts { get; set; }
-    
-    [FirestoreProperty]
-    public int higestLevel { get; set; }
+    public List<int> Hearts
+    {
+        get => hearts;
+        set => hearts = value;
+    }
 
-    // Parameterless constructor required by Firestore
+    [FirestoreProperty]
+    public int higestLevel
+    {
+        get => highestLevel;
+        set => highestLevel = value;
+    }
+
+    // Parameterless constructor for serialization
     public CharacterData()
     {
-        CharacterID = CharacterID.None;
-        Hearts = new();
-        higestLevel = 0;
+        characterId = CharacterID.None;
+        hearts = new List<int>();
+        highestLevel = 0;
     }
 
     public void SetPassLevel(int index, int start)
     {
-        if (higestLevel == index)
+        if (highestLevel == index)
         {
-            higestLevel++;
+            highestLevel++;
         }
-        this.Hearts[index] = start;
+
+        // Make sure the hearts list is large enough
+        while (hearts.Count <= index)
+        {
+            hearts.Add(0);
+        }
+
+        hearts[index] = start;
     }
 
     // Non-serialized helper method
     public int TotalHeartPoints()
     {
         int totalHeartPoints = 0;
-        for (int i = 0; i < Hearts.Count; i++)
+        for (int i = 0; i < hearts.Count; i++)
         {
-            totalHeartPoints += Hearts[i];
+            totalHeartPoints += hearts[i];
         }
+
         return totalHeartPoints;
     }
 }

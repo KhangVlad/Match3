@@ -40,10 +40,10 @@ public class UILevelDesignManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI warningText;
     [SerializeField] private TextMeshProUGUI heartText;
+    [SerializeField] private RawImage renderTexture;
 
     [Header("Levels Panel")] [SerializeField]
     private Transform levelsPanel;
-
     [SerializeField] private Button selectLevelBtn;
     [SerializeField] private Button closeLevelsPanel;
     [SerializeField] private UILevelDesign nextLevel;
@@ -131,14 +131,11 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void HandleCharacterInteracted(CharacterID id)
     {
+      
         currentCharacterId = id;
         LoadCharacterData(id);
         UpdateUI();
-        CharacterDisplay.Instance.TransitionToState(CharacterState.Entry);
-        Utilities.WaitAfter(0.2f, () =>
-        {
-            TownCanvasController.Instance.ActiveLevelDesign(true);
-        });
+        TownCanvasController.Instance.ActiveLevelDesign(true);
     }
 
 
@@ -162,7 +159,6 @@ public class UILevelDesignManager : MonoBehaviour
         if (currentChosenLevel == null)
             return;
         AudioManager.Instance.PlayButtonSfx();
-
         if (UserManager.Instance.HasEnoughEnergy(10)) // move to UILevelInformation  later
         {
             UserManager.Instance.ConsumeEnergy(10);
@@ -231,26 +227,34 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void ShowCanvas()
     {
-        int totalHeartPoints = characterData.TotalHeartPoints();
+        renderTexture.enabled = true;
+        int totalHeartPoints = UserManager.Instance.GetTotalHeart();
         int requiredHearts = characterDataSO.TotalHeartToUnlock;
         bool hasEnoughHearts = totalHeartPoints >= requiredHearts;
         UpdateHeartUI(hasEnoughHearts, totalHeartPoints, requiredHearts);
         canvas.enabled = true;
         selectBtn.gameObject.SetActive(false);
         canvas.transform.localScale = Vector3.zero;
-        canvasGroup.alpha = 0;
-        Sequence showSequence = DOTween.Sequence();
-        showSequence.Append(canvas.transform.DOScale(Vector3.one, ANIMATION_DURATION).SetEase(Ease.OutBack));
-        showSequence.Join(canvasGroup.DOFade(1, ANIMATION_DURATION));
-        showSequence.OnComplete(() =>
-        {
-            string dialogue = hasEnoughHearts
-                ? CharacterDisplay.Instance.GetGreetingDialog()
-                : CharacterDisplay.Instance.GetLowSympathyDialogue();
-            DialogueManager.Instance.ShowDialogue(typewriterEffect, dialogue);
-            if (!hasEnoughHearts)
-                warningPanel.gameObject.SetActive(true);
-        });
+        // canvasGroup.alpha = 0;
+        // Sequence showSequence = DOTween.Sequence();
+        // showSequence.Append(canvas.transform.DOScale(Vector3.one, ANIMATION_DURATION).SetEase(Ease.OutBack));
+        // showSequence.Join(canvasGroup.DOFade(1, ANIMATION_DURATION));
+        // showSequence.OnComplete(() =>
+        // {
+        //     string dialogue = hasEnoughHearts
+        //         ? CharacterDisplay.Instance.GetGreetingDialog()
+        //         : CharacterDisplay.Instance.GetLowSympathyDialogue();
+        //     DialogueManager.Instance.ShowDialogue(typewriterEffect, dialogue);
+        //     if (!hasEnoughHearts)
+        //         warningPanel.gameObject.SetActive(true);
+        // });
+        canvasGroup.alpha = 1;
+        string dialogue = hasEnoughHearts
+            ? CharacterDisplay.Instance.GetGreetingDialog()
+            : CharacterDisplay.Instance.GetLowSympathyDialogue();
+        DialogueManager.Instance.ShowDialogue(typewriterEffect, dialogue);
+        if (!hasEnoughHearts)
+            warningPanel.gameObject.SetActive(true);
     }
 
     private void HideCanvas()
@@ -266,6 +270,7 @@ public class UILevelDesignManager : MonoBehaviour
 
         CharacterDisplay.Instance.TransitionToState(CharacterState.Exit);
         typewriterEffect.ResetText();
+        renderTexture.enabled = false;
     }
 
     private void UpdateHeartUI(bool hasEnoughHearts, int totalHeartPoints, int requiredHearts)
@@ -365,9 +370,7 @@ public class UILevelDesignManager : MonoBehaviour
     private IEnumerator AnimateLayoutItems(Transform layoutTransform, LayoutAnimationSettings settings)
     {
         layoutTransform.gameObject.SetActive(true);
-
         LayoutRebuilder.ForceRebuildLayoutImmediate(layoutTransform.GetComponent<RectTransform>());
-        yield return null;
         yield return null;
         for (int i = 0; i < layoutTransform.childCount; i++)
         {

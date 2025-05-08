@@ -1,9 +1,9 @@
-#if !UNITY_WEBGL
 using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Firebase.Firestore;
 using Match3.Enums;
+using Match3.Shares;
 
 [Serializable]
 public class SerializableDateTime
@@ -45,10 +45,10 @@ public class TimeManager : MonoBehaviour
     public static TimeManager Instance { get; private set; }
     [SerializeField] private int currentHour = 25;
     [SerializeField] private int maxEnergy = 25; // Maximum energy cap
-    
+
     private TimeOfDay currentTimeOfDay;
     public event Action OnTimeChanged;
-    
+
     // Minute counter and event
     [SerializeField] private float minuteCounter = 0f;
     [SerializeField] private float DispatchInterval = 60f; // Time in seconds to represent a minute
@@ -65,12 +65,9 @@ public class TimeManager : MonoBehaviour
 
     public DateTime LoginTime
     {
-        get => loginTime.DateTime;  
+        get => loginTime.DateTime;
         set => loginTime.DateTime = value;
     }
-
-    // [field: SerializeField] public DateTime LastOnlineTime { get; set; }
-    // [field: SerializeField] public DateTime LoginTime { get; set; }
 
     private static readonly Dictionary<DayOfWeek, DayInWeek> DayMapping = new()
     {
@@ -101,23 +98,28 @@ public class TimeManager : MonoBehaviour
         currentTimeOfDay = GetCurrentTimeOfDay();
     }
 
- 
 
-    public void CalculateOfflineTimeEnergy()
+    public int CalculateOfflineTimeEnergy()
     {
-        Debug.Log("AAAA");
+        int totalRegenEnergy = 0;
         if (LastOnlineTime != default && UserManager.Instance != null && UserManager.Instance.UserData != null)
         {
             // Calculate minutes passed since last online
             TimeSpan timeDifference = LoginTime - LastOnlineTime;
             int minutesPassed = (int)timeDifference.TotalMinutes;
+            totalRegenEnergy = minutesPassed;
             if (minutesPassed > 0)
             {
+                
                 Debug.Log($"Restoring {minutesPassed} energy from offline time");
                 UserManager.Instance.RestoreEnergy(minutesPassed);
             }
         }
+
+        return totalRegenEnergy;
+
     }
+
     public void CheckNewDay(Timestamp serverTimestamp)
     {
         if (LastOnlineTime == default || UserManager.Instance == null || UserManager.Instance.UserData == null)
@@ -127,29 +129,34 @@ public class TimeManager : MonoBehaviour
         }
 
         DateTime serverDateTime = serverTimestamp.ToDateTime();
-        
+
         bool isNewDay = LastOnlineTime.Date != serverDateTime.Date;
-        
+
         if (isNewDay)
         {
             UserManager.Instance.ResetDailyGift();
         }
         else
         {
-            Debug.Log("old day");
         }
     }
-    
-    
+
+
     private void Update()
     {
-        minuteCounter += Time.deltaTime;
         
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log("AAAA");
+            UserManager.Instance.ConsumeEnergy(10);
+        }
+        if (!Utilities.IsConnectedToInternet()) return;
+        minuteCounter += Time.deltaTime;
         if (minuteCounter >= DispatchInterval)
         {
             minuteCounter -= DispatchInterval;
             OnMinuteElapsed?.Invoke();
-            
+
             // Update hour if needed
             int newHour = DateTime.Now.Hour;
             if (newHour != currentHour)
@@ -160,11 +167,7 @@ public class TimeManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            UserManager.Instance.ConsumeEnergy(10);
-        }
-    }   
+    }
 
     public TimeOfDay GetCurrentTimeOfDay()
     {
@@ -191,7 +194,6 @@ public class TimeManager : MonoBehaviour
             throw new ArgumentOutOfRangeException(nameof(currentDayOfWeek), "Invalid day of the week.");
         }
     }
-
 }
 
 public enum TimeOfDay
@@ -202,4 +204,3 @@ public enum TimeOfDay
     Evening, //from 18:00 to 21:00
     Night //from 21:00 to 6:00
 }
-#endif

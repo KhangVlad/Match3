@@ -1,5 +1,6 @@
 using System;
 using Match3.Enums;
+using Match3.Shares;
 using UnityEngine;
 
 namespace Match3
@@ -77,11 +78,12 @@ namespace Match3
 
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateTurnCount;
             Match3Grid.OnEndOfTurn += OnEndOfTurn_UpdateGameState;
-
             Match3Grid.OnEndOfTurn += OnEndOfTurnQuestTriggered;
             Lock.OnLockMatch += OnLockMatchTriggered;
             Ice.OnIceUnlocked += OnIceUnlockedTriggered;
             Tile.OnMatched += OnTileMatchedTriggered;
+            GameplayVideo.Instance.InitializeCharacterVideo(LevelManager.Instance.CharacterLevelData.CharacterID); //khang add
+          
         }
 
 

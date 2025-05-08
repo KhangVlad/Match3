@@ -23,9 +23,8 @@ public class UISettingManager : MonoBehaviour
 
     [Header("Temp Variables")] [SerializeField]
     private Button _dayAndNightToggle; //get child image to change sprite
-
     private TimeOfDay _timeOfDay;
-
+    
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -46,16 +45,13 @@ public class UISettingManager : MonoBehaviour
 
     private void OnDayAndNightToggle()
     {
-        if (_timeOfDay == TimeOfDay.Morning)
+        if (LightManager.Instance == null)
         {
-            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Night);
-            _timeOfDay = TimeOfDay.Night;
+            Debug.LogError("LightManager instance is null!");
+            return;
         }
-        else
-        {
-            TimeLineManager.Instance.ChangeTimeOfDay(TimeOfDay.Morning);
-            _timeOfDay = TimeOfDay.Morning;
-        }
+        AudioManager.Instance.PlayButtonSfx();
+        LightManager.Instance.ToggleDayNight();
     }
 
     private void OnLanguageChange(int value)
