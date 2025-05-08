@@ -150,6 +150,7 @@ public class AuthenticationManager : MonoBehaviour
         if (snapshot.Exists)
         {
             UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+            Debug.Log(localData == null);
             UserData cloud = snapshot.ConvertTo<UserData>();
             TimeManager.Instance.LastSpinTime = cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
 

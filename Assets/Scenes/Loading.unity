@@ -273,8 +273,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 654.1, y: -217.69995}
-  m_SizeDelta: {x: 700, y: 1000}
+  m_AnchoredPosition: {x: 997, y: 208}
+  m_SizeDelta: {x: 1024, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &93950511
 MonoBehaviour:
@@ -1221,8 +1221,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -384.7, y: -200}
-  m_SizeDelta: {x: 700, y: 1000}
+  m_AnchoredPosition: {x: -1112, y: -557}
+  m_SizeDelta: {x: 1024, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &410284482
 MonoBehaviour:
@@ -1871,21 +1871,28 @@ MonoBehaviour:
   currentHour: 25
   maxEnergy: 25
   minuteCounter: 0
-  DispatchInterval: 30
+  DispatchInterval: 60
   lastOnlineTime:
     year: 2025
-    month: 4
-    day: 25
-    hour: 11
-    minute: 9
-    second: 24
+    month: 5
+    day: 8
+    hour: 13
+    minute: 50
+    second: 14
   loginTime:
     year: 2025
-    month: 4
-    day: 25
-    hour: 11
-    minute: 9
-    second: 24
+    month: 5
+    day: 8
+    hour: 13
+    minute: 50
+    second: 14
+  lastSpinTime:
+    year: 2025
+    month: 5
+    day: 8
+    hour: 13
+    minute: 50
+    second: 14
 --- !u!1 &825611112
 GameObject:
   m_ObjectHideFlags: 0
@@ -2051,8 +2058,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 713.9, y: 93.30005}
-  m_SizeDelta: {x: 700, y: 1000}
+  m_AnchoredPosition: {x: 1208, y: -318}
+  m_SizeDelta: {x: 1024, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &920754852
 MonoBehaviour:
@@ -2497,7 +2504,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -105.20001, y: 51.099976}
+  m_AnchoredPosition: {x: -105.20007, y: 51.099854}
   m_SizeDelta: {x: 160, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1341478162
@@ -2602,8 +2609,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -332.14, y: 0}
-  m_SizeDelta: {x: 700, y: 1000}
+  m_AnchoredPosition: {x: -812, y: 261}
+  m_SizeDelta: {x: 1024, y: 1024}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1359850193
 MonoBehaviour:
