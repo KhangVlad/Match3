@@ -51,6 +51,7 @@ namespace Match3
         public bool IsDisplay { get; private set; } = true;
         public bool HasTriggeredRowBomb { get; set; } = false;
         public bool HasTriggererColumnBomb { get; set; } = false;
+        public bool HasTriggerBlastBomb { get; set; } = false;  
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
         public Transform BloomTransform { get; private set; }
@@ -404,9 +405,12 @@ namespace Match3
                 randomness: 3f         // Less randomness = more controlled movement
             );
         }
-        public virtual void PlayScaleTile(float endValue, float duration, Ease ease)
+        public virtual void PlayScaleTile(float endValue, float duration, Ease ease, System.Action omComplete = null)
         {
-            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease);
+            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease).OnComplete(()=>
+            {
+                omComplete?.Invoke();
+            });
         }
         public virtual void MovePath(Vector3[] path, float duration, PathType pathType, Ease ease, System.Action oncompleted)
         {

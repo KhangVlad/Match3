@@ -91,7 +91,7 @@ namespace Match3
 
 
         [Header("VFX")]
-        [SerializeField] private float _rocketPlayTime = 0.75f;
+        [SerializeField] private float _rocketPlayTime = 0.5f;
         private bool _isBlastBombTriggered = false;
 
 
@@ -208,6 +208,7 @@ namespace Match3
             _canPlay = false;
 
             StartCoroutine(ImplementGameLogicCoroutine(triggerEvent: false));
+            //Time.timeScale = 0.2f;
         }
 
 
@@ -441,13 +442,16 @@ namespace Match3
                 Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
                 if (IsValidGridTile(gridPosition.x, gridPosition.y))
                 {
-                    Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
-                    _tiles[gridPosition.x + gridPosition.y * Width] = null;
+                    if (_tiles[gridPosition.x + gridPosition.y * Width] != null)
+                    {
+                        Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
+                        _tiles[gridPosition.x + gridPosition.y * Width] = null;
 
-                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
-                    newTile.UpdatePosition();
-                    newTile.SetSpecialTile(SpecialTileID.ColumnBomb);
-                    _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
+                        Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                        newTile.UpdatePosition();
+                        newTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                        _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
+                    }
                 }
             }
 
@@ -923,7 +927,7 @@ namespace Match3
         {
             HandleFindColorBurst();
             HandleFindBlastBomb();
-            HandleSpecialMatch();
+            yield return StartCoroutine(HandleSpecialMatchCoroutine());
 
             for (int y = 0; y < Height; y++)
             {
@@ -969,6 +973,7 @@ namespace Match3
 
         private void HandleBlastBomb(Tile tile)
         {
+            Debug.Log("HandleBlastBomb");
             _isBlastBombTriggered = true;
             PlayFlashBombVfx(tile);
             Dictionary<int, int> highestBombTileDict = new();
@@ -1289,6 +1294,8 @@ namespace Match3
                 }
             }
 
+            //yield return new WaitForSeconds(_rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
+
 
             //Debug.Log($"This: {_singleColumnBombCoroutineDict.Count}");
             if (singleColumnBombCoroutineDict.Count > 0)
@@ -1354,6 +1361,7 @@ namespace Match3
 
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
+                            //Debug.Log("Handle Row Bomb AA");
                             if (_tiles[index].HasTriggeredRowBomb == false)
                             {
                                 Coroutine coroutine = null;
@@ -1394,6 +1402,7 @@ namespace Match3
 
                         if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
+                            //Debug.Log("Handle Row Bomb BB");
                             if (_tiles[index].HasTriggeredRowBomb == false)
                             {
                                 Coroutine coroutine = null;
@@ -1423,6 +1432,7 @@ namespace Match3
                         yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
                 }
             }
+            //yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
 
             if (_singleAllRowBombCoroutineDict.Count > 0)
             {
@@ -1874,9 +1884,9 @@ namespace Match3
             }
             return false;
         }
-        private void HandleSpecialMatch()
+        private IEnumerator HandleSpecialMatchCoroutine()
         {
-            if (_selectedTile == null || _swappedTile == null) return;
+            if (_selectedTile == null || _swappedTile == null) yield break;
             // if (_matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.None ||
             //     _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.Match) return;
             switch (_selectedTile.SpecialProperties)
@@ -1902,49 +1912,53 @@ namespace Match3
 
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        Debug.Log("Handle Colum Bomb + Color Burst here");
+
+                        _tiles[_swappedTile.X + _swappedTile.Y * Width].ReturnToPool();
+                        AddTile(_swappedTile.X, _swappedTile.Y, TileID.None, BlockID.None, display: true);
+                        _tiles[_swappedTile.X + _swappedTile.Y * Width].UpdatePosition();
+                        _tiles[_swappedTile.X + _swappedTile.Y * Width].PlayAppearAnimation(0.1f);
+                        SetMatchBuffer(_swappedTile.X + _swappedTile.Y * Width, MatchID.SpecialMatch);
+
+                        TileID mostTileID = FindMostTile();
+                        Debug.Log($"Most tile id:  {mostTileID}");
+
+                        for(int i = 0; i < _tiles.Length; i++)
+                        {
+                            int x = i % Width;
+                            int y = i / Width;
+
+                            if (_tiles[i].ID == mostTileID)
+                            {
+                                _tiles[i].ReturnToPool();
+                               Tile newTile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                newTile.UpdatePosition();
+                                newTile.PlayAppearAnimation(0.1f);
+                                if (Random.value < 0.5f)
+                                {
+                                    newTile.SetSpecialTile(SpecialTileID.RowBomb);
+                                    SetMatchBuffer(i, MatchID.SpecialMatch);
+                                }
+                                else
+                                {
+                                    newTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                                    SetMatchBuffer(i, MatchID.SpecialMatch);
+                                }
+
+
+                            }
+                        }
+
+
+                    }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        Debug.Log("Here");
-        
-                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
-                            _activeColumnBombSet.Add(_selectedTile);
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
-                            _activeRowBombSet.Add(_selectedTile);
-                        // _swappedTile.HasTriggererColumnBomb = true;
-
-
-                        // PlayClearVerticalVFX(_selectedTile);
-                        // if (_activeColumnBombSet.Contains(_selectedTile) == false)
-                        //     _activeColumnBombSet.Add(_selectedTile);
-
-                        // if (IsValidGridTile(_selectedTile.X - 1, _selectedTile.Y))
-                        // {
-                        //     PlayClearVerticalVFX(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
-                        //     if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]) == false)
-                        //         _activeColumnBombSet.Add(_tiles[_selectedTile.X - 1 + _selectedTile.Y * Width]);
-                        // }
-                        // if (IsValidGridTile(_selectedTile.X + 1, _selectedTile.Y))
-                        // {
-                        //     PlayClearVerticalVFX(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
-                        //     if (_activeColumnBombSet.Contains(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]) == false)
-                        //         _activeColumnBombSet.Add(_tiles[_selectedTile.X + 1 + _selectedTile.Y * Width]);
-                        // }
-
-                        // if (_activeRowBombSet.Contains(_selectedTile) == false)
-                        //     _activeRowBombSet.Add(_selectedTile);
-
-                        // if (IsValidGridTile(_selectedTile.X, _selectedTile.Y - 1))
-                        // {
-                        //     if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]) == false)
-                        //         _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y - 1) * Width]);
-                        // }
-
-                        // if (IsValidGridTile(_selectedTile.X, _selectedTile.Y + 1))
-                        // {
-                        //     if (_activeRowBombSet.Contains(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]) == false)
-                        //         _activeRowBombSet.Add(_tiles[_selectedTile.X + (_selectedTile.Y + 1) * Width]);
-                        // }
-
+                        //Debug.Log("Here");
+                        _selectedTile.HasTriggererColumnBomb = true;
+                        _swappedTile.HasTriggerBlastBomb = true;
+                        yield return StartCoroutine(HandleRowBombAndColumnBombCoroutine(_selectedTile, _swappedTile));
                         AudioManager.Instance.PlayMatch5Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.None)
@@ -1991,7 +2005,9 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        CombineMatch4AndMatch5();
+                        _selectedTile.HasTriggeredRowBomb = true;
+                        _swappedTile.HasTriggerBlastBomb = true;
+                        yield return StartCoroutine(HandleRowBombAndColumnBombCoroutine(_selectedTile, _swappedTile));
                         AudioManager.Instance.PlayMatch5Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.None)
@@ -2019,11 +2035,21 @@ namespace Match3
                         // UpdateBlastBombTriggerBuffer(_selectedTile);
                         _triggeredMatch5Set.Add(_selectedTile.X + _selectedTile.Y * Width);
                     }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
-                            _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        CombineMatch4AndMatch5();
+                        _selectedTile.HasTriggerBlastBomb = true;
+                        _swappedTile.HasTriggeredRowBomb = true;
+                        yield return StartCoroutine(HandleRowBombAndColumnBombCoroutine(_selectedTile, _swappedTile));
+                        AudioManager.Instance.PlayMatch5Sfx();
 
+                        //CombineMatch4AndMatch5();
+                        //AudioManager.Instance.PlayMatch5Sfx();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
+                    {
+                        _selectedTile.HasTriggerBlastBomb = true;
+                        _swappedTile.HasTriggererColumnBomb = true;
+                        yield return StartCoroutine(HandleRowBombAndColumnBombCoroutine(_selectedTile, _swappedTile));
                         AudioManager.Instance.PlayMatch5Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
@@ -2146,7 +2172,136 @@ namespace Match3
                     }
                 }
             }
+
+            TileID FindMostTile()
+            {
+                var mostCommonTileID = _tiles
+                       .Where(tile => tile.ID != TileID.None) // filter out TileID.None
+                       .GroupBy(tile => tile.ID)
+                       .OrderByDescending(group => group.Count())
+                       .First()
+                       .Key;
+                return mostCommonTileID;
+            }
         }
+
+
+        private IEnumerator HandleRowBombAndColumnBombCoroutine(Tile selectedTile, Tile swappedTile)
+        {
+            Vector3 centerPosition = (selectedTile.transform.position + swappedTile.transform.position) / 2f;
+
+
+            selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+            {
+                selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
+                {
+                    selectedTile.Emissive(0.2f);
+                    selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                    {
+                        selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
+                    });
+                });
+            });
+
+
+
+            swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+            {
+                swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
+                {
+                    swappedTile.Emissive(0.2f);
+                    swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                    {
+                        swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
+                    });
+                });
+            });
+
+
+            selectedTile.SetRenderOrder(5);
+            Vector3 offsetA = (swappedTile.transform.position - selectedTile.transform.position).normalized * 0.5f;
+            selectedTile.MoveToPosition(swappedTile.transform.position + offsetA, 0.2f, Ease.Linear, () =>
+            {
+                selectedTile.SetRenderOrder(10);
+                selectedTile.MoveToPosition(swappedTile.transform.position, 0.2f, Ease.Linear, () =>
+                {
+                    selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                });
+            });
+
+            swappedTile.SetRenderOrder(10);
+            Vector3 offsetB = (selectedTile.transform.position - swappedTile.transform.position).normalized * 0.5f;
+            swappedTile.MoveToPosition(selectedTile.transform.position + offsetB, 0.2f, Ease.Linear, () =>
+            {
+                swappedTile.SetRenderOrder(5);
+                swappedTile.MoveToPosition(selectedTile.transform.position, 0.2f, Ease.Linear, () =>
+                {
+                    swappedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                });
+            });
+
+
+            yield return new WaitForSeconds(0.5f);
+            Debug.Log("HandleRowBombAndColumnBomb");
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    int offsetX = selectedTile.X + x;
+                    int offsetY = selectedTile.Y + y;
+
+                    HorizontalRocketVfx horizontalVfx = (HorizontalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+                    horizontalVfx.transform.position = new Vector3(offsetX + 0.5f, offsetY + 0.5f, 0f);
+                    horizontalVfx.Play(_rocketPlayTime);
+
+                    VerticalRocketVfx verticalVfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+                    verticalVfx.transform.position = new Vector3(offsetX + 0.5f, offsetY + 0.5f, 0f);
+                    verticalVfx.Play(_rocketPlayTime);
+
+                    ExplosionVertical(offsetX);
+                    ExplosionHorizontal(offsetY);
+                }
+            }
+            PlayFlashBombVfx(_selectedTile);
+            //yield return new WaitForSeconds(_rocketPlayTime);
+
+
+
+            void ExplosionHorizontal(int y)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    if (IsValidGridTile(x, y) == false) continue;
+
+                    _matchBuffer[x + y * Width] = MatchID.SpecialMatch;
+                    if (_tiles[x + y * Width] != null)
+                    {
+                        if (_tiles[x + y * Width].CurrentBlock is NoneBlock)
+                        {
+                            _tiles[x + y * Width].Display(false);
+                        }
+                    }
+                }
+            }
+
+            void ExplosionVertical(int x)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    if (IsValidGridTile(x, y) == false) continue;
+
+                    _matchBuffer[x + y * Width] = MatchID.SpecialMatch;
+                    if (_tiles[x + y * Width] != null)
+                    {
+                        if (_tiles[x + y * Width].CurrentBlock is NoneBlock)
+                        {
+                            _tiles[x + y * Width].Display(false);
+                        }
+                    }
+                }
+            }
+        }
+
         private void HandleMatchSameIDInRow(Tile tile, int sameIDCountInRow)
         {
             if (sameIDCountInRow < 2) return;
@@ -2910,21 +3065,32 @@ namespace Match3
                         {
                             //Debug.Log("Handle Special Match 4 Horizontal");
                             //EnableHorizontalMatchBuffer(tile.Y);
-                            if (_activeRowBombSet.Contains(tile) == false)
-                                _activeRowBombSet.Add(tile);
+                            if (tile.HasTriggeredRowBomb == false)
+                            {
+                                if (_activeRowBombSet.Contains(tile) == false)
+                                {
+                                    _activeRowBombSet.Add(tile);
+                                }
+                            }
                         }
                         else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
                         {
-                            //Debug.Log("Handle Special Match 4 Vertical");
-                            //EnableVerticalMatchBuffer(tile.X);
-                            if (_activeColumnBombSet.Contains(tile) == false)
-                                _activeColumnBombSet.Add(tile);
+                            if (tile.HasTriggererColumnBomb == false)
+                            {
+                                if (_activeColumnBombSet.Contains(tile) == false)
+                                {
+                                    _activeColumnBombSet.Add(tile);
+                                }
+                            }
                         }
                         else if (tile.SpecialProperties == SpecialTileID.BlastBomb)
                         {
                             //Debug.Log("Handle Special Match 5");
-                            PlayFlashBombVfx(tile);
-                            UpdateBlastBombTriggerBuffer(tile);
+                            if (tile.HasTriggerBlastBomb == false)
+                            {
+                                PlayFlashBombVfx(tile);
+                                UpdateBlastBombTriggerBuffer(tile);
+                            }
                         }
                         else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
                         {
@@ -3558,7 +3724,6 @@ namespace Match3
 
         private IEnumerator SandFallingFillGridCoroutine()
         {
-
             void SwapTile(int x, int y, int xx, int yy)
             {
                 var temp = _tiles[x + y * Width];
@@ -3588,35 +3753,35 @@ namespace Match3
                         {
                             if (IsValidMoveTile(x, y) == false)
                             {
-                                // Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot move:   {x}  {y}");
+                                //Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot move:   {x}  {y}");
                                 continue;
                             }
                             if (currTile.CurrentBlock.CanFillDownThrough() == false)
                             {
-                                // Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot drop down:   {x}  {y}");
+                                //Debug.Log($"Block {currTile.CurrentBlock.BlockID} cannot drop down:   {x}  {y}");
                                 continue;
                             }
 
                             // Check below tiles
                             for (int yy = y - 1; yy >= 0; yy--)
                             {
-                                // Debug.Log($"Loop:  ({x}   {y})       ({x}   {yy})");
+                                //Debug.Log($"Loop:  ({x}   {y})       ({x}   {yy})");
                                 if (IsValidGridTile(x, yy))
                                 {
                                     if (_tiles[x + yy * Width] != null)
                                     {
-                                        // if (_tiles[x + yy * Width].CurrentBlock is not VoidBlock &&
-                                        //    _tiles[x + yy * Width].CurrentBlock is not NoneBlock)
-                                        // {
-                                        //     Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
-                                        //     break;
-                                        // }
-
-                                        if (_tiles[x + yy * Width].CurrentBlock is NoneBlock)
+                                        if (_tiles[x + yy * Width].CurrentBlock is not VoidBlock &&
+                                           _tiles[x + yy * Width].CurrentBlock is not NoneBlock)
                                         {
-                                            // Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
+                                            //Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
                                             break;
                                         }
+
+                                        //if (_tiles[x + yy * Width].CurrentBlock is NoneBlock)
+                                        //{
+                                        //    // Debug.Log($"early break  {_tiles[x + yy * Width].CurrentBlock}");
+                                        //    break;
+                                        //}
                                     }
                                 }
 
@@ -3633,8 +3798,8 @@ namespace Match3
                             }
                         }
                     }
-                    // yield return new WaitForSeconds(0.5f);
-                    // Debug.Log(" ------------ ");
+                    //yield return new WaitForSeconds(0.5f);
+                    //Debug.Log(" ------------ ");
                 }
 
 
@@ -4297,6 +4462,7 @@ namespace Match3
         }
         private void PlayFlashBombVfx(Tile tile)
         {
+            Debug.Log("PlayFlashBombVfx");
             //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
             //if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
             //GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
