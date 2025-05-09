@@ -9,6 +9,7 @@ public class UIDailyGiftManager : MonoBehaviour
     private CanvasGroup canvasGroup;
     [SerializeField] private Button _closebtn;
     [SerializeField] private float fadeDuration = 0.3f;
+    [SerializeField] private SpinWheel spin;
 
     private void Awake()
     {
@@ -18,7 +19,7 @@ public class UIDailyGiftManager : MonoBehaviour
 
     private void Start()
     {
-        _closebtn.onClick.AddListener(() => ActiveCanvas(false));
+        _closebtn.onClick.AddListener(() => TownCanvasController.Instance.ActiveDailyGift(false));
     }
 
     private void OnDestroy()
@@ -31,12 +32,14 @@ public class UIDailyGiftManager : MonoBehaviour
     {
         if (active)
         {
+            spin.enabled = true;
             canvas.enabled = true;
             canvasGroup.alpha = 0f;
             canvasGroup.DOFade(1f, fadeDuration);
         }
         else
         {
+            spin.enabled = false;
             canvasGroup.DOFade(0f, fadeDuration).OnComplete(() => canvas.enabled = false);
         }
     }

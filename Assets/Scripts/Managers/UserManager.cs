@@ -7,16 +7,32 @@ using System.Threading.Tasks;
 
 #if !UNITY_WEBGL
 using Firebase.Firestore;
+
 public class UserManager : MonoBehaviour
 {
     public static UserManager Instance { get; private set; }
     public event Action OnUserDataLoaded;
-    public event Action<int> OnEnergyChanged; // New event for energy changes
+    public event Action<int> OnEnergyChanged;
 
-    private int maxEnergy = 100; // Maximum energy cap
+    private int maxEnergy = 100;
+    private const string USER_ID_KEY = "user_ID";
 
-    public UserData UserData { get; set; }
+    // public UserData UserData { get; set; }
+    public LocalUserData UserData;
     public int TotalHeart => GetTotalHeart();
+
+    private string GenerateUniqueUserID()
+    {
+        string uniqueID = System.Guid.NewGuid().ToString();
+        PlayerPrefs.SetString(USER_ID_KEY, uniqueID);
+        PlayerPrefs.Save();
+        return uniqueID;
+    }
+
+    public string GetUserID()
+    {
+        return PlayerPrefs.GetString(USER_ID_KEY, String.Empty);
+    }
 
     private void Awake()
     {
@@ -39,6 +55,8 @@ public class UserManager : MonoBehaviour
         {
             TimeManager.Instance.OnMinuteElapsed += OnMinuteElapsed;
         }
+
+        Debug.Log("user Id " + GetUserID());
     }
 
     private void OnDestroy()
@@ -60,7 +78,6 @@ public class UserManager : MonoBehaviour
         }
     }
 
-
     private void OnWinEvent(CharacterID id, int heart)
     {
         CharacterData data = UserData.AllCharacterData.Find(x => id == x.CharacterID);
@@ -70,8 +87,10 @@ public class UserManager : MonoBehaviour
         }
     }
 
-    public UserData InitializeNewUserData()
+    public LocalUserData InitializeNewUserData()
     {
+        Debug.Log("new user");
+        GenerateUniqueUserID();
         List<CharacterData> allCharacterData = new List<CharacterData>();
         foreach (CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
         {
@@ -95,7 +114,7 @@ public class UserManager : MonoBehaviour
             }
         }
 
-        UserData = new UserData()
+        UserData = new LocalUserData()
         {
             AvaiableBoosters = new()
             {
@@ -110,11 +129,14 @@ public class UserManager : MonoBehaviour
                 new BoosterSlot(Match3.BoosterID.Hammer, 99),
             },
             AllCharacterData = allCharacterData,
-            LastOnline = TimeManager.Instance.LoginTime,
-            LastSpinTime = DateTime.Now,
+            LastOnlineTimestamp = TimeManager.Instance.LoginTime.ToString(),
+            SpinTime = TimeManager.Instance.ServerTime.AddHours(-12).ToString(),
             Energy = 80,
-            DailyRewardFlag = false,
         };
+
+        // Notify that user data has been loaded
+        OnUserDataLoaded?.Invoke();
+
         return UserData;
     }
 
@@ -171,10 +193,7 @@ public class UserManager : MonoBehaviour
         return UserData != null && UserData.Energy >= amount;
     }
 
-    public void ResetDailyGift()
-    {
-        UserData.DailyRewardFlag = false;
-    }
+
 
     public void ClaimDailyReward(BoosterID id, int quantity)
     {
@@ -186,54 +205,9 @@ public class UserManager : MonoBehaviour
             }
         }
 
-        UserData.DailyRewardFlag = true;
     }
 
-    public bool IsAvailableDailyGift => !UserData.DailyRewardFlag;
 }
-//
-// [FirestoreData]
-// [System.Serializable]
-// public class CharacterData
-// {
-//     [FirestoreProperty]
-//     public CharacterID CharacterID { get; set; }
-//
-//     [FirestoreProperty]
-//     public List<int> Hearts { get; set; }
-//     
-//     [FirestoreProperty]
-//     public int higestLevel { get; set; }
-//
-//     // Parameterless constructor required by Firestore
-//     public CharacterData()
-//     {
-//         CharacterID = CharacterID.None;
-//         Hearts = new();
-//         higestLevel = 0;
-//     }
-//
-//     public void SetPassLevel(int index, int start)
-//     {
-//         if (higestLevel == index)
-//         {
-//             higestLevel++;
-//         }
-//         this.Hearts[index] = start;
-//     }
-//
-//     // Non-serialized helper method
-//     public int TotalHeartPoints()
-//     {
-//         int totalHeartPoints = 0;
-//         for (int i = 0; i < Hearts.Count; i++)
-//         {
-//             totalHeartPoints += Hearts[i];
-//         }
-//         return totalHeartPoints;
-//     }
-// }
-
 
 
 [FirestoreData]

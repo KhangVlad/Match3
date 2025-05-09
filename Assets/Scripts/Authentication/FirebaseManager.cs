@@ -51,17 +51,17 @@ public class FirebaseManager : MonoBehaviour
                 App = FirebaseApp.DefaultInstance;
                 Auth = FirebaseAuth.DefaultInstance;
                 Firestore = FirebaseFirestore.DefaultInstance;
-                if (Utilities.IsConnectedToInternet())
-                {
-                    AuthenticationManager.Instance.SignInAnonymous(Auth, Firestore);
-                }
-                else
-                { 
-                    Debug.Log("AAAA");
-                    AuthenticationManager.Instance.SignInWithOutInternet();
-                }
-
-                
+                // if (Utilities.IsConnectedToInternet())
+                // {
+                //     AuthenticationManager.Instance.SignInAnonymous(Auth, Firestore);
+                // }
+                // else
+                // { 
+                //     Debug.Log("AAAA");
+                //     
+                // }
+            
+                AuthenticationManager.Instance.SignInWithOutInternet();
                 //FetchServerTime();
                 Debug.Log("Firebase initialized successfully!");
             }

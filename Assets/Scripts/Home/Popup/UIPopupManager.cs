@@ -100,7 +100,6 @@ public class UIPopupManager : MonoBehaviour
 
     public void ShowWarningPopup(string text)
     {
-        Debug.Log("Showing warning popup: " + text);
         ShowFromPool(warningPrefab, warningPool, text);
     }
 

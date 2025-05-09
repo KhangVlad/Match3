@@ -51,232 +51,183 @@ public class AuthenticationManager : MonoBehaviour
     }
 
 
-    public void SignInAnonymous(FirebaseAuth auth, FirebaseFirestore firestore)
-    {
-        auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                Debug.LogError($"Anonymous sign-in failed: {task.Exception}");
-                return;
-            }
-
-            FirebaseUser user = task.Result.User;
-            HandlerNewAndOldUserAnonymous(user, firestore);
-            OnAuthenticationSuccessfully?.Invoke(user);
-        });
-    }
-
-
-    // create new user document in Firestore
-    private async void CreateNewUserDocument(string userID)
-    {
-        Debug.Log($"CreateNewUserDocument  {userID}");
-        DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("users").Document(userID);
-        UserData userData = UserManager.Instance.InitializeNewUserData();
-
-        //UserManager.Instance.InitializeUserEvents();
-        //TimeManager.Instance.Initialize();
-
-        await docRef.SetAsync(userData).ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                IsUserDataLoaded = true;
-                IsNewUser = true;
-
-                // HandleChangeScene();
-            }
-            else
-            {
-                Debug.LogError("Error creating new user document: " + task.Exception);
-            }
-        });
-
-        // DocumentReference shopDocRef = FirebaseManager.Instance.Firestore.Collection("shops").Document(userID);
-        // ShopMarket market = ShopManager.Instance.InitializeMarket();
-        // market.LoadMarket();
-        // await shopDocRef.SetAsync(market).ContinueWithOnMainThread(task =>
-        // {
-        //     if (task.IsCompleted)
-        //     {
-        //         IsShopLoaded = true;
-        //         HandleChangeScene();
-        //     }
-        //     else
-        //     {
-        //         Debug.LogError("Error creating new shop market document: " + task.Exception);
-        //     }
-        // });
-    }
-
-
-    // private async void LoadUserData(DocumentSnapshot snapshot)
+    // public void SignInAnonymous(FirebaseAuth auth, FirebaseFirestore firestore)
     // {
-    //     if (snapshot.Exists)
+    //     auth.SignInAnonymouslyAsync().ContinueWithOnMainThread(task =>
     //     {
-    //         UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
-    //         UserData cloud = snapshot.ConvertTo<UserData>();
-    //         TimeManager.Instance.LastSpinTime = cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
-    //
-    //         if (snapshot.ContainsField("LastOnline"))
+    //         if (task.IsCanceled || task.IsFaulted)
     //         {
-    //             Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
-    //             TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-    //             var serverTime = await FirebaseManager.Instance.FetchServerTime();
+    //             Debug.LogError($"Anonymous sign-in failed: {task.Exception}");
+    //             return;
+    //         }
     //
-    //             DateTime loginTime = serverTime.ToDateTime();
+    //         FirebaseUser user = task.Result.User;
+    //         HandlerNewAndOldUserAnonymous(user, firestore);
+    //         OnAuthenticationSuccessfully?.Invoke(user);
+    //     });
+    // }
+
+
+    // private async void CreateNewUserDocument(string userID)
+    // {
+    //     Debug.Log($"CreateNewUserDocument  {userID}");
+    //     DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("users").Document(userID);
+    //     UserData userData = UserManager.Instance.InitializeNewUserData();
     //
-    //             // Fix: Ensure cloud.LastOnline is properly converted to DateTime
-    //             DateTime lastOnlineTime = cloud.LastOnline is DateTime
-    //                 ? (DateTime)cloud.LastOnline
-    //                 : lastOnlineTimestamp.ToDateTime();
+    //     //UserManager.Instance.InitializeUserEvents();
+    //     //TimeManager.Instance.Initialize();
     //
-    //             TimeSpan timeDifference = loginTime - lastOnlineTime;
-    //             int minutesPassed = (int)timeDifference.TotalMinutes;
+    //     await docRef.SetAsync(userData).ContinueWithOnMainThread(task =>
+    //     {
+    //         if (task.IsCompleted)
+    //         {
+    //             IsUserDataLoaded = true;
+    //             IsNewUser = true;
     //
-    //             cloud.Energy = localData.Energy + minutesPassed;
-    //             cloud.AvaiableBoosters = localData.AvaiableBoosters;
-    //             cloud.AllCharacterData = localData.AllCharacterData;
-    //             TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
+    //             // HandleChangeScene();
     //         }
     //         else
     //         {
-    //             Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
+    //             Debug.LogError("Error creating new user document: " + task.Exception);
     //         }
+    //     });
     //
-    //         UserManager.Instance.UserData = cloud;
+    //     // DocumentReference shopDocRef = FirebaseManager.Instance.Firestore.Collection("shops").Document(userID);
+    //     // ShopMarket market = ShopManager.Instance.InitializeMarket();
+    //     // market.LoadMarket();
+    //     // await shopDocRef.SetAsync(market).ContinueWithOnMainThread(task =>
+    //     // {
+    //     //     if (task.IsCompleted)
+    //     //     {
+    //     //         IsShopLoaded = true;
+    //     //         HandleChangeScene();
+    //     //     }
+    //     //     else
+    //     //     {
+    //     //         Debug.LogError("Error creating new shop market document: " + task.Exception);
+    //     //     }
+    //     // });
+    // }
+
+
+  
+    // private async void LoadUserData(DocumentSnapshot snapshot)
+    // {
+    //     if (snapshot == null)
+    //     {
+    //         Debug.LogError("Snapshot is null in LoadUserData");
+    //         return;
+    //     }
     //
-    //         // Match3.Shares.Utilities.WaitAfterEndOfFrame(() =>
-    //         // {
-    //         //     UserManager.Instance.LoadUserCardDataSO(UserManager.Instance.UserData);
-    //         //     IsUserDataLoaded = true;
-    //         //     HandleChangeScene();
-    //         // });
+    //     if (snapshot.Exists)
+    //     {
+    //         try
+    //         {
+    //             UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
+    //             if (localData == null)
+    //             {
+    //                 Debug.LogWarning("Local data is null, initializing new user data");
+    //                 localData = UserManager.Instance.InitializeNewUserData();
+    //             }
+    //
+    //             UserData cloud = snapshot.ConvertTo<UserData>();
+    //             if (cloud == null)
+    //             {
+    //                 Debug.LogError("Failed to convert snapshot to UserData");
+    //                 return;
+    //             }
+    //             if (snapshot.ContainsField("LastOnline"))
+    //             {   
+    //                 try
+    //                 {
+    //                     Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
+    //                     if (lastOnlineTimestamp != null)
+    //                     {
+    //                         TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
+    //                         var serverTime = await FirebaseManager.Instance.FetchServerTime();
+    //                         if (serverTime != null)
+    //                         {
+    //                             DateTime loginTime = serverTime.ToDateTime();
+    //
+    //                             // Fix: Ensure cloud.LastOnline is properly converted to DateTime
+    //                             DateTime lastOnlineTime = cloud.LastOnline is DateTime
+    //                                 ? (DateTime)cloud.LastOnline
+    //                                 : lastOnlineTimestamp.ToDateTime();
+    //
+    //                             TimeSpan timeDifference = loginTime - lastOnlineTime;
+    //                             int minutesPassed = (int)timeDifference.TotalMinutes;
+    //
+    //                             cloud.Energy = localData.Energy + minutesPassed;
+    //                             cloud.AvaiableBoosters = localData.AvaiableBoosters;
+    //                             cloud.AllCharacterData = localData.AllCharacterData;
+    //                             TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
+    //                         }
+    //                        
+    //                     }
+    //                 }
+    //                 catch (Exception e)
+    //                 {
+    //                     Debug.LogError($"Error processing LastOnline: {e.Message}");
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
+    //             }
+    //
+    //             UserManager.Instance.UserData = cloud;
+    //
+    //             IsUserDataLoaded = true;
+    //             HandleChangeScene();
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             Debug.LogError($"Error in LoadUserData: {ex.Message}");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("User document doesn't exist in Firestore");
     //     }
     // }
 
-    private async void LoadUserData(DocumentSnapshot snapshot)
-    {
-        if (snapshot == null)
-        {
-            Debug.LogError("Snapshot is null in LoadUserData");
-            return;
-        }
-
-        if (snapshot.Exists)
-        {
-            try
-            {
-                UserData localData = SaveManager.Instance.LoadUserDataFromLocalJson();
-                if (localData == null)
-                {
-                    Debug.LogWarning("Local data is null, initializing new user data");
-                    localData = UserManager.Instance.InitializeNewUserData();
-                }
-
-                UserData cloud = snapshot.ConvertTo<UserData>();
-                if (cloud == null)
-                {
-                    Debug.LogError("Failed to convert snapshot to UserData");
-                    return;
-                }
-
-                TimeManager.Instance.LastSpinTime =
-                    cloud.LastSpinTime is DateTime ? (DateTime)cloud.LastSpinTime : new DateTime();
-
-                if (snapshot.ContainsField("LastOnline"))
-                {
-                    try
-                    {
-                        Timestamp lastOnlineTimestamp = snapshot.GetValue<Timestamp>("LastOnline");
-                        if (lastOnlineTimestamp != null)
-                        {
-                            TimeManager.Instance.LastOnlineTime = lastOnlineTimestamp.ToDateTime();
-                            var serverTime = await FirebaseManager.Instance.FetchServerTime();
-
-                            if (serverTime != null)
-                            {
-                                DateTime loginTime = serverTime.ToDateTime();
-
-                                // Fix: Ensure cloud.LastOnline is properly converted to DateTime
-                                DateTime lastOnlineTime = cloud.LastOnline is DateTime
-                                    ? (DateTime)cloud.LastOnline
-                                    : lastOnlineTimestamp.ToDateTime();
-
-                                TimeSpan timeDifference = loginTime - lastOnlineTime;
-                                int minutesPassed = (int)timeDifference.TotalMinutes;
-
-                                cloud.Energy = localData.Energy + minutesPassed;
-                                cloud.AvaiableBoosters = localData.AvaiableBoosters;
-                                cloud.AllCharacterData = localData.AllCharacterData;
-                                TimeManager.Instance.CheckNewDay(lastOnlineTimestamp);
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError($"Error processing LastOnline: {e.Message}");
-                    }
-                }
-                else
-                {
-                    Debug.Log("Field 'LastOnlineSaved' does not exist in this document.");
-                }
-
-                UserManager.Instance.UserData = cloud;
-
-                IsUserDataLoaded = true;
-                HandleChangeScene();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error in LoadUserData: {ex.Message}");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("User document doesn't exist in Firestore");
-        }
-    }
-
-    private async void HandlerNewAndOldUserAnonymous(FirebaseUser user, FirebaseFirestore firestore)
-    {
-        Debug.Log("HandlerNewAndOldUserAnonymous");
-        string userID = user.UserId;
-        // Check if a document exists for this user in Firestore
-        DocumentReference docRef = firestore.Collection("users").Document(userID);
-        try
-        {
-            var serverTime = await FirebaseManager.Instance.FetchServerTime();
-            TimeManager.Instance.LoginTime = serverTime.ToDateTime();
-
-            // Check if the document already exist
-            DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
-            if (snapShot.Exists)
-            {
-                LoadUserData(snapShot);
-                OnNewUserCreate?.Invoke(false);
-            }
-            else
-            {
-                CreateNewUserDocument(userID);
-                OnNewUserCreate?.Invoke(true);
-                TimeManager.Instance.LastOnlineTime = TimeManager.Instance.LoginTime;
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error: Error checking or creating document: {e.Message}");
-        }
-    }
+    // private async void HandlerNewAndOldUserAnonymous(FirebaseUser user, FirebaseFirestore firestore)
+    // {
+    //     Debug.Log("HandlerNewAndOldUserAnonymous");
+    //     string userID = user.UserId;
+    //     // Check if a document exists for this user in Firestore
+    //     DocumentReference docRef = firestore.Collection("users").Document(userID);
+    //     try
+    //     {
+    //         var serverTime = await FirebaseManager.Instance.FetchServerTime();
+    //         TimeManager.Instance.LoginTime = serverTime.ToDateTime();
+    //
+    //         // Check if the document already exist
+    //         DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
+    //         if (snapShot.Exists)
+    //         {
+    //             LoadUserData(snapShot);
+    //             OnNewUserCreate?.Invoke(false);
+    //         }
+    //         else
+    //         {
+    //             CreateNewUserDocument(userID);
+    //             OnNewUserCreate?.Invoke(true);
+    //             TimeManager.Instance.LastOnlineTime = TimeManager.Instance.LoginTime;
+    //         }
+    //     }
+    //     catch (System.Exception e)
+    //     {
+    //         Debug.LogError($"Error: Error checking or creating document: {e.Message}");
+    //     }
+    // }
 
     public void SignInWithOutInternet()
     {
-        Debug.Log("Signing in without internet connection");
-        UserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
+        LocalUserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
         if (data == null)
         {
+            Debug.Log("AA");
             data = UserManager.Instance.InitializeNewUserData();
             UserManager.Instance.UserData = data;
             IsNewUser = true;
@@ -288,6 +239,11 @@ public class AuthenticationManager : MonoBehaviour
         }
 
         UserManager.Instance.UserData = data;
+        
+        if (UserManager.Instance.UserData == null)
+        {
+            Debug.LogError("a");
+        }
         IsUserDataLoaded = true;
         OnNewUserCreate?.Invoke(IsNewUser);
         HandleChangeScene();

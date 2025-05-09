@@ -45,13 +45,13 @@ public class TownCanvasController : MonoBehaviour
 
     public void ActiveSetting(bool active)
     {
-        uiSettingManager.ActiveCanvas(active);
+        // uiSettingManager.ActiveCanvas(active);
     }
 
     public void ActiveDailyGift(bool active)
     {
         UIDailyGiftManager.ActiveCanvas(active);
-        // uiHomeManager.ActiveCanvas(!active);
+        uiHomeManager.ActiveCanvas(!active);
     }
 }
 #endif

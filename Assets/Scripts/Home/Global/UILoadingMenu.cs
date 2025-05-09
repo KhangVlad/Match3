@@ -103,12 +103,9 @@ public class UILoadingMenu : MonoBehaviour
     {
         if (backgroundImage == null || TimeManager.Instance == null)
         {
-            Debug.LogWarning("Background image or TimeManager reference is missing.");
             return;
         }
-
         TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
-        Debug.Log("Current Time of Day: " + timeOfDay);
         
         string backgroundPath;
         
