@@ -52,6 +52,7 @@ namespace Match3
         public bool HasTriggeredRowBomb { get; set; } = false;
         public bool HasTriggererColumnBomb { get; set; } = false;
         public bool HasTriggerBlastBomb { get; set; } = false;  
+        public bool HasTriggerColorBurst { get; set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
         public Transform BloomTransform { get; private set; }
@@ -470,6 +471,9 @@ namespace Match3
             SpecialProperties = SpecialTileID.None;
             HasTriggeredRowBomb = false;
             HasTriggererColumnBomb = false;
+            HasTriggerBlastBomb = false;
+            HasTriggerColorBurst = false;
+    
 
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
