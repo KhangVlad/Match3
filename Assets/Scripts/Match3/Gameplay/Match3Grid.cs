@@ -625,77 +625,7 @@ namespace Match3
                     Debug.Log("Drag left");
                     Tile leftTile = _tiles[leftTileX + leftTileY * Width];
                     _swappedTile = leftTile;
-
-
-                    if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                        _swappedTile.SpecialProperties == SpecialTileID.None)
-                    {
-                        Debug.Log("Caser A");
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
-                    else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                        _swappedTile.SpecialProperties != SpecialTileID.None)
-                    {
-                        Debug.Log("Case B");
-                        if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                            _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            Debug.Log("Baslt bomb X Blast Bomb");
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                        else if(_selectedTile.SpecialProperties == SpecialTileID.BlastBomb && 
-                            _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
-                        {
-                            Debug.Log($"BlastBomb X Color BUrst");
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                        else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
-                           _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            Debug.Log($"Color Burst X  BlastBomb");
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                        else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Case C");
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
-                    //Debug.Log("VFX HERE");
-                    // vfx
-                    // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
-                    // {
-                    //     SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
-                    //     Destroy(slashVfx01.gameObject, 0.5f);
-                    // }
+                    HandleSwapDirection();
                 }
             }
             else if (dragDir == Vector2Int.right)
@@ -707,53 +637,7 @@ namespace Match3
                     Tile rightTile = _tiles[rightTileX + rightTileY * Width];
                     Debug.Log("Drag right");
                     _swappedTile = rightTile;
-
-                    if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                        _swappedTile.SpecialProperties == SpecialTileID.None)
-                    {
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
-                    else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                        _swappedTile.SpecialProperties != SpecialTileID.None)
-                    {
-                        if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                          _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                        else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                    }
-                    else
-                    {
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
+                    HandleSwapDirection();
                 }
             }
             else if (dragDir == Vector2Int.up)
@@ -764,53 +648,7 @@ namespace Match3
                 {
                     Tile upTile = _tiles[upTileX + upTileY * Width];
                     _swappedTile = upTile;
-
-                    if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                      _swappedTile.SpecialProperties == SpecialTileID.None)
-                    {
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
-                    else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                        _swappedTile.SpecialProperties != SpecialTileID.None)
-                    {
-                        if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                           _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                        else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                        }
-                    }
-                    else
-                    {
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
-                    }
+                    HandleSwapDirection();
                 }
             }
             else if (dragDir == Vector2Int.down)
@@ -821,55 +659,86 @@ namespace Match3
                 {
                     Tile downTile = _tiles[downTileX + downTileY * Width];
                     _swappedTile = downTile;
+                    HandleSwapDirection();
+                }
+            }
 
-                    if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                     _swappedTile.SpecialProperties == SpecialTileID.None)
+
+            void HandleSwapDirection()
+            {
+                if (_selectedTile.SpecialProperties == SpecialTileID.None &&
+                       _swappedTile.SpecialProperties == SpecialTileID.None)
+                {
+                    SwapPosition(_selectedTile, _swappedTile);
+                    _selectedTile.MoveToGridPosition();
+                    _swappedTile.MoveToGridPosition();
+                }
+                else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
+                    _swappedTile.SpecialProperties != SpecialTileID.None)
+                {
+                    if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
+                        // Debug.Log($"ColorBurst X ColorBurst");
                         SwapPosition(_selectedTile, _swappedTile);
                         _selectedTile.MoveToGridPosition();
                         _swappedTile.MoveToGridPosition();
                     }
-                    else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                        _swappedTile.SpecialProperties != SpecialTileID.None)
+                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                        _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                           _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                    }
+                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                    }
+                    else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                       _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                    }
+                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                            _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
                         {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                            SwapPosition(_selectedTile, _swappedTile);
+                            _selectedTile.MoveToGridPosition();
+                            _swappedTile.MoveToGridPosition();
                         }
-                        else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                            _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
                         {
-                            if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                                _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                            {
-                                SwapPosition(_selectedTile, _swappedTile);
-                                _selectedTile.MoveToGridPosition();
-                                _swappedTile.MoveToGridPosition();
-                            }
-                        }
-                        else
-                        {
-                            _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                            SwapPosition(_selectedTile, _swappedTile);
+                            _selectedTile.MoveToGridPosition();
+                            _swappedTile.MoveToGridPosition();
                         }
                     }
                     else
                     {
-                        SwapPosition(_selectedTile, _swappedTile);
-                        _selectedTile.MoveToGridPosition();
-                        _swappedTile.MoveToGridPosition();
+                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
                     }
                 }
+                else
+                {
+                    SwapPosition(_selectedTile, _swappedTile);
+                    _selectedTile.MoveToGridPosition();
+                    _swappedTile.MoveToGridPosition();
+                }
+                //Debug.Log("VFX HERE");
+                // vfx
+                // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
+                // {
+                //     SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
+                //     Destroy(slashVfx01.gameObject, 0.5f);
+                // }
             }
+
         }
 
         private IEnumerator ImplementGameLogicCoroutine(bool triggerEvent)
@@ -2319,6 +2188,43 @@ namespace Match3
                         // UpdateBlastBombTriggerBuffer(_selectedTile);
                         _triggeredMatch5Set.Add(_selectedTile.X + _selectedTile.Y * Width);
                     }
+                    if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        Debug.Log("HandleSpecialMatchCoroutine BlastBomb X ColorBurst:");
+                        _tiles[_selectedTile.X + _selectedTile.Y * Width].ReturnToPool();
+                        _tiles[_selectedTile.X + _selectedTile.Y * Width] = null;
+
+                        SetMatchBuffer(_swappedTile.X + _swappedTile.Y * Width, MatchID.SpecialMatch);
+                        _swappedTile.HasTriggerColorBurst = true;
+                        TileID mostTileID = FindMostTile(out int count);
+
+                        float colorBurstDuration = 1f;
+                        ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                        colorBurstFX.transform.position = _swappedTile.TileTransform.position;
+                        colorBurstFX.Play(colorBurstDuration + count * 0.1f);
+                        colorBurstFX.PlayAnimtion();
+
+                        for (int i = 0; i < _tiles.Length; i++)
+                        {
+                            int x = i % Width;
+                            int y = i / Width;
+                            if (_tiles[i] == null) continue;
+
+                            if (_tiles[i].ID == mostTileID)
+                            {
+                                PlayColorBurstLineFX(_swappedTile, _tiles[i], colorBurstDuration);
+                                yield return new WaitForSeconds(0.1f);
+
+                                _tiles[i].ReturnToPool();
+                                Tile newTile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                newTile.UpdatePosition();
+                                newTile.PlayAppearAnimation(0.1f);
+                                newTile.SetSpecialTile(SpecialTileID.BlastBomb);
+                                SetMatchBuffer(i, MatchID.SpecialMatch);
+                            }
+                        }
+                        yield return new WaitForSeconds(colorBurstDuration);
+                    }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
                         _selectedTile.HasTriggerBlastBomb = true;
@@ -2355,12 +2261,113 @@ namespace Match3
                     }
                     break;
                 case SpecialTileID.ColorBurst:
-                    if (_swappedTile.SpecialProperties == SpecialTileID.None)
+                    if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        Debug.Log("ColorBurst X ColorBurst");
+                        Vector3 centerPosition = (_selectedTile.transform.position + _swappedTile.transform.position) / 2f;
+                        _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                        {
+                            _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
+                            {
+                                _selectedTile.Emissive(0.2f);
+                                _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                                {
+                                    _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
+                                });
+                            });
+                        });
+
+                        _swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                        {
+                            _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
+                            {
+                                _swappedTile.Emissive(0.2f);
+                                _swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
+                                {
+                                    _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
+                                });
+                            });
+                        });
+
+
+                        _selectedTile.SetRenderOrder(5);
+                        Vector3 offsetA = (_swappedTile.transform.position - _selectedTile.transform.position).normalized * 0.5f;
+                        _selectedTile.MoveToPosition(_swappedTile.transform.position + offsetA, 0.2f, Ease.Linear, () =>
+                        {
+                            _selectedTile.SetRenderOrder(10);
+                            _selectedTile.MoveToPosition(_swappedTile.transform.position, 0.2f, Ease.Linear, () =>
+                            {
+                                _selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                            });
+                        });
+
+                        _swappedTile.SetRenderOrder(10);
+                        Vector3 offsetB = (_selectedTile.transform.position - _swappedTile.transform.position).normalized * 0.5f;
+                        _swappedTile.MoveToPosition(_selectedTile.transform.position + offsetB, 0.2f, Ease.Linear, () =>
+                        {
+                            _swappedTile.SetRenderOrder(5);
+                            _swappedTile.MoveToPosition(_selectedTile.transform.position, 0.2f, Ease.Linear, () =>
+                            {
+                                _swappedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                            });
+                        });
+
+                        _selectedTile.HasTriggerColorBurst = true;
+                        _swappedTile.HasTriggerColorBurst = true;
+                        yield return new WaitForSeconds(0.5f);
+
+
+                        for (int i = 0; i < _tiles.Length; i++)
+                        {
+                            if (_tiles[i] != null)
+                            {
+                                SetMatchBuffer(i, MatchID.SpecialMatch);
+                            }
+                        }
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.None)
                     {
                         ClearAllBoardTileID(_selectedTile, _swappedTile.ID);
                         _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] = MatchID.Match;
 
                         AudioManager.Instance.PlayColorBurstSFX();
+                    }
+                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        Debug.Log("HandleSpecialMatchCoroutine ColorBurst X BlastBomb:");
+                        _tiles[_swappedTile.X + _swappedTile.Y * Width].ReturnToPool();
+                        _tiles[_swappedTile.X + _swappedTile.Y * Width] = null;
+
+                        SetMatchBuffer(_selectedTile.X + _selectedTile.Y * Width, MatchID.SpecialMatch);
+                        _selectedTile.HasTriggerColorBurst = true;
+                        TileID mostTileID = FindMostTile(out int count);
+
+                        float colorBurstDuration = 1f;
+                        ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                        colorBurstFX.transform.position = _selectedTile.TileTransform.position;
+                        colorBurstFX.Play(colorBurstDuration + count * 0.1f);
+                        colorBurstFX.PlayAnimtion();
+
+                        for (int i = 0; i < _tiles.Length; i++)
+                        {
+                            int x = i % Width;
+                            int y = i / Width;
+                            if (_tiles[i] == null) continue;
+
+                            if (_tiles[i].ID == mostTileID)
+                            {
+                                PlayColorBurstLineFX(_selectedTile, _tiles[i], colorBurstDuration);
+                                yield return new WaitForSeconds(0.1f);
+
+                                _tiles[i].ReturnToPool();
+                                Tile newTile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                newTile.UpdatePosition();
+                                newTile.PlayAppearAnimation(0.1f);
+                                newTile.SetSpecialTile(SpecialTileID.BlastBomb);
+                                SetMatchBuffer(i, MatchID.SpecialMatch);
+                            }
+                        }
+                        yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
                             _swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
@@ -2557,8 +2564,6 @@ namespace Match3
         private IEnumerator HandleRowBombAndColumnBombCoroutine(Tile selectedTile, Tile swappedTile)
         {
             Vector3 centerPosition = (selectedTile.transform.position + swappedTile.transform.position) / 2f;
-
-
             selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
             {
                 selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
