@@ -32,11 +32,8 @@ public class UILoadingMenu : MonoBehaviour
 
     private void Awake()
     {
-        // Initialize values
         _currentProgress = initialProgress;
         _targetProgress = initialProgress;
-        
-        // Set initial UI state
         progressSlider.value = _currentProgress;
         homeButton.interactable = false;
     }

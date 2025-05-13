@@ -246,7 +246,7 @@ public class AuthenticationManager : MonoBehaviour
         }
         IsUserDataLoaded = true;
         OnNewUserCreate?.Invoke(IsNewUser);
-        HandleChangeScene();
+        // HandleChangeScene();
     }
 }
 #endif

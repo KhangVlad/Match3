@@ -134,7 +134,6 @@ public class UserManager : MonoBehaviour
             Energy = 80,
         };
 
-        // Notify that user data has been loaded
         OnUserDataLoaded?.Invoke();
 
         return UserData;

@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine.UI;
 using Match3.Enums;
 using Match3.Shares;
+using UnityEngine.Serialization;
 
 #if !UNITY_WEBGL
 public class UILevelDesignManager : MonoBehaviour
@@ -22,19 +23,17 @@ public class UILevelDesignManager : MonoBehaviour
 
     [SerializeField] private UILevelDesign levelDesignPrefab;
     [SerializeField] private UILevelDesign lockedLevelDesignPrefab;
-    [SerializeField] private Button closeButton;
-    [SerializeField] private Button selectBtn;
+    [SerializeField] private Button backBtn;
+    [SerializeField] private Button playBtn;
     [SerializeField] private Image panel;
 
     [Header("Character Info")] [SerializeField]
     private RectTransform heart;
+
     [SerializeField] private Image heartImage;
-    [SerializeField] private Image heartHeader;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private Slider energySlider;
-    [SerializeField] private TextMeshProUGUI energyText;
-    [SerializeField] private TextMeshProUGUI progressText;
     [SerializeField] private Button teaseBtn;
+
     [Header("Warning Panel")] [SerializeField]
     private Transform warningPanel;
 
@@ -44,6 +43,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     [Header("Levels Panel")] [SerializeField]
     private Transform levelsPanel;
+
     [SerializeField] private Button selectLevelBtn;
     [SerializeField] private Button closeLevelsPanel;
     [SerializeField] private UILevelDesign nextLevel;
@@ -54,10 +54,11 @@ public class UILevelDesignManager : MonoBehaviour
     private CharacterData characterData;
     private CharacterDataSO characterDataSO;
     private CharacterAppearance appearanceData;
-
-
     private const float ANIMATION_DURATION = 0.5f;
     private const string HEART_SPRITE_INDEX = "<sprite index=1/>";
+
+
+    private int currentEnergy;
 
 
     #region Unity Lifecycle
@@ -86,52 +87,75 @@ public class UILevelDesignManager : MonoBehaviour
     private void RegisterEventListeners()
     {
         CharacterDisplay.Instance.OnLoadVideosComplete += HandleCharacterInteracted;
-        closeButton.onClick.AddListener(HandleCloseButtonClicked);
-        selectBtn.onClick.AddListener(HandleSelectLevel);
-        selectLevelBtn.onClick.AddListener(HandleOpenSelectLevelContainer);
-        closeLevelsPanel.onClick.AddListener(HandleCloseLevelsPanel);
-        UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
+        CharacterDisplay.Instance.OnNewAngryState += OnNewAngryState;
         UserManager.Instance.OnUserDataLoaded += InitializeEnergyUI;
         LevelManager.Instance.OnBackScene += ForceUpdateUI;
-        teaseBtn.onClick.AddListener(CharacterDisplay.Instance.Tease);
+        UserManager.Instance.OnEnergyChanged += OnEnergyChanger;
+        backBtn.onClick.AddListener(HandleCloseButtonClicked);
+        playBtn.onClick.AddListener(HandleSelectLevel);
+        selectLevelBtn.onClick.AddListener(HandleOpenSelectLevelContainer);
+        closeLevelsPanel.onClick.AddListener(HandleCloseLevelsPanel);
+        // UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
+        teaseBtn.onClick.AddListener(HandleTeaseInput);
+        currentEnergy = UserManager.Instance.UserData.Energy;
+    }
+
+    private void OnNewAngryState()
+    {
+        DialogueManager.Instance.ShowDialogue(typewriterEffect, CharacterDisplay.Instance.GetLowSympathyDialogue());
+    }
+
+    private void OnEnergyChanger(int c)
+    {
+        currentEnergy = c;
+        if (currentEnergy < 5)
+        {
+        }
+    }
+
+    private void HandleTeaseInput()
+    {
+        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        VfxGameObject a = VfxPool.Instance.GetVfxByName("angry");
+        a.gameObject.transform.position = mouseWorldPos;
+        CharacterDisplay.Instance.Tease();
     }
 
 
     private void InitializeEnergyUI()
     {
-        if (UserManager.Instance != null && UserManager.Instance.UserData != null)
-        {
-            energySlider.maxValue = 100;
-            UpdateEnergyUI(UserManager.Instance.UserData.Energy);
-        }
+        // if (UserManager.Instance != null && UserManager.Instance.UserData != null)
+        // {
+        //     energySlider.maxValue = 100;
+        //     UpdateEnergyUI(UserManager.Instance.UserData.Energy);
+        // }
     }
 
     private void UnregisterEventListeners()
     {
-        if (CharacterDisplay.Instance != null) 
+        if (CharacterDisplay.Instance != null)
             CharacterDisplay.Instance.OnLoadVideosComplete -= HandleCharacterInteracted;
-        UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
+        // UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
         UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
         LevelManager.Instance.OnBackScene -= ForceUpdateUI;
-        closeButton.onClick.RemoveAllListeners();
-        selectBtn.onClick.RemoveAllListeners();
+        backBtn.onClick.RemoveAllListeners();
+        playBtn.onClick.RemoveAllListeners();
         selectLevelBtn.onClick.RemoveAllListeners();
         closeLevelsPanel.onClick.RemoveAllListeners();
         teaseBtn.onClick.RemoveAllListeners();
     }
 
-    private void UpdateEnergyUI(int currentEnergy)
-    {
-        // Update slider value
-        energySlider.value = currentEnergy;
-
-        // Update text display
-        energyText.text = $"{currentEnergy}/{100}";
-    }
+    // private void UpdateEnergyUI(int currentEnergy)
+    // {
+    //     // Update slider value
+    //     energySlider.value = currentEnergy;
+    //
+    //     // Update text display
+    //     energyText.text = $"{currentEnergy}/{100}";
+    // }
 
     private void HandleCharacterInteracted(CharacterID id)
     {
-      
         currentCharacterId = id;
         LoadCharacterData(id);
         UpdateUI();
@@ -166,7 +190,7 @@ public class UILevelDesignManager : MonoBehaviour
             UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData,
                 LevelManager.Instance.CurrentLevelIndex);
             Transform vfxTransform = VfxPool.Instance.GetVfxByName("Energy").gameObject.transform;
-            vfxTransform.position = selectBtn.transform.position;
+            vfxTransform.position = playBtn.transform.position;
             UILevelInfomation.Instance.DisplayCanvas(true);
             UILevelInfomation.Instance.SetQuest(nextLevel.cachedQuest);
         }
@@ -192,7 +216,6 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void HandleLevelDesignClicked(UILevelDesign levelDesign)
     {
-  
         AudioManager.Instance.PlayButtonSfx();
         if (!levelDesign.Islocked)
         {
@@ -233,21 +256,8 @@ public class UILevelDesignManager : MonoBehaviour
         bool hasEnoughHearts = totalHeartPoints >= requiredHearts;
         UpdateHeartUI(hasEnoughHearts, totalHeartPoints, requiredHearts);
         canvas.enabled = true;
-        selectBtn.gameObject.SetActive(false);
+        // playBtn.gameObject.SetActive(false);
         canvas.transform.localScale = Vector3.zero;
-        // canvasGroup.alpha = 0;
-        // Sequence showSequence = DOTween.Sequence();
-        // showSequence.Append(canvas.transform.DOScale(Vector3.one, ANIMATION_DURATION).SetEase(Ease.OutBack));
-        // showSequence.Join(canvasGroup.DOFade(1, ANIMATION_DURATION));
-        // showSequence.OnComplete(() =>
-        // {
-        //     string dialogue = hasEnoughHearts
-        //         ? CharacterDisplay.Instance.GetGreetingDialog()
-        //         : CharacterDisplay.Instance.GetLowSympathyDialogue();
-        //     DialogueManager.Instance.ShowDialogue(typewriterEffect, dialogue);
-        //     if (!hasEnoughHearts)
-        //         warningPanel.gameObject.SetActive(true);
-        // });
         canvasGroup.alpha = 1;
         string dialogue = hasEnoughHearts
             ? CharacterDisplay.Instance.GetGreetingDialog()
@@ -275,7 +285,7 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void UpdateHeartUI(bool hasEnoughHearts, int totalHeartPoints, int requiredHearts)
     {
-        heartText.text = totalHeartPoints.ToString();
+        // heartText.text = totalHeartPoints.ToString();
         selectLevelBtn.gameObject.SetActive(hasEnoughHearts);
         warningPanel.gameObject.SetActive(!hasEnoughHearts);
         nextLevel.gameObject.SetActive(hasEnoughHearts);
@@ -294,7 +304,7 @@ public class UILevelDesignManager : MonoBehaviour
                 typewriterEffect,
                 CharacterDisplay.Instance.GetDialogue(levelDesign.index, 1)
             );
-            selectBtn.gameObject.SetActive(true);
+            // playBtn.gameObject.SetActive(true);
         }
         else
         {
@@ -302,14 +312,14 @@ public class UILevelDesignManager : MonoBehaviour
                 typewriterEffect,
                 CharacterDisplay.Instance.GetRejectDialogue()
             );
-            selectBtn.gameObject.SetActive(false);
+            // playBtn.gameObject.SetActive(false);
         }
     }
 
     private void ResetState()
     {
         currentChosenLevel = null;
-        selectBtn.gameObject.SetActive(false);
+        // playBtn.gameObject.SetActive(false);
     }
 
     #endregion
@@ -321,6 +331,9 @@ public class UILevelDesignManager : MonoBehaviour
         characterData = UserManager.Instance.GetCharacterData(id);
         characterDataSO = GameDataManager.Instance.GetCharacterDataSOByID(id);
         appearanceData = GameDataManager.Instance.GetCharacterAppearanceData(id);
+        heartImage.color =
+            GameDataManager.Instance.characterColor.heartColors[
+                characterDataSO.CurrentSympathyLevel(characterData.TotalHeartPoints())];
         nameText.text = id.ToString();
         heartText.text = characterData.TotalHeartPoints().ToString();
     }
@@ -350,6 +363,7 @@ public class UILevelDesignManager : MonoBehaviour
 
         int h = characterData.higestLevel;
         nextLevel.OnClicked += () => HandleLevelDesignClicked(nextLevel);
+        currentChosenLevel = nextLevel;
         for (int i = 0; i < characterLevelData.Levels.Count; i++)
         {
             int levelIndex = i;

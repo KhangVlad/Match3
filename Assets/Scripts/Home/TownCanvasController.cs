@@ -8,6 +8,7 @@ public class TownCanvasController : MonoBehaviour
     public UILevelDesignManager uiLevelDesignManager { get; private set; }
     public UIDailyGiftManager UIDailyGiftManager { get; private set; }
     public UIHomeManager uiHomeManager { get; private set; }
+    
 
     private void Awake()
     {
@@ -40,6 +41,7 @@ public class TownCanvasController : MonoBehaviour
     public void ActiveLevelDesign(bool active)
     {
         uiLevelDesignManager.ActiveCanvas(active);
+        uiHomeManager.ActiveCanvas(!active);
         ActiveSetting(!active);
     }
 

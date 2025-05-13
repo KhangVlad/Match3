@@ -81,7 +81,6 @@ public class ScreenInteraction : MonoBehaviour
     {
         FirstMouseClick = true;
         PreviouseMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-
         Vector2 worldMousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(worldMousePos, Vector2.zero, 1000, characterLayerMask);
         if (hit.collider is not null)

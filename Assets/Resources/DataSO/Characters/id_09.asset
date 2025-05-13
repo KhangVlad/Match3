@@ -16,3 +16,5 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 07904e8b3fd54b34ab996027676a30d4, type: 3}
   displayName: 09
   age: 10
+  heartLevelRequired: 000000001e00000046000000960000002c010000c2010000bc020000
+  TotalHeartToUnlock: 0

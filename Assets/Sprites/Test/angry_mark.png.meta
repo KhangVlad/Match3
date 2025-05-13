@@ -1,25 +1,19 @@
 fileFormatVersion: 2
-guid: daa73430e3b324cf2b5187adf736d4c2
+guid: f1b42f2d465a8432c95499724af93ca6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5311469875037483920
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_0
+      213: -5984711829769963154
+    second: angry_mark_0
   - first:
-      213: 4517415709354165305
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_1
+      213: -13930928899369844
+    second: angry_mark_1
   - first:
-      213: 4024888061009130122
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_2
+      213: -791954780255256387
+    second: angry_mark_2
   - first:
-      213: -5131020360980815686
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_3
-  - first:
-      213: -4955590993616526341
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_4
-  - first:
-      213: 3192333239505860214
-    second: ChatGPT Image 14_17_09 9 thg 5, 2025_5
+      213: 4750328405313246087
+    second: angry_mark_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -141,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_0
+      name: angry_mark_0
       rect:
         serializedVersion: 2
-        x: 30
-        y: 175
-        width: 444
-        height: 414
+        x: 69
+        y: 164
+        width: 143
+        height: 153
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,20 +150,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0933cc0c5b126b940800000000000000
-      internalID: 5311469875037483920
+      spriteID: e69bb779c4802fca0800000000000000
+      internalID: -5984711829769963154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_1
+      name: angry_mark_1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 513
-        width: 441
-        height: 408
+        x: 221
+        y: 185
+        width: 153
+        height: 143
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -178,20 +172,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 93403d247a511be30800000000000000
-      internalID: 4517415709354165305
+      spriteID: c84df8bd4e18ecff0800000000000000
+      internalID: -13930928899369844
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_2
+      name: angry_mark_2
       rect:
         serializedVersion: 2
-        x: 295
-        y: 545
-        width: 434
-        height: 448
+        x: 80
+        y: 12
+        width: 153
+        height: 143
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -200,20 +194,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a82f821ed564bd730800000000000000
-      internalID: 4024888061009130122
+      spriteID: db086b4c2596205f0800000000000000
+      internalID: -791954780255256387
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_3
+      name: angry_mark_3
       rect:
         serializedVersion: 2
-        x: 529
-        y: 509
-        width: 452
-        height: 419
+        x: 242
+        y: 23
+        width: 143
+        height: 153
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -222,52 +216,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ab02170ca24fac8b0800000000000000
-      internalID: -5131020360980815686
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_4
-      rect:
-        serializedVersion: 2
-        x: 543
-        y: 167
-        width: 453
-        height: 426
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bf3ac554f343a3bb0800000000000000
-      internalID: -4955590993616526341
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ChatGPT Image 14_17_09 9 thg 5, 2025_5
-      rect:
-        serializedVersion: 2
-        x: 215
-        y: 40
-        width: 586
-        height: 436
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6763b69ea227d4c20800000000000000
-      internalID: 3192333239505860214
+      spriteID: 783d42d248e8ce140800000000000000
+      internalID: 4750328405313246087
       vertices: []
       indices: 
       edges: []
@@ -286,12 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ChatGPT Image 14_17_09 9 thg 5, 2025_0: 5311469875037483920
-      ChatGPT Image 14_17_09 9 thg 5, 2025_1: 4517415709354165305
-      ChatGPT Image 14_17_09 9 thg 5, 2025_2: 4024888061009130122
-      ChatGPT Image 14_17_09 9 thg 5, 2025_3: -5131020360980815686
-      ChatGPT Image 14_17_09 9 thg 5, 2025_4: -4955590993616526341
-      ChatGPT Image 14_17_09 9 thg 5, 2025_5: 3192333239505860214
+      angry_mark_0: -5984711829769963154
+      angry_mark_1: -13930928899369844
+      angry_mark_2: -791954780255256387
+      angry_mark_3: 4750328405313246087
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

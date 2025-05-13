@@ -32,19 +32,7 @@ public class LoadingAnimationController : MonoBehaviour
     }
 
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            TestAnimation();
-        }
-    }
-
-    private void TestAnimation()
-    {
-        SetActive(true);
-        Utilities.WaitAfter(1f, () => SetActive(false));
-    }
+  
 
     public void SetActive(bool active, Action ondoneAnination = null)
     {

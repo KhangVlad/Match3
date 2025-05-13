@@ -127,7 +127,7 @@ public class SpinWheel : MonoBehaviour
             return;
         }
 
-        // Update the last spin time to current server time
+        clocklIcon.enabled = true;
         UserManager.Instance.UserData.SpinTime = TimeManager.Instance.ServerTime.ToString();
         UserManager.Instance.ClaimDailyReward(BoosterID.Hammer, 1);
 
@@ -136,37 +136,7 @@ public class SpinWheel : MonoBehaviour
             StartCoroutine(DoSpin());
     }
 
-    // private IEnumerator DoSpin()
-    // {
-    //     m_spinning = true;
-    //     spinButton.interactable = false;
-    //     float angleStep = 360f / ItemCount;
-    //     float extraRotations = 3; // Adds extra rotations before stopping
-    //     float targetAngle = -(resultIndex * angleStep + (extraRotations * 360));
-    //
-    //     float duration = 3.0f; // Spin duration
-    //     float elapsed = 0f;
-    //     float startAngle = spinWheelTransform.eulerAngles.z;
-    //     lastAngle = startAngle;
-    //
-    //     while (elapsed < duration)
-    //     {
-    //         elapsed += Time.deltaTime;
-    //         float t = elapsed / duration;
-    //         float curveValue = AnimationCurve.Evaluate(t); // Smooth curve effect
-    //         float newAngle = Mathf.Lerp(startAngle, targetAngle, curveValue);
-    //         spinWheelTransform.eulerAngles = new Vector3(0, 0, newAngle);
-    //         CheckAngleChangeForShake(newAngle);
-    //
-    //         yield return null;
-    //     }
-    //
-    //     spinWheelTransform.eulerAngles = new Vector3(0, 0, targetAngle % 360);
-    //     Debug.Log($"{(BoosterID)resultIndex + 1}");
-    //     m_spinning = false;
-    //
-    //     ShowRewardPanel();
-    // }
+  
     private IEnumerator DoSpin()
     {
         m_spinning = true;
@@ -268,8 +238,7 @@ public class SpinWheel : MonoBehaviour
 
     private void ShowRewardPanel()
     {
-        //set image sprite for reward
-     
+        AudioManager.Instance.PlayWinSfx();     
         rewardImage.sprite = GameDataManager.Instance.GetBoosterDataByID((BoosterID)resultIndex + 1).Icon;
         allItem[resultIndex].Pick();
         StartCoroutine(ShowRewardPanelCoroutine());

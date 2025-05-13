@@ -200,13 +200,7 @@ public class SaveManager : MonoBehaviour
         string filename = "UserData.json";
         string filePath = Path.Combine(localSavePath, filename);
         string checksumPath = Path.Combine(localSavePath, "UserData.checksum");
-        string backupPath = Path.Combine(localSavePath, "UserData.json.backup");
-        
-        if (File.Exists(filePath))
-        {
-            File.Copy(filePath, backupPath, true);
-        }
-
+    
         LocalUserData localData = UserManager.Instance.UserData;
         if (Utilities.IsConnectedToInternet())
         {
@@ -239,23 +233,13 @@ public class SaveManager : MonoBehaviour
 
             string filePath = Path.Combine(localSavePath, "UserData.json");
             string checksumPath = Path.Combine(localSavePath, "UserData.checksum");
-            string backupPath = Path.Combine(localSavePath, "UserData.json.backup");
 
             // Main file check
             if (!File.Exists(filePath) || !File.Exists(checksumPath))
             {
                 Debug.LogWarning("Main save files don't exist or are incomplete");
 
-                // Try backup if main file doesn't exist
-                if (File.Exists(backupPath))
-                {
-                    Debug.Log("Attempting to restore from backup");
-                    File.Copy(backupPath, filePath, true);
-                }
-                else
-                {
-                    return null;
-                }
+               
             }
 
             // Read encrypted data and stored checksum
@@ -280,29 +264,7 @@ public class SaveManager : MonoBehaviour
             if (!VerifyChecksum(decryptedJson, storedChecksum))
             {
                 Debug.LogError("Checksum verification failed - data may have been tampered with");
-
-                // Try to restore from backup
-                if (File.Exists(backupPath))
-                {
-                    Debug.Log("Attempting to restore from backup after checksum failure");
-                    File.Copy(backupPath, filePath, true);
-                    encryptedJson = File.ReadAllText(filePath);
-                    decryptedJson = DecryptData(encryptedJson);
-
-                    if (decryptedJson == null)
-                    {
-                        Debug.LogError("Failed to decrypt backup user data");
-                        return null;
-                    }
-
-                    // We don't have a backup of the checksum, so regenerate it
-                    storedChecksum = GenerateChecksum(decryptedJson);
-                    File.WriteAllText(checksumPath, storedChecksum);
-                }
-                else
-                {
-                    return null;
-                }
+              
             }
 
             // Deserialize the decrypted data
@@ -326,8 +288,6 @@ public class SaveManager : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.LogError("Error loading user data from local JSON");
-            Debug.LogException(ex);
             return null;
         }
     }
