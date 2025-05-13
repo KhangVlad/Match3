@@ -1996,22 +1996,54 @@ namespace Match3
                 case SpecialTileID.ColumnBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        _swappedTile.HasTriggeredRowBomb = true;
-                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
-                            _activeColumnBombSet.Add(_selectedTile);
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
-                            _activeRowBombSet.Add(_selectedTile);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        if (dir == Vector2.left || dir == Vector2.right)
+                        {
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            {
+                                _selectedTile.SetSpecialTile(SpecialTileID.RowBomb);
+                                _activeRowBombSet.Add(_selectedTile);
+                            }
+
+                            _swappedTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                        }
+                        else if (dir == Vector2.up || dir == Vector2.down)
+                        {
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            {
+                                // _swappedTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                                _activeColumnBombSet.Add(_selectedTile);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("===== case not found");
+                        }
 
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
-                            _activeColumnBombSet.Add(_selectedTile);
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
-                            _activeRowBombSet.Add(_selectedTile);
-                        _swappedTile.HasTriggererColumnBomb = true;
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        if (dir == Vector2.left || dir == Vector2.right)
+                        {
+                            _selectedTile.SetSpecialTile(SpecialTileID.RowBomb);
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            {
+                                _activeRowBombSet.Add(_selectedTile);
+                            }
+                        }
+                        else if (dir == Vector2.up || dir == Vector2.down)
+                        {
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                                _activeColumnBombSet.Add(_selectedTile);
 
+                            _swappedTile.SetSpecialTile(SpecialTileID.RowBomb);
+                        }
+                        else
+                        {
+                            Debug.Log("===== case not found");
+                        }
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
@@ -2086,27 +2118,52 @@ namespace Match3
                 case SpecialTileID.RowBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        _swappedTile.HasTriggeredRowBomb = true;
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        if (dir == Vector2.left || dir == Vector2.right)
                         {
-                            _activeRowBombSet.Add(_selectedTile);
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            {
+                                _activeRowBombSet.Add(_selectedTile);
+                            }
+                            _swappedTile.SetSpecialTile(SpecialTileID.ColumnBomb);
                         }
-                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        else if (dir == Vector2.up || dir == Vector2.down)
                         {
-                            _activeColumnBombSet.Add(_selectedTile);
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            {
+                                _selectedTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                                _activeColumnBombSet.Add(_selectedTile);
+                            }
                         }
+                        else
+                        {
+                            Debug.Log("===== case not found");
+                        }
+
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        _swappedTile.HasTriggererColumnBomb = true;
-                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        if (dir == Vector2.left || dir == Vector2.right)
                         {
-                            _activeRowBombSet.Add(_selectedTile);
+                            if (_activeRowBombSet.Contains(_selectedTile) == false)
+                            {
+                                _activeRowBombSet.Add(_selectedTile);
+                            }
                         }
-                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        else if (dir == Vector2.up || dir == Vector2.down)
                         {
-                            _activeColumnBombSet.Add(_selectedTile);
+                            _swappedTile.SetSpecialTile(SpecialTileID.RowBomb);
+                            _selectedTile.SetSpecialTile(SpecialTileID.ColumnBomb);
+                            if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                            {
+                                _activeColumnBombSet.Add(_selectedTile);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("===== case not found");
                         }
                         AudioManager.Instance.PlayMatch4Sfx();
                     }
