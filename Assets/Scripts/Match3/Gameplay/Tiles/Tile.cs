@@ -243,7 +243,7 @@ namespace Match3
             }
         }
 
-        public virtual void Match(Tile[] grid, int width)
+        public virtual void Match(Tile[] grid, int width, MatchID matchID)
         {
             if (_emissiveCoroutine != null)
             {
@@ -253,7 +253,7 @@ namespace Match3
             {
                 if (IsDisplay)
                 {
-                    PlayMatchVFX();
+                    PlayMatchVFX(matchID);
                 }
             }
 
@@ -266,7 +266,7 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
-        public virtual void PlayMatchVFX() { }
+        public virtual void PlayMatchVFX(MatchID matchID) { }
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {

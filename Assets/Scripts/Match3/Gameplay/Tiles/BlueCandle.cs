@@ -17,12 +17,8 @@ namespace Match3
             this.ID = TileID.BlueCandle;
         }
 
-        public override void Match(Tile[] grid, int width)
-        {
-            base.Match(grid, width);
-        }
 
-        public override void PlayMatchVFX()
+        public override void PlayMatchVFX(MatchID matchID)
         {
             BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlueCandleDestroy);
             effect.transform.position = TileTransform.position;

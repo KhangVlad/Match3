@@ -15,13 +15,8 @@ namespace Match3
         {
             base.Awake();
         }
-
-        public override void Match(Tile[] grid, int width)
-        {
-            base.Match(grid, width);
-        }
-
-        public override void PlayMatchVFX()
+        
+        public override void PlayMatchVFX(MatchID matchID)
         {
             BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.WhiteFlowerDestroy);
             effect.transform.position = TileTransform.position;

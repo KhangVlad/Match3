@@ -6,7 +6,7 @@ namespace Match3
 {
     public class YellowRibbon : Tile
     {
-          public override void Initialize()
+        public override void Initialize()
         {
             base.Initialize();
             this.ID = TileID.YellowRibbon;
@@ -17,12 +17,12 @@ namespace Match3
             base.Awake();
         }
 
-        public override void Match(Tile[] grid, int width)
+        public override void Match(Tile[] grid, int width, MatchID matchID)
         {
-            base.Match(grid, width);
+            base.Match(grid, width, matchID);
         }
 
-        public override void PlayMatchVFX()
+        public override void PlayMatchVFX(MatchID matchID)
         {
             BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.YellowRibbonDestroy);
             effect.transform.position = TileTransform.position;
