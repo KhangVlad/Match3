@@ -116,8 +116,8 @@ namespace Match3
                 return;
             }
             Instance = this;
-            // _fillType = FillType.Dropdown;
-            _fillType = FillType.SandFalling;
+            _fillType = FillType.Dropdown;
+            //_fillType = FillType.SandFalling;
         }
 
         private void Start()
