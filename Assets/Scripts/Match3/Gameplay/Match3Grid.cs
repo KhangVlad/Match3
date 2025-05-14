@@ -3092,7 +3092,7 @@ namespace Match3
                 Utilities.WaitAfter(0.1f, () =>
                 {
                     tile.Display(false);
-                    ColorBurstFX colorBurstFX = (ColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstFX);
+                    ColorBurstAppearFX colorBurstFX = (ColorBurstAppearFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstAppearFX);
                     colorBurstFX.transform.position = tile.TileTransform.position;
                     colorBurstFX.SetTarget(tile.TileTransform);
                     colorBurstFX.Play(1f);
