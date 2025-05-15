@@ -91,7 +91,7 @@ namespace Match3
 
 
         [Header("VFX")]
-        [SerializeField] private float _rocketPlayTime = 0.5f;
+        private float _rocketPlayTime = 0.6f;
         private bool _isBlastBombTriggered = false;
 
 
@@ -631,7 +631,6 @@ namespace Match3
                 int leftTileY = _selectedTile.Y;
                 if (IsValidMatchTile(leftTileX, leftTileY))
                 {
-                    Debug.Log("Drag left");
                     Tile leftTile = _tiles[leftTileX + leftTileY * Width];
                     _swappedTile = leftTile;
                     HandleSwapDirection();
@@ -644,7 +643,6 @@ namespace Match3
                 if (IsValidMatchTile(rightTileX, rightTileY))
                 {
                     Tile rightTile = _tiles[rightTileX + rightTileY * Width];
-                    Debug.Log("Drag right");
                     _swappedTile = rightTile;
                     HandleSwapDirection();
                 }
@@ -766,13 +764,11 @@ namespace Match3
                 _unlockTileSet.Clear();
 
 
-
                 yield return StartCoroutine(HandleMatchCoroutine());
                 HandleTriggerAllSpecialTiles();
 
                 // Collect animation
                 yield return StartCoroutine(HandleCollectAnimationCoroutine());
-
 
                 #region Handle Row And Column Bomb
 
@@ -840,8 +836,6 @@ namespace Match3
                             EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
                             endLineColorBurstFX.transform.position = nb.TileTransform.position;
                             endLineColorBurstFX.Play(colorBurstDuration);
-
-
                         }
                     }
 
@@ -876,11 +870,12 @@ namespace Match3
 
 
                 HandleSpawnSpecialTile();
-                yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
+                // yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
+                StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
 
                 if (_emissiveTileQueue.Count > 0)
                 {
-                    yield return new WaitForSeconds(0.1f);
+                    // yield return new WaitForSeconds(0.1f);
                     while (_emissiveTileQueue.Count > 0)
                     {
                         Tile tile = _emissiveTileQueue.Dequeue();
@@ -908,10 +903,10 @@ namespace Match3
                     //yield return new WaitForSeconds(0.05f);
                     // yield return new WaitForSeconds(0.05f);
 
-                    if (_isBlastBombTriggered)
-                    {
-                        yield return new WaitForSeconds(0.1f);
-                    }
+                    // if (_isBlastBombTriggered)
+                    // {
+                    //     yield return new WaitForSeconds(0.1f);
+                    // }
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
 
@@ -1038,6 +1033,7 @@ namespace Match3
 
         private void HandleBlastBomb(Tile tile)
         {
+            // Time.timeScale = 0.5f;
             Debug.Log("HandleBlastBomb");
             _isBlastBombTriggered = true;
             PlayFlashBombVfx(tile);
@@ -1077,27 +1073,27 @@ namespace Match3
             }
 
             // Slightly bounce up
-            foreach (var e in highestBombTileDict)
-            {
-                int tileX = e.Key;
-                int tileY = e.Value;
+            // foreach (var e in highestBombTileDict)
+            // {
+            //     int tileX = e.Key;
+            //     int tileY = e.Value;
 
-                for (int y = tileY + 1; y < Height; y++)
-                {
-                    if (IsValidGridTile(tileX, y))
-                    {
-                        int index = tileX + y * Width;
-                        if (_tiles[index] == null) continue;
-                        Vector2 cachedTilePosition = (Vector2)_tiles[index].transform.position;
-                        Vector2 bouncePosition = (Vector2)_tiles[index].transform.position + new Vector2(0, 0.5f);
-                        float bounceTime = 0.1f;
-                        _tiles[index].MoveToPosition(bouncePosition, bounceTime, Ease.OutBack, () =>
-                        {
-                            _tiles[index].MoveToPosition(cachedTilePosition, bounceTime, Ease.OutBack);
-                        });
-                    }
-                }
-            }
+            //     for (int y = tileY + 1; y < Height; y++)
+            //     {
+            //         if (IsValidGridTile(tileX, y))
+            //         {
+            //             int index = tileX + y * Width;
+            //             if (_tiles[index] == null) continue;
+            //             Vector2 cachedTilePosition = (Vector2)_tiles[index].transform.position;
+            //             Vector2 bouncePosition = (Vector2)_tiles[index].transform.position + new Vector2(0, 0.5f);
+            //             float bounceTime = 0.1f;
+            //             _tiles[index].MoveToPosition(bouncePosition, bounceTime, Ease.OutBack, () =>
+            //             {
+            //                 _tiles[index].MoveToPosition(cachedTilePosition, bounceTime, Ease.OutBack);
+            //             });
+            //         }
+            //     }
+            // }
         }
 
         private Dictionary<Coroutine, bool> _singleAllColumnBombCoroutineDict = new Dictionary<Coroutine, bool>();
@@ -1132,97 +1128,101 @@ namespace Match3
                         if (leftValid)
                         {
                             int index = leftX + y * Width;
-                            if (_tiles[index] == null) continue;
-                            if (_tiles[index].IsDisplay == false) continue;
-                            bool isDisplay = offset == Width - 1;
-                            _tiles[index].Display(isDisplay);
-                            _tiles[index].PlayMatchVFX(MatchID.RowBomb);
-
-                            // Collect
-                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                            if (_tiles[index] != null && _tiles[index].IsDisplay)
                             {
-                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                            }
+                                bool isDisplay = offset == Width - 1;
+                                _tiles[index].Display(isDisplay);
+                                _tiles[index].PlayMatchVFX(MatchID.RowBomb);
 
-                            if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
-                            {
-                                if (_tiles[index].HasTriggererColumnBomb == false)
+                                // Collect
+                                if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                                 {
-                                    Coroutine coroutine = null;
-                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
-                                    {
-                                        if (coroutine != null)
-                                            _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                    }));
-                                    if (coroutine != null)
-                                        _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                    MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                                 }
-                            }
-                            else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                            {
-                                HandleBlastBomb(_tiles[index]);
-                            }
-                            else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                            {
-                                if (_tiles[index].HasTriggerColorBurst == false)
+
+                                if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                                 {
-                                    HandleTriggerColorBurst(_tiles[index]);
-                                    if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                    if (!_tiles[index].HasTriggererColumnBomb)
                                     {
-                                        PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                        Coroutine coroutine = null;
+                                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                        {
+                                            if (coroutine != null)
+                                                _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                        }));
+                                        if (coroutine != null)
+                                            _singleAllColumnBombCoroutineDict.Add(coroutine, false);
                                     }
                                 }
+                                else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                                {
+                                    HandleBlastBomb(_tiles[index]);
+                                }
+                                else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                                {
+                                    if (!_tiles[index].HasTriggerColorBurst)
+                                    {
+                                        HandleTriggerColorBurst(_tiles[index]);
+                                        if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                        {
+                                            PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                        }
+                                    }
+                                }
+
+                                SetMatchBuffer(index, MatchID.ColorBurst);
                             }
-                            SetMatchBuffer(index, MatchID.ColorBurst);
                         }
+
 
                         if (rightValid && offset != 0) // Avoid double-playing the center tile
                         {
                             int index = rightX + y * Width;
-                            if (_tiles[index] == null) continue;
-                            if (_tiles[index].IsDisplay == false) continue;
-                            bool isDisplay = offset == Width - 1;
-                            _tiles[index].Display(isDisplay);
-                            _tiles[index].PlayMatchVFX(MatchID.RowBomb);
 
-
-                            // Collect
-                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                            if (_tiles[index] != null && _tiles[index].IsDisplay)
                             {
-                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                            }
+                                bool isDisplay = offset == Width - 1;
+                                _tiles[index].Display(isDisplay);
+                                _tiles[index].PlayMatchVFX(MatchID.RowBomb);
 
-
-                            if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
-                            {
-                                if (_tiles[index].HasTriggererColumnBomb == false)
+                                // Collect
+                                if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                                 {
-                                    Coroutine coroutine = null;
-                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
-                                    {
-                                        if (coroutine != null)
-                                            _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                    }));
-                                    if (coroutine != null)
-                                        _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                    MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                                 }
-                            }
-                            else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                            {
-                                HandleBlastBomb(_tiles[index]);
-                            }
-                            else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                            {
-                                if (_tiles[index].HasTriggerColorBurst == false)
+
+                                if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                                 {
-                                    HandleTriggerColorBurst(_tiles[index]);
-                                    if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                    if (!_tiles[index].HasTriggererColumnBomb)
                                     {
-                                        PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                        Coroutine coroutine = null;
+                                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                        {
+                                            if (coroutine != null)
+                                                _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                        }));
+                                        if (coroutine != null)
+                                            _singleAllColumnBombCoroutineDict.Add(coroutine, false);
                                     }
                                 }
+                                else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                                {
+                                    HandleBlastBomb(_tiles[index]);
+                                }
+                                else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                                {
+                                    if (!_tiles[index].HasTriggerColorBurst)
+                                    {
+                                        HandleTriggerColorBurst(_tiles[index]);
+                                        if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                        {
+                                            PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                        }
+                                    }
+                                }
+
+                                SetMatchBuffer(index, MatchID.RowBomb);
                             }
-                            SetMatchBuffer(index, MatchID.RowBomb);
                         }
 
                         if (offset < Width - 1)
@@ -1276,103 +1276,102 @@ namespace Match3
                 if (leftValid)
                 {
                     int index = leftX + y * Width;
-                    if (_tiles[index] == null) continue;
-                    if (_tiles[index].IsDisplay == false) continue;
-                    bool isDisplay = offset == Width - 1;
-                    _tiles[index].Display(false);
-                    _tiles[index].PlayMatchVFX(MatchID.RowBomb);
-
-                    // Collect FX
-                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    if (_tiles[index] != null && _tiles[index].IsDisplay)
                     {
-                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                    }
+                        bool isDisplay = offset == Width - 1;
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX(MatchID.RowBomb);
 
-
-                    //Debug.Log($"AA: {index%Width}  {index /Width} {_tiles[index].SpecialProperties}");
-                    if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
-                    {
-                        if (_tiles[index].HasTriggererColumnBomb == false)
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
-                            {
-                                if (coroutine != null)
-                                    singleColumnBombCoroutineDict[coroutine] = true;
-                            }));
-                            if (coroutine != null)
-                                singleColumnBombCoroutineDict.Add(coroutine, false);
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                         }
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        HandleBlastBomb(_tiles[index]);
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        if (_tiles[index].HasTriggerColorBurst == false)
+                        if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                         {
-                            HandleTriggerColorBurst(_tiles[index]);
-                            if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                            if (_tiles[index].HasTriggererColumnBomb == false)
                             {
-                                PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                {
+                                    if (coroutine != null)
+                                        singleColumnBombCoroutineDict[coroutine] = true;
+                                }));
+                                if (coroutine != null)
+                                    singleColumnBombCoroutineDict.Add(coroutine, false);
                             }
                         }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                        {
+                            HandleBlastBomb(_tiles[index]);
+                        }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                        {
+                            if (_tiles[index].HasTriggerColorBurst == false)
+                            {
+                                HandleTriggerColorBurst(_tiles[index]);
+                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                {
+                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                }
+                            }
+                        }
+                        SetMatchBuffer(index, MatchID.RowBomb);
                     }
-                    SetMatchBuffer(index, MatchID.RowBomb);
                 }
 
                 if (rightValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = rightX + y * Width;
-                    if (_tiles[index] == null) continue;
                     if (_tiles[index].IsDisplay)
                     {
                         bool isDisplay = offset == Width - 1;
                         _tiles[index].Display(false);
                         _tiles[index].PlayMatchVFX(MatchID.RowBomb);
                     }
-
-                    // Collect FX
-                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    if (_tiles[index] != null)
                     {
-                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                    }
-
-
-                    if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
-                    {
-                        if (_tiles[index].HasTriggererColumnBomb == false)
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
-                            {
-                                if (coroutine != null)
-                                {
-                                    if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
-                                        singleColumnBombCoroutineDict[coroutine] = true;
-                                }
-                            }));
-                            if (coroutine != null)
-                                singleColumnBombCoroutineDict.Add(coroutine, false);
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                         }
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        HandleBlastBomb(_tiles[index]);
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        if (_tiles[index].HasTriggerColorBurst == false)
+
+
+                        if (_tiles[index].SpecialProperties == SpecialTileID.ColumnBomb)
                         {
-                            HandleTriggerColorBurst(_tiles[index]);
-                            if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                            if (_tiles[index].HasTriggererColumnBomb == false)
                             {
-                                PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                {
+                                    if (coroutine != null)
+                                    {
+                                        if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
+                                            singleColumnBombCoroutineDict[coroutine] = true;
+                                    }
+                                }));
+                                if (coroutine != null)
+                                    singleColumnBombCoroutineDict.Add(coroutine, false);
                             }
                         }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                        {
+                            HandleBlastBomb(_tiles[index]);
+                        }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                        {
+                            if (_tiles[index].HasTriggerColorBurst == false)
+                            {
+                                HandleTriggerColorBurst(_tiles[index]);
+                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                {
+                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                }
+                            }
+                        }
+                        SetMatchBuffer(index, MatchID.RowBomb);
                     }
-                    SetMatchBuffer(index, MatchID.RowBomb);
                 }
 
                 if (offset < Width - 1)
@@ -1435,98 +1434,100 @@ namespace Match3
                     if (topValid)
                     {
                         int index = x + topY * Width;
-                        if (_tiles[index] == null) continue;
-                        if (_tiles[index].IsDisplay == false) continue;
-                        _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
-
-                        // Collect FX
-                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                        if (_tiles[index] != null && _tiles[index].IsDisplay)
                         {
-                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                        }
+                            _tiles[index].Display(false);
+                            _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
 
-                        if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
-                        {
-                            //Debug.Log("Handle Row Bomb AA");
-                            if (_tiles[index].HasTriggeredRowBomb == false)
+                            // Collect FX
+                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
-                                {
-                                    if (coroutine != null)
-                                    {
-                                        _singleAllRowBombCoroutineDict[coroutine] = true;
-                                    }
-                                }));
-                                if (coroutine != null)
-                                    _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                             }
-                        }
-                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            HandleBlastBomb(_tiles[index]);
-                        }
-                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                        {
-                            if (_tiles[index].HasTriggerColorBurst == false)
+
+                            if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                             {
-                                HandleTriggerColorBurst(_tiles[index]);
-                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                //Debug.Log("Handle Row Bomb AA");
+                                if (_tiles[index].HasTriggeredRowBomb == false)
                                 {
-                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    {
+                                        if (coroutine != null)
+                                        {
+                                            _singleAllRowBombCoroutineDict[coroutine] = true;
+                                        }
+                                    }));
+                                    if (coroutine != null)
+                                        _singleAllRowBombCoroutineDict.Add(coroutine, false);
                                 }
                             }
+                            else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                            {
+                                HandleBlastBomb(_tiles[index]);
+                            }
+                            else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                            {
+                                if (_tiles[index].HasTriggerColorBurst == false)
+                                {
+                                    HandleTriggerColorBurst(_tiles[index]);
+                                    if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                    {
+                                        PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                    }
+                                }
+                            }
+                            SetMatchBuffer(index, MatchID.ColumnBomb);
                         }
-                        SetMatchBuffer(index, MatchID.ColumnBomb);
                     }
 
                     if (bottomValid && offset != 0) // Avoid double-playing the center tile
                     {
                         int index = x + bottomY * Width;
-                        if (_tiles[index] == null) continue;
-                        if (_tiles[index].IsDisplay == false) continue;
-                        _tiles[index].Display(false);
-
-                        // Collect FX
-                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                        if (_tiles[index] != null && _tiles[index].IsDisplay)
                         {
-                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                        }
+                            _tiles[index].Display(false);
 
-                        if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
-                        {
-                            //Debug.Log("Handle Row Bomb BB");
-                            if (_tiles[index].HasTriggeredRowBomb == false)
+                            // Collect FX
+                            if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
-                                {
-                                    if (coroutine != null)
-                                    {
-                                        _singleAllRowBombCoroutineDict[coroutine] = true;
-                                    }
-                                }));
-                                if (coroutine != null)
-                                    _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                             }
-                        }
-                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                        {
-                            HandleBlastBomb(_tiles[index]);
-                        }
-                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                        {
-                            if (_tiles[index].HasTriggerColorBurst == false)
+
+                            if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                             {
-                                HandleTriggerColorBurst(_tiles[index]);
-                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                //Debug.Log("Handle Row Bomb BB");
+                                if (_tiles[index].HasTriggeredRowBomb == false)
                                 {
-                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    {
+                                        if (coroutine != null)
+                                        {
+                                            _singleAllRowBombCoroutineDict[coroutine] = true;
+                                        }
+                                    }));
+                                    if (coroutine != null)
+                                        _singleAllRowBombCoroutineDict.Add(coroutine, false);
                                 }
                             }
+                            else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                            {
+                                HandleBlastBomb(_tiles[index]);
+                            }
+                            else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                            {
+                                if (_tiles[index].HasTriggerColorBurst == false)
+                                {
+                                    HandleTriggerColorBurst(_tiles[index]);
+                                    if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                    {
+                                        PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                    }
+                                }
+                            }
+                            SetMatchBuffer(index, MatchID.ColumnBomb);
                         }
-                        SetMatchBuffer(index, MatchID.ColumnBomb);
                     }
 
                     if (offset < Height - 1)
@@ -1575,95 +1576,97 @@ namespace Match3
                 if (topValid)
                 {
                     int index = x + topY * Width;
-                    if (_tiles[index] == null) continue;
-                    if (_tiles[index].IsDisplay == false) continue;
-                    _tiles[index].Display(false);
-                    _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
-
-                    // Collect FX
-                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    if (_tiles[index] != null && _tiles[index].IsDisplay)
                     {
-                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                    }
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
 
-
-                    if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
-                    {
-                        if (_tiles[index].HasTriggeredRowBomb == false)
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
-                            {
-                                if (coroutine != null)
-                                    _singleRowBombCoroutineDict[coroutine] = true;
-                            }));
-                            if (coroutine != null)
-                                _singleRowBombCoroutineDict.Add(coroutine, false);
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                         }
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        HandleBlastBomb(_tiles[index]);
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        if (_tiles[index].HasTriggerColorBurst == false)
+
+
+                        if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
-                            HandleTriggerColorBurst(_tiles[index]);
-                            if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                            if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                {
+                                    if (coroutine != null)
+                                        _singleRowBombCoroutineDict[coroutine] = true;
+                                }));
+                                if (coroutine != null)
+                                    _singleRowBombCoroutineDict.Add(coroutine, false);
                             }
                         }
-                    }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                        {
+                            HandleBlastBomb(_tiles[index]);
+                        }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                        {
+                            if (_tiles[index].HasTriggerColorBurst == false)
+                            {
+                                HandleTriggerColorBurst(_tiles[index]);
+                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                {
+                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                }
+                            }
+                        }
 
-                    SetMatchBuffer(index, MatchID.ColumnBomb);
+                        SetMatchBuffer(index, MatchID.ColumnBomb);
+                    }
                 }
 
                 if (bottomValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = x + bottomY * Width;
-                    if (_tiles[index] == null) continue;
-                    if (_tiles[index].IsDisplay == false) continue;
-                    _tiles[index].Display(false);
-                    _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
-
-                    // Collect FX
-                    if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
+                    if (_tiles[index] != null && _tiles[index].IsDisplay)
                     {
-                        MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
-                    }
+                        _tiles[index].Display(false);
+                        _tiles[index].PlayMatchVFX(MatchID.ColumnBomb);
 
-                    if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
-                    {
-                        if (_tiles[index].HasTriggeredRowBomb == false)
+                        // Collect FX
+                        if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                         {
-                            Coroutine coroutine = null;
-                            coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
-                            {
-                                if (coroutine != null)
-                                    _singleRowBombCoroutineDict[coroutine] = true;
-                            }));
-                            if (coroutine != null)
-                                _singleRowBombCoroutineDict.Add(coroutine, false);
+                            MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                         }
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        HandleBlastBomb(_tiles[index]);
-                    }
-                    else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        if (_tiles[index].HasTriggerColorBurst == false)
+
+                        if (_tiles[index].SpecialProperties == SpecialTileID.RowBomb)
                         {
-                            HandleTriggerColorBurst(_tiles[index]);
-                            if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                            if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                Coroutine coroutine = null;
+                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                {
+                                    if (coroutine != null)
+                                        _singleRowBombCoroutineDict[coroutine] = true;
+                                }));
+                                if (coroutine != null)
+                                    _singleRowBombCoroutineDict.Add(coroutine, false);
                             }
                         }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
+                        {
+                            HandleBlastBomb(_tiles[index]);
+                        }
+                        else if (_tiles[index].SpecialProperties == SpecialTileID.ColorBurst)
+                        {
+                            if (_tiles[index].HasTriggerColorBurst == false)
+                            {
+                                HandleTriggerColorBurst(_tiles[index]);
+                                if (_colorBurstParentDictionary.ContainsKey(_tiles[index]))
+                                {
+                                    PlayColorBurstVFX(_tiles[index], removeCached: true);
+                                }
+                            }
+                        }
+                        SetMatchBuffer(index, MatchID.ColumnBomb);
                     }
-                    SetMatchBuffer(index, MatchID.ColumnBomb);
                 }
                 if (offset < Height - 1)
                     yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
@@ -1813,12 +1816,15 @@ namespace Match3
             bool FoundBlastBomb(List<int[,]> shapes, int xIndex, int yIndex, ref List<Tile> bfsTiles)
             {
                 bfsTiles.Clear();
+                TileID targetTileID = default;
+                int tileX = 0;
+                int tileY = 0;
+
                 for (int i = 0; i < shapes.Count; i++)
                 {
                     bool found = true;
                     int w = shapes[i].GetLength(0);
                     int h = shapes[i].GetLength(1);
-                    TileID targetTileID = default;
 
                     bool foundFirstValidTile = false;
                     for (int y = 0; y < h && !foundFirstValidTile; y++)
@@ -1832,6 +1838,8 @@ namespace Match3
                                 if (IsValidMatchTile(offsetX, offsetY) && _tiles[offsetX + offsetY * Width] != null && _tiles[offsetX + offsetY * Width].SpecialProperties == SpecialTileID.None)
                                 {
                                     targetTileID = _tiles[offsetX + offsetY * Width].ID;
+                                    tileX = offsetX;
+                                    tileY = offsetY;
                                     foundFirstValidTile = true;
                                     break;
                                 }
@@ -1888,19 +1896,20 @@ namespace Match3
                                 {
                                     if (_selectedTile.Equal(_tiles[index]))
                                     {
+                                        Debug.Log("AAAAA");
                                         foundBlashBombTile = true;
                                         Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles, ref _bfsSteps);
-                                        Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
+                                        // Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
                                         if (bfsTiles.Count > 0)
                                         {
-                                            _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+                                            _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_selectedTile.ID, _selectedTile.X + _selectedTile.Y * Width));
                                             for (int j = 0; j < bfsTiles.Count; j++)
                                             {
                                                 Tile t = bfsTiles[j];
                                                 SetMatchBuffer(t.X + t.Y * Width, MatchID.Match);
                                                 if (_blastBombDictionary.ContainsKey(t) == false)
                                                 {
-                                                    _blastBombDictionary.Add(t, medianTile);
+                                                    _blastBombDictionary.Add(t, _selectedTile);
                                                 }
                                             }
                                             return true;
@@ -1909,15 +1918,36 @@ namespace Match3
                                         {
                                             Debug.Log($"Why bfs tiles count == {_bfsTiles.Count}???");
                                         }
-
                                     }
                                     else if (_swappedTile.Equal(_tiles[index]))
                                     {
+                                        Debug.Log("BBBBBB");
                                         foundBlashBombTile = true;
                                         Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles, ref _bfsSteps);
-                                        Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
-                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
+                                        // Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(_swappedTile.ID, _swappedTile.X + _swappedTile.Y * Width));
 
+                                        for (int j = 0; j < bfsTiles.Count; j++)
+                                        {
+                                            Tile t = bfsTiles[j];
+                                            SetMatchBuffer(t.X + t.Y * Width, MatchID.Match);
+                                            if (_blastBombDictionary.ContainsKey(t) == false)
+                                            {
+                                                _blastBombDictionary.Add(t, _swappedTile);
+                                            }
+                                        }
+                                        return true;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.Log("CCCCC");
+                                    foundBlashBombTile = true;
+                                    Match3Algorithm.FloodFillBFS(_tiles, tileX, tileY, Width, Height, targetTileID, ref bfsTiles, ref _bfsSteps);
+                                    Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
+                                    if (bfsTiles.Count > 0)
+                                    {
+                                        _matchBlastBombQueue.Enqueue(new SpecialTileQueue(medianTile.ID, medianTile.X + medianTile.Y * Width));
                                         for (int j = 0; j < bfsTiles.Count; j++)
                                         {
                                             Tile t = bfsTiles[j];
@@ -1928,6 +1958,10 @@ namespace Match3
                                             }
                                         }
                                         return true;
+                                    }
+                                    else
+                                    {
+                                        Debug.Log($"Why bfs tiles count == {_bfsTiles.Count}???");
                                     }
                                 }
                             }
@@ -2878,7 +2912,6 @@ namespace Match3
         {
             if (_blastBombDictionary.Count > 0)
             {
-                Debug.Log("HERERERE");
                 foreach (var tile in _blastBombDictionary)
                 {
                     Tile t = tile.Value;
@@ -2889,10 +2922,10 @@ namespace Match3
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
                         //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
-                        nb.MoveToPosition((Vector2)t.transform.position, 0.2f, Ease.InSine);
+                        nb.MoveToPosition((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME, Ease.InSine);
                     }
                 }
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
                 int multiplier = 1;
                 foreach (var e in _blastBombDictionary)
                 {
@@ -3507,6 +3540,7 @@ namespace Match3
                         }
                         else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
                         {
+                            Debug.Log("Column BOmb");
                             if (tile.HasTriggererColumnBomb == false)
                             {
                                 if (_activeColumnBombSet.Contains(tile) == false)
@@ -4898,11 +4932,6 @@ namespace Match3
         }
         private void PlayFlashBombVfx(Tile tile)
         {
-            Debug.Log("PlayFlashBombVfx");
-            //GameObject vfxPrefab = Resources.Load<GameObject>("Effects/Match5VFX");
-            //if (vfxPrefab == null) Debug.LogError("Missing vfx prefab !!!");
-            //GameObject vfxInstance = Instantiate(vfxPrefab, (Vector2)tile.transform.position + TileExtension.TileCenter(), Quaternion.identity);
-
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.BlastBomb);
             vfxPrefab.transform.position = tile.TileTransform.position;
             vfxPrefab.Play(0.5f);
