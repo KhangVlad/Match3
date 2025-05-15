@@ -1,6 +1,6 @@
 ﻿namespace Match3
 {
-    public enum TileID : byte
+    public enum TileID : short
     {
         None = 0,
         RedFlower = 1,
@@ -82,6 +82,11 @@
         Cookie = 76,
         Egg =77,
         Green_Vegetable =78,
+
+
+
+        // Speical Tile
+        BlastBomb = 5000,
     }
 
     public enum SpecialTileID 

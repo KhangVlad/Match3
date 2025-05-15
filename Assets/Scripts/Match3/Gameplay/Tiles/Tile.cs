@@ -127,7 +127,7 @@ namespace Match3
             }
         }
 
-        public void Display(bool enable)
+        public virtual void Display(bool enable)
         {
             if (enable)
             {

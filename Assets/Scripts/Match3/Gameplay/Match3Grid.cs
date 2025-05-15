@@ -342,7 +342,7 @@ namespace Match3
                     Destroy(_tiles[gridPosition.x + gridPosition.y * Width].gameObject);
                     _tiles[gridPosition.x + gridPosition.y * Width] = null;
 
-                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.None, BlockID.None);
+                    Tile newTile = AddTile(gridPosition.x, gridPosition.y, TileID.BlastBomb, BlockID.None);
                     newTile.UpdatePosition();
                     newTile.SetSpecialTile(SpecialTileID.BlastBomb);
                     //newTile.SetSpecialTile(SpecialTileID.Match5);
@@ -557,7 +557,7 @@ namespace Match3
                                 break;
                             case BoosterID.BlastBomb:
                                 _tiles[randomTileIndex].ReturnToPool();
-                                AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                AddTile(x, y, TileID.BlastBomb, BlockID.None, display: true);
                                 _tiles[randomTileIndex].UpdatePosition();
                                 _tiles[randomTileIndex].SetSpecialTile(SpecialTileID.BlastBomb);
                                 break;
@@ -2306,11 +2306,13 @@ namespace Match3
                         _selectedTile.HasTriggerBlastBomb = true;
                         _swappedTile.HasTriggerBlastBomb = true;
 
+
                         Debug.Log("BlastBomb X BlastBomb");
                         BigBlastBombExplosionFX vfx = (BigBlastBombExplosionFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.BigBlastBombExplosionFX);
+                        vfx.transform.localScale = new Vector3(0.5f,0.5f, 1);
                         vfx.transform.position = _selectedTile.TileTransform.position;
-                        vfx.Play(duration: 1f);
-                        yield return new WaitForSeconds(1f);
+                        vfx.Play(duration: 1.05f);
+                        yield return new WaitForSeconds(1.05f);
                         CameraShakeManager.Instance.Shake(intensity: 0.2f, duration: 0.1f);
 
                         BigBlastBombClear(_selectedTile);
@@ -3109,7 +3111,7 @@ namespace Match3
                 int x = e.Index % Width;
                 int y = e.Index / Width;
 
-                Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
+                Tile tile = AddTile(x, y, TileID.BlastBomb, BlockID.None, display: false);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.BlastBomb);
 
