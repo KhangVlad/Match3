@@ -1896,7 +1896,6 @@ namespace Match3
                                 {
                                     if (_selectedTile.Equal(_tiles[index]))
                                     {
-                                        Debug.Log("AAAAA");
                                         foundBlashBombTile = true;
                                         Match3Algorithm.FloodFillBFS(_tiles, _selectedTile.X, _selectedTile.Y, Width, Height, _selectedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         // Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
@@ -1921,7 +1920,6 @@ namespace Match3
                                     }
                                     else if (_swappedTile.Equal(_tiles[index]))
                                     {
-                                        Debug.Log("BBBBBB");
                                         foundBlashBombTile = true;
                                         Match3Algorithm.FloodFillBFS(_tiles, _swappedTile.X, _swappedTile.Y, Width, Height, _swappedTile.ID, ref bfsTiles, ref _bfsSteps);
                                         // Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
@@ -1941,7 +1939,6 @@ namespace Match3
                                 }
                                 else
                                 {
-                                    Debug.Log("CCCCC");
                                     foundBlashBombTile = true;
                                     Match3Algorithm.FloodFillBFS(_tiles, tileX, tileY, Width, Height, targetTileID, ref bfsTiles, ref _bfsSteps);
                                     Tile medianTile = Match3Algorithm.GetMedianTile(bfsTiles);
@@ -2316,7 +2313,7 @@ namespace Match3
                                 yield return new WaitForSeconds(0.1f);
 
                                 _tiles[i].ReturnToPool();
-                                Tile newTile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                Tile newTile = AddTile(x, y, TileID.BlastBomb, BlockID.None, display: true);
                                 newTile.UpdatePosition();
                                 newTile.PlayAppearAnimation(0.1f);
                                 newTile.SetSpecialTile(SpecialTileID.BlastBomb);
@@ -2354,8 +2351,8 @@ namespace Match3
                         BigBlastBombExplosionFX vfx = (BigBlastBombExplosionFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.BigBlastBombExplosionFX);
                         vfx.transform.localScale = new Vector3(0.5f, 0.5f, 1);
                         vfx.transform.position = _selectedTile.TileTransform.position;
-                        vfx.Play(duration: 1.05f);
-                        yield return new WaitForSeconds(1.05f);
+                        vfx.Play(duration: 1.0f);
+                        yield return new WaitForSeconds(1.0f);
                         CameraShakeManager.Instance.Shake(intensity: 0.2f, duration: 0.1f);
 
                         BigBlastBombClear(_selectedTile);
@@ -2462,7 +2459,7 @@ namespace Match3
                                 yield return new WaitForSeconds(0.1f);
 
                                 _tiles[i].ReturnToPool();
-                                Tile newTile = AddTile(x, y, TileID.None, BlockID.None, display: true);
+                                Tile newTile = AddTile(x, y, TileID.BlastBomb, BlockID.None, display: true);
                                 newTile.UpdatePosition();
                                 newTile.PlayAppearAnimation(0.1f);
                                 newTile.SetSpecialTile(SpecialTileID.BlastBomb);
