@@ -3297,7 +3297,8 @@ namespace Match3
             int attempts = 0;
             while (true)
             {
-                if (CanMatch() == false)
+
+                if (HasAvaiableMove() == false)
                 {
                     if (attempts == 0)
                     {
@@ -3306,7 +3307,6 @@ namespace Match3
                     }
                     yield return StartCoroutine(ShuffleGridCoroutine());
                     attempts++;
-
                     if (attempts > 20)
                     {
                         Debug.Log("Something went wrong !!!!!");
@@ -3317,6 +3317,27 @@ namespace Match3
                 {
                     break;
                 }
+
+
+                // if (CanMatch() == false)
+                // {
+                //     if (attempts == 0)
+                //     {
+                //         Debug.Log("Cannot match -> SHUFFLE");
+                //         yield return new WaitForSeconds(2.0f);
+                //     }
+                //     yield return StartCoroutine(ShuffleGridCoroutine());
+                //     attempts++;
+                //     if (attempts > 20)
+                //     {
+                //         Debug.Log("Something went wrong !!!!!");
+                //         break;
+                //     }
+                // }
+                // else
+                // {
+                //     break;
+                // }
 
             }
 
@@ -4536,6 +4557,7 @@ namespace Match3
                         return true;
                 }
             }
+            Debug.Log("No move found!");
             return false; // No moves found
 
 
@@ -4545,7 +4567,7 @@ namespace Match3
                 Tile b = _tiles[x2 + y2 * Width];
 
                 if (a == null || b == null) return false;
-                if(a.CurrentBlock is not NoneBlock || b.CurrentBlock is not NoneBlock) return false;
+                if (a.CurrentBlock is not NoneBlock || b.CurrentBlock is not NoneBlock) return false;
 
                 // Swap
                 _tiles[x1 + y1 * Width] = b;
@@ -4564,18 +4586,47 @@ namespace Match3
             {
                 Tile tile = _tiles[x + y * Width];
                 if (tile == null) return false;
-                if (tile.CurrentBlock is not NoneBlock || tile.CurrentBlock is not Lock) return false;
+                if (tile.CurrentBlock is not NoneBlock && tile.CurrentBlock is not Lock) return false;
 
                 int horizontal = 1;
                 int vertical = 1;
 
                 // Horizontal check
-                for (int i = x - 1; i >= 0 && _tiles[i + y * Width]?.ID == tile.ID; i--) horizontal++;
-                for (int i = x + 1; i < Width && _tiles[i + y * Width]?.ID == tile.ID; i++) horizontal++;
+                for (int i = x - 1; i >= 0 &&
+                                    (_tiles[i + y * Width]?.CurrentBlock is NoneBlock ||
+                                    _tiles[i + y * Width]?.CurrentBlock is Lock) &&
+                                    _tiles[i + y * Width]?.ID == tile.ID;
+                                    i--)
+                {
+                    horizontal++;
+                }
+
+                for (int i = x + 1; i < Width &&
+                                    (_tiles[i + y * Width]?.CurrentBlock is NoneBlock ||
+                                    _tiles[i + y * Width]?.CurrentBlock is Lock) &&
+                                    _tiles[i + y * Width]?.ID == tile.ID;
+                                    i++)
+                {
+                    horizontal++;
+                }
 
                 // Vertical check
-                for (int j = y - 1; j >= 0 && _tiles[x + j * Width]?.ID == tile.ID; j--) vertical++;
-                for (int j = y + 1; j < Height && _tiles[x + j * Width]?.ID == tile.ID; j++) vertical++;
+                for (int j = y - 1; j >= 0 &&
+                                    (_tiles[x + j * Width]?.CurrentBlock is NoneBlock ||
+                                    _tiles[x + j * Width]?.CurrentBlock is Lock) &&
+                                    _tiles[x + j * Width]?.ID == tile.ID;
+                                    j--)
+                {
+                    vertical++;
+                }
+                for (int j = y + 1; j < Height &&
+                                    (_tiles[x + j * Width]?.CurrentBlock is NoneBlock ||
+                                    _tiles[x + j * Width]?.CurrentBlock is Lock) &&
+                                    _tiles[x + j * Width]?.ID == tile.ID;
+                                    j++)
+                {
+                    vertical++;
+                }
 
                 return horizontal >= 3 || vertical >= 3;
             }
