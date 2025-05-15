@@ -411,6 +411,15 @@ namespace Match3
                     _prevTileIDs[gridPosition.x + gridPosition.y * Width] = TileID.None;
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                Vector2Int gridPosition = InputHandler.Instance.GetGridPositionByMouse();
+                if (IsValidGridTile(gridPosition.x, gridPosition.y))
+                {
+                    _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
+                }
+            }
 #endif
         }
 
@@ -2309,7 +2318,7 @@ namespace Match3
 
                         Debug.Log("BlastBomb X BlastBomb");
                         BigBlastBombExplosionFX vfx = (BigBlastBombExplosionFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.BigBlastBombExplosionFX);
-                        vfx.transform.localScale = new Vector3(0.5f,0.5f, 1);
+                        vfx.transform.localScale = new Vector3(0.5f, 0.5f, 1);
                         vfx.transform.position = _selectedTile.TileTransform.position;
                         vfx.Play(duration: 1.05f);
                         yield return new WaitForSeconds(1.05f);
@@ -2869,6 +2878,7 @@ namespace Match3
         {
             if (_blastBombDictionary.Count > 0)
             {
+                Debug.Log("HERERERE");
                 foreach (var tile in _blastBombDictionary)
                 {
                     Tile t = tile.Value;
@@ -3137,23 +3147,31 @@ namespace Match3
                 Tile tile = AddTile(x, y, TileID.None, BlockID.None, display: false);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.RowBomb);
-                tile.Display(false);
+                tile.PlayAppearAnimation(0.2f);
 
-                // tile.StopEmissive();
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
 
-                Utilities.WaitAfter(0.1f, () =>
+                tile.Emissive(duration: 0, () =>
                 {
-                    HorizontalRocketVfx vfx = (HorizontalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
-                    vfx.transform.position = tile.TileTransform.position;
-                    vfx.PlayAnimtion();
-                    Utilities.WaitAfter(0.25f, () =>
-                    {
-                        vfx.ReturnToPool();
-                        tile.Display(true);
-                    });
+                    _emissiveTileQueue.Enqueue(tile);
+                    tile.Display(true);
                 });
+
+                // Utilities.WaitAfter(0.1f, () =>
+                // {
+                //     HorizontalRocketVfx vfx = (HorizontalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
+                //     vfx.transform.position = tile.TileTransform.position;
+                //     vfx.PlayAnimtion();
+
+
+                //     Utilities.WaitAfter(0.25f, () =>
+                //     {
+                //         vfx.ReturnToPool();
+                //         tile.Display(true);
+
+                //          Debug.Break();
+                //     });
+                // });
+
             }
 
 
@@ -3168,25 +3186,27 @@ namespace Match3
                 Tile tile = AddTile(x, y, e.TileID, BlockID.None, display: false);
                 tile.UpdatePosition();
                 tile.SetSpecialTile(SpecialTileID.ColumnBomb);
-                tile.Display(false);
+                tile.PlayAppearAnimation(0.2f);
 
-                tile.Emissive(0.1f);
-                _emissiveTileQueue.Enqueue(tile);
+                tile.Emissive(0f, () =>
+                {
+                    _emissiveTileQueue.Enqueue(tile);
+                    tile.Display(true);
+                });
+                // Transform cachedTileTransform = tile.TileTransform;
+                // Utilities.WaitAfter(0.1f, () =>
+                //  {
+                //      VerticalRocketVfx vfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
+                //      vfx.transform.position = tile.TileTransform.position;
 
-                Transform cachedTileTransform = tile.TileTransform;
-                Utilities.WaitAfter(0.1f, () =>
-                 {
-                     VerticalRocketVfx vfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
-                     vfx.transform.position = tile.TileTransform.position;
-
-                     vfx.PlayAnimtion();
-                     vfx.SetTargetTransform(cachedTileTransform);
-                     Utilities.WaitAfter(0.25f, () =>
-                     {
-                         vfx.ReturnToPool();
-                         tile.Display(true);
-                     });
-                 });
+                //      vfx.PlayAnimtion();
+                //      vfx.SetTargetTransform(cachedTileTransform);
+                //      Utilities.WaitAfter(0.25f, () =>
+                //      {
+                //          vfx.ReturnToPool();
+                //          tile.Display(true);
+                //      });
+                //  });
             }
 
         }
@@ -4989,7 +5009,7 @@ public static class TileMatchExtensions
         return matchID == MatchID.ColumnBomb ||
             matchID == MatchID.RowBomb ||
             matchID == MatchID.BlastBomb ||
-            matchID == MatchID.ColorBurst || 
+            matchID == MatchID.ColorBurst ||
             matchID == MatchID.Booster;
     }
 }

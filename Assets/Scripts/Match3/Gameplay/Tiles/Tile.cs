@@ -358,14 +358,16 @@ namespace Match3
         }
 
 
-        public void Emissive(float duration)
+        public void Emissive(float duration, System.Action onComplete = null)
         {
             if (_emissiveCoroutine != null)
-                return;
-            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(0f, 5f, duration));
+            {
+                StopCoroutine(_emissiveCoroutine);
+            }
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(0f, 5f, duration, onComplete));
         }
 
-        private IEnumerator EmissiveCoroutine(float startValue, float endValue, float duration)
+        private IEnumerator EmissiveCoroutine(float startValue, float endValue, float duration, System.Action onComplete)
         {
             float elapsed = 0f;
 
@@ -383,17 +385,19 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", endValue);
             sr.SetPropertyBlock(_propBlock);
+
+            onComplete?.Invoke();
         }
 
 
 
-        public void StopEmissive(float startValue = 5f, float endValue = 0f, float duration = 0.2f)
+        public void StopEmissive(float startValue = 5f, float endValue = 0f, float duration = 0.2f, System.Action onComplete = null)
         {
             if (_emissiveCoroutine != null)
             {
                 StopCoroutine(_emissiveCoroutine);
             }
-            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration,onComplete));
         }
 
 
