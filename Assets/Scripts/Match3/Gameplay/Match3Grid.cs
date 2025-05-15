@@ -420,11 +420,6 @@ namespace Match3
                     _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
                 }
             }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                Debug.Log($"Can Match: {CanMatch()}");
-            }
 #endif
         }
 
@@ -4544,6 +4539,33 @@ namespace Match3
 
         private bool HasAvaiableMove()
         {
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Tile tile = _tiles[x + y * Width];
+                    if (tile == null) continue;
+                    if (tile.CurrentBlock is not NoneBlock) continue;
+
+                    if (tile.SpecialProperties == SpecialTileID.ColumnBomb ||
+                        tile.SpecialProperties == SpecialTileID.RowBomb ||
+                        tile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        Debug.Log("Can match A");
+                        return true;
+                    }
+                    else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        Debug.Log("Can match B");
+                        if (IsValidMatchTile(x - 1, y)) return true;
+                        if (IsValidMatchTile(x + 1, y)) return true;
+                        if (IsValidMatchTile(x, y - 1)) return true;
+                        if (IsValidMatchTile(x, y + 1)) return true;
+                    }
+                }
+            }
+
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -4632,241 +4654,241 @@ namespace Match3
             }
         }
 
-        private bool CanMatch()
-        {
-            bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
-            {
-                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-                {
-                    return false;
-                }
+        // private bool CanMatch()
+        // {
+        //     bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
+        //     {
+        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+        //         {
+        //             return false;
+        //         }
 
-                // down, down of down
-                if (IsValidMatchTile(newX, newY - 1))
-                {
-                    if (IsValidMatchTile(newX, newY - 2))
-                    {
-                        Tile downTile = _tiles[newX + (newY - 1) * Width];
-                        Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
-                        if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
-                            (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
-                            (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"D: {newX}  {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
-            {
-                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-                {
-                    return false;
-                }
+        //         // down, down of down
+        //         if (IsValidMatchTile(newX, newY - 1))
+        //         {
+        //             if (IsValidMatchTile(newX, newY - 2))
+        //             {
+        //                 Tile downTile = _tiles[newX + (newY - 1) * Width];
+        //                 Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
+        //                 if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
+        //                     (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
+        //                     (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
+        //                 {
+        //                     // Debug.Log($"D: {newX}  {newY}");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         return false;
+        //     }
+        //     bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
+        //     {
+        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+        //         {
+        //             return false;
+        //         }
 
-                // top, top of top
-                if (IsValidMatchTile(newX, newY + 1))
-                {
-                    if (IsValidMatchTile(newX, newY + 2))
-                    {
-                        Tile topTile = _tiles[newX + (newY + 1) * Width];
-                        Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
-                        if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
-                            (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
-                            (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"C: {newX}  {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
-            {
-                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-                {
-                    return false;
-                }
+        //         // top, top of top
+        //         if (IsValidMatchTile(newX, newY + 1))
+        //         {
+        //             if (IsValidMatchTile(newX, newY + 2))
+        //             {
+        //                 Tile topTile = _tiles[newX + (newY + 1) * Width];
+        //                 Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
+        //                 if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
+        //                     (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
+        //                     (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
+        //                 {
+        //                     // Debug.Log($"C: {newX}  {newY}");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         return false;
+        //     }
+        //     bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
+        //     {
+        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+        //         {
+        //             return false;
+        //         }
 
-                // right, right of right
-                if (IsValidMatchTile(newX + 1, newY))
-                {
-                    if (IsValidMatchTile(newX + 2, newY))
-                    {
-                        Tile rightTile = _tiles[newX + 1 + newY * Width];
-                        Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
+        //         // right, right of right
+        //         if (IsValidMatchTile(newX + 1, newY))
+        //         {
+        //             if (IsValidMatchTile(newX + 2, newY))
+        //             {
+        //                 Tile rightTile = _tiles[newX + 1 + newY * Width];
+        //                 Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
 
-                        if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
-                            (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
-                            (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"B: {newX}  {newY} ");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
-            {
-                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-                {
-                    return false;
-                }
+        //                 if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
+        //                     (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
+        //                     (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
+        //                 {
+        //                     // Debug.Log($"B: {newX}  {newY} ");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         return false;
+        //     }
+        //     bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
+        //     {
+        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+        //         {
+        //             return false;
+        //         }
 
-                // left, left of left
-                if (IsValidMatchTile(newX - 1, newY))
-                {
-                    if (IsValidMatchTile(newX - 2, newY))
-                    {
-                        Tile leftTile = _tiles[newX - 1 + newY * Width];
-                        Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
+        //         // left, left of left
+        //         if (IsValidMatchTile(newX - 1, newY))
+        //         {
+        //             if (IsValidMatchTile(newX - 2, newY))
+        //             {
+        //                 Tile leftTile = _tiles[newX - 1 + newY * Width];
+        //                 Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
 
-                        if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
-                            (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
-                            (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
-                        {
-                            // Debug.Log($"A: {tileID} {newX} {newY}");
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
+        //                 if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
+        //                     (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
+        //                     (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
+        //                 {
+        //                     // Debug.Log($"A: {tileID} {newX} {newY}");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //         return false;
+        //     }
 
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    Tile tile = _tiles[x + y * Width];
-                    if (tile == null) continue;
-                    if (tile.CurrentBlock is not NoneBlock) continue;
+        //     for (int y = 0; y < Height; y++)
+        //     {
+        //         for (int x = 0; x < Width; x++)
+        //         {
+        //             Tile tile = _tiles[x + y * Width];
+        //             if (tile == null) continue;
+        //             if (tile.CurrentBlock is not NoneBlock) continue;
 
-                    if (tile.SpecialProperties == SpecialTileID.ColumnBomb ||
-                        tile.SpecialProperties == SpecialTileID.RowBomb ||
-                        tile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        Debug.Log("Can match A");
-                        return true;
-                    }
-                    else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        Debug.Log("Can match B");
-                        if (IsValidMatchTile(x - 1, y)) return true;
-                        if (IsValidMatchTile(x + 1, y)) return true;
-                        if (IsValidMatchTile(x, y - 1)) return true;
-                        if (IsValidMatchTile(x, y + 1)) return true;
-                    }
+        //             if (tile.SpecialProperties == SpecialTileID.ColumnBomb ||
+        //                 tile.SpecialProperties == SpecialTileID.RowBomb ||
+        //                 tile.SpecialProperties == SpecialTileID.BlastBomb)
+        //             {
+        //                 Debug.Log("Can match A");
+        //                 return true;
+        //             }
+        //             else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
+        //             {
+        //                 Debug.Log("Can match B");
+        //                 if (IsValidMatchTile(x - 1, y)) return true;
+        //                 if (IsValidMatchTile(x + 1, y)) return true;
+        //                 if (IsValidMatchTile(x, y - 1)) return true;
+        //                 if (IsValidMatchTile(x, y + 1)) return true;
+        //             }
 
-                    if (HasEnoughSameNeighborsLeft(tile.ID, x, y))
-                    {
-                        Debug.Log("AAA");
-                        return true;
-                    }
-                    if (HasEnoughSameNeighborsRight(tile.ID, x, y))
-                    {
-                        Debug.Log("BBB");
-                        return true;
-                    }
-                    if (HasEnoughSameNeighborsTop(tile.ID, x, y))
-                    {
-                        Debug.Log("CCC");
-                        return true;
-                    }
-                    if (HasEnoughSameNeighborsDown(tile.ID, x, y))
-                    {
-                        Debug.Log("DDD");
-                        return true;
-                    }
+        //             if (HasEnoughSameNeighborsLeft(tile.ID, x, y))
+        //             {
+        //                 Debug.Log("AAA");
+        //                 return true;
+        //             }
+        //             if (HasEnoughSameNeighborsRight(tile.ID, x, y))
+        //             {
+        //                 Debug.Log("BBB");
+        //                 return true;
+        //             }
+        //             if (HasEnoughSameNeighborsTop(tile.ID, x, y))
+        //             {
+        //                 Debug.Log("CCC");
+        //                 return true;
+        //             }
+        //             if (HasEnoughSameNeighborsDown(tile.ID, x, y))
+        //             {
+        //                 Debug.Log("DDD");
+        //                 return true;
+        //             }
 
-                    // left 
-                    if (IsValidMatchTile(x - 1, y))
-                    {
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
-                        {
-                            // Debug.Log($"L 0:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
-                        {
-                            // Debug.Log($"L 1:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
-                        {
-                            // Debug.Log($"L 2:  {x}  {y}");
-                            return true;
-                        }
-                    }
+        //             // left 
+        //             if (IsValidMatchTile(x - 1, y))
+        //             {
+        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
+        //                 {
+        //                     // Debug.Log($"L 0:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
+        //                 {
+        //                     // Debug.Log($"L 1:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
+        //                 {
+        //                     // Debug.Log($"L 2:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //             }
 
-                    // right 
-                    if (IsValidMatchTile(x + 1, y))
-                    {
-                        if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
-                        {
-                            // Debug.Log($"R 0:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
-                        {
-                            // Debug.Log($"R 1:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
-                        {
-                            // Debug.Log($"R 2:  {x}  {y}");
-                            return true;
-                        }
-                    }
+        //             // right 
+        //             if (IsValidMatchTile(x + 1, y))
+        //             {
+        //                 if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
+        //                 {
+        //                     // Debug.Log($"R 0:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
+        //                 {
+        //                     // Debug.Log($"R 1:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
+        //                 {
+        //                     // Debug.Log($"R 2:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //             }
 
-                    // up 
-                    if (IsValidMatchTile(x, y + 1))
-                    {
-                        if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
-                        {
-                            // Debug.Log($"U 0:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
-                        {
-                            // Debug.Log($"U 1:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
-                        {
-                            // Debug.Log($"U 2:  {x}  {y}");
-                            return true;
-                        }
-                    }
+        //             // up 
+        //             if (IsValidMatchTile(x, y + 1))
+        //             {
+        //                 if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
+        //                 {
+        //                     // Debug.Log($"U 0:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
+        //                 {
+        //                     // Debug.Log($"U 1:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
+        //                 {
+        //                     // Debug.Log($"U 2:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //             }
 
-                    // down 
-                    if (IsValidMatchTile(x, y - 1))
-                    {
-                        if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
-                        {
-                            // Debug.Log($"D 0:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
-                        {
-                            // Debug.Log($"D 2:  {x}  {y}");
-                            return true;
-                        }
-                        if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
-                        {
-                            // Debug.Log($"D 2:  {x}  {y}");
-                            return true;
-                        }
-                    }
-                }
-            }
+        //             // down 
+        //             if (IsValidMatchTile(x, y - 1))
+        //             {
+        //                 if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
+        //                 {
+        //                     // Debug.Log($"D 0:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
+        //                 {
+        //                     // Debug.Log($"D 2:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //                 if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
+        //                 {
+        //                     // Debug.Log($"D 2:  {x}  {y}");
+        //                     return true;
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            Debug.Log("END FALSE");
-            return false;
-        }
+        //     Debug.Log("END FALSE");
+        //     return false;
+        // }
 
         private void SwapPosition(Tile tileA, Tile tileB)
         {
