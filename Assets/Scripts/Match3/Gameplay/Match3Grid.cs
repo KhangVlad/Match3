@@ -420,6 +420,11 @@ namespace Match3
                     _tiles[gridPosition.x + gridPosition.y * Width].PlayAppearAnimation(0.2f);
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                Debug.Log($"Can Match: {CanMatch()}");
+            }
 #endif
         }
 
@@ -625,7 +630,39 @@ namespace Match3
         #region HANDLE GAME LOGIC
         private void HandleSwap(Vector2 dragDir)
         {
-            if (dragDir == Vector2Int.left)
+            if (dragDir == Vector2.zero)
+            {
+                Debug.Log("Zero");
+                switch (_selectedTile.SpecialProperties)
+                {
+                    default:
+                    case SpecialTileID.None:
+
+                        break;
+                    case SpecialTileID.RowBomb:
+                        _swappedTile = _selectedTile;
+                        if (_activeRowBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeRowBombSet.Add(_selectedTile);
+                        }
+                        break;
+                    case SpecialTileID.ColumnBomb:
+                        _swappedTile = _selectedTile;
+                        if (_activeColumnBombSet.Contains(_selectedTile) == false)
+                        {
+                            _activeColumnBombSet.Add(_selectedTile);
+                        }
+                        break;
+                    case SpecialTileID.BlastBomb:
+                        _swappedTile = _selectedTile;
+                        AudioManager.Instance.PlayMatch5Sfx();
+                        PlayFlashBombVfx(_selectedTile);
+                        HandleBlastBomb(_selectedTile);
+                        _triggeredMatch5Set.Add(_selectedTile.X + _selectedTile.Y * Width);
+                        break;
+                }
+            }
+            else if (dragDir == Vector2Int.left)
             {
                 int leftTileX = _selectedTile.X - 1;
                 int leftTileY = _selectedTile.Y;
@@ -870,12 +907,10 @@ namespace Match3
 
 
                 HandleSpawnSpecialTile();
-                // yield return StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
                 StartCoroutine(MatchAnimManager.Instance.PlayCollectAnimationCoroutine());
 
                 if (_emissiveTileQueue.Count > 0)
                 {
-                    // yield return new WaitForSeconds(0.1f);
                     while (_emissiveTileQueue.Count > 0)
                     {
                         Tile tile = _emissiveTileQueue.Dequeue();
@@ -898,17 +933,16 @@ namespace Match3
                         if (_tiles[i] != null)
                             _tiles[i].Display(true);
                     }
-
-                    // float waitFillTime = _activeRowBombSet.Count > 0 || _activeColumnBombSet.Count > 0 ? 1 : 0.05f;
-                    //yield return new WaitForSeconds(0.05f);
-                    // yield return new WaitForSeconds(0.05f);
-
-                    // if (_isBlastBombTriggered)
-                    // {
-                    //     yield return new WaitForSeconds(0.1f);
-                    // }
                     yield return StartCoroutine(AutoFillCoroutine());
                 }
+
+
+                // if (hasMatched)
+                // {
+                //     yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
+                // }
+                yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
+
 
 
                 _colorBurstParentDictionary.Clear();
@@ -916,17 +950,16 @@ namespace Match3
                 _match4Dictionary.Clear();
                 _match5Dictionary.Clear();
                 _blastBombDictionary.Clear();
-
-
-
                 _activeColumnBombSet.Clear();
                 _activeRowBombSet.Clear();
                 _isBlastBombTriggered = false;
-                //_singleColumnBombCoroutineKey.Clear();
-                //_singleRowBombCoroutineKey.Clear();
-                //_singleColumnBombCoroutineDict.Clear();
-                //_singleRowBombCoroutineDict.Clear();
 
+
+                if (HasMatch() == false)
+                {
+                    Debug.Log("Break here");
+                    break;
+                }
 
                 attempts++;
                 if (attempts > 50)
@@ -935,17 +968,8 @@ namespace Match3
                     break;
                 }
 
-                // Debug.Log($"HasMatch: {HasMatch()}");
 
-                if (HasMatch() == false)
-                {
-                    break;
-                }
 
-                if (hasMatched)
-                {
-                    yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
-                }
             }
 
             if (HandleReswapIfNotMatch)
@@ -1033,11 +1057,10 @@ namespace Match3
 
         private void HandleBlastBomb(Tile tile)
         {
-            // Time.timeScale = 0.5f;
-            Debug.Log("HandleBlastBomb");
+            // Debug.Log("HandleBlastBomb");
             _isBlastBombTriggered = true;
             PlayFlashBombVfx(tile);
-            Dictionary<int, int> highestBombTileDict = new();
+            // Dictionary<int, int> highestBombTileDict = new();
             for (int y = 0; y < _blastBombPattern.GetLength(1); y++)
             {
                 for (int x = 0; x < _blastBombPattern.GetLength(0); x++)
@@ -1059,14 +1082,14 @@ namespace Match3
                                 MatchAnimManager.Instance.Collect(_tiles[index].transform.position, _tiles[index].ID);
                             }
 
-                            if (highestBombTileDict.ContainsKey(xx) == false)
-                            {
-                                highestBombTileDict.Add(xx, yy);
-                            }
-                            else
-                            {
-                                highestBombTileDict[xx] = yy;
-                            }
+                            // if (highestBombTileDict.ContainsKey(xx) == false)
+                            // {
+                            //     highestBombTileDict.Add(xx, yy);
+                            // }
+                            // else
+                            // {
+                            //     highestBombTileDict[xx] = yy;
+                            // }
                         }
                     }
                 }
@@ -2029,6 +2052,7 @@ namespace Match3
         private IEnumerator HandleSpecialMatchCoroutine()
         {
             if (_selectedTile == null || _swappedTile == null) yield break;
+            if (_selectedTile.Equal(_swappedTile)) yield break;
             // if (_matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.None ||
             //     _matchBuffer[_selectedTile.X + _selectedTile.Y * Width] != MatchID.Match) return;
             switch (_selectedTile.SpecialProperties)
@@ -3247,7 +3271,7 @@ namespace Match3
 
 
         #region SHUFFLE
-        private void ShuffleGrid()
+        private IEnumerator ShuffleGridCoroutine()
         {
             Debug.Log("ShuffleGrid");
 
@@ -3262,23 +3286,41 @@ namespace Match3
                     randomTile.CurrentBlock is not NoneBlock) continue;
 
                 SwapPosition(currTile, randomTile);
-                currTile.UpdatePosition();
-                randomTile.UpdatePosition();
+                currTile.MoveToGridPosition();
+                randomTile.MoveToGridPosition();
+                yield return new WaitForSeconds(0.01f);
             }
         }
         private IEnumerator ShuffleGridUntilCanMatchCoroutine()
         {
             // shuffle grid if no match found
+            int attempts = 0;
             while (true)
             {
-                if (CanMatch())
+                if (CanMatch() == false)
+                {
+                    if (attempts == 0)
+                    {
+                        Debug.Log("Cannot match -> SHUFFLE");
+                        yield return new WaitForSeconds(2.0f);
+                    }
+                    yield return StartCoroutine(ShuffleGridCoroutine());
+                    attempts++;
+
+                    if (attempts > 20)
+                    {
+                        Debug.Log("Something went wrong !!!!!");
+                        break;
+                    }
+                }
+                else
                 {
                     break;
                 }
 
-                yield return new WaitForSeconds(0.5f);
-                ShuffleGrid();
             }
+
+            Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
 
@@ -4472,16 +4514,82 @@ namespace Match3
                     {
                         return true;
                     }
-
                 }
             }
 
             return false;
         }
+
+
+        private bool HasAvaiableMove()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    // Check right swap
+                    if (x < Width - 1 && TrySwapAndCheck(x, y, x + 1, y))
+                        return true;
+
+                    // Check up swap
+                    if (y < Height - 1 && TrySwapAndCheck(x, y, x, y + 1))
+                        return true;
+                }
+            }
+            return false; // No moves found
+
+
+            bool TrySwapAndCheck(int x1, int y1, int x2, int y2)
+            {
+                Tile a = _tiles[x1 + y1 * Width];
+                Tile b = _tiles[x2 + y2 * Width];
+
+                if (a == null || b == null) return false;
+                if(a.CurrentBlock is not NoneBlock || b.CurrentBlock is not NoneBlock) return false;
+
+                // Swap
+                _tiles[x1 + y1 * Width] = b;
+                _tiles[x2 + y2 * Width] = a;
+
+                bool matchFound = CheckForMatchAt(x1, y1) || CheckForMatchAt(x2, y2);
+
+                // Revert swap
+                _tiles[x1 + y1 * Width] = a;
+                _tiles[x2 + y2 * Width] = b;
+
+                return matchFound;
+            }
+
+            bool CheckForMatchAt(int x, int y)
+            {
+                Tile tile = _tiles[x + y * Width];
+                if (tile == null) return false;
+                if (tile.CurrentBlock is not NoneBlock || tile.CurrentBlock is not Lock) return false;
+
+                int horizontal = 1;
+                int vertical = 1;
+
+                // Horizontal check
+                for (int i = x - 1; i >= 0 && _tiles[i + y * Width]?.ID == tile.ID; i--) horizontal++;
+                for (int i = x + 1; i < Width && _tiles[i + y * Width]?.ID == tile.ID; i++) horizontal++;
+
+                // Vertical check
+                for (int j = y - 1; j >= 0 && _tiles[x + j * Width]?.ID == tile.ID; j--) vertical++;
+                for (int j = y + 1; j < Height && _tiles[x + j * Width]?.ID == tile.ID; j++) vertical++;
+
+                return horizontal >= 3 || vertical >= 3;
+            }
+        }
+
         private bool CanMatch()
         {
             bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
             {
+                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+                {
+                    return false;
+                }
+
                 // down, down of down
                 if (IsValidMatchTile(newX, newY - 1))
                 {
@@ -4502,6 +4610,11 @@ namespace Match3
             }
             bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
             {
+                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+                {
+                    return false;
+                }
+
                 // top, top of top
                 if (IsValidMatchTile(newX, newY + 1))
                 {
@@ -4522,6 +4635,11 @@ namespace Match3
             }
             bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
             {
+                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+                {
+                    return false;
+                }
+
                 // right, right of right
                 if (IsValidMatchTile(newX + 1, newY))
                 {
@@ -4543,6 +4661,11 @@ namespace Match3
             }
             bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
             {
+                if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
+                {
+                    return false;
+                }
+
                 // left, left of left
                 if (IsValidMatchTile(newX - 1, newY))
                 {
@@ -4569,20 +4692,61 @@ namespace Match3
                 {
                     Tile tile = _tiles[x + y * Width];
                     if (tile == null) continue;
+                    if (tile.CurrentBlock is not NoneBlock) continue;
+
+                    if (tile.SpecialProperties == SpecialTileID.ColumnBomb ||
+                        tile.SpecialProperties == SpecialTileID.RowBomb ||
+                        tile.SpecialProperties == SpecialTileID.BlastBomb)
+                    {
+                        Debug.Log("Can match A");
+                        return true;
+                    }
+                    else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
+                    {
+                        Debug.Log("Can match B");
+                        if (IsValidMatchTile(x - 1, y)) return true;
+                        if (IsValidMatchTile(x + 1, y)) return true;
+                        if (IsValidMatchTile(x, y - 1)) return true;
+                        if (IsValidMatchTile(x, y + 1)) return true;
+                    }
+
+                    if (HasEnoughSameNeighborsLeft(tile.ID, x, y))
+                    {
+                        Debug.Log("AAA");
+                        return true;
+                    }
+                    if (HasEnoughSameNeighborsRight(tile.ID, x, y))
+                    {
+                        Debug.Log("BBB");
+                        return true;
+                    }
+                    if (HasEnoughSameNeighborsTop(tile.ID, x, y))
+                    {
+                        Debug.Log("CCC");
+                        return true;
+                    }
+                    if (HasEnoughSameNeighborsDown(tile.ID, x, y))
+                    {
+                        Debug.Log("DDD");
+                        return true;
+                    }
 
                     // left 
                     if (IsValidMatchTile(x - 1, y))
                     {
                         if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
                         {
+                            // Debug.Log($"L 0:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
                         {
+                            // Debug.Log($"L 1:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
                         {
+                            // Debug.Log($"L 2:  {x}  {y}");
                             return true;
                         }
                     }
@@ -4592,15 +4756,17 @@ namespace Match3
                     {
                         if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
                         {
-                            // Debug.Log($"{tile.X} {tile.Y}  {tile.Data.ID}");
+                            // Debug.Log($"R 0:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
                         {
+                            // Debug.Log($"R 1:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
                         {
+                            // Debug.Log($"R 2:  {x}  {y}");
                             return true;
                         }
                     }
@@ -4610,14 +4776,17 @@ namespace Match3
                     {
                         if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
                         {
+                            // Debug.Log($"U 0:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
                         {
+                            // Debug.Log($"U 1:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
                         {
+                            // Debug.Log($"U 2:  {x}  {y}");
                             return true;
                         }
                     }
@@ -4627,20 +4796,24 @@ namespace Match3
                     {
                         if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
                         {
+                            // Debug.Log($"D 0:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
                         {
+                            // Debug.Log($"D 2:  {x}  {y}");
                             return true;
                         }
                         if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
                         {
+                            // Debug.Log($"D 2:  {x}  {y}");
                             return true;
                         }
                     }
                 }
             }
 
+            Debug.Log("END FALSE");
             return false;
         }
 
