@@ -1,3 +1,4 @@
+#if !UNITY_WEBGL
 using UnityEngine;
 using Match3;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ public class UIShop : MonoBehaviour
     private Canvas _canvas;
     [SerializeField] private Button _closeBtn;
 
-    [Header("Shop Pack")] [SerializeField] private Transform _contentParent;
+    [Header("Shop Pack")][SerializeField] private Transform _contentParent;
 
     // [SerializeField] private UIShopPack[] _uiShopPackPrefab;
     [SerializeField] private UIShopPack[] _uiPackSlots;
@@ -220,93 +221,94 @@ public class UIShop : MonoBehaviour
     // }
     private void ProcessShopItems(System.Collections.Generic.List<ShopItemPack> shopItems,
     System.Collections.Generic.List<UIShopPack> allShopPacks)
-{
-    // Count items by type
-    int totalSingle = shopItems.Count(x => x.ShopPackType == ShopPackType.Single);
-    int totalPair = shopItems.Count(x => x.ShopPackType == ShopPackType.Pair);
-    int totalTriple = shopItems.Count(x => x.ShopPackType == ShopPackType.Triple);
-
-    // Calculate how many prefabs of each type we need
-    int singlePrefabsNeeded = totalSingle / 1 + (totalSingle % 1 > 0 ? 1 : 0);
-    int pairPrefabsNeeded = totalPair / 2 + (totalPair % 2 > 0 ? 1 : 0);
-    int triplePrefabsNeeded = totalTriple / 3 + (totalTriple % 3 > 0 ? 1 : 0);
-
-    // Process single packs
-    int singlePacksProcessed = 0;
-    for (int i = 0; i < singlePrefabsNeeded; i++)
     {
-        GameObject singlePrefabInstance = Instantiate(_uiSingleUIShopPackPrefab, _contentParent);
-        UIShopPack packSlot = singlePrefabInstance.GetComponentInChildren<UIShopPack>();
+        // Count items by type
+        int totalSingle = shopItems.Count(x => x.ShopPackType == ShopPackType.Single);
+        int totalPair = shopItems.Count(x => x.ShopPackType == ShopPackType.Pair);
+        int totalTriple = shopItems.Count(x => x.ShopPackType == ShopPackType.Triple);
 
-        if (packSlot != null && singlePacksProcessed < totalSingle)
+        // Calculate how many prefabs of each type we need
+        int singlePrefabsNeeded = totalSingle / 1 + (totalSingle % 1 > 0 ? 1 : 0);
+        int pairPrefabsNeeded = totalPair / 2 + (totalPair % 2 > 0 ? 1 : 0);
+        int triplePrefabsNeeded = totalTriple / 3 + (totalTriple % 3 > 0 ? 1 : 0);
+
+        // Process single packs
+        int singlePacksProcessed = 0;
+        for (int i = 0; i < singlePrefabsNeeded; i++)
         {
-            var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Single)
-                .Skip(singlePacksProcessed).FirstOrDefault();
-            if (pack != null)
-            {
-                packSlot.SetPackData(pack, MainSpritePicker(pack));
-                allShopPacks.Add(packSlot);
-                singlePacksProcessed++;
-            }
-        }
-    }
+            GameObject singlePrefabInstance = Instantiate(_uiSingleUIShopPackPrefab, _contentParent);
+            UIShopPack packSlot = singlePrefabInstance.GetComponentInChildren<UIShopPack>();
 
-    // Process pair packs
-    int pairPacksProcessed = 0;
-    for (int i = 0; i < pairPrefabsNeeded; i++)
-    {
-        GameObject pairPrefabInstance = Instantiate(_uiPairUIShopPackPrefab, _contentParent);
-        UIShopPack[] packSlots = pairPrefabInstance.GetComponentsInChildren<UIShopPack>();
-
-        // Process each slot in the pair prefab
-        for (int j = 0; j < packSlots.Length; j++)
-        {
-            if (pairPacksProcessed < totalPair)
+            if (packSlot != null && singlePacksProcessed < totalSingle)
             {
-                var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Pair)
-                    .Skip(pairPacksProcessed).FirstOrDefault();
+                var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Single)
+                    .Skip(singlePacksProcessed).FirstOrDefault();
                 if (pack != null)
                 {
-                    packSlots[j].SetPackData(pack, MainSpritePicker(pack));
-                    allShopPacks.Add(packSlots[j]);
-                    pairPacksProcessed++;
+                    packSlot.SetPackData(pack, MainSpritePicker(pack));
+                    allShopPacks.Add(packSlot);
+                    singlePacksProcessed++;
                 }
-            }
-            else
-            {
-                // Disable or destroy the empty slot
-                Destroy(packSlots[j].gameObject);
             }
         }
-    }
 
-    // Process triple packs
-    int triplePacksProcessed = 0;
-    for (int i = 0; i < triplePrefabsNeeded; i++)
-    {
-        GameObject triplePrefabInstance = Instantiate(_uiThreeUIShopPackPrefab, _contentParent);
-        UIShopPack[] packSlots = triplePrefabInstance.GetComponentsInChildren<UIShopPack>();
-
-        // Process each slot in the triple prefab
-        for (int j = 0; j < packSlots.Length; j++)
+        // Process pair packs
+        int pairPacksProcessed = 0;
+        for (int i = 0; i < pairPrefabsNeeded; i++)
         {
-            if (triplePacksProcessed < totalTriple)
+            GameObject pairPrefabInstance = Instantiate(_uiPairUIShopPackPrefab, _contentParent);
+            UIShopPack[] packSlots = pairPrefabInstance.GetComponentsInChildren<UIShopPack>();
+
+            // Process each slot in the pair prefab
+            for (int j = 0; j < packSlots.Length; j++)
             {
-                var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Triple)
-                    .Skip(triplePacksProcessed).FirstOrDefault();
-                if (pack != null)
+                if (pairPacksProcessed < totalPair)
                 {
-                    packSlots[j].SetPackData(pack, MainSpritePicker(pack));
-                    allShopPacks.Add(packSlots[j]);
-                    triplePacksProcessed++;
+                    var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Pair)
+                        .Skip(pairPacksProcessed).FirstOrDefault();
+                    if (pack != null)
+                    {
+                        packSlots[j].SetPackData(pack, MainSpritePicker(pack));
+                        allShopPacks.Add(packSlots[j]);
+                        pairPacksProcessed++;
+                    }
+                }
+                else
+                {
+                    // Disable or destroy the empty slot
+                    Destroy(packSlots[j].gameObject);
                 }
             }
-            else
+        }
+
+        // Process triple packs
+        int triplePacksProcessed = 0;
+        for (int i = 0; i < triplePrefabsNeeded; i++)
+        {
+            GameObject triplePrefabInstance = Instantiate(_uiThreeUIShopPackPrefab, _contentParent);
+            UIShopPack[] packSlots = triplePrefabInstance.GetComponentsInChildren<UIShopPack>();
+
+            // Process each slot in the triple prefab
+            for (int j = 0; j < packSlots.Length; j++)
             {
-                // Disable or destroy the empty slot
-                Destroy(packSlots[j].gameObject);
+                if (triplePacksProcessed < totalTriple)
+                {
+                    var pack = shopItems.Where(x => x.ShopPackType == ShopPackType.Triple)
+                        .Skip(triplePacksProcessed).FirstOrDefault();
+                    if (pack != null)
+                    {
+                        packSlots[j].SetPackData(pack, MainSpritePicker(pack));
+                        allShopPacks.Add(packSlots[j]);
+                        triplePacksProcessed++;
+                    }
+                }
+                else
+                {
+                    // Disable or destroy the empty slot
+                    Destroy(packSlots[j].gameObject);
+                }
             }
         }
     }
 }
-}
+#endif

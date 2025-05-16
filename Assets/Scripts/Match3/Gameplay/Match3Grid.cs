@@ -3032,6 +3032,7 @@ namespace Match3
                  _matchAnimationTileDictionary.Count > 0)
             {
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
+                // yield return null;
             }
 
 

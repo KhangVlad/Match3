@@ -1,4 +1,4 @@
-
+#if !UNITY_WEBGL
     using System;
     using Match3;
     using UnityEngine;
@@ -33,3 +33,4 @@
         }
         
     }
+#endif

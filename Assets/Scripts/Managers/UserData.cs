@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !UNITY_WEBGL
+using UnityEngine;
 using System.Collections.Generic;
 using Firebase.Firestore;
 
@@ -20,6 +21,7 @@ public class UserData
 
     [FirestoreProperty] public object FirstLoginTime { get; set; }
 }
+#endif
 
 //
 // #if !UNITY_WEBGL

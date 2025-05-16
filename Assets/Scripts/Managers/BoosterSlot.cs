@@ -21,6 +21,7 @@
 //     }
 // }
 
+#if !UNITY_WEBGL
 using Match3;
 using Firebase.Firestore;
 using UnityEngine;
@@ -61,3 +62,4 @@ public class BoosterSlot
         this.quantity = quantity;
     }
 }
+#endif
