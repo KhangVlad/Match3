@@ -91,7 +91,8 @@ namespace Match3
 
 
         [Header("VFX")]
-        private float _rocketPlayTime = 0.6f;
+        private float _defaultRocketPlayTime = 0.5f;
+        private float _triggerByBombRocketPlayTime = 0.35f;
         private bool _isBlastBombTriggered = false;
 
 
@@ -105,6 +106,7 @@ namespace Match3
         public bool Canplay => _canPlay;
         public bool UseBoosterThisTurn { get; private set; } = false;
         public bool SwapTileHasMatched { get; private set; } = false;
+        public bool FirstTimeHasChecked {get; private set;} = false;
         #endregion
 
 
@@ -116,8 +118,8 @@ namespace Match3
                 return;
             }
             Instance = this;
-            _fillType = FillType.Dropdown;
-            //_fillType = FillType.SandFalling;
+            // _fillType = FillType.Dropdown;
+            _fillType = FillType.SandFalling;
         }
 
         private void Start()
@@ -799,8 +801,8 @@ namespace Match3
                 yield return StartCoroutine(HandleMatchCoroutine());
                 HandleTriggerAllSpecialTiles();
 
-                // Collect animation
-                yield return StartCoroutine(HandleCollectAnimationCoroutine());
+                // // Collect animation
+                // yield return StartCoroutine(HandleCollectAnimationCoroutine());
 
                 #region Handle Row And Column Bomb
 
@@ -888,6 +890,10 @@ namespace Match3
                 #endregion
 
 
+
+                // Collect animation
+                yield return StartCoroutine(HandleCollectAnimationCoroutine());
+
                 #region  Handle Match
                 HandleMatchAndUnlock(ref hasMatched);
                 if (hasMatched)
@@ -932,11 +938,11 @@ namespace Match3
                 }
 
 
-                // if (hasMatched)
-                // {
-                //     yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
-                // }
-                yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
+                if (hasMatched || !FirstTimeHasChecked)
+                {
+                    yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
+                }
+                // yield return StartCoroutine(ShuffleGridUntilCanMatchCoroutine());
 
 
 
@@ -998,6 +1004,7 @@ namespace Match3
             _unlockThisPlayTurnSet.Clear();
             _matchThisPlayTurnSet.Clear();
             UseBoosterThisTurn = false;
+            FirstTimeHasChecked = true;
         }
 
 
@@ -1129,8 +1136,9 @@ namespace Match3
 
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
                     vfxPrefab.transform.position = tile.TileTransform.position;
-                    vfxPrefab.Play(_rocketPlayTime);
 
+                    float vfxPlayTime = _matchBuffer[tile.X + tile.Y * Width] == MatchID.BlastBomb ? _triggerByBombRocketPlayTime : _defaultRocketPlayTime;
+                    vfxPrefab.Play(vfxPlayTime);
 
                     int centerX = tile.X;
                     int y = tile.Y;
@@ -1245,7 +1253,7 @@ namespace Match3
 
                         if (offset < Width - 1)
                         {
-                            float linearTime = _rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE;
+                            float linearTime = vfxPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE;
                             yield return new WaitForSeconds(linearTime);
                         }
                     }
@@ -1274,7 +1282,8 @@ namespace Match3
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
-            vfxPrefab.Play(_rocketPlayTime);
+            float vfxPlayTime = _matchBuffer[tile.X + tile.Y * Width] == MatchID.BlastBomb ? _triggerByBombRocketPlayTime : _defaultRocketPlayTime;
+            vfxPrefab.Play(vfxPlayTime);
 
             int centerX = tile.X;
             int y = tile.Y;
@@ -1341,14 +1350,15 @@ namespace Match3
                 if (rightValid && offset != 0) // Avoid double-playing the center tile
                 {
                     int index = rightX + y * Width;
-                    if (_tiles[index].IsDisplay)
-                    {
-                        bool isDisplay = offset == Width - 1;
-                        _tiles[index].Display(false);
-                        _tiles[index].PlayMatchVFX(MatchID.RowBomb);
-                    }
                     if (_tiles[index] != null)
                     {
+                        if (_tiles[index].IsDisplay)
+                        {
+                            bool isDisplay = offset == Width - 1;
+                            _tiles[index].Display(false);
+                            _tiles[index].PlayMatchVFX(MatchID.RowBomb);
+                        }
+
                         // Collect FX
                         if (GameplayManager.Instance.HasTileQuest(_tiles[index].ID))
                         {
@@ -1394,7 +1404,7 @@ namespace Match3
 
                 if (offset < Width - 1)
                 {
-                    yield return new WaitForSeconds(_rocketPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
+                    yield return new WaitForSeconds(vfxPlayTime / HorizontalRocketVfx.MAX_ROCKET_DISTANCE);
                 }
             }
 
@@ -1436,7 +1446,8 @@ namespace Match3
 
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
                 vfxPrefab.transform.position = tile.TileTransform.position;
-                vfxPrefab.Play(_rocketPlayTime);
+                float vfxPlayTime = _matchBuffer[tile.X + tile.Y * Width] == MatchID.BlastBomb ? _triggerByBombRocketPlayTime : _defaultRocketPlayTime;
+                vfxPrefab.Play(vfxPlayTime);
 
                 int x = tile.X;
                 int centerY = tile.Y;
@@ -1549,7 +1560,7 @@ namespace Match3
                     }
 
                     if (offset < Height - 1)
-                        yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
+                        yield return new WaitForSeconds(vfxPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
                 }
             }
             //yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
@@ -1576,7 +1587,8 @@ namespace Match3
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
             vfxPrefab.transform.position = tile.TileTransform.position;
-            vfxPrefab.Play(_rocketPlayTime);
+            float vfxPlayTime = _matchBuffer[tile.X + tile.Y * Width] == MatchID.BlastBomb ? _triggerByBombRocketPlayTime : _defaultRocketPlayTime;
+            vfxPrefab.Play(vfxPlayTime);
 
             int x = tile.X;
             int centerY = tile.Y;
@@ -1687,7 +1699,7 @@ namespace Match3
                     }
                 }
                 if (offset < Height - 1)
-                    yield return new WaitForSeconds(_rocketPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
+                    yield return new WaitForSeconds(vfxPlayTime / VerticalRocketVfx.MAX_ROCKET_DISTANCE);
             }
 
             onCompleted?.Invoke();
@@ -2723,11 +2735,11 @@ namespace Match3
 
                     HorizontalRocketVfx horizontalVfx = (HorizontalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
                     horizontalVfx.transform.position = new Vector3(offsetX + 0.5f, offsetY + 0.5f, 0f);
-                    horizontalVfx.Play(_rocketPlayTime);
+                    horizontalVfx.Play(_defaultRocketPlayTime);
 
                     VerticalRocketVfx verticalVfx = (VerticalRocketVfx)VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
                     verticalVfx.transform.position = new Vector3(offsetX + 0.5f, offsetY + 0.5f, 0f);
-                    verticalVfx.Play(_rocketPlayTime);
+                    verticalVfx.Play(_defaultRocketPlayTime);
 
                     ExplosionVertical(offsetX);
                     ExplosionHorizontal(offsetY);
@@ -3199,11 +3211,9 @@ namespace Match3
                 tile.PlayAppearAnimation(0.2f);
 
 
-                tile.Emissive(duration: 0, () =>
-                {
-                    _emissiveTileQueue.Enqueue(tile);
-                    tile.Display(true);
-                });
+                tile.Emissive(duration: 0);
+                _emissiveTileQueue.Enqueue(tile);
+                tile.Display(true);
 
                 // Utilities.WaitAfter(0.1f, () =>
                 // {
@@ -3237,11 +3247,9 @@ namespace Match3
                 tile.SetSpecialTile(SpecialTileID.ColumnBomb);
                 tile.PlayAppearAnimation(0.2f);
 
-                tile.Emissive(0f, () =>
-                {
-                    _emissiveTileQueue.Enqueue(tile);
-                    tile.Display(true);
-                });
+                tile.Emissive(0f);
+                _emissiveTileQueue.Enqueue(tile);
+                tile.Display(true);
                 // Transform cachedTileTransform = tile.TileTransform;
                 // Utilities.WaitAfter(0.1f, () =>
                 //  {
@@ -3298,7 +3306,8 @@ namespace Match3
                     if (attempts == 0)
                     {
                         Debug.Log("Cannot match -> SHUFFLE");
-                        yield return new WaitForSeconds(2.0f);
+                        UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(true);
+                        yield return new WaitForSeconds(1.0f);
                     }
                     yield return StartCoroutine(ShuffleGridCoroutine());
                     attempts++;
@@ -3336,6 +3345,8 @@ namespace Match3
 
             }
 
+            yield return new WaitForSeconds(0.2f);
+            UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
             Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
@@ -4348,10 +4359,10 @@ namespace Match3
                             newTile.SetTileVisualizePosition(x, y);
                             newTile.MoveToGridPosition(TileAnimationExtensions.TILE_FALLDOWN_TIME);
                         }
-                        else
-                        {
-                            tileBelow.FallDownScaleAnimation();
-                        }
+                        // else
+                        // {
+                        //     tileBelow.FallDownScaleAnimation();
+                        // }
                     }
                 }
 

@@ -4,6 +4,7 @@ using TMPro;
 using System;
 using DG.Tweening;
 using UnityEngine.Video;
+using Match3.Shares;
 
 namespace Match3
 {
@@ -13,9 +14,11 @@ namespace Match3
 
         [SerializeField] private TextMeshProUGUI _turnCountText;
 
-        [Header("Buttons")] [SerializeField] private Button _settingsBtn;
+        [Header("Buttons")]
+        [SerializeField] private Button _settingsBtn;
 
-        [Header("Progress")] [SerializeField] private Slider _progressSlider;
+        [Header("Progress")]
+        [SerializeField] private Slider _progressSlider;
         [SerializeField] private Image _start1;
         [SerializeField] private Image _start2;
         [SerializeField] private Image _start3;
@@ -23,11 +26,13 @@ namespace Match3
         [SerializeField] private Sprite _unactiveSprite;
         [SerializeField] private VideoPlayer _videoPlayer;
 
-        [Header("Boosters")] [SerializeField] private UIGameplayBooster _uiGameplayBoosterPrefab;
+        [Header("Boosters")]
+        [SerializeField]
+        private UIGameplayBooster _uiGameplayBoosterPrefab;
         [SerializeField] private Transform _boosterContentParent;
 
 
-        [Header("Avatars")] [SerializeField] private Image _characterAvatar;
+        [Header("Avatars")][SerializeField] private Image _characterAvatar;
 
 
         private void Awake()
