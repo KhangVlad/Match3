@@ -35,8 +35,6 @@
         RedBut = 30,
         WhiteBut = 31,
         YellowBut = 32,
-        RedBug = 33,
-        YellowBug = 34,
         Rock = 35,
 
         Bell = 36,

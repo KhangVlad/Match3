@@ -8,19 +8,26 @@ namespace Match3
 
         public UIGameplay UIGameplay { get; private set; }
         public UISettings UISettings { get; private set; }
-        public UIWin UIWin { get; private set; }    
-        public UIGameover UIGameover { get; private set; }    
-        public UIGameplayBoosterManager UIGameplayBoosterManager { get; private set; }  
-
+        public UIWin UIWin { get; private set; }
+        public UIGameover UIGameover { get; private set; }
+        public UIGameplayBoosterManager UIGameplayBoosterManager { get; private set; }
+        public UINoMorePossibleMove UINoMorePossibleMove { get; private set; }
 
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            Debug.Log("AAAAA");
+            // Debug.Break();
+            // if (Instance != null && Instance != this)
+            // {
+            //     Destroy(this.gameObject);
+            //     return;
+            // }
+            if(Instance == null)
             {
-                Destroy(this.gameObject);
-                return;
+                Instance = this;
             }
+            Debug.Log("BBB");
             Instance = this;
 
             UIGameplay = FindFirstObjectByType<UIGameplay>();
@@ -28,6 +35,7 @@ namespace Match3
             UIWin = FindFirstObjectByType<UIWin>();
             UIGameover = FindFirstObjectByType<UIGameover>();
             UIGameplayBoosterManager = FindFirstObjectByType<UIGameplayBoosterManager>();
+            UINoMorePossibleMove = FindFirstObjectByType<UINoMorePossibleMove>();
         }
 
         private void Start()
@@ -35,8 +43,7 @@ namespace Match3
 
             CloseAll();
             DisplayUIGameplay(true);
-
-
+            DisplayUINoMorePossibleMove(true);
         }
 
         public void CloseAll()
@@ -46,6 +53,7 @@ namespace Match3
             DisplayUIWin(false);
             DisplayUIGameover(false);
             DisplayUIGameplayBoosterManager(false);
+            DisplayUINoMorePossibleMove(false);
         }
 
 
@@ -72,6 +80,11 @@ namespace Match3
         public void DisplayUIGameplayBoosterManager(bool enable)
         {
             UIGameplayBoosterManager.DisplayCanvas(enable);
+        }
+
+        public void DisplayUINoMorePossibleMove(bool enable)
+        {
+            UINoMorePossibleMove.DisplayCanvas(enable);
         }
     }
 }

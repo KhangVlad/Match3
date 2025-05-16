@@ -106,7 +106,7 @@ namespace Match3
         public bool Canplay => _canPlay;
         public bool UseBoosterThisTurn { get; private set; } = false;
         public bool SwapTileHasMatched { get; private set; } = false;
-        public bool FirstTimeHasChecked {get; private set;} = false;
+        public bool FirstTimeHasChecked { get; private set; } = false;
         #endregion
 
 
@@ -809,7 +809,6 @@ namespace Match3
                 if (_handleColumnBombCoroutine != null) StopCoroutine(_handleColumnBombCoroutine);
                 if (_handleRowBombCoroutine != null) StopCoroutine(_handleRowBombCoroutine);
 
-
                 bool columnDone = false;
                 bool rowDone = false;
                 if (_activeColumnBombSet.Count > 0)
@@ -859,13 +858,11 @@ namespace Match3
                             Tile nb = e.Value[i];
                             nb.PlayShaking(colorBurstDuration);
 
-
                             nb.Bloom(true);
                             LightningLine lightningLineFX = (LightningLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.LightingLine);
                             lightningLineFX.transform.position = Vector2.zero;
                             float reachTaretTime = 0.1f;
                             lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, reachTaretTime, colorBurstDuration);
-
 
                             EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
                             endLineColorBurstFX.transform.position = nb.TileTransform.position;
@@ -986,7 +983,7 @@ namespace Match3
             _selectedTile = null;
             _swappedTile = null;
 
-            yield return new WaitForSeconds(0.1f);
+            // yield return new WaitForSeconds(0.1f);
             _canPlay = true;
 
             if (triggerEvent)
@@ -2949,24 +2946,8 @@ namespace Match3
                         float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
                         nb.MoveToPosition((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME, Ease.InSine);
                     }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                int multiplier = 1;
-                foreach (var e in _blastBombDictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
                 }
             }
 
@@ -3011,23 +2992,6 @@ namespace Match3
                 {
                     t.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
                 });
-
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                int multiplier = 1;
-                foreach (var e in _match4Dictionary)
-                {
-                    t = e.Value;
-                    nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
-                }
             }
 
             if (_match5Dictionary.Count > 0)
@@ -3042,19 +3006,6 @@ namespace Match3
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
                         nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
-                    }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                foreach (var e in _match5Dictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                     }
                 }
             }
@@ -3073,8 +3024,53 @@ namespace Match3
                         nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
                     }
                 }
+            }
+
+            if (_blastBombDictionary.Count > 0 ||
+                 _match4Dictionary.Count > 0 ||
+                 _match5Dictionary.Count > 0 ||
+                 _matchAnimationTileDictionary.Count > 0)
+            {
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                foreach (var e in _matchAnimationTileDictionary)
+            }
+
+
+            if (_blastBombDictionary.Count > 0)
+            {
+                foreach (var e in _blastBombDictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+            }
+
+            if (_match4Dictionary.Count > 0)
+            {
+                foreach (var e in _match4Dictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+            }
+
+            if (_match5Dictionary.Count > 0)
+            {
+                foreach (var e in _match5Dictionary)
                 {
                     Tile t = e.Value;
                     Tile nb = e.Key;
@@ -3087,7 +3083,26 @@ namespace Match3
                     }
                 }
             }
+
+            if (_matchAnimationTileDictionary.Count > 0)
+            {
+                foreach (var e in _matchAnimationTileDictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+
+            }
+
             _matchAnimationTileDictionary.Clear();
+
         }
         private void HandleMatchAndUnlock(ref bool hasMatched)
         {
@@ -3164,7 +3179,7 @@ namespace Match3
 
                 Utilities.WaitAfter(0.1f, () =>
                 {
-                    tile.Display(false);
+                    // tile.Display(false);
                     ColorBurstAppearFX colorBurstFX = (ColorBurstAppearFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstAppearFX);
                     colorBurstFX.transform.position = tile.TileTransform.position;
                     colorBurstFX.SetTarget(tile.TileTransform);
