@@ -52,7 +52,6 @@ using System.Threading.Tasks;
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
@@ -171,20 +170,23 @@ using System.Threading.Tasks;
             }
         }
         
-        public void CalculateOfflineTimeEnergy()
+        private void CalculateOfflineTimeEnergy()
         {
-            int totalRegenEnergy = 0;
-            if (UserManager.Instance != null)
-            {
-                TimeSpan timeDifference =
-                    ServerTime - UserManager.Instance.UserData.LastOnlineTimestamp.StringToDateTime();
-                int minutesPassed = (int)timeDifference.TotalMinutes;
-                if (minutesPassed > 0)
-                {
-                    UserManager.Instance.RestoreEnergy(minutesPassed);
-                }
-            }
+            if (UserManager.Instance == null)
+                return;
+
+            var userData = UserManager.Instance.UserData;
+            DateTime lastOnline = userData.LastOnlineTimestamp.StringToDateTime();
+            TimeSpan timeOffline = ServerTime - lastOnline;
+            int minutesPassed = (int)timeOffline.TotalMinutes;
+
+            if (minutesPassed <= 0 || userData.Energy >= 100)
+                return;
+
+            int energyToRestore = Math.Min(100 - userData.Energy, minutesPassed);
+            UserManager.Instance.RestoreEnergy(energyToRestore);
         }
+
 
         public async Task<bool> UpdateServerTime()
         {
@@ -196,12 +198,11 @@ using System.Threading.Tasks;
                 serverTimeOffset = 0;
                 serverTime = new SerializableDateTime(fetchedTime);
                 IsTimeValid = true;
-                Debug.Log($"Server time updated: {fetchedTime}");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to update server time: {ex.Message}");
+                // Debug.LogError($"Failed to update server time: {ex.Message}");
                 return false;
             }
         }

@@ -7,7 +7,7 @@ public class UIDailyGiftManager : MonoBehaviour
 {
     private Canvas canvas;
     private CanvasGroup canvasGroup;
-    [SerializeField] private Button _closebtn;
+ 
     [SerializeField] private float fadeDuration = 0.3f;
     [SerializeField] private SpinWheel spin;
 
@@ -19,12 +19,12 @@ public class UIDailyGiftManager : MonoBehaviour
 
     private void Start()
     {
-        _closebtn.onClick.AddListener(() => TownCanvasController.Instance.ActiveDailyGift(false));
+        // _closebtn.onClick.AddListener(() => TownCanvasController.Instance.ActiveDailyGift(false));
     }
 
     private void OnDestroy()
     {
-        _closebtn.onClick.RemoveAllListeners();
+        // _closebtn.onClick.RemoveAllListeners();
         DOTween.Kill(canvasGroup);
     }
 

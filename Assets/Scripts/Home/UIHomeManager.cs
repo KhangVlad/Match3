@@ -8,6 +8,8 @@ public class UIHomeManager : MonoBehaviour
 {
     private Canvas _canvas;
     [SerializeField] private Button _dailyGiftbtn;
+
+    [SerializeField] private Button _shopBtn;
     // [SerializeField] private Slider energySlider;
     // [SerializeField] private TextMeshProUGUI energyText; // {current energy}/{max}
     // [SerializeField] private int maxEnergy = 100; // Reference to max energy value
@@ -20,7 +22,10 @@ public class UIHomeManager : MonoBehaviour
     private void Start()
     {
         _dailyGiftbtn.onClick.AddListener(() => { TownCanvasController.Instance.ActiveDailyGift(true); });
-       
+        _shopBtn.onClick.AddListener(() =>
+        {
+            TownCanvasController.Instance.ActiveShop(true);
+        });
     }
 
 

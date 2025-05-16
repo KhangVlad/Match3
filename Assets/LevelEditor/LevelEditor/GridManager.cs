@@ -52,7 +52,7 @@ namespace Match3.LevelEditor
             }
             Instance = this;
 
-            Application.targetFrameRate = 60;
+          
         }
 
         private void Update()

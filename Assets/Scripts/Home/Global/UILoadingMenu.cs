@@ -47,10 +47,7 @@ public class UILoadingMenu : MonoBehaviour
         }
         
         #if !UNITY_WEBGL
-        if (AuthenticationManager.Instance != null)
-        {
-            AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
-        }
+        AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
         #endif
         
         // Set background based on time of day
@@ -140,7 +137,6 @@ public class UILoadingMenu : MonoBehaviour
     private void OnGameDataLoaded()
     {
         _targetProgress += 0.25f;
-        Debug.Log("Game data loaded. Target progress updated to: " + _targetProgress);
     }
     
     private void OnUserDataLoaded()
@@ -178,7 +174,6 @@ public class UILoadingMenu : MonoBehaviour
         homeButton.interactable = true;
         
         // Optional: Add animation or visual feedback to indicate loading is complete
-        Debug.Log("Loading complete!");
         
         // Automatically switch to town scene
         if (LoadingAnimationController.Instance != null)

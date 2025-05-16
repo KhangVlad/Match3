@@ -5,6 +5,7 @@ using Match3.Shares;
 using Match3.Enums;
 using Newtonsoft.Json;
 using System.Linq;
+using NUnit.Framework;
 using UnityEngine.Tilemaps;
 using UnityEngine.Video;
 
@@ -53,6 +54,9 @@ namespace Match3
 
         // public List<CharacterDialogueSO> characterDialogues = new();
         public List<CharacterActivitySO> characterActivities = new();
+
+        public DailyGiftSO[] DailyGiftData;
+        private Dictionary<ShopItemID, DailyGiftSO> _dailyGiftDict;
         public event System.Action OnCharacterDataLoaded;
 
 
@@ -136,11 +140,23 @@ namespace Match3
             // Character level data
             LoadCharactereLevelData();
             characterActivities = Resources.LoadAll<CharacterActivitySO>("DataSO/CharacterActivities").ToList();
-
+            LoadDailyGift();
 
             // Shop data
             LoadShopData();
             OnDataLoaded?.Invoke();
+        }
+
+
+        private void LoadDailyGift()
+        {
+            DailyGiftData = Resources.LoadAll<DailyGiftSO>("DataSO/DailyGift/");
+            _dailyGiftDict = new Dictionary<ShopItemID, DailyGiftSO>();
+            for (int i = 0; i < DailyGiftData.Length; i++)
+            {
+                DailyGiftSO data = DailyGiftData[i];
+                _dailyGiftDict.Add(data.id, data);
+            }
         }
 
 
@@ -298,6 +314,7 @@ namespace Match3
                     {
                         greetingDialogs.Add(greeting);
                     }
+
                     if (!string.IsNullOrEmpty(lowSympathy))
                     {
                         lowSympathyDialogs.Add(lowSympathy);

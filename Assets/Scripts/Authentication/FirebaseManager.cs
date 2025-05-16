@@ -30,12 +30,12 @@ public class FirebaseManager : MonoBehaviour
     private void Start()
     {
         InitializeFirebase();
-        AuthenticationManager.Instance.OnAuthenticationSuccessfully += OnAuthenticationSuccessfully_SetUser;
+        // AuthenticationManager.Instance.OnAuthenticationSuccessfully += OnAuthenticationSuccessfully_SetUser;
     }
 
     private void OnDestroy()
     {
-        AuthenticationManager.Instance.OnAuthenticationSuccessfully -= OnAuthenticationSuccessfully_SetUser;
+        // AuthenticationManager.Instance.OnAuthenticationSuccessfully -= OnAuthenticationSuccessfully_SetUser;
     }
     
     
@@ -85,7 +85,6 @@ public class FirebaseManager : MonoBehaviour
         {
             if (task.IsCompleted)
             {
-                Debug.Log("Update server time successfully");
             }
             else
             {

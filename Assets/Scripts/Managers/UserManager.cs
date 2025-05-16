@@ -13,6 +13,7 @@ public class UserManager : MonoBehaviour
     public static UserManager Instance { get; private set; }
     public event Action OnUserDataLoaded;
     public event Action<int> OnEnergyChanged;
+    public event Action<float> OnGoldChanged;
 
     private int maxEnergy = 100;
     private const string USER_ID_KEY = "user_ID";
@@ -49,6 +50,7 @@ public class UserManager : MonoBehaviour
     {
         // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
         GameplayManager.OnWin += OnWinEvent;
+        GameplayManager.OnGameOver += OnLoseEvent;
 
         // Subscribe to minute elapsed event for energy regeneration
         if (TimeManager.Instance != null)
@@ -56,7 +58,6 @@ public class UserManager : MonoBehaviour
             TimeManager.Instance.OnMinuteElapsed += OnMinuteElapsed;
         }
 
-        Debug.Log("user Id " + GetUserID());
     }
 
     private void OnDestroy()
@@ -85,6 +86,11 @@ public class UserManager : MonoBehaviour
         {
             data.SetPassLevel(LevelManager.Instance.CurrentLevelIndex, heart);
         }
+    }
+
+    private void OnLoseEvent()
+    {
+        UserData.LoseStreak += 1;
     }
 
     public LocalUserData InitializeNewUserData()
@@ -132,6 +138,8 @@ public class UserManager : MonoBehaviour
             LastOnlineTimestamp = TimeManager.Instance.LoginTime.ToString(),
             SpinTime = TimeManager.Instance.ServerTime.AddHours(-12).ToString(),
             Energy = 80,
+            Gold =300,
+            LoseStreak =0
         };
 
         OnUserDataLoaded?.Invoke();
@@ -160,7 +168,7 @@ public class UserManager : MonoBehaviour
         if (UserData != null)
         {
             int oldEnergy = UserData.Energy;
-            UserData.Energy = Mathf.Min(UserData.Energy + amount, maxEnergy);
+            UserData.Energy += amount;
 
             // Only invoke event if energy actually changed
             if (oldEnergy != UserData.Energy)
@@ -187,6 +195,45 @@ public class UserManager : MonoBehaviour
         }
     }
 
+    public void ConsumeGold(float amount)
+    {
+        if (UserData != null)
+        {
+            float oldGold = UserData.Gold;
+            UserData.Gold = Mathf.Max(UserData.Gold - amount, 0);
+
+            // Only invoke event if gold actually changed
+            if (oldGold != UserData.Gold)
+            {
+                Debug.Log($"Gold consumed: {oldGold} -> {UserData.Gold}");
+                OnGoldChanged?.Invoke(UserData.Gold);
+            }
+        }
+    }
+
+    // Method to check if there's enough gold before consuming
+    public bool HasEnoughGold(float amount)
+    {
+        return UserData != null && UserData.Gold >= amount;
+    }
+
+    // Helper method to add gold
+    public void AddGold(float amount)
+    {
+        if (UserData != null)
+        {
+            float oldGold = UserData.Gold;
+            UserData.Gold += amount;
+
+            // Only invoke event if gold actually changed
+            if (oldGold != UserData.Gold)
+            {
+                Debug.Log($"Gold added: {oldGold} -> {UserData.Gold}");
+                OnGoldChanged?.Invoke(UserData.Gold);
+            }
+        }
+    }
+
     public bool HasEnoughEnergy(int amount)
     {
         return UserData != null && UserData.Energy >= amount;
@@ -205,7 +252,6 @@ public class UserManager : MonoBehaviour
         }
 
     }
-
 }
 
 

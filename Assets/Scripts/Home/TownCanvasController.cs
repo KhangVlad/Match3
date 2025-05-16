@@ -1,3 +1,4 @@
+using Match3;
 using UnityEngine;
 
 #if !UNITY_WEBGL
@@ -8,7 +9,7 @@ public class TownCanvasController : MonoBehaviour
     public UILevelDesignManager uiLevelDesignManager { get; private set; }
     public UIDailyGiftManager UIDailyGiftManager { get; private set; }
     public UIHomeManager uiHomeManager { get; private set; }
-    
+    public UIShop uiShop { get; private set; }
 
     private void Awake()
     {
@@ -28,6 +29,7 @@ public class TownCanvasController : MonoBehaviour
         uiLevelDesignManager = GetComponentInChildren<UILevelDesignManager>();
         UIDailyGiftManager = GetComponentInChildren<UIDailyGiftManager>();
         uiHomeManager = GetComponentInChildren<UIHomeManager>();
+        uiShop = GetComponentInChildren<UIShop>();
         CloseAllCanvas();
     }
 
@@ -35,6 +37,7 @@ public class TownCanvasController : MonoBehaviour
     {
         ActiveLevelDesign(false);
         ActiveDailyGift(false);
+        ActiveShop(false);
     }
 
 
@@ -54,6 +57,11 @@ public class TownCanvasController : MonoBehaviour
     {
         UIDailyGiftManager.ActiveCanvas(active);
         uiHomeManager.ActiveCanvas(!active);
+    }
+
+    public void ActiveShop(bool active)
+    {
+        uiShop.ActiveCanvas(active);
     }
 }
 #endif

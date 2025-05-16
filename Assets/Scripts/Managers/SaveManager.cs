@@ -304,11 +304,12 @@ public class LocalUserData
     public int Energy;
     public string LastOnlineTimestamp;
     public string SpinTime;
-    
-
+    public float Gold;
+    public int LoseStreak;
+    public bool IsBuyWelcomePack;
     public LocalUserData()
     {
-        
+        IsBuyWelcomePack = false;
     }
 
     public void SetSpinTime(DateTime t)

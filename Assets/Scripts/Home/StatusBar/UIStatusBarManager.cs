@@ -11,7 +11,7 @@ public class UIStatusBarManager : MonoBehaviour
     [SerializeField] private Slider energySlider;
     [SerializeField] private TextMeshProUGUI energyText; // {current energy}/{max}
     [SerializeField] private int maxEnergy = 100; // Reference to max energy value
-    
+    [SerializeField] private TextMeshProUGUI goldText;
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -20,24 +20,33 @@ public class UIStatusBarManager : MonoBehaviour
     private void Start()
     {
         UserManager.Instance.OnEnergyChanged += UpdateEnergyUI;
-        UserManager.Instance.OnUserDataLoaded += InitializeEnergyUI;
-        InitializeEnergyUI();
+        UserManager.Instance.OnGoldChanged += UpdateGoldUI;
+        UserManager.Instance.OnUserDataLoaded += InitializeEnergyAndGoldUI;
+        InitializeEnergyAndGoldUI();
     }
 
 
     private void OnDestroy()
     {
         UserManager.Instance.OnEnergyChanged -= UpdateEnergyUI;
-        UserManager.Instance.OnUserDataLoaded -= InitializeEnergyUI;
+        UserManager.Instance.OnGoldChanged -= UpdateGoldUI;
+        UserManager.Instance.OnUserDataLoaded -= InitializeEnergyAndGoldUI;
     }
     
-    private void InitializeEnergyUI()
+    
+    private void InitializeEnergyAndGoldUI()
     {
         if (UserManager.Instance != null && UserManager.Instance.UserData != null)
         {
             energySlider.maxValue = maxEnergy;
             UpdateEnergyUI(UserManager.Instance.UserData.Energy);
+            UpdateGoldUI(UserManager.Instance.UserData.Gold);
         }
+    }
+
+    private void UpdateGoldUI(float gold)
+    {
+        goldText.text = gold.ToString();
     }
     
     private void UpdateEnergyUI(int currentEnergy)

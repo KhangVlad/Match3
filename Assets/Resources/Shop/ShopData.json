@@ -1,85 +1,224 @@
 {
-    "ShopItemPacks": [
-      {
-        "PackName": "Beginner Pack",
-        "Price": 1.99,
-        "Items": [
-          {
-            "ShopItemID": 1,
-            "Quantity": 3000
-          },
-          {
-            "ShopItemID": 51,
-            "Quantity": 1
-          }
-          ,
-          {
-            "ShopItemID": 52,
-            "Quantity": 1
-          }
-          ,
-          {
-            "ShopItemID": 53,
-            "Quantity": 1
-          }
-        ]
-      },
-      {
-        "PackName": "Baisc Pack",
-        "Price": 1.99,
-        "Items": [
-          {
-            "ShopItemID": 1,
-            "Quantity": 3000
-          },
-          {
-            "ShopItemID": 54,
-            "Quantity": 1
-          },
-          {
-            "ShopItemID": 55,
-            "Quantity": 1
-          }
-          ,
-          {
-            "ShopItemID": 56,
-            "Quantity": 1
-          }
-        ]
-      },
-      {
-        "PackName": "Tiny Golds",
-        "Price": 4.99,
-        "Items": [
-          {
-            "ShopItemID": 1,
-            "Quantity": 1000
-          }
-        ]
-      },
-      {
-        "PackName": "Golds & Remove Ads",
-        "Price": 4.99,
-        "Items": [
-          {
-            "ShopItemID": 1,
-            "Quantity": 3000
-          },
-          {
-            "ShopItemID": 2,
-            "Quantity": 1
-          }
-        ]
-      },
-      {
-        "PackName": "Remove ADS",
-        "Price": 12.99,
-        "Items": [
-          {
-            "ShopItemID": 2,
-            "Quantity": 1
-          }
-        ]
-      }
-    ]
-  }
+  "Purchase_Shop": [
+    {
+      "Id": "haven_treasure",
+      "PackName": "Starter Pack",
+      "Price": 14.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 1000
+        },
+        {
+          "ShopItemID": 53,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 3,
+          "Quantity": 100
+        }
+      ],
+      "ShopPackType": 0
+    },
+    {
+      "Id": "starter_pack",
+      "PackName": "Starter Pack",
+      "Price": 0.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 158
+        }
+      ],
+      "ShopPackType": 1
+    },
+    {
+      "Id": "adventurer_pack",
+      "PackName": "Adventurer Pack",
+      "Price": 2.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 450
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        }
+      ],
+      "ShopPackType": 1
+    },
+    {
+      "Id": "relax_bundle",
+      "PackName": "Relax Bundle",
+      "Price": 6.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 1000
+        },
+        {
+          "ShopItemID": 53,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 3,
+          "Quantity": 100
+        }
+      ],
+      "ShopPackType": 1
+    },
+    {
+      "Id": "haven_1",
+      "PackName": "Haven Treasure",
+      "Price": 14.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 2500
+        },
+        {
+          "ShopItemID": 51,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 53,
+          "Quantity": 1
+        }
+      ],
+      "ShopPackType": 1
+    }
+  ],
+  "Gold_Shop": [
+    {
+      "Id": "Engergy",
+      "PackName": "Engergy Mini",
+      "Price": 100,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 3,
+          "Quantity": 20
+        }
+      ],
+      "ShopPackType": 2
+    },
+    {
+      "Id": "Engergy_1",
+      "PackName": "Engergy Medium",
+      "Price": 200,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 3,
+          "Quantity": 45
+        }
+      ],
+      "ShopPackType": 2
+    },
+    {
+      "Id": "Engergy_1",
+      "PackName": "Engergy Medium",
+      "Price": 200,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 3,
+          "Quantity": 45
+        }
+      ],
+      "ShopPackType": 2
+    },
+    {
+      "Id": "Engergy_1",
+      "PackName": "Engergy Medium",
+      "Price": 200,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 3,
+          "Quantity": 45
+        }
+      ],
+      "ShopPackType": 2
+    },
+    {
+      "Id": "Engergy_1",
+      "PackName": "Engergy Medium",
+      "Price": 200,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 3,
+          "Quantity": 45
+        }
+      ],
+      "ShopPackType": 2
+    },
+    {
+      "Id": "Gold_Pack_Combine",
+      "PackName": "Everything Medium",
+      "Price": 500,
+      "PriceType": 0,
+      "Items": [
+        {
+          "ShopItemID": 51,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 53,
+          "Quantity": 1
+        }
+      ],
+      "ShopPackType": 0
+    }
+  ],
+  "Condition_Shop": [
+    {
+      "Id": "welcome",
+      "PackName": "Welcome To Heaven",
+      "Price": 0.99,
+      "PriceType": 1,
+      "Items": [
+        {
+          "ShopItemID": 1,
+          "Quantity": 1000
+        },
+        {
+          "ShopItemID": 53,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 52,
+          "Quantity": 1
+        },
+        {
+          "ShopItemID": 3,
+          "Quantity": 100
+        }
+      ],
+      "ShopPackType": 3
+    }
+  ]
+}

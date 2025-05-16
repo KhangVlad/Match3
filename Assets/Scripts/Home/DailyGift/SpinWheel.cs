@@ -6,6 +6,7 @@ using DG.Tweening;
 using Match3;
 using TMPro;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 #if !UNITY_WEBGL
 public class SpinWheel : MonoBehaviour
@@ -17,11 +18,10 @@ public class SpinWheel : MonoBehaviour
     private int defaultItem = 5;
     public SpinItem itemPrefab;
     public List<SpinItem> allItem;
-    public int ItemCount = 5;
     private bool m_spinning = false;
     private int selectedItemIndex = -1;
     private float lastAngle = 0f;
-    public int resultIndex;
+    private int resultIndex;
 
     [SerializeField] private Transform rewardPanel;
     [SerializeField] private Image rewardImage;
@@ -31,30 +31,43 @@ public class SpinWheel : MonoBehaviour
     [SerializeField] private Image buttonImage;
     [SerializeField] private Sprite InActiveSprite;
     [SerializeField] private ParticleSystem confestyPrefab;
+    [SerializeField] private Button watchAds;
+    private DailyGiftSO[] allData;
     private float animation_Speed_Deffault = 1;
     private float animation_Max_Speed = 5;
-
     private TimeSpan timeSinceLastSpin;
-
-    // Added variables for spin cooldown
     private const int HOURS_BETWEEN_SPINS = 12;
     private bool canSpin = false;
+    [SerializeField] private Button _closebtn;
+   
 
     private void Start()
     {
         spinButton.onClick.AddListener(Spin);
         InitializeSpinWheelItem();
         InitializeTimeText();
+        watchAds.onClick.AddListener(HandleWatchAdd);
+        _closebtn.onClick.AddListener(() => TownCanvasController.Instance.ActiveDailyGift(false));
     }
 
+    private void HandleWatchAdd()
+    {
+        AdManager.Instance.ShowRewardedAd((() =>
+        {
+            for (int i = 0; i < allItem.Count; i++)
+            {
+                allItem[i].SetQuantity(2);
+            }
+        }));
+    }
+
+    
     private void Update()
     {
         canSpin = IsSpinAvailable();
         UpdateNextSpinText();
         spinButton.interactable = canSpin && !m_spinning;
-
-        //for debug
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             StartCoroutine(DoSpin());
         }
@@ -78,6 +91,7 @@ public class SpinWheel : MonoBehaviour
         {
             clocklIcon.enabled = false;
         }
+
         string formattedTime = string.Format("{0:D2}:{1:D2}",
             timeRemaining.Hours,
             timeRemaining.Minutes);
@@ -136,12 +150,13 @@ public class SpinWheel : MonoBehaviour
             StartCoroutine(DoSpin());
     }
 
-  
+
     private IEnumerator DoSpin()
     {
+        resultIndex = Random.Range(0, allData.Length);
         m_spinning = true;
         spinButton.interactable = false;
-        float angleStep = 360f / ItemCount;
+        float angleStep = 360f / allData.Length;
         float extraRotations = 3; // Adds extra rotations before stopping
         float targetAngle = -(resultIndex * angleStep + (extraRotations * 360));
 
@@ -208,7 +223,7 @@ public class SpinWheel : MonoBehaviour
         float normalizedNewAngle = ((newAngle % 360) + 360) % 360;
 
         // Calculate the angle step based on item count
-        float angleStep = 360f / ItemCount;
+        float angleStep = 360f / allData.Length;
 
         // Check if we've crossed a section boundary
         int lastSection = Mathf.FloorToInt(normalizedLastAngle / angleStep);
@@ -238,7 +253,7 @@ public class SpinWheel : MonoBehaviour
 
     private void ShowRewardPanel()
     {
-        AudioManager.Instance.PlayWinSfx();     
+        AudioManager.Instance.PlayWinSfx();
         rewardImage.sprite = GameDataManager.Instance.GetBoosterDataByID((BoosterID)resultIndex + 1).Icon;
         allItem[resultIndex].Pick();
         StartCoroutine(ShowRewardPanelCoroutine());
@@ -246,7 +261,7 @@ public class SpinWheel : MonoBehaviour
 
     private IEnumerator ShowRewardPanelCoroutine()
     {
-        ParticleSystem a = Instantiate(confestyPrefab,transform);
+        ParticleSystem a = Instantiate(confestyPrefab, transform);
         a.Play();
         float popupDuration = 2f;
         float elapsed = 0f;
@@ -258,26 +273,28 @@ public class SpinWheel : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return null;
         }
-        rewardPanel.gameObject.SetActive(false); 
+
+        rewardPanel.gameObject.SetActive(false);
     }
 
     private void InitializeSpinWheelItem()
     {
-        float angleStep = 360.0f / ItemCount;
+        allData = GameDataManager.Instance.DailyGiftData;
+        float angleStep = 360.0f / allData.Length;
         float radius = Mathf.Min(spinWheelTransform.rect.width, spinWheelTransform.rect.height) / 3.5f;
-        float scaleRatio = ItemCount > defaultItem ? (float)defaultItem / ItemCount : 1.0f;
+        float scaleRatio = allData.Length > defaultItem ? (float)defaultItem / allData.Length : 1.0f;
 
-        for (int i = 0; i < ItemCount; i++)
+        for (int i = 0; i < allData.Length; i++)
         {
             float angle = (i * angleStep + 90) * Mathf.Deg2Rad; // Adjust to start at x = 0
             float x = Mathf.Cos(angle) * radius;
             float y = Mathf.Sin(angle) * radius;
             SpinItem item = Instantiate(itemPrefab, spinWheelTransform);
             item.transform.localPosition = new Vector3(x, y, 0);
-            item.transform.localRotation = Quaternion.Euler(0, 0, 75 * i);
+            item.transform.localRotation = Quaternion.Euler(0, 0, 60 * i);
             item.transform.localScale = new Vector3(scaleRatio, scaleRatio, 1);
             item.InitializeItem(
-                GameDataManager.Instance.GetBoosterDataByID((BoosterID)i + 1).Icon); //because enum start from 1
+                allData[i]);
             allItem.Add(item);
         }
     }

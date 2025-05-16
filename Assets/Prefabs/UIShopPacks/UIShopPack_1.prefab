@@ -523,7 +523,7 @@ GameObject:
   - component: {fileID: 5803856000599297828}
   - component: {fileID: 2356973614134022915}
   - component: {fileID: 3237945842145726592}
-  - component: {fileID: 471949274250485188}
+  - component: {fileID: 1628084877793576078}
   m_Layer: 5
   m_Name: UIShopPack_1
   m_TagString: Untagged
@@ -592,7 +592,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1.2
---- !u!114 &471949274250485188
+--- !u!114 &1628084877793576078
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -601,7 +601,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8210996715049088809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b381472e7fb7e114184d7e842db82267, type: 3}
+  m_Script: {fileID: 11500000, guid: 52bce65463724a6db7643c544152a7a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _packageName: {fileID: 7552819984092200176}

@@ -227,7 +227,6 @@ public class AuthenticationManager : MonoBehaviour
         LocalUserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
         if (data == null)
         {
-            Debug.Log("AA");
             data = UserManager.Instance.InitializeNewUserData();
             UserManager.Instance.UserData = data;
             IsNewUser = true;

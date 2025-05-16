@@ -7,7 +7,7 @@ namespace Match3
         public static UIHomeManager Instance { get; private set; }
 
         public UILevelInfomation UILevelInfomation { get; private set; }
-        public UIShop UIShop { get; private set; }
+        // public UIShop UIShop { get; private set; }
 
         private void Awake()
         {
@@ -19,7 +19,7 @@ namespace Match3
             Instance = this;
 
             UILevelInfomation = FindFirstObjectByType<UILevelInfomation>();
-            UIShop = FindFirstObjectByType<UIShop>();
+            // UIShop = FindFirstObjectByType<UIShop>();
         }
 
 
@@ -42,7 +42,7 @@ namespace Match3
 
         public void DisplayUIShop(bool enable)
         {
-            this.UIShop.DisplayCanvas(enable);
+            // this.UIShop.ActiveCanvas(enable);
         }
     }
 

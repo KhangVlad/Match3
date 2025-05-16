@@ -24,7 +24,6 @@ namespace Match3
         public UIBooster[] UIBoosters;
         [SerializeField] private UIQuestRequirement requirementPrefab;
         [SerializeField] private Transform requirementParent;
-        public event Action<Loader.Scene> OnSceneSwitch;
 
         private void Awake()
         {

@@ -126,7 +126,9 @@ public class ScreenInteraction : MonoBehaviour
             yield return null;
         }
 
-        OnCharacterInteracted?.Invoke(character.id);
+        // OnCharacterInteracted?.Invoke(character.id);
+        PlayCloudAnimation(
+            () => { OnCharacterInteracted?.Invoke(character.id); });
         InteractAble = true;
     }
 

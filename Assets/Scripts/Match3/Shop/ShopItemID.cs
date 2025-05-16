@@ -5,9 +5,10 @@ namespace Match3
     public enum ShopItemID
     {
         None = 0,
-        Gems = 1,
+        Gold = 1,
         RemoveAds = 2,
-
+        Energy = 3,
+        
         ColorBurst = 51,
         BlastBomb = 52,
         AxisBomb = 53,
