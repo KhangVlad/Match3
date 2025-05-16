@@ -1,7 +1,6 @@
 using UnityEngine;
 using Match3.Enums;
 using UnityEngine.Pool;
-using log4net.Appender;
 
 namespace Match3.Shares
 {
