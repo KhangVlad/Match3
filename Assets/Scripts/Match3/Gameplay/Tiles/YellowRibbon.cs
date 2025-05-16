@@ -6,7 +6,7 @@ namespace Match3
 {
     public class YellowRibbon : Tile
     {
-          public override void Initialize()
+        public override void Initialize()
         {
             base.Initialize();
             this.ID = TileID.YellowRibbon;
@@ -17,15 +17,28 @@ namespace Match3
             base.Awake();
         }
 
-        public override void Match(Tile[] grid, int width)
+        public override void Match(Tile[] grid, int width, MatchID matchID)
         {
-            base.Match(grid, width);
+            base.Match(grid, width, matchID);
         }
 
-        public override void PlayMatchVFX()
+        public override void PlayMatchVFX(MatchID matchID)
         {
             BaseVisualEffect effect = VFXPoolManager.Instance.GetEffect(VisualEffectID.YellowRibbonDestroy);
             effect.transform.position = TileTransform.position;
+               switch (matchID)
+            {
+                case MatchID.BlastBomb:
+                    effect.SetParticleQuantity(50);
+                    effect.SetLifeTime(1.5f);
+                    effect.SetSpeed();
+                    break;
+                default:
+                    effect.SetParticleQuantity(5);
+                    effect.SetLifeTime(0.65f);
+                    effect.SetSpeed();
+                    break;
+            }
             effect.Play();
         }
     }

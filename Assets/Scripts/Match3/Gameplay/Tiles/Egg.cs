@@ -15,15 +15,5 @@ namespace Match3
         {
             base.Awake();
         }
-
-        public override void Match(Tile[] grid, int width)
-        {
-            base.Match(grid, width);
-        }
-
-        public override void PlayMatchVFX()
-        {
-           
-        }
     }
 }

@@ -58,9 +58,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 250
+  alignment: 9
+  spritePivot: {x: 0.47, y: 0.54}
+  spritePixelsToUnits: 240
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -156,7 +156,7 @@ TextureImporter:
         width: 184
         height: 211
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -165,72 +165,6 @@ TextureImporter:
       bones: []
       spriteID: 7de8fd55f51349b20800000000000000
       internalID: 3140189125716446935
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: unscreen-010_1
-      rect:
-        serializedVersion: 2
-        x: 221
-        y: 0
-        width: 35
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 6a67d974ac3f5cdc0800000000000000
-      internalID: -3619218675411880282
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: unscreen-010_2
-      rect:
-        serializedVersion: 2
-        x: 259
-        y: 21
-        width: 51
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a4180815a1cf0c1a0800000000000000
-      internalID: -6791151048107982518
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: unscreen-010_3
-      rect:
-        serializedVersion: 2
-        x: 259
-        y: 4
-        width: 101
-        height: 18
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c4670bca81013dbb0800000000000000
-      internalID: -4912565070368573876
       vertices: []
       indices: 
       edges: []

@@ -49,10 +49,14 @@ namespace Match3
         public SpriteRenderer TileSR => sr;
         public Sprite TileSprite => _tileSprite;
         public bool IsDisplay { get; private set; } = true;
-        public bool HasTriggeredSpecial { get; private set; } = false;
+        public bool HasTriggeredRowBomb { get; set; } = false;
+        public bool HasTriggererColumnBomb { get; set; } = false;
+        public bool HasTriggerBlastBomb { get; set; } = false;  
+        public bool HasTriggerColorBurst { get; set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
         public Transform BloomTransform { get; private set; }
+
         #endregion
 
 
@@ -123,7 +127,7 @@ namespace Match3
             }
         }
 
-        public void Display(bool enable)
+        public virtual void Display(bool enable)
         {
             if (enable)
             {
@@ -239,7 +243,7 @@ namespace Match3
             }
         }
 
-        public virtual void Match(Tile[] grid, int width)
+        public virtual void Match(Tile[] grid, int width, MatchID matchID)
         {
             if (_emissiveCoroutine != null)
             {
@@ -249,7 +253,7 @@ namespace Match3
             {
                 if (IsDisplay)
                 {
-                    PlayMatchVFX();
+                    PlayMatchVFX(matchID);
                 }
             }
 
@@ -262,7 +266,7 @@ namespace Match3
             CurrentBlock.Unlock(this);
         }
 
-        public virtual void PlayMatchVFX() { }
+        public virtual void PlayMatchVFX(MatchID matchID) { }
 
         public void MoveToPosition(Vector2 targetPosition, float moveTime, Ease ease, System.Action onCompleted = null)
         {
@@ -354,14 +358,16 @@ namespace Match3
         }
 
 
-        public void Emissive(float duration)
+        public void Emissive(float duration, System.Action onComplete = null)
         {
             if (_emissiveCoroutine != null)
-                return;
-            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(0f, 5f, duration));
+            {
+                StopCoroutine(_emissiveCoroutine);
+            }
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(0f, 5f, duration, onComplete));
         }
 
-        private IEnumerator EmissiveCoroutine(float startValue, float endValue, float duration)
+        private IEnumerator EmissiveCoroutine(float startValue, float endValue, float duration, System.Action onComplete)
         {
             float elapsed = 0f;
 
@@ -379,24 +385,21 @@ namespace Match3
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", endValue);
             sr.SetPropertyBlock(_propBlock);
+
+            onComplete?.Invoke();
         }
 
 
 
-        public void StopEmissive(float startValue = 5f, float endValue = 0f, float duration = 0.2f)
+        public void StopEmissive(float startValue = 5f, float endValue = 0f, float duration = 0.2f, System.Action onComplete = null)
         {
             if (_emissiveCoroutine != null)
             {
                 StopCoroutine(_emissiveCoroutine);
             }
-            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration));
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration,onComplete));
         }
 
-
-        public virtual void SetTriggerSpecial(bool triggered)
-        {
-            HasTriggeredSpecial = triggered;
-        }
 
         public virtual void PlayShaking(float duration)
         {
@@ -407,9 +410,12 @@ namespace Match3
                 randomness: 3f         // Less randomness = more controlled movement
             );
         }
-        public virtual void PlayScaleTile(float endValue, float duration, Ease ease)
+        public virtual void PlayScaleTile(float endValue, float duration, Ease ease, System.Action omComplete = null)
         {
-            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease);
+            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease).OnComplete(()=>
+            {
+                omComplete?.Invoke();
+            });
         }
         public virtual void MovePath(Vector3[] path, float duration, PathType pathType, Ease ease, System.Action oncompleted)
         {
@@ -467,12 +473,16 @@ namespace Match3
             ClearAllTweens();
             ChangeBlock(BlockID.None);
             SpecialProperties = SpecialTileID.None;
+            HasTriggeredRowBomb = false;
+            HasTriggererColumnBomb = false;
+            HasTriggerBlastBomb = false;
+            HasTriggerColorBurst = false;
+    
 
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);
             sr.SetPropertyBlock(_propBlock);
             Bloom(false);
-            SetTriggerSpecial(false);
         }
         #endregion
     }

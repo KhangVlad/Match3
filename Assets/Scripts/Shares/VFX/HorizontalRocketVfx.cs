@@ -1,7 +1,6 @@
 ﻿using Match3.Enums;
 using UnityEngine;
 using DG.Tweening;
-using UnityEngine.Playables;
 
 namespace Match3.Shares
 {
@@ -85,7 +84,7 @@ namespace Match3.Shares
             _sr.enabled = true;
         }
 
-           public void PlayAnimtion()
+        public void PlayAnimtion()
         {
             _leftRocket.gameObject.SetActive(false);
             _rightRocket.gameObject.SetActive(false);

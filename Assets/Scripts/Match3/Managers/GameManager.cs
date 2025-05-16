@@ -11,7 +11,8 @@ namespace Match3
         {
             Instance = this;
             Application.targetFrameRate = 60;
+
+            Debug.Log("TrgetFrameRate = 60");
         }
     }
-
 }

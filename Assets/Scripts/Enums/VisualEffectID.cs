@@ -35,6 +35,8 @@ namespace Match3.Enums
         BlastBomb = 59,
         BlastBombAppear = 60,
         SpecialTileMergeGhostFX = 61,
+        BigBlastBombExplosionFX = 62,
+        ColorBurstAppearFX = 63,
 
 
         Slash = 100,
