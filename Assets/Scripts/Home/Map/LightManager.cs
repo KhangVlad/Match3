@@ -19,7 +19,6 @@ public class LightManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Optional: keep across scenes
         }
         else
         {

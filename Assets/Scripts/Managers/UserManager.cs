@@ -22,12 +22,18 @@ public class UserManager : MonoBehaviour
     public LocalUserData UserData;
     public int TotalHeart => GetTotalHeart();
 
-    private string GenerateUniqueUserID()
+    public string GenerateUniqueUserID()
     {
         string uniqueID = System.Guid.NewGuid().ToString();
         PlayerPrefs.SetString(USER_ID_KEY, uniqueID);
         PlayerPrefs.Save();
         return uniqueID;
+    }
+    
+    public void ModifyUserID(string id)
+    {
+        PlayerPrefs.SetString(USER_ID_KEY, id);
+        PlayerPrefs.Save();
     }
 
     public string GetUserID()
@@ -48,16 +54,12 @@ public class UserManager : MonoBehaviour
 
     private void Start()
     {
-        // GameDataManager.Instance.OnDataLoaded += InitializeNewUserData;
         GameplayManager.OnWin += OnWinEvent;
         GameplayManager.OnGameOver += OnLoseEvent;
-
-        // Subscribe to minute elapsed event for energy regeneration
         if (TimeManager.Instance != null)
         {
             TimeManager.Instance.OnMinuteElapsed += OnMinuteElapsed;
         }
-
     }
 
     private void OnDestroy()
@@ -93,10 +95,11 @@ public class UserManager : MonoBehaviour
         UserData.LoseStreak += 1;
     }
 
-    public LocalUserData InitializeNewUserData()
+    public LocalUserData InitializeNewUserData(string userID)
     {
-        Debug.Log("new user");
-        GenerateUniqueUserID();
+        // Debug.Log("new user");
+        // GenerateUniqueUserID();
+        ModifyUserID(userID);
         List<CharacterData> allCharacterData = new List<CharacterData>();
         foreach (CharacterID id in System.Enum.GetValues(typeof(CharacterID)))
         {

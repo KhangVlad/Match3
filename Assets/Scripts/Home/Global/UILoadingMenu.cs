@@ -9,26 +9,34 @@ using Match3.Shares;
 #if !UNITY_WEBGL
 public class UILoadingMenu : MonoBehaviour
 {
-    [Header("UI References")]
-    [SerializeField] private Button homeButton;
+    [Header("UI References")] [SerializeField]
+    private Button homeButton;
+
     [SerializeField] private Slider progressSlider;
     [SerializeField] private Image backgroundImage;
     [SerializeField] private UIComic comic;
-    
-    [Header("Loading Settings")]
-    [SerializeField] private float progressSpeed = 1f;
+
+    [Header("Loading Settings")] [SerializeField]
+    private float progressSpeed = 1f;
+
     [SerializeField] private float initialProgress = 0f;
-    
+
     private float _currentProgress;
     private float _targetProgress;
     private bool _isLoading = true;
-    
+
     // Path constants to avoid typos and make changes easier
     private const string BACKGROUND_PATH = "Sprites/Backgrounds/";
     private const string MORNING_BG_1 = BACKGROUND_PATH + "bg_morning_1";
     private const string MORNING_BG_2 = BACKGROUND_PATH + "bg_morning_2";
     private const string EVENING_BG_1 = BACKGROUND_PATH + "bg_evening_1";
     private const string EVENING_BG_2 = BACKGROUND_PATH + "bg_evening_2";
+
+
+    [SerializeField] private Transform UIOnBoard; //new user click on quest or ch play
+    [SerializeField] private Button _questSignInBtn;
+    [SerializeField] private Button _chPlayBtn;
+
 
     private void Awake()
     {
@@ -37,31 +45,70 @@ public class UILoadingMenu : MonoBehaviour
         progressSlider.value = _currentProgress;
         homeButton.interactable = false;
     }
-    
+
     private void Start()
     {
-        
         if (GameDataManager.Instance != null)
         {
             GameDataManager.Instance.OnDataLoaded += OnGameDataLoaded;
         }
-        
-        #if !UNITY_WEBGL
-        AuthenticationManager.Instance.OnNewUserCreate += HandleNewUser;
-        #endif
-        
+
+#if !UNITY_WEBGL
+        // AuthenticationManager.Instance.NewUser += HandleNewUser;
+        // AuthenticationManager.Instance.OldUser += HandleOldUser;
+        AuthenticationManager.Instance.OnUserDataLoaded += HandleUserDataLoaded;
+        _questSignInBtn.onClick.AddListener(QuestSignIn);
+        _chPlayBtn.onClick.AddListener(SignInAsChPlay);
+#endif
+
         // Set background based on time of day
         SetBackgroundByTimeOfDay();
-        
+
         // Start loading process
         _targetProgress += 0.5f; // Initial progress target
     }
 
-    private void OnEnable()
+    private void QuestSignIn()
     {
-        // Start updating progress when enabled
-        StartCoroutine(UpdateProgressRoutine());
+        string id = UserManager.Instance.GenerateUniqueUserID();
+        UserManager.Instance.InitializeNewUserData(id);
+        comic.gameObject.SetActive(true);
+        comic.OnNewUserCreate();
     }
+
+    private void SignInAsChPlay()
+    {
+        StartCoroutine(CheckUser());
+    }
+
+    private IEnumerator CheckUser()
+    {
+        // StartCoroutine(AuthenticationManager.Instance.WaitForPlayGamesPlatformThenAuthenticate((b =>
+        // {
+        //     if (b)
+        //     {
+        //         await AuthenticationManager.Instance.CHPlaySignInFirebase();
+        //     }
+        // })));
+        yield return AuthenticationManager.Instance.WaitForPlayGamesPlatformThenAuthenticate(async success =>
+        {
+            if (success)
+            {
+                await AuthenticationManager.Instance.CHPlaySignInFirebase();
+                LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+            }
+            else
+            {
+                AuthenticationManager.Instance.LinkGooglePlayGamesAccount((() =>
+                {
+                   UserManager.Instance.UserData =  UserManager.Instance.InitializeNewUserData(AuthenticationManager.Instance.GetChPlayID());
+                   LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+                }));
+            }
+         
+        });
+    }
+
 
     private void OnDestroy()
     {
@@ -69,28 +116,36 @@ public class UILoadingMenu : MonoBehaviour
         {
             GameDataManager.Instance.OnDataLoaded -= OnGameDataLoaded;
         }
-        
-        #if !UNITY_WEBGL
+
+#if !UNITY_WEBGL
         if (AuthenticationManager.Instance != null)
         {
-            AuthenticationManager.Instance.OnNewUserCreate -= HandleNewUser;
+            // AuthenticationManager.Instance.NewUser -= HandleNewUser;
         }
-        #endif
-        
+#endif
+
         StopAllCoroutines();
     }
-    
-    private void HandleNewUser(bool isNewUser)
+
+    private void HandleUserDataLoaded()
     {
-        if (!isNewUser)
+        if (UserManager.Instance.UserData == null)
         {
-            OnUserDataLoaded();
+            UIOnBoard.gameObject.SetActive(true);
+            progressSlider.gameObject.SetActive(false);
         }
-        else
-        {
-            comic.gameObject.SetActive(true);
-            comic.OnNewUserCreate();
-        }
+    }
+
+    private void HandleNewUser()
+    {
+        comic.gameObject.SetActive(true);
+        comic.OnNewUserCreate();
+    }
+
+    private void HandleOldUser()
+    {
+        progressSlider.gameObject.SetActive(true);
+        StartCoroutine(UpdateProgressRoutine());
     }
 
     private void SetBackgroundByTimeOfDay()
@@ -99,10 +154,11 @@ public class UILoadingMenu : MonoBehaviour
         {
             return;
         }
+
         TimeOfDay timeOfDay = TimeManager.Instance.GetCurrentTimeOfDay();
-        
+
         string backgroundPath;
-        
+
         switch (timeOfDay)
         {
             case TimeOfDay.Morning:
@@ -122,7 +178,7 @@ public class UILoadingMenu : MonoBehaviour
                 backgroundPath = MORNING_BG_1;
                 break;
         }
-        
+
         Sprite bgSprite = Resources.Load<Sprite>(backgroundPath);
         if (bgSprite != null)
         {
@@ -133,16 +189,12 @@ public class UILoadingMenu : MonoBehaviour
             Debug.LogWarning($"Could not load background sprite at path: {backgroundPath}");
         }
     }
-    
+
     private void OnGameDataLoaded()
     {
-        _targetProgress += 0.25f;
+        _targetProgress += 0.75f;
     }
-    
-    private void OnUserDataLoaded()
-    {
-        _targetProgress += 0.25f;
-    }
+
 
     private IEnumerator UpdateProgressRoutine()
     {
@@ -151,30 +203,30 @@ public class UILoadingMenu : MonoBehaviour
             // Only update if we haven't reached target yet
             if (_currentProgress < _targetProgress)
             {
-                _currentProgress = Mathf.MoveTowards(_currentProgress, _targetProgress, 
+                _currentProgress = Mathf.MoveTowards(_currentProgress, _targetProgress,
                     progressSpeed * Time.deltaTime);
-                
+
                 // Update UI
                 progressSlider.value = _currentProgress;
-                
+
                 // Check if loading is complete
                 if (_currentProgress >= 1f && _targetProgress >= 1f)
                 {
                     CompleteLoading();
                 }
             }
-            
+
             yield return null;
         }
     }
-    
+
     private void CompleteLoading()
     {
         _isLoading = false;
         homeButton.interactable = true;
-        
+
         // Optional: Add animation or visual feedback to indicate loading is complete
-        
+
         // Automatically switch to town scene
         if (LoadingAnimationController.Instance != null)
         {

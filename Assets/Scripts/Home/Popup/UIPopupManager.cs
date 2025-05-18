@@ -46,6 +46,7 @@ public class UIPopupManager : MonoBehaviour
 
 
     [SerializeField] private UIPurchasePopup EncouragePackPrefab;
+    [SerializeField] private UIAdsChose _uiAdsChose;
 
 
     private void Awake()
@@ -125,6 +126,12 @@ public class UIPopupManager : MonoBehaviour
     {
         UIPurchasePopup instance = Instantiate(EncouragePackPrefab, canvas.transform);
         instance.Initialize(ShopManager.Instance.GetShopPackById("welcome"));
+    }
+
+    public void ShowAdsChose(Action accept, Action reject, string contentAds = "Double Reward !!!")
+    {
+        UIAdsChose instance = Instantiate(_uiAdsChose, canvas.transform);
+        instance.InitializeContent(contentAds, accept, reject);
     }
 
     public void ShowWarningPopup(string text)

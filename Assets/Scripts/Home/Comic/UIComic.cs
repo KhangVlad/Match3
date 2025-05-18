@@ -15,12 +15,14 @@ public class UIComic : MonoBehaviour
     [SerializeField] private float delayBetweenFrames = 0.5f;
     [SerializeField] private float skipButtonAnimDuration = 0.5f; // Duration for skip button animation
 
+
+   
     private void Start()
     {
         SetFrameAlpha(frame1, 0f);
         SetFrameAlpha(frame2, 0f);
         SetFrameAlpha(frame3, 0f);
-        
+        skip.onClick.AddListener(OnSkipButtonClicked);
         // Set up skip button
         if (skip != null)
         {

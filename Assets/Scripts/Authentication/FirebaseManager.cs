@@ -1,20 +1,25 @@
 #if !UNITY_WEBGL
+using System;
 using UnityEngine;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Firestore;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 using Match3.Shares;
 
 public class FirebaseManager : MonoBehaviour
 {
     public static FirebaseManager Instance { get; private set; }
 
-    public FirebaseUser User {get; private set; }
+    public FirebaseUser User { get; private set; }
     public FirebaseApp App { get; private set; }
     public FirebaseAuth Auth { get; private set; }
-    public FirebaseFirestore Firestore { get; private set; }   
+    public FirebaseFirestore Firestore { get; private set; }
+
+    public event Action OnFirebaseInitialized;
 
     private void Awake()
     {
@@ -23,6 +28,7 @@ public class FirebaseManager : MonoBehaviour
             Destroy(this.gameObject);
             return;
         }
+
         Instance = this;
     }
 
@@ -30,18 +36,9 @@ public class FirebaseManager : MonoBehaviour
     private void Start()
     {
         InitializeFirebase();
-        // AuthenticationManager.Instance.OnAuthenticationSuccessfully += OnAuthenticationSuccessfully_SetUser;
     }
 
-    private void OnDestroy()
-    {
-        // AuthenticationManager.Instance.OnAuthenticationSuccessfully -= OnAuthenticationSuccessfully_SetUser;
-    }
-    
-    
 
-   
-  
     public void InitializeFirebase()
     {
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
@@ -51,19 +48,8 @@ public class FirebaseManager : MonoBehaviour
                 App = FirebaseApp.DefaultInstance;
                 Auth = FirebaseAuth.DefaultInstance;
                 Firestore = FirebaseFirestore.DefaultInstance;
-                // if (Utilities.IsConnectedToInternet())
-                // {
-                //     AuthenticationManager.Instance.SignInAnonymous(Auth, Firestore);
-                // }
-                // else
-                // { 
-                //     Debug.Log("AAAA");
-                //     
-                // }
-            
-                AuthenticationManager.Instance.SignInWithOutInternet();
-                //FetchServerTime();
-                Debug.Log("Firebase initialized successfully!");
+                OnFirebaseInitialized?.Invoke();
+   
             }
             else
             {
@@ -71,6 +57,10 @@ public class FirebaseManager : MonoBehaviour
             }
         });
     }
+    
+   
+    
+    
 
     public async Task<Timestamp> FetchServerTime()
     {
@@ -122,6 +112,28 @@ public class FirebaseManager : MonoBehaviour
         this.User = user;
     }
 
+    public async Task<LocalUserData> GetUserDataFromFirebase(string id)
+    {
+        try
+        {
+            DocumentReference docRef = Firestore.Collection("users").Document(id);
+            DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
+
+            if (snapShot.Exists)
+            {
+                UserData userData = snapShot.ConvertTo<UserData>();
+                return new LocalUserData(userData);
+            }
+
+            // Return null or throw an exception if the document doesn't exist
+            return null; // Or consider returning a default instance instead of null
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error retrieving user data: {ex.Message}");
+            return null;
+        }
+    }
 }
 
 

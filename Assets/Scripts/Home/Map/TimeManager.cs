@@ -133,6 +133,7 @@ using System.Threading.Tasks;
         {
             InitializeTime();
             SubscribeToEvents();
+            // NewUser();
         }
 
         private void InitializeTime()
@@ -143,25 +144,25 @@ using System.Threading.Tasks;
 
         private void SubscribeToEvents()
         {
-            if (AuthenticationManager.Instance != null)
-            {
-                AuthenticationManager.Instance.OnNewUserCreate += OnNewUser;
-            }
-            else
-            {
-                Debug.LogWarning("AuthenticationManager.Instance is null. Cannot subscribe to OnNewUserCreate event.");
-            }
+            // if (AuthenticationManager.Instance != null)
+            // {
+            //     AuthenticationManager.Instance.NewUser += NewUser;
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("AuthenticationManager.Instance is null. Cannot subscribe to OnNewUserCreate event.");
+            // }
         }
 
         private void OnDestroy()
         {
-            if (AuthenticationManager.Instance != null)
-            {
-                AuthenticationManager.Instance.OnNewUserCreate -= OnNewUser;
-            }
+            // if (AuthenticationManager.Instance != null)
+            // {
+            //     AuthenticationManager.Instance.NewUser -= NewUser;
+            // }
         }
 
-        private async void OnNewUser(bool isNew)
+        private async void NewUser()
         {
             if (Utilities.IsConnectedToInternet())
             {

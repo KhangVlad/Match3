@@ -31,7 +31,6 @@ public class SpinWheel : MonoBehaviour
     [SerializeField] private Image buttonImage;
     [SerializeField] private Sprite InActiveSprite;
     [SerializeField] private ParticleSystem confestyPrefab;
-    [SerializeField] private Button watchAds;
     private DailyGiftSO[] allData;
     private float animation_Speed_Deffault = 1;
     private float animation_Max_Speed = 5;
@@ -46,7 +45,6 @@ public class SpinWheel : MonoBehaviour
         spinButton.onClick.AddListener(Spin);
         InitializeSpinWheelItem();
         InitializeTimeText();
-        watchAds.onClick.AddListener(HandleWatchAdd);
         _closebtn.onClick.AddListener(() => TownCanvasController.Instance.ActiveDailyGift(false));
     }
 
@@ -66,7 +64,7 @@ public class SpinWheel : MonoBehaviour
     {
         canSpin = IsSpinAvailable();
         UpdateNextSpinText();
-        spinButton.interactable = canSpin && !m_spinning;
+        spinButton.interactable = canSpin;
         if (Input.GetKeyDown(KeyCode.K))
         {
             StartCoroutine(DoSpin());
@@ -212,9 +210,11 @@ public class SpinWheel : MonoBehaviour
         {
             light_bulb_anim.SetFloat("Speed", animation_Speed_Deffault);
         }
-
+        
         ShowRewardPanel();
     }
+    
+    
 
     private void CheckAngleChangeForShake(float newAngle)
     {
@@ -257,6 +257,10 @@ public class SpinWheel : MonoBehaviour
         rewardImage.sprite = GameDataManager.Instance.GetBoosterDataByID((BoosterID)resultIndex + 1).Icon;
         allItem[resultIndex].Pick();
         StartCoroutine(ShowRewardPanelCoroutine());
+        
+        UIPopupManager.Instance.ShowAdsChose((() => HandleWatchAdd()) ,
+            null
+            );
     }
 
     private IEnumerator ShowRewardPanelCoroutine()

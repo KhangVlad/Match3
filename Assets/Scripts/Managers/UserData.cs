@@ -19,6 +19,8 @@ public class UserData
     [FirestoreProperty] public object LastOnline { get; set; }
 
     [FirestoreProperty] public object FirstLoginTime { get; set; }
+    [FirestoreProperty] public int Gold { get; set; }
+    [FirestoreProperty] public bool IsBuyWelcomePack { get; set; }
 }
 
 //

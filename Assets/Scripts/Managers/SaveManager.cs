@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 public class SaveManager : MonoBehaviour
 {
     public static SaveManager Instance { get; private set; }
-    public const string USER_DATA = "UserData";
     private string localSavePath;
     private readonly string encryptionKey = "Match3GameSecretKey2025"; // Change this to something unique
 
@@ -35,7 +34,7 @@ public class SaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (UserManager.Instance == null || UserManager.Instance.UserData == null) return;
+        if (UserManager.Instance == null || UserManager.Instance.UserData == null ) return;
 
         if (Utilities.IsConnectedToInternet())
         {
@@ -47,10 +46,13 @@ public class SaveManager : MonoBehaviour
             SaveUserDataToLocalJson();
         }
     }
+
+
     
     #if UNITY_ANDROID
     private void OnApplicationPause(bool pauseStatus)
     {
+        if (UserManager.Instance == null || UserManager.Instance.UserData == null ) return;
         if (pauseStatus) // Save when app is paused
         {
             if (Utilities.IsConnectedToInternet())
@@ -310,6 +312,17 @@ public class LocalUserData
     public LocalUserData()
     {
         IsBuyWelcomePack = false;
+    }
+
+    public LocalUserData(UserData fireStoreData)
+    {
+        this.AvaiableBoosters = fireStoreData.AvaiableBoosters;
+        this.EquipBooster = fireStoreData.EquipBooster;
+        this.Energy = fireStoreData.Energy;
+        this.LastOnlineTimestamp = DateTime.Now.ToString();
+        this.Gold = fireStoreData.Gold;
+        this.LoseStreak = 0;
+        this.IsBuyWelcomePack = fireStoreData.IsBuyWelcomePack;
     }
 
     public void SetSpinTime(DateTime t)
