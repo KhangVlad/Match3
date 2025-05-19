@@ -2391,7 +2391,15 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
                         Debug.Log("ColorBurst X ColorBurst");
+
+            
                         Vector3 centerPosition = (_selectedTile.transform.position + _swappedTile.transform.position) / 2f;
+
+                        DoubleColorBurstCharge chargeFX = (DoubleColorBurstCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstCharge);
+                        chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f ;
+                        chargeFX.Play(0.5f);
+
+
                         _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                         {
                             _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
@@ -2442,6 +2450,12 @@ namespace Match3
                         _selectedTile.HasTriggerColorBurst = true;
                         _swappedTile.HasTriggerColorBurst = true;
                         yield return new WaitForSeconds(0.5f);
+
+
+                        DoubleColorBurstExplosion explosionFX = (DoubleColorBurstExplosion)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstExplosion);
+                        explosionFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                        explosionFX.Play(1f);
+
 
 
                         for (int i = 0; i < _tiles.Length; i++)

@@ -37,6 +37,8 @@ namespace Match3.Enums
         SpecialTileMergeGhostFX = 61,
         BigBlastBombExplosionFX = 62,
         ColorBurstAppearFX = 63,
+        DoubleColorBurstCharge = 64,
+        DoubleColorBurstExplosion = 65,
 
 
         Slash = 100,
