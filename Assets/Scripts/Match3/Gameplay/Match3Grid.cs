@@ -59,6 +59,7 @@ namespace Match3
         private HashSet<Tile> _activeColumnBombSet;
         private List<Tile> _bfsTiles;
         private List<int> _bfsSteps;
+        private List<Vector2Int> _doubleColorBurstRingPositions;
         //private Dictionary<Coroutine, bool> _singleRowBombCoroutineDict;
         //private Dictionary<Coroutine, bool> _singleColumnBombCoroutineDict;
         //private List<Coroutine> _singleRowBombCoroutineKey;
@@ -145,6 +146,7 @@ namespace Match3
             _activeColumnBombSet = new();
             _bfsTiles = new();
             _bfsSteps = new();
+            _doubleColorBurstRingPositions = new();
 
 
             _tShapes = new List<int[,]>
@@ -284,7 +286,7 @@ namespace Match3
                     {
                         _mouseUpPosition = Input.mousePosition;
 
-                        Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         HandleSwap(dragDir);
 
                         // if found swapped tile
@@ -2064,7 +2066,7 @@ namespace Match3
                 case SpecialTileID.ColumnBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2092,7 +2094,7 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             _selectedTile.SetSpecialTile(SpecialTileID.RowBomb);
@@ -2186,7 +2188,7 @@ namespace Match3
                 case SpecialTileID.RowBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2212,7 +2214,7 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2392,19 +2394,32 @@ namespace Match3
                     {
                         Debug.Log("ColorBurst X ColorBurst");
 
-            
+
                         Vector3 centerPosition = (_selectedTile.transform.position + _swappedTile.transform.position) / 2f;
 
-                        DoubleColorBurstCharge chargeFX = (DoubleColorBurstCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstCharge);
-                        chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f ;
-                        chargeFX.Play(0.5f);
 
+                        Vector2 direction = DetectDragDirection(_selectedTile.transform.position, _swappedTile.transform.position, threshold: 0);
+                        if (direction == Vector2.zero || direction == Vector2.left || direction == Vector2.right)
+                        {
+                            DoubleColorBurstHorizontalCharge chargeFX = (DoubleColorBurstHorizontalCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstHorizontalCharge);
+                            chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                            chargeFX.Play(0.9f);
+                        }
+                        else if (direction == Vector2.up || direction == Vector2.down)
+                        {
+                            DoubleColorBurstVerticalCharge chargeFX = (DoubleColorBurstVerticalCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstVerticalCharge);
+                            chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                            chargeFX.Play(0.9f);
+                        }
+
+
+                        //Time.timeScale = 0.25f;
 
                         _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                         {
                             _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
                             {
-                                _selectedTile.Emissive(0.2f);
+                                _selectedTile.Emissive(0.7f);
                                 _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                                 {
                                     _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
@@ -2416,7 +2431,7 @@ namespace Match3
                         {
                             _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
                             {
-                                _swappedTile.Emissive(0.2f);
+                                _swappedTile.Emissive(0.7f);
                                 _swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                                 {
                                     _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
@@ -2432,7 +2447,15 @@ namespace Match3
                             _selectedTile.SetRenderOrder(10);
                             _selectedTile.MoveToPosition(_swappedTile.transform.position, 0.2f, Ease.Linear, () =>
                             {
-                                _selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                _selectedTile.SetRenderOrder(5);
+                                _selectedTile.MoveToPosition(_swappedTile.transform.position + offsetA, 0.2f, Ease.Linear, () =>
+                                {
+                                    _selectedTile.SetRenderOrder(10);
+                                    _selectedTile.MoveToPosition(_swappedTile.transform.position, 0.2f, Ease.Linear, () =>
+                                    {
+                                        _selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                    });
+                                });
                             });
                         });
 
@@ -2443,19 +2466,28 @@ namespace Match3
                             _swappedTile.SetRenderOrder(5);
                             _swappedTile.MoveToPosition(_selectedTile.transform.position, 0.2f, Ease.Linear, () =>
                             {
-                                _swappedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                _swappedTile.SetRenderOrder(10);
+                                _swappedTile.MoveToPosition(_selectedTile.transform.position + offsetB, 0.2f, Ease.Linear, () =>
+                                {
+                                    _swappedTile.SetRenderOrder(5);
+                                    _swappedTile.MoveToPosition(_selectedTile.transform.position, 0.2f, Ease.Linear, () =>
+                                    {
+                                        _swappedTile.MoveToPosition(centerPosition, 0.2f, Ease.Linear);
+                                    });
+                                });
                             });
                         });
 
-                        _selectedTile.HasTriggerColorBurst = true;
-                        _swappedTile.HasTriggerColorBurst = true;
-                        yield return new WaitForSeconds(0.5f);
 
+
+
+                        yield return new WaitForSeconds(0.9f);
+                        _selectedTile.Display(false);
+                        _swappedTile.Display(false);
 
                         DoubleColorBurstExplosion explosionFX = (DoubleColorBurstExplosion)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstExplosion);
                         explosionFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
                         explosionFX.Play(1f);
-
 
 
                         for (int i = 0; i < _tiles.Length; i++)
@@ -2463,6 +2495,70 @@ namespace Match3
                             if (_tiles[i] != null)
                             {
                                 SetMatchBuffer(i, MatchID.ColorBurst);
+                                _tiles[i].HasTriggerBlastBomb = true;
+                                _tiles[i].HasTriggerColorBurst = true;
+                                _tiles[i].HasTriggeredRowBomb = true;
+                                _tiles[i].HasTriggererColumnBomb = true;
+                            }
+                        }
+
+
+                        // Ring clear animation
+                        int botLeftDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(0, 0)));
+                        int botRightDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(Width - 1, 0)));
+                        int topLeftDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(0, Height - 1)));
+                        int topRightDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(Width - 1, Height - 1)));
+
+                        int maxRadius = Mathf.Max(botLeftDistance, botRightDistance, topLeftDistance, topRightDistance);
+                        Debug.Log($"Max Radius: {maxRadius}   {0.5f / maxRadius}");
+                        float waitTimeEachWave = 0.2f / maxRadius;
+                        Vector2Int center = new Vector2Int(_selectedTile.X, _selectedTile.Y);
+                        for (int radius = 1; radius <= maxRadius; radius++)
+                        {
+                            GetRing(center, radius, Width, Height, ref _doubleColorBurstRingPositions);
+                            foreach (var cell in _doubleColorBurstRingPositions)
+                            {
+                                if (IsValidGridTile(cell.x, cell.y))
+                                {
+                                    int index = cell.x + cell.y * Width;
+                                    if (_tiles[index] != null)
+                                    {
+                                        _tiles[index].PlayMatchVFX(MatchID.ColorBurst);
+                                        _tiles[index].Display(false);
+                                    }
+                                }
+                            }
+
+                            yield return new WaitForSeconds(waitTimeEachWave);
+                        }
+
+
+
+                        void GetRing(Vector2Int center, int radius, int width, int height, ref List<Vector2Int> ring)
+                        {
+                            ring.Clear();
+
+                            int minX = Mathf.Max(0, center.x - radius);
+                            int maxX = Mathf.Min(width - 1, center.x + radius);
+                            int minY = Mathf.Max(0, center.y - radius);
+                            int maxY = Mathf.Min(height - 1, center.y + radius);
+
+                            float radiusSqr = radius * radius;
+                            float prevRadiusSqr = (radius - 1) * (radius - 1);
+
+                            for (int y = minY; y <= maxY; y++)
+                            {
+                                for (int x = minX; x <= maxX; x++)
+                                {
+                                    float dx = x - center.x;
+                                    float dy = y - center.y;
+                                    float distSqr = dx * dx + dy * dy;
+
+                                    if (distSqr <= radiusSqr && distSqr > prevRadiusSqr)
+                                    {
+                                        ring.Add(new Vector2Int(x, y));
+                                    }
+                                }
                             }
                         }
                     }
@@ -3352,12 +3448,12 @@ namespace Match3
                 }
             }
 
-            if(attempts > 0)
+            if (attempts > 0)
             {
                 yield return new WaitForSeconds(0.2f);
                 UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
             }
-            
+
             Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
@@ -5038,11 +5134,11 @@ namespace Match3
             return _getTileList;
         }
 
-        private Vector2Int DetectDragDirection(Vector2 start, Vector2 end)
+        private Vector2Int DetectDragDirection(Vector2 start, Vector2 end, float threshold)
         {
             Vector2 dragVector = end - start;
 
-            if (dragVector.magnitude < _dragThreshold)
+            if (dragVector.magnitude < threshold)
             {
                 return Vector2Int.zero;
             }
