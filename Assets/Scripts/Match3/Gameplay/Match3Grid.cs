@@ -92,7 +92,7 @@ namespace Match3
 
         [Header("VFX")]
         private float _defaultRocketPlayTime = 0.5f;
-        private float _triggerByBombRocketPlayTime = 0.35f;
+        private float _triggerByBombRocketPlayTime = 0.4f;
         private bool _isBlastBombTriggered = false;
 
 
@@ -3316,7 +3316,6 @@ namespace Match3
             int attempts = 0;
             while (true)
             {
-
                 if (HasAvaiableMove() == false)
                 {
                     if (attempts == 0)
@@ -3337,32 +3336,14 @@ namespace Match3
                 {
                     break;
                 }
-
-
-                // if (CanMatch() == false)
-                // {
-                //     if (attempts == 0)
-                //     {
-                //         Debug.Log("Cannot match -> SHUFFLE");
-                //         yield return new WaitForSeconds(2.0f);
-                //     }
-                //     yield return StartCoroutine(ShuffleGridCoroutine());
-                //     attempts++;
-                //     if (attempts > 20)
-                //     {
-                //         Debug.Log("Something went wrong !!!!!");
-                //         break;
-                //     }
-                // }
-                // else
-                // {
-                //     break;
-                // }
-
             }
 
-            yield return new WaitForSeconds(0.2f);
-            UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
+            if(attempts > 0)
+            {
+                yield return new WaitForSeconds(0.2f);
+                UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
+            }
+            
             Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
@@ -3419,6 +3400,7 @@ namespace Match3
                     {
                         _tiles[index].ChangeBlock(BlockID.SpiderNet);
                         _spiderSpreadingList.Add(index);
+                        Debug.Log($"Add:  {index}");
                     }
                 }
             }
@@ -3426,6 +3408,7 @@ namespace Match3
             bool spreadToNeighbor = false;
             for (int i = 0; i < _spiderSpreadingList.Count; i++)
             {
+                Debug.Log($"{i}  max: {_spiderSpreadingList.Count}");
                 int tileIndex = _spiderSpreadingList[i];
                 int x = tileIndex % Width;
                 int y = tileIndex / Width;
@@ -3459,8 +3442,8 @@ namespace Match3
                         break;
                     }
                 }
-                if (spreadToNeighbor)
-                    break;
+                //if (spreadToNeighbor)
+                //    break;
             }
 
             if (spreadToNeighbor == false)
