@@ -1131,6 +1131,7 @@ namespace Match3
                 foreach (var tile in _activeRowBombSet)
                 {
                     if (tile.HasTriggeredRowBomb) continue;
+                    //if (tile.IsDisplay == false) continue;
                     tile.HasTriggeredRowBomb = true;
 
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
@@ -1277,6 +1278,8 @@ namespace Match3
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
         {
             if (tile.HasTriggeredRowBomb) yield break;
+            //if (tile.IsDisplay == false) yield break;
+
             tile.HasTriggeredRowBomb = true;
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
@@ -1441,6 +1444,8 @@ namespace Match3
             foreach (var tile in _activeColumnBombSet)
             {
                 if (tile.HasTriggererColumnBomb) continue;
+                //if (tile.IsDisplay == false) continue;
+
                 tile.HasTriggererColumnBomb = true;
 
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
@@ -1582,6 +1587,7 @@ namespace Match3
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
             if (tile.HasTriggererColumnBomb) yield break;
+            //if (tile.IsDisplay == false) yield break;
             tile.HasTriggererColumnBomb = true;
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
@@ -2160,6 +2166,8 @@ namespace Match3
                                 }
                             }
                         }
+
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
@@ -2350,6 +2358,7 @@ namespace Match3
                                 SetMatchBuffer(i, MatchID.ColorBurst);
                             }
                         }
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
@@ -2393,7 +2402,6 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
                         Debug.Log("ColorBurst X ColorBurst");
-
 
                         Vector3 centerPosition = (_selectedTile.transform.position + _swappedTile.transform.position) / 2f;
 
@@ -2510,7 +2518,7 @@ namespace Match3
                         int topRightDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(Width - 1, Height - 1)));
 
                         int maxRadius = Mathf.Max(botLeftDistance, botRightDistance, topLeftDistance, topRightDistance);
-                        Debug.Log($"Max Radius: {maxRadius}   {0.5f / maxRadius}");
+                        //Debug.Log($"Max Radius: {maxRadius}   {0.5f / maxRadius}");
                         float waitTimeEachWave = 0.2f / maxRadius;
                         Vector2Int center = new Vector2Int(_selectedTile.X, _selectedTile.Y);
                         for (int radius = 1; radius <= maxRadius; radius++)
@@ -2604,6 +2612,8 @@ namespace Match3
                                 SetMatchBuffer(i, MatchID.BlastBomb);
                             }
                         }
+
+                        _selectedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
@@ -2651,6 +2661,8 @@ namespace Match3
                                 }
                             }
                         }
+                        _selectedTile.Display(false);
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     break;
@@ -4672,12 +4684,10 @@ namespace Match3
                         tile.SpecialProperties == SpecialTileID.RowBomb ||
                         tile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        Debug.Log("Can match A");
                         return true;
                     }
                     else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
-                        Debug.Log("Can match B");
                         if (IsValidMatchTile(x - 1, y)) return true;
                         if (IsValidMatchTile(x + 1, y)) return true;
                         if (IsValidMatchTile(x, y - 1)) return true;
