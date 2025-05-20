@@ -169,8 +169,10 @@ public class SaveManager : MonoBehaviour
             AvaiableBoosters = local.AvaiableBoosters ?? new List<BoosterSlot>(),
             EquipBooster = local.EquipBooster ?? new List<BoosterSlot>(),
             AllCharacterData = local.AllCharacterData ?? new List<CharacterData>(),
-            Energy = local.Energy,
-            LastOnline =  FieldValue.ServerTimestamp
+            Energy = local.Energy, 
+            Gold = local.Gold,
+            LastOnline =  FieldValue.ServerTimestamp,
+            LastSpinTime = local.SpinTime,
         };
 
         // UserManager.Instance.UserData.LastOnlineTimestamp = FieldValue.ServerTimestamp.ToString();
@@ -316,6 +318,7 @@ public class LocalUserData
 
     public LocalUserData(UserData fireStoreData)
     {
+        this.AllCharacterData = fireStoreData.AllCharacterData;
         this.AvaiableBoosters = fireStoreData.AvaiableBoosters;
         this.EquipBooster = fireStoreData.EquipBooster;
         this.Energy = fireStoreData.Energy;
@@ -323,6 +326,7 @@ public class LocalUserData
         this.Gold = fireStoreData.Gold;
         this.LoseStreak = 0;
         this.IsBuyWelcomePack = fireStoreData.IsBuyWelcomePack;
+        this.SpinTime = fireStoreData.LastSpinTime;
     }
 
     public void SetSpinTime(DateTime t)

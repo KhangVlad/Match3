@@ -1,251 +1,418 @@
+// #if !UNITY_WEBGL
+// using System;
+// using System.Collections;
+// using System.Threading.Tasks;
+// using UnityEngine;
+// using Firebase.Auth;
+// using Firebase.Extensions;
+// using GooglePlayGames;
+// using GooglePlayGames.BasicApi;
+// using Match3.Shares;
+//
+//
+// public class AuthenticationManager : MonoBehaviour
+// {
+//     public static AuthenticationManager Instance { get; private set; }
+//
+//     public event Action OnUserDataLoaded;
+//
+//     public bool IsSceneLoaded { get; private set; }
+//
+//     private FirebaseAuth auth;
+//
+//     private void Awake()
+//     {
+//         if (Instance != null && Instance != this)
+//         {
+//             Destroy(gameObject);
+//             return;
+//         }
+//
+//         Instance = this;
+//         DontDestroyOnLoad(gameObject);
+//     }
+//
+//     private void Start()
+//     {
+//         FirebaseManager.Instance.OnFirebaseInitialized += InitializeFirebase;
+//     }
+//
+//     private void InitializeFirebase()
+//     {
+//         auth = FirebaseManager.Instance.Auth;
+//         LoadLocalUserData();
+//     }
+//
+//     private void LoadLocalUserData()
+//     {
+//         var data = SaveManager.Instance.LoadUserDataFromLocalJson();
+//         UserManager.Instance.UserData = data;
+//         OnUserDataLoaded?.Invoke();
+//     }
+//
+//     public void HandleChangeScene()
+//     {
+//         if (IsSceneLoaded) return;
+//
+//         IsSceneLoaded = true;
+//         Loader.Load(Loader.Scene.Town);
+//     }
+//
+//     public IEnumerator CheckOrCreateUser()
+//     {
+//         yield return AuthenticateWithPlayGames(async success =>
+//         {
+//             if (success)
+//             {
+//                 await SignInToFirebaseWithCHPlay();
+//                 LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+//             }
+//             else
+//             {
+//                 LinkGooglePlayAccount(() =>
+//                 {
+//                     string chPlayId = GetCHPlayUserID();
+//                     UserManager.Instance.UserData = UserManager.Instance.InitializeNewUserData(chPlayId);
+//                     LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+//                 });
+//             }
+//         });
+//     }
+//
+//     public async Task SignInToFirebaseWithCHPlay()
+//     {
+//         string userId = GetCHPlayUserID();
+//         var userData = await FirebaseManager.Instance.GetUserDataFromFirebase(userId);
+//
+//         if (userData == null)
+//         {
+//             userData = UserManager.Instance.InitializeNewUserData(userId);
+//         }
+//         else
+//         {
+//             UserManager.Instance.ModifyUserID(userId);
+//         }
+//
+//         UserManager.Instance.UserData = userData;
+//     }
+//
+//     #region Google Play Games Integration
+//
+//     public void LinkGooglePlayAccount(Action onSuccess = null, Action onFailure = null)
+//     {
+//         StartCoroutine(AuthenticateWithPlayGames(success =>
+//         {
+//             if (!success)
+//             {
+//                 Debug.LogWarning("Failed to authenticate with GPGS.");
+//                 onFailure?.Invoke();
+//                 return;
+//             }
+//
+//             PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
+//             {
+//                 var credential = PlayGamesAuthProvider.GetCredential(code);
+//                 LinkFirebaseAccount(credential, onSuccess, onFailure);
+//             });
+//         }));
+//     }
+//
+//
+//     public IEnumerator AuthenticateWithPlayGames(Action<bool> callback)
+//     {
+//         float timeout = 5f;
+//         float elapsed = 0f;
+//
+//         while (PlayGamesPlatform.Instance == null && elapsed < timeout)
+//         {
+//             elapsed += Time.deltaTime;
+//             yield return null;
+//         }
+//
+//         if (PlayGamesPlatform.Instance == null)
+//         {
+//             Debug.LogError("GPGS platform not initialized.");
+//             callback(false);
+//             yield break;
+//         }
+//
+//         PlayGamesPlatform.Instance.Authenticate(status =>
+//         {
+//             bool success = status == SignInStatus.Success;
+//
+//             if (success)
+//             {
+//                 PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
+//                 {
+//                     var credential = PlayGamesAuthProvider.GetCredential(code);
+//                     auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+//                     {
+//                         callback(task.IsCompleted && !task.IsFaulted);
+//                     });
+//                 });
+//             }
+//             else
+//             {
+//                 callback(false);
+//             }
+//         });
+//     }
+//
+//     public void LinkFirebaseAccount(Credential credential, Action onSuccess, Action onFailure = null)
+//     {
+//         if (auth.CurrentUser == null)
+//         {
+//             Debug.LogError("No Firebase user is currently signed in.");
+//             onFailure?.Invoke();
+//             return;
+//         }
+//
+//         auth.CurrentUser.LinkWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+//         {
+//             if (task.IsCompleted && !task.IsFaulted)
+//             {
+//                 Debug.Log("Successfully linked Firebase with GPGS.");
+//                 onSuccess?.Invoke();
+//             }
+//             else
+//             {
+//                 Debug.LogError("Firebase account link failed: " + task.Exception);
+//                 onFailure?.Invoke();
+//             }
+//         });
+//     }
+//
+//     public string GetCHPlayUserID()
+//     {
+//         return PlayGamesPlatform.Instance?.GetUserId();
+//     }
+//
+//     #endregion
+// }
+// #endif
+
 #if !UNITY_WEBGL
 using System;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
-using Firebase.Extensions;
 using Firebase.Auth;
-using Match3.Shares;
+using Firebase.Extensions;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using Match3.Shares;
 
 public class AuthenticationManager : MonoBehaviour
 {
     public static AuthenticationManager Instance { get; private set; }
 
-    // public event Action NewUser;
-    // public event Action OldUser;
     public event Action OnUserDataLoaded;
-    public bool IsSceneLoaded;
+
+    public bool IsSceneLoaded { get; private set; }
+
     private FirebaseAuth auth;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
 
         Instance = this;
-        IsSceneLoaded = false;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
-        FirebaseManager.Instance.OnFirebaseInitialized += () =>
-        {
-            auth = FirebaseManager.Instance.Auth;
-            UserDataLoad();
-
-            // StartCoroutine(AutoSignInCoroutine());
-        };
+        FirebaseManager.Instance.OnFirebaseInitialized += InitializeFirebase;
     }
 
-    private void UserDataLoad()
+    private void InitializeFirebase()
     {
-        LocalUserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
+        auth = FirebaseManager.Instance.Auth;
+        LoadUserDataFromLocal();
+    }
+
+    private void LoadUserDataFromLocal()
+    {
+        var data = SaveManager.Instance.LoadUserDataFromLocalJson();
         UserManager.Instance.UserData = data;
         OnUserDataLoaded?.Invoke();
     }
 
-    private IEnumerator AutoSignInCoroutine()
+    public void HandleSceneLoad()
     {
-        LocalUserData data = SaveManager.Instance.LoadUserDataFromLocalJson();
+        if (IsSceneLoaded) return;
 
-        if (data == null)
+        IsSceneLoaded = true;
+        Loader.Load(Loader.Scene.Town);
+    }
+
+    public IEnumerator CheckOrCreateUser()
+    {
+        yield return AuthenticateWithPlayGames(async success =>
         {
-            // Wait for GPGS to be ready, then try sign-in
-            yield return WaitForPlayGamesPlatformThenAuthenticate(async success =>
+            if (success)
             {
-                if (success)
-                {
-                    Debug.Log("GPGS login success.");
-                    await CHPlaySignInFirebase();
-                }
-                else
-                {
-                    Debug.Log("GPGS login failed or no account linked. Creating new user.");
-                    // UserManager.Instance.InitializeNewUserData();
-                    // NewUser?.Invoke();
-                }
-            });
+                await SignInToFirebaseWithPlayGames();
+                LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+            }
+            else
+            {
+                LinkGooglePlayAccount(
+                    onSuccess: () =>
+                    {
+                        var newUserId = GetPlayGamesUserID();
+                        var newUserData = UserManager.Instance.InitializeNewUserData(newUserId);
+                        UserManager.Instance.UserData = newUserData;
+                        LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+                    },
+                    onFailure: () =>
+                    {
+                        Debug.LogError("Failed to link Google Play account and create user.");
+                    });
+            }
+        });
+    }
+    
+    
+    public bool IsCHPlayLinkedToFirebase()
+    {
+        if (auth?.CurrentUser == null)
+        {
+            Debug.LogWarning("No Firebase user is signed in.");
+            return false;
+        }
+
+        // Check if the current user was signed in using Google Play Games
+        // The ProviderId for Google Play Games is "playgames.google.com"
+        foreach (var info in auth.CurrentUser.ProviderData)
+        {
+            if (info.ProviderId == "playgames.google.com")
+            {
+                Debug.Log("Google Play Games is linked to Firebase.");
+                return true;    
+            }
+        }
+
+        Debug.Log("Google Play Games is not linked to Firebase.");
+        return false;
+    }
+
+    public async Task SignInToFirebaseWithPlayGames()
+    {
+        string userId = GetPlayGamesUserID();
+
+        var userData = await FirebaseManager.Instance.GetUserDataFromFirebase(userId);
+
+        if (userData == null)
+        {
+            userData = UserManager.Instance.InitializeNewUserData(userId);
         }
         else
         {
-            SignInByLocalData(data);
-            // OldUser?.Invoke();
+            UserManager.Instance.ModifyUserID(userId);
         }
+
+        UserManager.Instance.UserData = userData;
     }
 
+    #region Google Play Games Integration
 
-    public async Task CHPlaySignInFirebase()
+    public void LinkGooglePlayAccount(Action onSuccess = null, Action onFailure = null)
     {
-        string userID = PlayGamesPlatform.Instance.GetUserId();
-        LocalUserData data = await FirebaseManager.Instance.GetUserDataFromFirebase(userID);
-        if (data == null)
-        {
-           data = UserManager.Instance.InitializeNewUserData(userID);
-        }
-        else
-        {
-            UserManager.Instance.ModifyUserID(userID);  
-        }
-        UserManager.Instance.UserData = data;
-    }
-
-    public void HandleChangeScene()
-    {
-        if (!IsSceneLoaded)
-        {
-            IsSceneLoaded = true;
-            Loader.Load(Loader.Scene.Town);
-        }
-    }
-
-    public void SignInByLocalData(LocalUserData data)
-    {
-        UserManager.Instance.UserData = data;
-
-        if (UserManager.Instance.UserData == null)
-        {
-            Debug.LogError("Local user data is null.");
-        }
-    }
-
-    #region Link Google Play Games
-
-    public void LinkGooglePlayGamesAccount(Action s = null, Action f = null)
-    {
-        StartCoroutine(WaitForPlayGamesPlatformThenAuthenticate(success =>
+        StartCoroutine(AuthenticateWithPlayGames(success =>
         {
             if (!success)
             {
-                Debug.LogWarning("GPGS authentication failed. Cannot link account.");
+                Debug.LogWarning("GPGS authentication failed.");
+                onFailure?.Invoke();
                 return;
             }
 
-
             PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
             {
-                Credential credential = PlayGamesAuthProvider.GetCredential(code);
-                LinkAccount(credential,
-                    onSuccess: () => s.Invoke(),
-                    onFailure: () => f.Invoke());
+                var credential = PlayGamesAuthProvider.GetCredential(code);
+                LinkFirebaseAccount(credential, onSuccess, onFailure);
             });
         }));
     }
 
-    public string GetChPlayID()
+    public IEnumerator AuthenticateWithPlayGames(Action<bool> callback)
     {
-        return PlayGamesPlatform.Instance.GetUserId();
+        float timeout = 5f;
+        float elapsed = 0f;
+
+        while (PlayGamesPlatform.Instance == null && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (PlayGamesPlatform.Instance == null)
+        {
+            Debug.LogError("Google Play Games Platform not initialized.");
+            callback(false);
+            yield break;
+        }
+
+        PlayGamesPlatform.Instance.Authenticate(status =>
+        {
+            bool success = status == SignInStatus.Success;
+
+            if (!success)
+            {
+                callback(false);
+                return;
+            }
+
+            PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
+            {
+                var credential = PlayGamesAuthProvider.GetCredential(code);
+
+                auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
+                {
+                    if (task.IsCompletedSuccessfully)
+                        callback(true);
+                    else
+                    {
+                        Debug.LogError("Firebase sign-in failed: " + task.Exception);
+                        callback(false);
+                    }
+                });
+            });
+        });
     }
 
-    public void LinkAccount(Credential credential, Action onSuccess, Action onFailure = null)
+    public void LinkFirebaseAccount(Credential credential, Action onSuccess, Action onFailure = null)
     {
         if (auth.CurrentUser == null)
         {
-            Debug.LogError("No Firebase user signed in.");
+            Debug.LogError("No Firebase user currently signed in.");
             onFailure?.Invoke();
             return;
         }
 
         auth.CurrentUser.LinkWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
         {
-            if (task.IsCompleted && !task.IsFaulted)
+            if (task.IsCompletedSuccessfully)
             {
-                Debug.Log("Firebase account successfully linked.");
+                Debug.Log("Successfully linked Firebase with Google Play.");
                 onSuccess?.Invoke();
             }
             else
             {
-                Debug.LogError("Failed to link Firebase account: " + task.Exception);
+                Debug.LogError("Linking Firebase account failed: " + task.Exception);
                 onFailure?.Invoke();
             }
         });
     }
 
-    public async Task<bool> SignInWithPlayGames()
+    public string GetPlayGamesUserID()
     {
-        var tcs = new TaskCompletionSource<bool>();
-
-        PlayGamesPlatform.Instance.Authenticate(status =>
-        {
-            if (status == SignInStatus.Success)
-            {
-                PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
-                {
-                    Credential credential = PlayGamesAuthProvider.GetCredential(code);
-                    auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
-                    {
-                        if (task.IsCompleted && !task.IsFaulted)
-                        {
-                            // OnAuthenticationSuccessfully?.Invoke(task.Result);
-                            tcs.SetResult(true);
-                        }
-                        else
-                        {
-                            Debug.LogError("Firebase GPGS sign-in failed: " + task.Exception);
-                            tcs.SetResult(false);
-                        }
-                    });
-                });
-            }
-            else
-            {
-                Debug.LogError("GPGS auth failed: " + status);
-                tcs.SetResult(false);
-            }
-        });
-
-        return await tcs.Task;
-    }
-
-    public IEnumerator WaitForPlayGamesPlatformThenAuthenticate(Action<bool> callback)
-    {
-        var tcs = new TaskCompletionSource<bool>();
-        float timeout = 5f;
-        float timer = 0f;
-
-        while (PlayGamesPlatform.Instance == null && timer < timeout)
-        {
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        if (PlayGamesPlatform.Instance != null)
-        {
-            PlayGamesPlatform.Instance.Authenticate(status =>
-            {
-                if (status == SignInStatus.Success)
-                {
-                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
-                    {
-                        Credential credential = PlayGamesAuthProvider.GetCredential(code);
-                        auth.SignInWithCredentialAsync(credential).ContinueWithOnMainThread(task =>
-                        {
-                            if (task.IsCompleted && !task.IsFaulted)
-                            {
-                                // OnAuthenticationSuccessfully?.Invoke(task.Result);
-                                tcs.SetResult(true);
-                            }
-                            else
-                            {
-                                Debug.LogError("Firebase GPGS sign-in failed: " + task.Exception);
-                                tcs.SetResult(false);
-                            }
-                        });
-                    });
-                }
-
-                callback?.Invoke(status == SignInStatus.Success);
-            });
-        }
-        else
-        {
-            Debug.LogError("PlayGamesPlatform.Instance never initialized.");
-            callback?.Invoke(false);
-        }
+        return PlayGamesPlatform.Instance?.GetUserId();
     }
 
     #endregion

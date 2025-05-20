@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 using Match3;
 using TMPro;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
 
 #if !UNITY_WEBGL
 public class UISettingManager : MonoBehaviour
@@ -20,7 +22,7 @@ public class UISettingManager : MonoBehaviour
     [SerializeField] private Button _saveButton;
     [SerializeField] private Transform settingParent;
     [SerializeField] private TMP_Dropdown _dropdownlanguage;
-    [SerializeField] private Button chPlay_link;
+    [SerializeField] private Button _chPlay_link;
 
     [Header("Temp Variables")] [SerializeField]
     private Button _dayAndNightToggle; //get child image to change sprite
@@ -35,7 +37,6 @@ public class UISettingManager : MonoBehaviour
 
     private void Start()
     {
-        CheckCHPlayLink();
         _closeButton.onClick.AddListener(Close);
         _openSoundSettingBtn.onClick.AddListener(OnOpenButtonClicked);
         _musicSlider.onValueChanged.AddListener(OnMusicSliderValueChanged);
@@ -43,18 +44,16 @@ public class UISettingManager : MonoBehaviour
         _saveButton.onClick.AddListener(OnSaveButtonClicked);
         _dropdownlanguage.onValueChanged.AddListener(OnLanguageChange);
         _dayAndNightToggle.onClick.AddListener(OnDayAndNightToggle);
-        if (chPlay_link != null)
+        if (AuthenticationManager.Instance.IsCHPlayLinkedToFirebase())
         {
-            chPlay_link.onClick.AddListener(() => { AuthenticationManager.Instance.LinkGooglePlayGamesAccount(); });
+            _chPlay_link.gameObject.SetActive(false);
         }
-    }
+        else
+        {
+            _chPlay_link.gameObject.SetActive(true);
+        }
 
-    private void CheckCHPlayLink()
-    {
-        // if (AuthenticationManager.Instance.CheckIfGooglePlayGamesLinked())
-        // {
-        //     chPlay_link.gameObject.SetActive(false);
-        // }
+        _chPlay_link.onClick.AddListener(() => { StartCoroutine(AuthenticationManager.Instance.CheckOrCreateUser()); });
     }
 
 

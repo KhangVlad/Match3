@@ -54,14 +54,12 @@ public class UILoadingMenu : MonoBehaviour
         }
 
 #if !UNITY_WEBGL
-        // AuthenticationManager.Instance.NewUser += HandleNewUser;
-        // AuthenticationManager.Instance.OldUser += HandleOldUser;
+     
         AuthenticationManager.Instance.OnUserDataLoaded += HandleUserDataLoaded;
         _questSignInBtn.onClick.AddListener(QuestSignIn);
         _chPlayBtn.onClick.AddListener(SignInAsChPlay);
 #endif
 
-        // Set background based on time of day
         SetBackgroundByTimeOfDay();
 
         // Start loading process
@@ -78,35 +76,7 @@ public class UILoadingMenu : MonoBehaviour
 
     private void SignInAsChPlay()
     {
-        StartCoroutine(CheckUser());
-    }
-
-    private IEnumerator CheckUser()
-    {
-        // StartCoroutine(AuthenticationManager.Instance.WaitForPlayGamesPlatformThenAuthenticate((b =>
-        // {
-        //     if (b)
-        //     {
-        //         await AuthenticationManager.Instance.CHPlaySignInFirebase();
-        //     }
-        // })));
-        yield return AuthenticationManager.Instance.WaitForPlayGamesPlatformThenAuthenticate(async success =>
-        {
-            if (success)
-            {
-                await AuthenticationManager.Instance.CHPlaySignInFirebase();
-                LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-            }
-            else
-            {
-                AuthenticationManager.Instance.LinkGooglePlayGamesAccount((() =>
-                {
-                   UserManager.Instance.UserData =  UserManager.Instance.InitializeNewUserData(AuthenticationManager.Instance.GetChPlayID());
-                   LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-                }));
-            }
-         
-        });
+        StartCoroutine(AuthenticationManager.Instance.CheckOrCreateUser());
     }
 
 
@@ -133,6 +103,10 @@ public class UILoadingMenu : MonoBehaviour
         {
             UIOnBoard.gameObject.SetActive(true);
             progressSlider.gameObject.SetActive(false);
+        }
+        else
+        {
+            StartCoroutine(UpdateProgressRoutine());
         }
     }
 
@@ -224,18 +198,7 @@ public class UILoadingMenu : MonoBehaviour
     {
         _isLoading = false;
         homeButton.interactable = true;
-
-        // Optional: Add animation or visual feedback to indicate loading is complete
-
-        // Automatically switch to town scene
-        if (LoadingAnimationController.Instance != null)
-        {
-            LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-        }
-        else
-        {
-            Debug.LogWarning("LoadingAnimationController instance is null. Cannot switch scenes.");
-        }
+        LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
     }
 }
 #endif

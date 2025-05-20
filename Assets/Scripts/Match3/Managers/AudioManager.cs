@@ -32,8 +32,8 @@ namespace Match3
         [SerializeField] private EventReference _win;
         [SerializeField] private EventReference _gameover;
         [SerializeField] private EventReference _closeBtn;
-
-        [SerializeField] private EventReference _backgroundMusic;
+        [SerializeField] private EventReference _morningBackgroundMusic;
+        [SerializeField] private EventReference _nightBackgroundMusic;
 
         //--------------------------------------------------------------------
         // 2: Using the EventInstance class will allow us to manage an event
@@ -96,7 +96,7 @@ namespace Match3
         private void Start()
         {
             //PlayMusic(_music);
-            PlayMusic(_backgroundMusic);
+            PlayMusic(_morningBackgroundMusic);
         }
 
         private void OnDestroy()
