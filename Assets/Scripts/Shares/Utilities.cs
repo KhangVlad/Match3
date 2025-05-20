@@ -3,6 +3,8 @@ using System.Collections;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Match3.Shares
 {
@@ -249,6 +251,29 @@ namespace Match3.Shares
         public void StartStaticCoroutine(IEnumerator coroutine)
         {
             StartCoroutine(coroutine);
+        }
+
+        public IEnumerator WaitAllCoroutines(List<IEnumerator> coroutines)
+        {
+            List<bool> doneFlags = new List<bool>();
+            List<Coroutine> runningCoroutines = new List<Coroutine>();
+
+            for (int i = 0; i < coroutines.Count; i++)
+            {
+                int index = i;
+                doneFlags.Add(false);
+
+                IEnumerator Wrapper()
+                {
+                    yield return StartCoroutine(coroutines[index]);
+                    doneFlags[index] = true;
+                }
+
+                runningCoroutines.Add(StartCoroutine(Wrapper()));
+            }
+
+            // Wait until all doneFlags are true
+            yield return new WaitUntil(() => doneFlags.All(done => done));
         }
     }
 
