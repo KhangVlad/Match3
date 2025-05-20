@@ -3631,7 +3631,6 @@ namespace Match3
                 yield return new WaitForSeconds(0.2f);
                 UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
             }
-
             // Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion

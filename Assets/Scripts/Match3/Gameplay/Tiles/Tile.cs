@@ -441,16 +441,32 @@ namespace Match3
                 _moveTween.Kill();
             }
 
-            float moveAmount = 0.2f;
+            float moveAmount = 0.15f;
             float duration = 0.3f;
-            float pause = 0.2f;
+            float pause = 0.35f;
+            float longPause = 1.0f;
 
             Vector3 startPos = transform.position;
 
             Sequence seq = DOTween.Sequence();
-            seq.Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InOutSine))
-               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.InOutSine))
+            seq.Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
                .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(longPause)
                .SetLoops(-1)
                .SetId("HintAnimation");
 
