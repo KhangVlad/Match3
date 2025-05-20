@@ -246,6 +246,11 @@ namespace Match3
                     {
                         if (IsValidGridTile(gridPosition.x, gridPosition.y))
                         {
+                            if (_hintCoroutine != null)
+                            {
+                                StopCoroutine(_hintCoroutine);
+                            }
+
                             Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
                             if (tile != null)
                             {
@@ -292,6 +297,10 @@ namespace Match3
                 {
                     if (_selectedTile != null)
                     {
+                        if (_hintCoroutine != null)
+                        {
+                            StopCoroutine(_hintCoroutine);
+                        }
                         _mouseUpPosition = Input.mousePosition;
 
                         Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
@@ -338,36 +347,48 @@ namespace Match3
                 }
 
 
-                if (_hintHasShown == false)
+                // if (_hintHasShown == false)
+                // {
+                //     if (_selectedTile == null && _swappedTile == null)
+                //     {
+                //         _showHintTimer += Time.deltaTime;
+                //         if (_showHintTimer > _showHintWaitTime)
+                //         {
+                //             _showHintTimer = 0f;
+                //             _tileHintList.Clear();
+                //             Debug.Log("Show Hint");
+                //             _hintHasShown = true;
+
+                //             if (HasAvaiableMove(out Tile fTile, out Tile sTile))
+                //             {
+                //                 if (fTile != null)
+                //                 {
+                //                     fTile.ShowHintAnimation();
+                //                     _tileHintList.Add(fTile);
+                //                 }
+
+                //                 if (sTile != null)
+                //                 {
+                //                     sTile.ShowHintAnimation();
+                //                     _tileHintList.Add(sTile);
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+
+
+                if (_hintHasShown == false && _canPlay)
                 {
                     if (_selectedTile == null && _swappedTile == null)
                     {
-                        _showHintTimer += Time.deltaTime;
-                        if (_showHintTimer > _showHintWaitTime)
+                        if (_hintCoroutine != null)
                         {
-                            _showHintTimer = 0f;
-                            _tileHintList.Clear();
-                            Debug.Log("Show Hint");
-                            _hintHasShown = true;
-
-                            if (HasAvaiableMove(out Tile fTile, out Tile sTile))
-                            {
-                                if (fTile != null)
-                                {
-                                    fTile.ShowHintAnimation();
-                                    _tileHintList.Add(fTile);
-                                }
-
-                                if (sTile != null)
-                                {
-                                    sTile.ShowHintAnimation();
-                                    _tileHintList.Add(sTile);
-                                }
-                            }
+                            StopCoroutine(_hintCoroutine);
                         }
+
+                        _hintCoroutine = StartCoroutine(HandleHintCoroutine());
                     }
-
-
                 }
             }
 
@@ -658,6 +679,60 @@ namespace Match3
 
 
 
+        private Coroutine _hintCoroutine;
+        private IEnumerator HandleHintCoroutine()
+        {
+            // Debug.Log("HandleHintCoroutine");
+            _hintHasShown = true;
+            yield return new WaitForSeconds(_showHintWaitTime);
+            // Debug.Log("Show Hint");
+
+            _tileHintList.Clear();
+            if (HasAvaiableMove(out Tile fTile, out Tile sTile))
+            {
+                if (fTile != null && sTile != null)
+                {
+                    // _selectedTile = fTile;
+                    // _swappedTile = sTile;
+                    SwapPosition(fTile, sTile);
+                    yield return StartCoroutine(HandleMatchCoroutine());
+
+                    for (int i = 0; i < _matchBuffer.Length; i++)
+                    {
+                        if (_matchBuffer[i] != MatchID.None)
+                        {
+                            if (_tiles[i] != null)
+                            {
+                                _tiles[i].ShowHintAnimation();
+                                _tileHintList.Add(_tiles[i]);
+                            }
+
+                            SetMatchBuffer(i, MatchID.None);
+                        }
+                    }
+                    SwapPosition(fTile, sTile);
+                    // _selectedTile = null;
+                    // _swappedTile = null;
+                }
+                else
+                {
+                    if (fTile != null)
+                    {
+                        fTile.ShowHintAnimation();
+                        _tileHintList.Add(fTile);
+                    }
+
+                    if (sTile != null)
+                    {
+                        sTile.ShowHintAnimation();
+                        _tileHintList.Add(sTile);
+                    }
+                }
+            }
+
+
+        }
+
 
         private void OnSelectGameplayBooster_UpdateLogic(Booster booster)
         {
@@ -759,83 +834,74 @@ namespace Match3
                     HandleSwapDirection();
                 }
             }
+        }
 
-
-            void HandleSwapDirection()
+        private void HandleSwapDirection()
+        {
+            if (_selectedTile.SpecialProperties == SpecialTileID.None &&
+                   _swappedTile.SpecialProperties == SpecialTileID.None)
             {
-                if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                       _swappedTile.SpecialProperties == SpecialTileID.None)
+                SwapPosition(_selectedTile, _swappedTile);
+                _selectedTile.MoveToGridPosition();
+                _swappedTile.MoveToGridPosition();
+            }
+            else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
+                _swappedTile.SpecialProperties != SpecialTileID.None)
+            {
+                if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                    _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                 {
+                    // Debug.Log($"ColorBurst X ColorBurst");
                     SwapPosition(_selectedTile, _swappedTile);
                     _selectedTile.MoveToGridPosition();
                     _swappedTile.MoveToGridPosition();
                 }
-                else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                    _swappedTile.SpecialProperties != SpecialTileID.None)
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                    _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                 {
-                    if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
-                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                    _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                {
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                   _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                        _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
                     {
-                        // Debug.Log($"ColorBurst X ColorBurst");
                         SwapPosition(_selectedTile, _swappedTile);
                         _selectedTile.MoveToGridPosition();
                         _swappedTile.MoveToGridPosition();
                     }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                        _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                }
+                else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                        _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
                     {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
-                       _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                            _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                        {
-                            SwapPosition(_selectedTile, _swappedTile);
-                            _selectedTile.MoveToGridPosition();
-                            _swappedTile.MoveToGridPosition();
-                        }
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                            _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                        {
-                            SwapPosition(_selectedTile, _swappedTile);
-                            _selectedTile.MoveToGridPosition();
-                            _swappedTile.MoveToGridPosition();
-                        }
-                    }
-                    else
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                        SwapPosition(_selectedTile, _swappedTile);
+                        _selectedTile.MoveToGridPosition();
+                        _swappedTile.MoveToGridPosition();
                     }
                 }
                 else
                 {
-                    SwapPosition(_selectedTile, _swappedTile);
-                    _selectedTile.MoveToGridPosition();
-                    _swappedTile.MoveToGridPosition();
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
                 }
-                //Debug.Log("VFX HERE");
-                // vfx
-                // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
-                // {
-                //     SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
-                //     Destroy(slashVfx01.gameObject, 0.5f);
-                // }
             }
-
+            else
+            {
+                SwapPosition(_selectedTile, _swappedTile);
+                _selectedTile.MoveToGridPosition();
+                _swappedTile.MoveToGridPosition();
+            }
         }
 
         private IEnumerator ImplementGameLogicCoroutine(bool triggerEvent)
@@ -849,7 +915,6 @@ namespace Match3
             {
                 bool hasMatched = false;
                 _unlockTileSet.Clear();
-
 
                 yield return StartCoroutine(HandleMatchCoroutine());
                 yield return StartCoroutine(HandleTriggerAllSpecialTilesCoroutine());
@@ -1059,6 +1124,7 @@ namespace Match3
         // ================== Handle match logic ====================
         private IEnumerator HandleMatchCoroutine()
         {
+            Debug.Log("HandleMatchCoroutine");
             HandleFindColorBurst();
             HandleFindBlastBomb();
             yield return StartCoroutine(HandleSpecialMatchCoroutine());
@@ -1096,7 +1162,6 @@ namespace Match3
                         }
                         else break;
                     }
-
                     HandleMatchSameIDInRow(currTile, sameIDCountInRow);
                     HandleMatchSameIDInColumn(currTile, sameIDCountInColumn);
                 }
@@ -3567,7 +3632,7 @@ namespace Match3
                 UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
             }
 
-            Debug.Log($"Swap attempts: {attempts}");
+            // Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
 
