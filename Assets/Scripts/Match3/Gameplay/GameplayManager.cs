@@ -384,14 +384,6 @@ namespace Match3
                         if (tile is YellowBut)
                             Quests[i].Quantity--;
                         break;
-                    case QuestID.RedBug:
-                        if (tile is RedBug)
-                            Quests[i].Quantity--;
-                        break;
-                    case QuestID.YellowBug:
-                        if (tile is YellowBug)
-                            Quests[i].Quantity--;
-                        break;
                     case QuestID.Rock:
                         if (tile is Rock)
                             Quests[i].Quantity--;

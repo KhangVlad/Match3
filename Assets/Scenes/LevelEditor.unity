@@ -11402,20 +11402,13 @@ MonoBehaviour:
       Data3: 2086814851
       Data4: -773168414
     Path: event:/Win
-  _morningBackgroundMusic:
+  _backgroundMusic:
     Guid:
-      Data1: 1771248970
-      Data2: 1249376079
-      Data3: -1224137331
-      Data4: -1906538992
-    Path: event:/MorningBG
-  _nightBackgroundMusic:
-    Guid:
-      Data1: 1043595479
-      Data2: 1206968203
-      Data3: 778163626
-      Data4: -1157871577
-    Path: event:/AfternoonBG
+      Data1: -1407889360
+      Data2: 1257474257
+      Data3: 2086814851
+      Data4: -773168414
+    Path: event:/Win
 --- !u!4 &1310305417
 Transform:
   m_ObjectHideFlags: 0
@@ -13747,7 +13740,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 50149920}
+  m_AnchoredPosition: {x: 0, y: 51128332}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1577166308

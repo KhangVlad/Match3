@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if !UNITY_WEBGL
+using UnityEngine;
 using System.Collections.Generic;
 using Firebase.Firestore;
 
@@ -22,4 +23,5 @@ public class UserData
     [FirestoreProperty] public float Gold { get; set; }
     [FirestoreProperty] public bool IsBuyWelcomePack { get; set; }
 }
+#endif
 

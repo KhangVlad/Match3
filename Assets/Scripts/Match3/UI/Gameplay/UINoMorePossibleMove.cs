@@ -34,7 +34,6 @@ namespace Match3
                 _defaultNoMorePossibleMovePanelPosition = _noMorePossibleMovePanel.transform.position;
                 _noMorePossibleMovePanel.gameObject.SetActive(false);
             });
-
         }
 
         private void Update()
@@ -59,13 +58,13 @@ namespace Match3
 
             if (enable)
             {
-                _noMorePossibleMovePanel.transform.position = _defaultNoMorePossibleMovePanelPosition + new Vector3(0, 750);
+                _noMorePossibleMovePanel.transform.position = _defaultNoMorePossibleMovePanelPosition + new Vector3(0, 900);
                 _noMorePossibleMovePanel.gameObject.SetActive(true);
                 _moveTween = _noMorePossibleMovePanel.DOMove(_defaultNoMorePossibleMovePanelPosition, 0.5f).SetEase(Ease.InBack);
             }
             else
             {
-                _moveTween = _noMorePossibleMovePanel.DOMove(_defaultNoMorePossibleMovePanelPosition + new Vector3(0, 750), 0.5f).SetEase(Ease.InBack).OnComplete(() =>
+                _moveTween = _noMorePossibleMovePanel.DOMove(_defaultNoMorePossibleMovePanelPosition + new Vector3(0, 900), 0.5f).SetEase(Ease.InBack).OnComplete(() =>
                 {
                     _noMorePossibleMovePanel.gameObject.SetActive(false);
                 });
@@ -74,7 +73,8 @@ namespace Match3
 
         public void DisplayCanvas(bool enable)
         {
-            this.enabled = enable;
+            Debug.Log($"Display canvas:  {enable}");
+            this._canvas.enabled = enable;
         }
     }
 }

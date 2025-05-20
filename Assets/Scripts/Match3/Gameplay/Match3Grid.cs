@@ -59,6 +59,7 @@ namespace Match3
         private HashSet<Tile> _activeColumnBombSet;
         private List<Tile> _bfsTiles;
         private List<int> _bfsSteps;
+        private List<Vector2Int> _doubleColorBurstRingPositions;
         //private Dictionary<Coroutine, bool> _singleRowBombCoroutineDict;
         //private Dictionary<Coroutine, bool> _singleColumnBombCoroutineDict;
         //private List<Coroutine> _singleRowBombCoroutineKey;
@@ -92,7 +93,7 @@ namespace Match3
 
         [Header("VFX")]
         private float _defaultRocketPlayTime = 0.5f;
-        private float _triggerByBombRocketPlayTime = 0.35f;
+        private float _triggerByBombRocketPlayTime = 0.4f;
         private bool _isBlastBombTriggered = false;
 
 
@@ -106,7 +107,7 @@ namespace Match3
         public bool Canplay => _canPlay;
         public bool UseBoosterThisTurn { get; private set; } = false;
         public bool SwapTileHasMatched { get; private set; } = false;
-        public bool FirstTimeHasChecked {get; private set;} = false;
+        public bool FirstTimeHasChecked { get; private set; } = false;
         #endregion
 
 
@@ -145,6 +146,7 @@ namespace Match3
             _activeColumnBombSet = new();
             _bfsTiles = new();
             _bfsSteps = new();
+            _doubleColorBurstRingPositions = new();
 
 
             _tShapes = new List<int[,]>
@@ -284,7 +286,7 @@ namespace Match3
                     {
                         _mouseUpPosition = Input.mousePosition;
 
-                        Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         HandleSwap(dragDir);
 
                         // if found swapped tile
@@ -799,7 +801,7 @@ namespace Match3
 
 
                 yield return StartCoroutine(HandleMatchCoroutine());
-                HandleTriggerAllSpecialTiles();
+                yield return StartCoroutine(HandleTriggerAllSpecialTilesCoroutine());
 
                 // // Collect animation
                 // yield return StartCoroutine(HandleCollectAnimationCoroutine());
@@ -808,7 +810,6 @@ namespace Match3
 
                 if (_handleColumnBombCoroutine != null) StopCoroutine(_handleColumnBombCoroutine);
                 if (_handleRowBombCoroutine != null) StopCoroutine(_handleRowBombCoroutine);
-
 
                 bool columnDone = false;
                 bool rowDone = false;
@@ -859,13 +860,11 @@ namespace Match3
                             Tile nb = e.Value[i];
                             nb.PlayShaking(colorBurstDuration);
 
-
                             nb.Bloom(true);
                             LightningLine lightningLineFX = (LightningLine)VFXPoolManager.Instance.GetEffect(VisualEffectID.LightingLine);
                             lightningLineFX.transform.position = Vector2.zero;
                             float reachTaretTime = 0.1f;
                             lightningLineFX.ActiveLightningLine((Vector2)t.TileTransform.position, (Vector2)nb.TileTransform.position, reachTaretTime, colorBurstDuration);
-
 
                             EndLineColorBurstFX endLineColorBurstFX = (EndLineColorBurstFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.EndLineColorBurstFX);
                             endLineColorBurstFX.transform.position = nb.TileTransform.position;
@@ -926,9 +925,10 @@ namespace Match3
                 }
 
 
+
                 if (hasMatched)
                 {
-                    // yield return new WaitForSeconds(0.3f);
+                    yield return new WaitForSeconds(0.05f);
                     for (int i = 0; i < _tiles.Length; i++)
                     {
                         if (_tiles[i] != null)
@@ -968,9 +968,6 @@ namespace Match3
                     Debug.LogError("Something went wrong");
                     break;
                 }
-
-
-
             }
 
             if (HandleReswapIfNotMatch)
@@ -986,7 +983,7 @@ namespace Match3
             _selectedTile = null;
             _swappedTile = null;
 
-            yield return new WaitForSeconds(0.1f);
+            // yield return new WaitForSeconds(0.1f);
             _canPlay = true;
 
             if (triggerEvent)
@@ -1132,6 +1129,7 @@ namespace Match3
                 foreach (var tile in _activeRowBombSet)
                 {
                     if (tile.HasTriggeredRowBomb) continue;
+                    //if (tile.IsDisplay == false) continue;
                     tile.HasTriggeredRowBomb = true;
 
                     BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
@@ -1170,14 +1168,17 @@ namespace Match3
                                 {
                                     if (!_tiles[index].HasTriggererColumnBomb)
                                     {
-                                        Coroutine coroutine = null;
-                                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                        if (_activeColumnBombSet.Contains(_tiles[index]) == false)
                                         {
+                                            Coroutine coroutine = null;
+                                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                            {
+                                                if (coroutine != null)
+                                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                            }));
                                             if (coroutine != null)
-                                                _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                        }));
-                                        if (coroutine != null)
-                                            _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                        }
                                     }
                                 }
                                 else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1221,14 +1222,17 @@ namespace Match3
                                 {
                                     if (!_tiles[index].HasTriggererColumnBomb)
                                     {
-                                        Coroutine coroutine = null;
-                                        coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                        if (_activeColumnBombSet.Contains(_tiles[index]) == false)
                                         {
+                                            Coroutine coroutine = null;
+                                            coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                            {
+                                                if (coroutine != null)
+                                                    _singleAllColumnBombCoroutineDict[coroutine] = true;
+                                            }));
                                             if (coroutine != null)
-                                                _singleAllColumnBombCoroutineDict[coroutine] = true;
-                                        }));
-                                        if (coroutine != null)
-                                            _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                                _singleAllColumnBombCoroutineDict.Add(coroutine, false);
+                                        }
                                     }
                                 }
                                 else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1278,6 +1282,8 @@ namespace Match3
         private IEnumerator HandleRowBombCoroutine(Tile tile, System.Action onCompleted)
         {
             if (tile.HasTriggeredRowBomb) yield break;
+            //if (tile.IsDisplay == false) yield break;
+
             tile.HasTriggeredRowBomb = true;
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.HorizontalRocket);
@@ -1318,14 +1324,25 @@ namespace Match3
                         {
                             if (_tiles[index].HasTriggererColumnBomb == false)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                if (_activeColumnBombSet.Contains(_tiles[index]) == false)
                                 {
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                    {
+                                        if (coroutine != null)
+                                            singleColumnBombCoroutineDict[coroutine] = true;
+                                        else
+                                        {
+                                            Debug.Log("======= Column Is NULL =========");
+                                        }
+                                    }));
                                     if (coroutine != null)
-                                        singleColumnBombCoroutineDict[coroutine] = true;
-                                }));
-                                if (coroutine != null)
-                                    singleColumnBombCoroutineDict.Add(coroutine, false);
+                                        singleColumnBombCoroutineDict.Add(coroutine, false);
+                                    else
+                                    {
+                                        Debug.Log("===== NULL =====");
+                                    }
+                                }
                             }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1370,17 +1387,28 @@ namespace Match3
                         {
                             if (_tiles[index].HasTriggererColumnBomb == false)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
+                                if (_activeColumnBombSet.Contains(_tiles[index]) == false)
                                 {
-                                    if (coroutine != null)
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleColumnBombCoroutine(_tiles[index], () =>
                                     {
-                                        if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
-                                            singleColumnBombCoroutineDict[coroutine] = true;
+                                        if (coroutine != null)
+                                        {
+                                            if (singleColumnBombCoroutineDict.ContainsKey(coroutine))
+                                                singleColumnBombCoroutineDict[coroutine] = true;
+                                        }
+                                        else
+                                        {
+                                            Debug.Log("======= Column Is NULL =========");
+                                        }
+                                    }));
+                                    if (coroutine != null)
+                                        singleColumnBombCoroutineDict.Add(coroutine, false);
+                                    else
+                                    {
+                                        Debug.Log("===== NULL =====");
                                     }
-                                }));
-                                if (coroutine != null)
-                                    singleColumnBombCoroutineDict.Add(coroutine, false);
+                                }
                             }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1442,6 +1470,8 @@ namespace Match3
             foreach (var tile in _activeColumnBombSet)
             {
                 if (tile.HasTriggererColumnBomb) continue;
+                //if (tile.IsDisplay == false) continue;
+
                 tile.HasTriggererColumnBomb = true;
 
                 BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
@@ -1479,16 +1509,19 @@ namespace Match3
                                 //Debug.Log("Handle Row Bomb AA");
                                 if (_tiles[index].HasTriggeredRowBomb == false)
                                 {
-                                    Coroutine coroutine = null;
-                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    if (_activeRowBombSet.Contains(_tiles[index]) == false)
                                     {
-                                        if (coroutine != null)
+                                        Coroutine coroutine = null;
+                                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                                         {
-                                            _singleAllRowBombCoroutineDict[coroutine] = true;
-                                        }
-                                    }));
-                                    if (coroutine != null)
-                                        _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                            if (coroutine != null)
+                                            {
+                                                _singleAllRowBombCoroutineDict[coroutine] = true;
+                                            }
+                                        }));
+                                        if (coroutine != null)
+                                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                    }
                                 }
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1528,16 +1561,19 @@ namespace Match3
                                 //Debug.Log("Handle Row Bomb BB");
                                 if (_tiles[index].HasTriggeredRowBomb == false)
                                 {
-                                    Coroutine coroutine = null;
-                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    if (_activeRowBombSet.Contains(_tiles[index]) == false)
                                     {
-                                        if (coroutine != null)
+                                        Coroutine coroutine = null;
+                                        coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
                                         {
-                                            _singleAllRowBombCoroutineDict[coroutine] = true;
-                                        }
-                                    }));
-                                    if (coroutine != null)
-                                        _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                            if (coroutine != null)
+                                            {
+                                                _singleAllRowBombCoroutineDict[coroutine] = true;
+                                            }
+                                        }));
+                                        if (coroutine != null)
+                                            _singleAllRowBombCoroutineDict.Add(coroutine, false);
+                                    }
                                 }
                             }
                             else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1583,6 +1619,7 @@ namespace Match3
         private IEnumerator HandleColumnBombCoroutine(Tile tile, System.Action onCompleted)
         {
             if (tile.HasTriggererColumnBomb) yield break;
+            //if (tile.IsDisplay == false) yield break;
             tile.HasTriggererColumnBomb = true;
 
             BaseVisualEffect vfxPrefab = VFXPoolManager.Instance.GetEffect(VisualEffectID.VerticalRocket);
@@ -1622,14 +1659,23 @@ namespace Match3
                         {
                             if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                if (_activeRowBombSet.Contains(_tiles[index]) == false)
                                 {
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    {
+                                        if (coroutine != null)
+                                            _singleRowBombCoroutineDict[coroutine] = true;
+                                        else
+                                            Debug.Log("======= Row Is NULL =========");
+                                    }));
                                     if (coroutine != null)
-                                        _singleRowBombCoroutineDict[coroutine] = true;
-                                }));
-                                if (coroutine != null)
-                                    _singleRowBombCoroutineDict.Add(coroutine, false);
+                                        _singleRowBombCoroutineDict.Add(coroutine, false);
+                                    else
+                                    {
+                                        Debug.Log("===== NULL =====");
+                                    }
+                                }
                             }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -1670,14 +1716,23 @@ namespace Match3
                         {
                             if (_tiles[index].HasTriggeredRowBomb == false)
                             {
-                                Coroutine coroutine = null;
-                                coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                if (_activeRowBombSet.Contains(_tiles[index]) == false)
                                 {
+                                    Coroutine coroutine = null;
+                                    coroutine = StartCoroutine(HandleRowBombCoroutine(_tiles[index], () =>
+                                    {
+                                        if (coroutine != null)
+                                            _singleRowBombCoroutineDict[coroutine] = true;
+                                        else
+                                            Debug.Log("======= Row Is NULL =========");
+                                    }));
                                     if (coroutine != null)
-                                        _singleRowBombCoroutineDict[coroutine] = true;
-                                }));
-                                if (coroutine != null)
-                                    _singleRowBombCoroutineDict.Add(coroutine, false);
+                                        _singleRowBombCoroutineDict.Add(coroutine, false);
+                                    else
+                                    {
+                                        Debug.Log("===== NULL =====");
+                                    }
+                                }
                             }
                         }
                         else if (_tiles[index].SpecialProperties == SpecialTileID.BlastBomb)
@@ -2067,7 +2122,7 @@ namespace Match3
                 case SpecialTileID.ColumnBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2095,7 +2150,7 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             _selectedTile.SetSpecialTile(SpecialTileID.RowBomb);
@@ -2161,6 +2216,8 @@ namespace Match3
                                 }
                             }
                         }
+
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
@@ -2189,7 +2246,7 @@ namespace Match3
                 case SpecialTileID.RowBomb:
                     if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2215,7 +2272,7 @@ namespace Match3
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.ColumnBomb)
                     {
-                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition);
+                        Vector2 dir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
                         if (dir == Vector2.left || dir == Vector2.right)
                         {
                             if (_activeRowBombSet.Contains(_selectedTile) == false)
@@ -2351,6 +2408,7 @@ namespace Match3
                                 SetMatchBuffer(i, MatchID.ColorBurst);
                             }
                         }
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb)
@@ -2394,12 +2452,32 @@ namespace Match3
                     if (_swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
                         Debug.Log("ColorBurst X ColorBurst");
+
                         Vector3 centerPosition = (_selectedTile.transform.position + _swappedTile.transform.position) / 2f;
+
+
+                        Vector2 direction = DetectDragDirection(_selectedTile.transform.position, _swappedTile.transform.position, threshold: 0);
+                        if (direction == Vector2.zero || direction == Vector2.left || direction == Vector2.right)
+                        {
+                            DoubleColorBurstHorizontalCharge chargeFX = (DoubleColorBurstHorizontalCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstHorizontalCharge);
+                            chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                            chargeFX.Play(0.9f);
+                        }
+                        else if (direction == Vector2.up || direction == Vector2.down)
+                        {
+                            DoubleColorBurstVerticalCharge chargeFX = (DoubleColorBurstVerticalCharge)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstVerticalCharge);
+                            chargeFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                            chargeFX.Play(0.9f);
+                        }
+
+
+                        //Time.timeScale = 0.25f;
+
                         _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                         {
                             _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
                             {
-                                _selectedTile.Emissive(0.2f);
+                                _selectedTile.Emissive(0.7f);
                                 _selectedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                                 {
                                     _selectedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
@@ -2411,7 +2489,7 @@ namespace Match3
                         {
                             _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear, () =>
                             {
-                                _swappedTile.Emissive(0.2f);
+                                _swappedTile.Emissive(0.7f);
                                 _swappedTile.PlayScaleTile(1.5f, 0.1f, Ease.Linear, () =>
                                 {
                                     _swappedTile.PlayScaleTile(1f, 0.1f, Ease.Linear);
@@ -2427,7 +2505,15 @@ namespace Match3
                             _selectedTile.SetRenderOrder(10);
                             _selectedTile.MoveToPosition(_swappedTile.transform.position, 0.2f, Ease.Linear, () =>
                             {
-                                _selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                _selectedTile.SetRenderOrder(5);
+                                _selectedTile.MoveToPosition(_swappedTile.transform.position + offsetA, 0.2f, Ease.Linear, () =>
+                                {
+                                    _selectedTile.SetRenderOrder(10);
+                                    _selectedTile.MoveToPosition(_swappedTile.transform.position, 0.2f, Ease.Linear, () =>
+                                    {
+                                        _selectedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                    });
+                                });
                             });
                         });
 
@@ -2438,13 +2524,28 @@ namespace Match3
                             _swappedTile.SetRenderOrder(5);
                             _swappedTile.MoveToPosition(_selectedTile.transform.position, 0.2f, Ease.Linear, () =>
                             {
-                                _swappedTile.MoveToPosition(centerPosition, 0.1f, Ease.Linear);
+                                _swappedTile.SetRenderOrder(10);
+                                _swappedTile.MoveToPosition(_selectedTile.transform.position + offsetB, 0.2f, Ease.Linear, () =>
+                                {
+                                    _swappedTile.SetRenderOrder(5);
+                                    _swappedTile.MoveToPosition(_selectedTile.transform.position, 0.2f, Ease.Linear, () =>
+                                    {
+                                        _swappedTile.MoveToPosition(centerPosition, 0.2f, Ease.Linear);
+                                    });
+                                });
                             });
                         });
 
-                        _selectedTile.HasTriggerColorBurst = true;
-                        _swappedTile.HasTriggerColorBurst = true;
-                        yield return new WaitForSeconds(0.5f);
+
+
+
+                        yield return new WaitForSeconds(0.9f);
+                        _selectedTile.Display(false);
+                        _swappedTile.Display(false);
+
+                        DoubleColorBurstExplosion explosionFX = (DoubleColorBurstExplosion)VFXPoolManager.Instance.GetEffect(VisualEffectID.DoubleColorBurstExplosion);
+                        explosionFX.transform.position = (_selectedTile.TileTransform.position + _swappedTile.TileTransform.position) / 2f;
+                        explosionFX.Play(1f);
 
 
                         for (int i = 0; i < _tiles.Length; i++)
@@ -2452,6 +2553,70 @@ namespace Match3
                             if (_tiles[i] != null)
                             {
                                 SetMatchBuffer(i, MatchID.ColorBurst);
+                                _tiles[i].HasTriggerBlastBomb = true;
+                                _tiles[i].HasTriggerColorBurst = true;
+                                _tiles[i].HasTriggeredRowBomb = true;
+                                _tiles[i].HasTriggererColumnBomb = true;
+                            }
+                        }
+
+
+                        // Ring clear animation
+                        int botLeftDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(0, 0)));
+                        int botRightDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(Width - 1, 0)));
+                        int topLeftDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(0, Height - 1)));
+                        int topRightDistance = Mathf.RoundToInt(Vector2.Distance(_selectedTile.transform.position, new Vector2(Width - 1, Height - 1)));
+
+                        int maxRadius = Mathf.Max(botLeftDistance, botRightDistance, topLeftDistance, topRightDistance);
+                        //Debug.Log($"Max Radius: {maxRadius}   {0.5f / maxRadius}");
+                        float waitTimeEachWave = 0.2f / maxRadius;
+                        Vector2Int center = new Vector2Int(_selectedTile.X, _selectedTile.Y);
+                        for (int radius = 1; radius <= maxRadius; radius++)
+                        {
+                            GetRing(center, radius, Width, Height, ref _doubleColorBurstRingPositions);
+                            foreach (var cell in _doubleColorBurstRingPositions)
+                            {
+                                if (IsValidGridTile(cell.x, cell.y))
+                                {
+                                    int index = cell.x + cell.y * Width;
+                                    if (_tiles[index] != null)
+                                    {
+                                        _tiles[index].PlayMatchVFX(MatchID.ColorBurst);
+                                        _tiles[index].Display(false);
+                                    }
+                                }
+                            }
+
+                            yield return new WaitForSeconds(waitTimeEachWave);
+                        }
+
+
+
+                        void GetRing(Vector2Int center, int radius, int width, int height, ref List<Vector2Int> ring)
+                        {
+                            ring.Clear();
+
+                            int minX = Mathf.Max(0, center.x - radius);
+                            int maxX = Mathf.Min(width - 1, center.x + radius);
+                            int minY = Mathf.Max(0, center.y - radius);
+                            int maxY = Mathf.Min(height - 1, center.y + radius);
+
+                            float radiusSqr = radius * radius;
+                            float prevRadiusSqr = (radius - 1) * (radius - 1);
+
+                            for (int y = minY; y <= maxY; y++)
+                            {
+                                for (int x = minX; x <= maxX; x++)
+                                {
+                                    float dx = x - center.x;
+                                    float dy = y - center.y;
+                                    float distSqr = dx * dx + dy * dy;
+
+                                    if (distSqr <= radiusSqr && distSqr > prevRadiusSqr)
+                                    {
+                                        ring.Add(new Vector2Int(x, y));
+                                    }
+                                }
                             }
                         }
                     }
@@ -2497,6 +2662,8 @@ namespace Match3
                                 SetMatchBuffer(i, MatchID.BlastBomb);
                             }
                         }
+
+                        _selectedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     else if (_swappedTile.SpecialProperties == SpecialTileID.RowBomb ||
@@ -2544,6 +2711,8 @@ namespace Match3
                                 }
                             }
                         }
+                        _selectedTile.Display(false);
+                        _swappedTile.Display(false);
                         yield return new WaitForSeconds(colorBurstDuration);
                     }
                     break;
@@ -2949,24 +3118,8 @@ namespace Match3
                         float offsetX = -(t.transform.position.x - nb.transform.position.x) * 0.0f;
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
-                        //nb.transform.DOMove((Vector2)t.transform.position, 0.2f).SetEase(Ease.InSine);
                         nb.MoveToPosition((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME, Ease.InSine);
                     }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                int multiplier = 1;
-                foreach (var e in _blastBombDictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
                 }
             }
 
@@ -3011,23 +3164,6 @@ namespace Match3
                 {
                     t.Emissive(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME * 0.3f);
                 });
-
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                int multiplier = 1;
-                foreach (var e in _match4Dictionary)
-                {
-                    t = e.Value;
-                    nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
-
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
-                    }
-                    multiplier++;
-                }
             }
 
             if (_match5Dictionary.Count > 0)
@@ -3042,19 +3178,6 @@ namespace Match3
                         float offsetY = (t.transform.position.y - nb.transform.position.y) * 0.0f;
                         Vector2 offsetPosition = new Vector2(offsetX, offsetY);
                         nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
-                    }
-                }
-                yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                foreach (var e in _match5Dictionary)
-                {
-                    Tile t = e.Value;
-                    Tile nb = e.Key;
-                    if (t != null && nb != null)
-                    {
-                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
-                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
-                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
                     }
                 }
             }
@@ -3073,8 +3196,54 @@ namespace Match3
                         nb.transform.DOMove((Vector2)t.transform.position, TileAnimationExtensions.TILE_COLLECT_MOVE_TIME).SetEase(Ease.InSine);
                     }
                 }
+            }
+
+            if (_blastBombDictionary.Count > 0 ||
+                 _match4Dictionary.Count > 0 ||
+                 _match5Dictionary.Count > 0 ||
+                 _matchAnimationTileDictionary.Count > 0)
+            {
                 yield return new WaitForSeconds(TileAnimationExtensions.TILE_COLLECT_MOVE_TIME);
-                foreach (var e in _matchAnimationTileDictionary)
+                // yield return null;
+            }
+
+
+            if (_blastBombDictionary.Count > 0)
+            {
+                foreach (var e in _blastBombDictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+            }
+
+            if (_match4Dictionary.Count > 0)
+            {
+                foreach (var e in _match4Dictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);// + new Vector2(0,0.02f) * multiplier);
+
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+            }
+
+            if (_match5Dictionary.Count > 0)
+            {
+                foreach (var e in _match5Dictionary)
                 {
                     Tile t = e.Value;
                     Tile nb = e.Key;
@@ -3087,7 +3256,26 @@ namespace Match3
                     }
                 }
             }
+
+            if (_matchAnimationTileDictionary.Count > 0)
+            {
+                foreach (var e in _matchAnimationTileDictionary)
+                {
+                    Tile t = e.Value;
+                    Tile nb = e.Key;
+                    if (t != null && nb != null)
+                    {
+                        TilePositionInfo tileInfo = new TilePositionInfo(t.ID, t.transform.position, t.X + t.Y * Width);
+                        TilePositionInfo nbTileInfo = new TilePositionInfo(nb.ID, (Vector2)nb.transform.position, nb.X + nb.Y * Width);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, nbTileInfo);
+                        MatchAnimManager.Instance.AddAnotherMatch(tileInfo, tileInfo);
+                    }
+                }
+
+            }
+
             _matchAnimationTileDictionary.Clear();
+
         }
         private void HandleMatchAndUnlock(ref bool hasMatched)
         {
@@ -3164,7 +3352,7 @@ namespace Match3
 
                 Utilities.WaitAfter(0.1f, () =>
                 {
-                    tile.Display(false);
+                    // tile.Display(false);
                     ColorBurstAppearFX colorBurstFX = (ColorBurstAppearFX)VFXPoolManager.Instance.GetEffect(VisualEffectID.ColorBurstAppearFX);
                     colorBurstFX.transform.position = tile.TileTransform.position;
                     colorBurstFX.SetTarget(tile.TileTransform);
@@ -3300,7 +3488,6 @@ namespace Match3
             int attempts = 0;
             while (true)
             {
-
                 if (HasAvaiableMove() == false)
                 {
                     if (attempts == 0)
@@ -3321,32 +3508,14 @@ namespace Match3
                 {
                     break;
                 }
-
-
-                // if (CanMatch() == false)
-                // {
-                //     if (attempts == 0)
-                //     {
-                //         Debug.Log("Cannot match -> SHUFFLE");
-                //         yield return new WaitForSeconds(2.0f);
-                //     }
-                //     yield return StartCoroutine(ShuffleGridCoroutine());
-                //     attempts++;
-                //     if (attempts > 20)
-                //     {
-                //         Debug.Log("Something went wrong !!!!!");
-                //         break;
-                //     }
-                // }
-                // else
-                // {
-                //     break;
-                // }
-
             }
 
-            yield return new WaitForSeconds(0.2f);
-            UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
+            if (attempts > 0)
+            {
+                yield return new WaitForSeconds(0.2f);
+                UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
+            }
+
             Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
@@ -3403,6 +3572,7 @@ namespace Match3
                     {
                         _tiles[index].ChangeBlock(BlockID.SpiderNet);
                         _spiderSpreadingList.Add(index);
+                        Debug.Log($"Add:  {index}");
                     }
                 }
             }
@@ -3410,6 +3580,7 @@ namespace Match3
             bool spreadToNeighbor = false;
             for (int i = 0; i < _spiderSpreadingList.Count; i++)
             {
+                Debug.Log($"{i}  max: {_spiderSpreadingList.Count}");
                 int tileIndex = _spiderSpreadingList[i];
                 int x = tileIndex % Width;
                 int y = tileIndex / Width;
@@ -3443,8 +3614,8 @@ namespace Match3
                         break;
                     }
                 }
-                if (spreadToNeighbor)
-                    break;
+                //if (spreadToNeighbor)
+                //    break;
             }
 
             if (spreadToNeighbor == false)
@@ -3580,8 +3751,9 @@ namespace Match3
             }
         }
 
-        private void HandleTriggerAllSpecialTiles()
+        private IEnumerator HandleTriggerAllSpecialTilesCoroutine()
         {
+            List<IEnumerator> runningIEnumerators = new();
             for (int i = 0; i < _matchBuffer.Length; i++)
             {
                 Tile tile = _tiles[i];
@@ -3595,25 +3767,27 @@ namespace Match3
                         if (tile.SpecialProperties == SpecialTileID.RowBomb)
                         {
                             //Debug.Log("Handle Special Match 4 Horizontal");
-                            //EnableHorizontalMatchBuffer(tile.Y);
-                            if (tile.HasTriggeredRowBomb == false)
-                            {
-                                if (_activeRowBombSet.Contains(tile) == false)
-                                {
-                                    _activeRowBombSet.Add(tile);
-                                }
-                            }
+                            // if (tile.HasTriggeredRowBomb == false)
+                            // {
+                            //     if (_activeRowBombSet.Contains(tile) == false)
+                            //     {
+                            //         _activeRowBombSet.Add(tile);
+                            //     }
+                            // }
+
+                            runningIEnumerators.Add(HandleRowBombCoroutine(tile, null));
                         }
                         else if (tile.SpecialProperties == SpecialTileID.ColumnBomb)
                         {
                             Debug.Log("Column BOmb");
-                            if (tile.HasTriggererColumnBomb == false)
-                            {
-                                if (_activeColumnBombSet.Contains(tile) == false)
-                                {
-                                    _activeColumnBombSet.Add(tile);
-                                }
-                            }
+                            // if (tile.HasTriggererColumnBomb == false)
+                            // {
+                            //     if (_activeColumnBombSet.Contains(tile) == false)
+                            //     {
+                            //         _activeColumnBombSet.Add(tile);
+                            //     }
+                            // }
+                            runningIEnumerators.Add(HandleColumnBombCoroutine(tile, null));
                         }
                         else if (tile.SpecialProperties == SpecialTileID.BlastBomb)
                         {
@@ -3635,6 +3809,8 @@ namespace Match3
                     }
                 }
             }
+
+            yield return CoroutineManager.Instance.WaitAllCoroutines(runningIEnumerators);
         }
 
         private void HandleTriggerColorBurst(Tile tile)
@@ -4563,12 +4739,10 @@ namespace Match3
                         tile.SpecialProperties == SpecialTileID.RowBomb ||
                         tile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
-                        Debug.Log("Can match A");
                         return true;
                     }
                     else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
-                        Debug.Log("Can match B");
                         if (IsValidMatchTile(x - 1, y)) return true;
                         if (IsValidMatchTile(x + 1, y)) return true;
                         if (IsValidMatchTile(x, y - 1)) return true;
@@ -5025,11 +5199,11 @@ namespace Match3
             return _getTileList;
         }
 
-        private Vector2Int DetectDragDirection(Vector2 start, Vector2 end)
+        private Vector2Int DetectDragDirection(Vector2 start, Vector2 end, float threshold)
         {
             Vector2 dragVector = end - start;
 
-            if (dragVector.magnitude < _dragThreshold)
+            if (dragVector.magnitude < threshold)
             {
                 return Vector2Int.zero;
             }
