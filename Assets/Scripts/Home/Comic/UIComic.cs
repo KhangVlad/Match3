@@ -128,7 +128,7 @@ public class UIComic : MonoBehaviour
     private void LoadScene()
     {
         #if !UNITY_WEBGL
-        AuthenticationManager.Instance.HandleSceneLoad();
+        AuthenticationManager.Instance.HandleChangeScene();
         #endif
     }
 }

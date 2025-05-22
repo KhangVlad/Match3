@@ -173,6 +173,8 @@ public class SaveManager : MonoBehaviour
             Gold = local.Gold,
             LastOnline =  FieldValue.ServerTimestamp,
             LastSpinTime = local.SpinTime,
+            IsBuyWelcomePack = local.IsBuyWelcomePack,
+            LinkedCredential = local.LinkedCredential
         };
 
         // UserManager.Instance.UserData.LastOnlineTimestamp = FieldValue.ServerTimestamp.ToString();
@@ -193,7 +195,7 @@ public class SaveManager : MonoBehaviour
         });
     }
 
-    private void SaveUserDataToLocalJson()
+    public void SaveUserDataToLocalJson()
     {
         if (UserManager.Instance == null || UserManager.Instance.UserData == null)
         {
@@ -220,8 +222,6 @@ public class SaveManager : MonoBehaviour
 
         File.WriteAllText(filePath, encryptedJson);
         File.WriteAllText(checksumPath, checksum);
-
-       
     }
 
     public LocalUserData LoadUserDataFromLocalJson()
@@ -311,9 +311,12 @@ public class LocalUserData
     public float Gold;
     public int LoseStreak;
     public bool IsBuyWelcomePack;
+    public string LinkedCredential;
+    
     public LocalUserData()
     {
         IsBuyWelcomePack = false;
+        LinkedCredential = "";
     }
 
     public LocalUserData(UserData fireStoreData)
@@ -327,6 +330,7 @@ public class LocalUserData
         this.LoseStreak = 0;
         this.IsBuyWelcomePack = fireStoreData.IsBuyWelcomePack;
         this.SpinTime = fireStoreData.LastSpinTime;
+        this.LinkedCredential = fireStoreData.LinkedCredential;
     }
 
     public void SetSpinTime(DateTime t)

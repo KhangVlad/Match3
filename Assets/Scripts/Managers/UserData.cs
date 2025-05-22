@@ -1,4 +1,4 @@
-﻿#if !UNITY_WEBGL
+﻿﻿#if !UNITY_WEBGL
 using UnityEngine;
 using System.Collections.Generic;
 using Firebase.Firestore;
@@ -22,6 +22,6 @@ public class UserData
     [FirestoreProperty] public string LastSpinTime { get; set; }
     [FirestoreProperty] public float Gold { get; set; }
     [FirestoreProperty] public bool IsBuyWelcomePack { get; set; }
+    [FirestoreProperty] public string LinkedCredential { get; set; }
 }
 #endif
-

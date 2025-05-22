@@ -36,8 +36,8 @@ public class UILoadingMenu : MonoBehaviour
     [SerializeField] private Transform UIOnBoard; //new user click on quest or ch play
     [SerializeField] private Button _questSignInBtn;
     [SerializeField] private Button _chPlayBtn;
-
-
+    [SerializeField] private Button _google;
+    
     private void Awake()
     {
         _currentProgress = initialProgress;
@@ -54,10 +54,10 @@ public class UILoadingMenu : MonoBehaviour
         }
 
 #if !UNITY_WEBGL
-     
         AuthenticationManager.Instance.OnUserDataLoaded += HandleUserDataLoaded;
-        _questSignInBtn.onClick.AddListener(QuestSignIn);
+        _questSignInBtn.onClick.AddListener(SignInAsGuest);
         _chPlayBtn.onClick.AddListener(SignInAsChPlay);
+        _google.onClick.AddListener(SignInAsGoogle);
 #endif
 
         SetBackgroundByTimeOfDay();
@@ -66,19 +66,60 @@ public class UILoadingMenu : MonoBehaviour
         _targetProgress += 0.5f; // Initial progress target
     }
 
-    private void QuestSignIn()
+    private void SignInAsGuest()
     {
-        string id = UserManager.Instance.GenerateUniqueUserID();
-        UserManager.Instance.InitializeNewUserData(id);
-        comic.gameObject.SetActive(true);
-        comic.OnNewUserCreate();
+        // Display loading indicator
+        progressSlider.gameObject.SetActive(true);
+        UIOnBoard.gameObject.SetActive(false);
+        
+        StartCoroutine(AuthenticationManager.Instance.HandleGuestSignIn(() => {
+            if (UserManager.Instance.UserData != null)
+            {
+                comic.gameObject.SetActive(true);
+                comic.OnNewUserCreate();
+            }
+            else
+            {
+                Debug.LogError("Guest sign-in failed: User data is null");
+                // Show authentication options again if it failed
+                UIOnBoard.gameObject.SetActive(true);
+                progressSlider.gameObject.SetActive(false);
+            }
+        }));
     }
 
     private void SignInAsChPlay()
     {
-        StartCoroutine(AuthenticationManager.Instance.CheckOrCreateUser());
+        // Display loading indicator
+        progressSlider.gameObject.SetActive(true);
+        UIOnBoard.gameObject.SetActive(false);
+        
+        StartCoroutine(AuthenticationManager.Instance.HandleChPlaySignIn((() =>
+        {
+            // Check if user data is properly loaded
+            if (UserManager.Instance.UserData != null)
+            {
+                LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+            }
+            else
+            {
+                Debug.LogError("CH Play sign-in failed: User data is null");
+                // Show authentication options again if it failed
+                UIOnBoard.gameObject.SetActive(true);
+                progressSlider.gameObject.SetActive(false);
+            }
+        })));
     }
 
+    private void SignInAsGoogle()
+    {
+        // Display loading indicator
+        progressSlider.gameObject.SetActive(true);
+        UIOnBoard.gameObject.SetActive(false);
+        
+        AuthenticationManager.Instance.HandleGoogleSignIn();
+        // Result handling is done in the AuthenticationManager's callback
+    }
 
     private void OnDestroy()
     {
@@ -101,11 +142,13 @@ public class UILoadingMenu : MonoBehaviour
     {
         if (UserManager.Instance.UserData == null)
         {
+            // Show authentication options when no local data exists
             UIOnBoard.gameObject.SetActive(true);
             progressSlider.gameObject.SetActive(false);
         }
         else
         {
+            // Continue loading with existing user data
             StartCoroutine(UpdateProgressRoutine());
         }
     }

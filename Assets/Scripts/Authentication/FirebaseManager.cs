@@ -116,17 +116,24 @@ public class FirebaseManager : MonoBehaviour
     {
         try
         {
+            if (string.IsNullOrEmpty(id))
+            {
+                Debug.LogError("Attempted to fetch user data with empty ID");
+                return null;
+            }
+
             DocumentReference docRef = Firestore.Collection("users").Document(id);
             DocumentSnapshot snapShot = await docRef.GetSnapshotAsync();
 
             if (snapShot.Exists)
             {
+                Debug.Log($"Found existing user data for ID: {id}");
                 UserData userData = snapShot.ConvertTo<UserData>();
                 return new LocalUserData(userData);
             }
 
-            // Return null or throw an exception if the document doesn't exist
-            return null; // Or consider returning a default instance instead of null
+            Debug.Log($"No existing user data found for ID: {id}");
+            return null;
         }
         catch (Exception ex)
         {

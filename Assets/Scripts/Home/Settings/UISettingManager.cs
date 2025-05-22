@@ -14,7 +14,6 @@ public class UISettingManager : MonoBehaviour
 
     [Header("Sounds Setting")] public GameObject m_background;
     [SerializeField] private Animator _animatorSoundPanel;
-    [SerializeField] private Animator _animatorLanguagePanel;
     [SerializeField] private Slider _musicSlider;
     [SerializeField] private Slider _soundSlider;
     [SerializeField] private Button _closeButton;
@@ -22,7 +21,8 @@ public class UISettingManager : MonoBehaviour
     [SerializeField] private Button _saveButton;
     [SerializeField] private Transform settingParent;
     [SerializeField] private TMP_Dropdown _dropdownlanguage;
-    [SerializeField] private Button _chPlay_link;
+    [SerializeField] private TMP_Dropdown _linkCredentialOptions; //google or ch play 0 is google, 1 is ch play
+    
 
     [Header("Temp Variables")] [SerializeField]
     private Button _dayAndNightToggle; //get child image to change sprite
@@ -44,19 +44,56 @@ public class UISettingManager : MonoBehaviour
         _saveButton.onClick.AddListener(OnSaveButtonClicked);
         _dropdownlanguage.onValueChanged.AddListener(OnLanguageChange);
         _dayAndNightToggle.onClick.AddListener(OnDayAndNightToggle);
-        if (AuthenticationManager.Instance.IsCHPlayLinkedToFirebase())
+        
+        // Update credential options visibility based on user data
+        UpdateCredentialOptionsVisibility();
+        
+        // Add listener for link credential dropdown
+        if (_linkCredentialOptions != null)
         {
-            _chPlay_link.gameObject.SetActive(false);
+            _linkCredentialOptions.onValueChanged.AddListener(OnLinkCredentialOptionChanged);
         }
-        else
-        {
-            _chPlay_link.gameObject.SetActive(true);
-        }
-
-        _chPlay_link.onClick.AddListener(() => { StartCoroutine(AuthenticationManager.Instance.CheckOrCreateUser()); });
+        
+        _animatorSoundPanel.Play("Close");
     }
-
-
+    
+    private void UpdateCredentialOptionsVisibility()
+    {
+        if (UserManager.Instance != null && UserManager.Instance.UserData != null)
+        {
+            // Show the dropdown if the account is a Guest account, hide it otherwise
+            bool isGuest = UserManager.Instance.UserData.LinkedCredential == "Guest";
+            if (_linkCredentialOptions != null)
+            {
+                _linkCredentialOptions.gameObject.SetActive(isGuest);
+            }
+        }
+    }
+    
+    private void OnLinkCredentialOptionChanged(int optionIndex)
+    {
+        AudioManager.Instance.PlayButtonSfx();
+        
+        // 0 is Google, 1 is CH Play
+        if (optionIndex == 0)
+        {
+            if (AuthenticationManager.Instance != null)
+            {
+                AuthenticationManager.Instance.HandleGoogleSignIn();
+            }
+        }
+        else if (optionIndex == 1)
+        {
+            if (AuthenticationManager.Instance != null)
+            {
+                StartCoroutine(AuthenticationManager.Instance.HandleChPlaySignIn(() => {
+                    // Update UI after linking
+                    UpdateCredentialOptionsVisibility();
+                }));
+            }
+        }
+    }
+    
     private void OnDayAndNightToggle()
     {
         if (LightManager.Instance == null)
@@ -90,6 +127,11 @@ public class UISettingManager : MonoBehaviour
         _dropdownlanguage.onValueChanged.RemoveAllListeners();
         _saveButton.onClick.RemoveAllListeners();
         _dayAndNightToggle.onClick.RemoveAllListeners();
+        
+        if (_linkCredentialOptions != null)
+        {
+            _linkCredentialOptions.onValueChanged.RemoveAllListeners();
+        }
     }
 
     private void OnOpenButtonClicked()
@@ -97,6 +139,10 @@ public class UISettingManager : MonoBehaviour
         AudioManager.Instance.PlayButtonSfx();
         CreateBackground();
         settingParent.gameObject.SetActive(true);
+        
+        // Update credential options visibility when opening settings
+        UpdateCredentialOptionsVisibility();
+        
         if (_animatorSoundPanel.GetCurrentAnimatorStateInfo(0).IsName("Close"))
             _animatorSoundPanel.Play("Open");
     }
