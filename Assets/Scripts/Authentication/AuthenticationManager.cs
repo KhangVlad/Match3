@@ -60,92 +60,7 @@ public class AuthenticationManager : MonoBehaviour
         Loader.Load(Loader.Scene.Town);
     }
 
-    public IEnumerator CheckOrCreateUser()
-    {
-        yield return AuthenticateWithPlayGames(async success =>
-        {
-            if (success)
-            {
-                await SignInToFirebaseWithPlayGames();
-                LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-            }
-            else
-            {
-                LinkGooglePlayAccount(
-                    onSuccess: () =>
-                    {
-                        var newUserId = GetPlayGamesUserID();
-                        var newUserData = UserManager.Instance.InitializeNewUserData(newUserId);
-                        UserManager.Instance.UserData = newUserData;
-                        LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
-                    },
-                    onFailure: () =>
-                    {
-                        Debug.LogError("Failed to link Google Play account and create user.");
-                    });
-            }
-        });
-    }
     
-    public bool IsCHPlayLinkedToFirebase()
-    {
-        if (auth?.CurrentUser == null)
-        {
-            Debug.LogWarning("No Firebase user is signed in.");
-            return false;
-        }
-
-        foreach (var info in auth.CurrentUser.ProviderData)
-        {
-            if (info.ProviderId == "playgames.google.com")
-            {
-                Debug.Log("Google Play Games is linked to Firebase.");
-                return true;    
-            }
-        }
-
-        Debug.Log("Google Play Games is not linked to Firebase.");
-        return false;
-    }
-
-    public async Task SignInToFirebaseWithPlayGames()
-    {
-        string userId = GetPlayGamesUserID();
-
-        var userData = await FirebaseManager.Instance.GetUserDataFromFirebase(userId);
-
-        if (userData == null)
-        {
-            userData = UserManager.Instance.InitializeNewUserData(userId);
-        }
-        else
-        {
-            UserManager.Instance.ModifyUserID(userId);
-        }
-
-        UserManager.Instance.UserData = userData;
-    }
-
-    #region Google Play Games Integration
-
-    public void LinkGooglePlayAccount(Action onSuccess = null, Action onFailure = null)
-    {
-        StartCoroutine(AuthenticateWithPlayGames(success =>
-        {
-            if (!success)
-            {
-                Debug.LogWarning("GPGS authentication failed.");
-                onFailure?.Invoke();
-                return;
-            }
-
-            PlayGamesPlatform.Instance.RequestServerSideAccess(true, code =>
-            {
-                var credential = PlayGamesAuthProvider.GetCredential(code);
-                LinkFirebaseAccount(credential, "GooglePlay", onSuccess, onFailure);
-            });
-        }));
-    }
 
     public IEnumerator AuthenticateWithPlayGames(Action<bool> callback)
     {
@@ -299,7 +214,6 @@ public class AuthenticationManager : MonoBehaviour
                 if (UserManager.Instance != null && UserManager.Instance.UserData != null)
                 {
                     UserManager.Instance.UserData.LinkedCredential = linkedService;
-                    SaveManager.Instance.SaveAndUploadUserDataToFirebase();
                 }
                 
                 onSuccess?.Invoke();
@@ -317,7 +231,6 @@ public class AuthenticationManager : MonoBehaviour
         return PlayGamesPlatform.Instance?.GetUserId();
     }
 
-    #endregion
 
 
     #region Google Sign In
@@ -367,11 +280,7 @@ public class AuthenticationManager : MonoBehaviour
                     if (authTask.IsCompleted && !authTask.IsFaulted)
                     {
                         Debug.Log("Firebase sign-in with Google successful");
-                        
-                        // Use email as userID for Google sign-in
-                        string userId = googleUser.Email;
-                        
-                        // Check if user exists in Firebase
+                        string userId = auth.CurrentUser.UserId;
                         var userData = await FirebaseManager.Instance.GetUserDataFromFirebase(userId);
                         
                         if (userData == null)
@@ -382,7 +291,6 @@ public class AuthenticationManager : MonoBehaviour
                         }
                         else
                         {
-                            UserManager.Instance.ModifyUserID(userId);
                             if (string.IsNullOrEmpty(userData.LinkedCredential))
                             {
                                 userData.LinkedCredential = "Google";

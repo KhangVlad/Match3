@@ -62,6 +62,22 @@
                 "y": -1,
                 "z": 0
             },
+            "TileName": "board_tiles_1"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": -1,
+                "z": 0
+            },
+            "TileName": "board_tiles_1"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": -1,
+                "z": 0
+            },
             "TileName": "board_tiles_42"
         },
         {
@@ -126,6 +142,22 @@
                 "y": 0,
                 "z": 0
             },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 0,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 0,
+                "z": 0
+            },
             "TileName": "board_tiles_8"
         },
         {
@@ -190,6 +222,22 @@
                 "y": 1,
                 "z": 0
             },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 1,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 1,
+                "z": 0
+            },
             "TileName": "board_tiles_8"
         },
         {
@@ -254,6 +302,22 @@
                 "y": 2,
                 "z": 0
             },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 2,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 2,
+                "z": 0
+            },
             "TileName": "board_tiles_8"
         },
         {
@@ -318,6 +382,22 @@
                 "y": 3,
                 "z": 0
             },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 3,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 3,
+                "z": 0
+            },
             "TileName": "board_tiles_8"
         },
         {
@@ -382,6 +462,22 @@
                 "y": 4,
                 "z": 0
             },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 4,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 4,
+                "z": 0
+            },
             "TileName": "board_tiles_8"
         },
         {
@@ -443,6 +539,22 @@
         {
             "Position": {
                 "x": 6,
+                "y": 5,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 5,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
                 "y": 5,
                 "z": 0
             },
@@ -452,6 +564,166 @@
             "Position": {
                 "x": -1,
                 "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_9"
+        },
+        {
+            "Position": {
+                "x": 0,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 1,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 2,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 3,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 4,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 5,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 6,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 6,
+                "z": 0
+            },
+            "TileName": "board_tiles_8"
+        },
+        {
+            "Position": {
+                "x": -1,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_9"
+        },
+        {
+            "Position": {
+                "x": 0,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 1,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 2,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 3,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 4,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 5,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 6,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_22"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 7,
+                "z": 0
+            },
+            "TileName": "board_tiles_8"
+        },
+        {
+            "Position": {
+                "x": -1,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_33"
@@ -459,7 +731,7 @@
         {
             "Position": {
                 "x": 0,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -467,7 +739,7 @@
         {
             "Position": {
                 "x": 1,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -475,7 +747,7 @@
         {
             "Position": {
                 "x": 2,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -483,7 +755,7 @@
         {
             "Position": {
                 "x": 3,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -491,7 +763,7 @@
         {
             "Position": {
                 "x": 4,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -499,7 +771,7 @@
         {
             "Position": {
                 "x": 5,
-                "y": 6,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_16"
@@ -507,7 +779,23 @@
         {
             "Position": {
                 "x": 6,
-                "y": 6,
+                "y": 8,
+                "z": 0
+            },
+            "TileName": "board_tiles_16"
+        },
+        {
+            "Position": {
+                "x": 7,
+                "y": 8,
+                "z": 0
+            },
+            "TileName": "board_tiles_16"
+        },
+        {
+            "Position": {
+                "x": 8,
+                "y": 8,
                 "z": 0
             },
             "TileName": "board_tiles_34"

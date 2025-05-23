@@ -119,6 +119,17 @@ public class UILoadingMenu : MonoBehaviour
         
         AuthenticationManager.Instance.HandleGoogleSignIn();
         // Result handling is done in the AuthenticationManager's callback
+        if( UserManager.Instance.UserData != null)
+        {
+            LoadingAnimationController.Instance.SceneSwitch(Loader.Scene.Town);
+        }
+        else
+        {
+            Debug.LogError("Google sign-in failed: User data is null");
+            // Show authentication options again if it failed
+            UIOnBoard.gameObject.SetActive(true);
+            progressSlider.gameObject.SetActive(false);
+        }
     }
 
     private void OnDestroy()

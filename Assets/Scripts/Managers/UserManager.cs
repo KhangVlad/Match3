@@ -29,7 +29,7 @@ public class UserManager : MonoBehaviour
         PlayerPrefs.Save();
         return uniqueID;
     }
-    
+
     public void ModifyUserID(string id)
     {
         PlayerPrefs.SetString(USER_ID_KEY, id);
@@ -141,8 +141,8 @@ public class UserManager : MonoBehaviour
             LastOnlineTimestamp = TimeManager.Instance.LoginTime.ToString(),
             SpinTime = TimeManager.Instance.ServerTime.AddHours(-12).ToString(),
             Energy = 80,
-            Gold =300,
-            LoseStreak =0
+            Gold = 300,
+            LoseStreak = 0
         };
 
         OnUserDataLoaded?.Invoke();
@@ -242,18 +242,38 @@ public class UserManager : MonoBehaviour
         return UserData != null && UserData.Energy >= amount;
     }
 
-
-
-    public void ClaimDailyReward(BoosterID id, int quantity)
+    public void ClaimDailyReward(ShopItemID id, int quantity)
     {
-        for (int i = 0; i < UserData.AvaiableBoosters.Count; i++)
+        switch (id)
         {
-            if (UserData.AvaiableBoosters[i].BoosterID == id)
-            {
-                UserData.AvaiableBoosters[i].Quantity += quantity;
-            }
+            case ShopItemID.Gold:
+                AddGold(quantity);
+                break;
+            case ShopItemID.Energy:
+                RestoreEnergy(quantity);
+                break;
+            case ShopItemID.BlastBomb:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.BlastBomb).Quantity += quantity;
+                break;
+            case ShopItemID.ColorBurst:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.ColorBurst).Quantity += quantity;
+                break;
+            case ShopItemID.AxisBomb:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.AxisBomb).Quantity += quantity;
+                break;
+            case ShopItemID.ExtraMove:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.ExtraMove).Quantity += quantity;
+                break;
+            case ShopItemID.FreeSwitch:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.FreeSwitch).Quantity += quantity;
+                break;
+            case ShopItemID.Hammer:
+                UserData.AvaiableBoosters.Find(x => x.BoosterID == BoosterID.Hammer).Quantity += quantity;
+                break;
+            default:
+                Debug.LogWarning($"Unknown ShopItemID: {id}");
+                break;
         }
-
     }
 }
 

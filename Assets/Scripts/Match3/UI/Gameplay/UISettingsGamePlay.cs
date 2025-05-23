@@ -1,18 +1,21 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Match3.Shares;
 
 namespace Match3
 {
-    public class UISettings : MonoBehaviour
+    public class UISettingsGamePlay : MonoBehaviour
     {
         private Canvas _canvas;
 
         [SerializeField] private Button _closeBtn;
         [SerializeField] private Button _homeBtn;
         [SerializeField] private Button _replayBtn;
-
+            
+        public event Action OnHomeBtnClick;
+        public event Action OnReplayBtnClick;
 
         private void Awake()
         {
@@ -31,15 +34,12 @@ namespace Match3
             _homeBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
-
-                Loader.Load(Loader.Scene.Town);
+              LevelManager.Instance.BackToTownAdditive();
             });
 
             _replayBtn.onClick.AddListener(() =>
             {
-                AudioManager.Instance.PlayButtonSfx();
-
-                Loader.Load(Loader.Scene.GameplayScene);
+               LevelManager.Instance.ReloadScene();
             });
         }
 
@@ -57,3 +57,4 @@ namespace Match3
         }
     }
 }
+   

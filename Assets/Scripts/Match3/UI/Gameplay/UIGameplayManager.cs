@@ -7,7 +7,7 @@ namespace Match3
         public static UIGameplayManager Instance { get; private set; }
 
         public UIGameplay UIGameplay { get; private set; }
-        public UISettings UISettings { get; private set; }
+        public UISettingsGamePlay UISettingsGamePlay { get; private set; }
         public UIWin UIWin { get; private set; }
         public UIGameover UIGameover { get; private set; }
         public UIGameplayBoosterManager UIGameplayBoosterManager { get; private set; }
@@ -31,7 +31,7 @@ namespace Match3
             Instance = this;
 
             UIGameplay = FindFirstObjectByType<UIGameplay>();
-            UISettings = FindFirstObjectByType<UISettings>();
+            UISettingsGamePlay = FindFirstObjectByType<UISettingsGamePlay>();
             UIWin = FindFirstObjectByType<UIWin>();
             UIGameover = FindFirstObjectByType<UIGameover>();
             UIGameplayBoosterManager = FindFirstObjectByType<UIGameplayBoosterManager>();
@@ -64,7 +64,7 @@ namespace Match3
 
         public void DisplayUISettings(bool enable)
         {
-            UISettings.DisplayCanvas(enable);
+            UISettingsGamePlay.DisplayCanvas(enable);
         }
 
         public void DisplayUIWin(bool enable)

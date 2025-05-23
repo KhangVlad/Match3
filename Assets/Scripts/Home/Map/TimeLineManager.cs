@@ -304,28 +304,32 @@ public class TimeLineManager : MonoBehaviour
 
     private void CheckCharacterOutOfBound()
     {
-        foreach (var entry in pairDict)
+        if (Input.GetMouseButtonDown(0))
         {
-            IconWithPosition iconWithPosition = entry.Value;
-            bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
-            if (isOut != iconWithPosition.isOut)
+            foreach (var entry in pairDict)
             {
-                iconWithPosition.isOut = isOut;
-                if (isOut)
+                IconWithPosition iconWithPosition = entry.Value;
+                bool isOut = !IsPositionVisible(iconWithPosition.bubble.transform.position);
+                if (isOut != iconWithPosition.isOut)
                 {
-                    if (iconWithPosition.directionArrow == null)
+                    iconWithPosition.isOut = isOut;
+                    if (isOut)
                     {
-                        InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
-                    }
+                        if (iconWithPosition.directionArrow == null)
+                        {
+                            InstantiateAndPositionIcon(iconWithPosition, entry.Value.originPosition);
+                        }
 
-                    iconWithPosition.directionArrow.gameObject.SetActive(true);
-                }
-                else
-                {
-                    iconWithPosition.directionArrow?.gameObject.SetActive(false);
+                        iconWithPosition.directionArrow.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        iconWithPosition.directionArrow?.gameObject.SetActive(false);
+                    }
                 }
             }
         }
+        
     }
 
     private void UpdateAllDirectionArrows()

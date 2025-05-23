@@ -6,6 +6,7 @@ using Firebase.Extensions;
 using Firebase.Auth;
 using System.Threading.Tasks;
 using Firebase.Firestore;
+using System.Collections.Generic;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
 using Match3.Shares;
@@ -62,49 +63,86 @@ public class FirebaseManager : MonoBehaviour
     
     
 
+    // public async Task<Timestamp> FetchServerTime()
+    // {
+    //     Debug.LogWarning("FetchServerTime ~~~~~~~~~~~~ Performance issue !!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    //     Timestamp now = default;
+    //     DocumentReference docRef = Firestore.Collection("server_time").Document("Time");
+    //     ServerTimestamp serverTimestamp = new ServerTimestamp()
+    //     {
+    //         UTCNow = FieldValue.ServerTimestamp
+    //     };
+    //     await docRef.SetAsync(serverTimestamp).ContinueWithOnMainThread(task =>
+    //     {
+    //         if (task.IsCompleted)
+    //         {
+    //             Debug.Log("Timestamp created successfully");
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError("Error creating new user document: " + task.Exception);
+    //         }
+    //     });
+    //
+    //     await docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+    //     {
+    //         if (task.IsCompleted)
+    //         {
+    //             DocumentSnapshot snapshot = task.Result;
+    //             if (snapshot.Exists)
+    //             {
+    //                 if (snapshot.ContainsField("UTCNow"))
+    //                 {
+    //                     now = snapshot.GetValue<Timestamp>("UTCNow");
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 Debug.LogError("not have this snapshot");
+    //             }
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError($"Error checking user data: {task.Exception}");
+    //         }
+    //     });
+    //     return now;
+    // }
     public async Task<Timestamp> FetchServerTime()
     {
-        Debug.LogWarning("FetchServerTime ~~~~~~~~~~~~ Performance issue !!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Timestamp now = default;
-        DocumentReference docRef = Firestore.Collection("server_time").Document("Time");
-        ServerTimestamp serverTimestamp = new ServerTimestamp()
+        Debug.Log("Starting FetchServerTime...");
+        try
         {
-            UTCNow = FieldValue.ServerTimestamp
-        };
-        await docRef.SetAsync(serverTimestamp).ContinueWithOnMainThread(task =>
+            // Create a document reference for the timestamp
+            DocumentReference docRef = Firestore.Collection("server_time").Document("now");
+        
+            // Create a new document with server timestamp
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                { "timestamp", FieldValue.ServerTimestamp }
+            };
+        
+            // Set the document with the server timestamp
+            await docRef.SetAsync(data);
+            Debug.Log("Server timestamp document created");
+        
+            // Get the document to retrieve the actual timestamp
+            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+        
+            if (snapshot.Exists && snapshot.TryGetValue<Timestamp>("timestamp", out var timestamp))
+            {
+                Debug.Log($"Successfully retrieved server timestamp: {timestamp.ToDateTime()}");
+                return timestamp;
+            }
+        
+            Debug.LogError("Failed to retrieve timestamp from snapshot");
+            return Timestamp.FromDateTime(DateTime.UtcNow);
+        }
+        catch (Exception ex)
         {
-            if (task.IsCompleted)
-            {
-            }
-            else
-            {
-                Debug.LogError("Error creating new user document: " + task.Exception);
-            }
-        });
-
-        await docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                DocumentSnapshot snapshot = task.Result;
-                if (snapshot.Exists)
-                {
-                    if (snapshot.ContainsField("UTCNow"))
-                    {
-                        now = snapshot.GetValue<Timestamp>("UTCNow");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("not have this snapshot");
-                }
-            }
-            else
-            {
-                Debug.LogError($"Error checking user data: {task.Exception}");
-            }
-        });
-        return now;
+            Debug.LogError($"Error in FetchServerTime: {ex.Message}\n{ex.StackTrace}");
+            return Timestamp.FromDateTime(DateTime.UtcNow);
+        }
     }
 
     private void OnAuthenticationSuccessfully_SetUser(FirebaseUser user)

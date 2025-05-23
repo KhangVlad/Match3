@@ -52,10 +52,8 @@ public class SpinWheel : MonoBehaviour
     {
         AdManager.Instance.ShowRewardedAd((() =>
         {
-            for (int i = 0; i < allItem.Count; i++)
-            {
-                allItem[i].SetQuantity(2);
-            }
+           // add reward x2 
+           UserManager.Instance.ClaimDailyReward(allItem[resultIndex].data.id, allItem[resultIndex].data.quantity * 2);
         }));
     }
 
@@ -141,7 +139,6 @@ public class SpinWheel : MonoBehaviour
 
         clocklIcon.enabled = true;
         UserManager.Instance.UserData.SpinTime = TimeManager.Instance.ServerTime.ToString();
-        UserManager.Instance.ClaimDailyReward(BoosterID.Hammer, 1);
 
         canSpin = false;
         if (!m_spinning)

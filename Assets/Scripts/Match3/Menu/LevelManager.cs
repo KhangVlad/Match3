@@ -15,7 +15,7 @@ namespace Match3
         public CharacterLevelDataV2 CharacterLevelData { get; private set; }
         public LevelDataV2 LevelData { get; private set; }
         public int CurrentLevelIndex => _currentLevelIndex;
-        [SerializeField] private GameObject sceneGameobjects;
+        [SerializeField] private GameObject townSceneGameobjects;
         public Scene OtherScene;
         public event Action OnBackScene;
 
@@ -55,6 +55,12 @@ namespace Match3
             this.LevelData = levelData;
         }
 
+        public void BackToTownAdditive()
+        {
+            ActiveGameObject(true);
+            SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
+        }
+
 
         public void SetCurrentLevelIndex(int levelIndex)
         {
@@ -79,7 +85,7 @@ namespace Match3
 
         public void ActiveGameObject(bool a)
         {
-            sceneGameobjects.SetActive(a);
+            townSceneGameobjects.SetActive(a);
             if (a)
             {
                 OnBackScene?.Invoke();

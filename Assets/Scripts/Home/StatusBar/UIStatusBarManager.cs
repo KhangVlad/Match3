@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class UIStatusBarManager : MonoBehaviour
 {
     private Canvas _canvas;
-    [SerializeField] private Slider energySlider;
     [SerializeField] private TextMeshProUGUI energyText; // {current energy}/{max}
     [SerializeField] private int maxEnergy = 100; // Reference to max energy value
     [SerializeField] private TextMeshProUGUI goldText;
@@ -38,7 +37,7 @@ public class UIStatusBarManager : MonoBehaviour
     {
         if (UserManager.Instance != null && UserManager.Instance.UserData != null)
         {
-            energySlider.maxValue = maxEnergy;
+            // energySlider.maxValue = maxEnergy;
             UpdateEnergyUI(UserManager.Instance.UserData.Energy);
             UpdateGoldUI(UserManager.Instance.UserData.Gold);
         }
@@ -51,7 +50,6 @@ public class UIStatusBarManager : MonoBehaviour
     
     private void UpdateEnergyUI(int currentEnergy)
     {
-        energySlider.value = currentEnergy;
         energyText.text = $"{currentEnergy}/{maxEnergy}";
     }
 

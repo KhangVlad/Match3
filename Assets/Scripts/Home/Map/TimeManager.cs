@@ -77,7 +77,7 @@ public class TimeManager : MonoBehaviour
     [SerializeField] private float dispatchInterval = DEFAULT_DISPATCH_INTERVAL;
 
     [Header("Time Tracking")] [SerializeField]
-    private SerializableDateTime serverTime;
+    private SerializableDateTime serverTime = new();
 
     [SerializeField] private SerializableDateTime loginTime = new();
 
@@ -142,7 +142,7 @@ public class TimeManager : MonoBehaviour
     {
         InitializeTime();
         SubscribeToEvents();
-        AuthenticationManager.Instance.OnUserDataLoaded += NewUser;
+        AuthenticationManager.Instance.OnUserDataLoaded += OnUserDataLoaded;
         // NewUser();
     }
 
@@ -166,14 +166,12 @@ public class TimeManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // if (AuthenticationManager.Instance != null)
-        // {
-        //     AuthenticationManager.Instance.NewUser -= NewUser;
-        // }
+        AuthenticationManager.Instance.OnUserDataLoaded -= OnUserDataLoaded;
     }
 
-    private async void NewUser()
+    private async void OnUserDataLoaded()
     {
+        Debug.Log("loaddadaad");
         if (Utilities.IsConnectedToInternet())
         {
             await UpdateServerTime();
@@ -199,19 +197,49 @@ public class TimeManager : MonoBehaviour
     }
 
 
+    // public async Task<bool> UpdateServerTime()
+    // {
+    //     try
+    //     {
+    //         var serverTimestamp = await FirebaseManager.Instance.FetchServerTime();
+    //         Debug.Log($"Server time fetched: {serverTimestamp}");
+    //         DateTime fetchedTime = serverTimestamp.ToDateTime(); 
+    //         serverTimeOffset = 0;
+    //         serverTime = new SerializableDateTime(fetchedTime);
+    //         Debug.Log($"Server time updated: {serverTime.DateTime}");
+    //         IsTimeValid = true;
+    //         return true;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return false;
+    //     }
+    // }
     public async Task<bool> UpdateServerTime()
     {
         try
         {
+            Debug.Log("Updating server time...");
+        
+            if (FirebaseManager.Instance == null)
+            {
+                Debug.LogError("FirebaseManager.Instance is null");
+                return false;
+            }
+        
             var serverTimestamp = await FirebaseManager.Instance.FetchServerTime();
+            Debug.Log($"Server time fetched: {serverTimestamp.ToDateTime()}");
+        
             DateTime fetchedTime = serverTimestamp.ToDateTime();
             serverTimeOffset = 0;
             serverTime = new SerializableDateTime(fetchedTime);
+            Debug.Log($"Server time updated: {serverTime.DateTime}");
             IsTimeValid = true;
             return true;
         }
         catch (Exception ex)
         {
+            Debug.LogError($"Error updating server time: {ex.Message}\n{ex.StackTrace}");
             return false;
         }
     }

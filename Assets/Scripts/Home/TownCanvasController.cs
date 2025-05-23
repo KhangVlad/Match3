@@ -10,6 +10,7 @@ public class TownCanvasController : MonoBehaviour
     public UIDailyGiftManager UIDailyGiftManager { get; private set; }
     public UIHomeManager uiHomeManager { get; private set; }
     public UIShop uiShop { get; private set; }
+    public UIStatusBarManager uiStatusBarManager { get; private set; }
 
     private void Awake()
     {
@@ -30,6 +31,7 @@ public class TownCanvasController : MonoBehaviour
         UIDailyGiftManager = GetComponentInChildren<UIDailyGiftManager>();
         uiHomeManager = GetComponentInChildren<UIHomeManager>();
         uiShop = GetComponentInChildren<UIShop>();
+        uiStatusBarManager = GetComponentInChildren<UIStatusBarManager>();
         CloseAllCanvas();
     }
 
@@ -46,6 +48,7 @@ public class TownCanvasController : MonoBehaviour
         uiLevelDesignManager.ActiveCanvas(active);
         uiHomeManager.ActiveCanvas(!active);
         uiSettingManager.ActiveCanvas(!active);
+        uiStatusBarManager.ActiveCanvas(!active);
     }
 
 

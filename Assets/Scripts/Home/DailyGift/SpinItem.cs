@@ -10,7 +10,7 @@ public class SpinItem : MonoBehaviour
 {
     private float durationPopup = 1f;
     public Image i;
-    private DailyGiftSO data;
+    public DailyGiftSO data;
     [SerializeField] private TextMeshProUGUI quantity;
     private int Quantity;
     private Vector3 defaultScale;

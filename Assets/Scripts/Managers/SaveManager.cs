@@ -34,7 +34,7 @@ public class SaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (UserManager.Instance == null || UserManager.Instance.UserData == null ) return;
+        if (UserManager.Instance == null || UserManager.Instance.UserData == null) return;
 
         if (Utilities.IsConnectedToInternet())
         {
@@ -48,25 +48,21 @@ public class SaveManager : MonoBehaviour
     }
 
 
-    
-    #if UNITY_ANDROID
+#if UNITY_ANDROID
     private void OnApplicationPause(bool pauseStatus)
     {
-        if (UserManager.Instance == null || UserManager.Instance.UserData == null ) return;
+        if (UserManager.Instance == null || UserManager.Instance.UserData == null) return;
         if (pauseStatus) // Save when app is paused
         {
             if (Utilities.IsConnectedToInternet())
             {
                 SaveAndUploadUserDataToFirebase();
-                SaveUserDataToLocalJson();
             }
-            else
-            {
-                SaveUserDataToLocalJson();
-            }
+
+            SaveUserDataToLocalJson();
         }
     }
-    #endif
+#endif
 
     #region Encryption and Checksum Methods
 
@@ -155,13 +151,8 @@ public class SaveManager : MonoBehaviour
     {
         Debug.Log("Save And Upload User Data To Firebase");
 
-        if (
-            UserManager.Instance == null ||
-            UserManager.Instance.UserData == null)
-        {
-            Debug.LogError("Cannot save to Firebase: Required instances are null");
-            return;
-        }
+        if (UserManager.Instance.UserData.LinkedCredential == "Guest" ||
+            UserManager.Instance.UserData.LinkedCredential == "") return;
 
         LocalUserData local = UserManager.Instance.UserData;
         UserData userData = new UserData
@@ -169,24 +160,23 @@ public class SaveManager : MonoBehaviour
             AvaiableBoosters = local.AvaiableBoosters ?? new List<BoosterSlot>(),
             EquipBooster = local.EquipBooster ?? new List<BoosterSlot>(),
             AllCharacterData = local.AllCharacterData ?? new List<CharacterData>(),
-            Energy = local.Energy, 
+            Energy = local.Energy,
             Gold = local.Gold,
-            LastOnline =  FieldValue.ServerTimestamp,
+            LastOnline = FieldValue.ServerTimestamp,
             LastSpinTime = local.SpinTime,
             IsBuyWelcomePack = local.IsBuyWelcomePack,
             LinkedCredential = local.LinkedCredential
         };
-
-        // UserManager.Instance.UserData.LastOnlineTimestamp = FieldValue.ServerTimestamp.ToString();
-        string userID = UserManager.Instance.GetUserID();
+        string userID = FirebaseManager.Instance.Auth.CurrentUser.UserId;
         Firebase.Firestore.DocumentReference docRef = FirebaseManager.Instance.Firestore.Collection("users")
             .Document(userID);
 
         docRef.SetAsync(userData).ContinueWithOnMainThread(task =>
-        {   
+        {
             if (task.IsCompleted)
             {
                 Debug.Log("Save to Firebase complete");
+                
             }
             else
             {
@@ -206,18 +196,18 @@ public class SaveManager : MonoBehaviour
         string filename = "UserData.json";
         string filePath = Path.Combine(localSavePath, filename);
         string checksumPath = Path.Combine(localSavePath, "UserData.checksum");
-    
+
         LocalUserData localData = UserManager.Instance.UserData;
         if (Utilities.IsConnectedToInternet())
         {
             localData.LastOnlineTimestamp = TimeManager.Instance.ServerTime.ToString();
         }
+
         string json = JsonUtility.ToJson(localData, true); // true for pretty print
-        string checksum = GenerateChecksum(json);   
+        string checksum = GenerateChecksum(json);
         string encryptedJson = EncryptData(json);
         if (encryptedJson == null)
         {
-            
         }
 
         File.WriteAllText(filePath, encryptedJson);
@@ -242,8 +232,6 @@ public class SaveManager : MonoBehaviour
             if (!File.Exists(filePath) || !File.Exists(checksumPath))
             {
                 Debug.LogWarning("Main save files don't exist or are incomplete");
-
-               
             }
 
             // Read encrypted data and stored checksum
@@ -268,7 +256,6 @@ public class SaveManager : MonoBehaviour
             if (!VerifyChecksum(decryptedJson, storedChecksum))
             {
                 Debug.LogError("Checksum verification failed - data may have been tampered with");
-              
             }
 
             // Deserialize the decrypted data
@@ -288,6 +275,7 @@ public class SaveManager : MonoBehaviour
                 Debug.LogException(e);
                 return null;
             }
+
             return localData;
         }
         catch (Exception ex)
@@ -312,7 +300,7 @@ public class LocalUserData
     public int LoseStreak;
     public bool IsBuyWelcomePack;
     public string LinkedCredential;
-    
+
     public LocalUserData()
     {
         IsBuyWelcomePack = false;

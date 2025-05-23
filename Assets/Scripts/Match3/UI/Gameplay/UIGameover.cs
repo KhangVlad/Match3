@@ -29,10 +29,6 @@ namespace Match3
             _replayBtn.onClick.AddListener(() =>
             {
                 AudioManager.Instance.PlayButtonSfx();
-                // Loader.Load(Loader.Scene.GameplayScene);
-                // SceneManager.UnloadSceneAsync(LevelManager.Instance.OtherScene);
-                // // StartCoroutine(Loader.LoadSceneAsyncCoroutine(Loader.Scene.GameplayScene, LoadSceneMode.Additive, 0f,
-                // //     () => { }));
                 LevelManager.Instance.ReloadScene();
             });
 

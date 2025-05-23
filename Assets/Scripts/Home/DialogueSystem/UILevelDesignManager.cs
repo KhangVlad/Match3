@@ -7,11 +7,14 @@ using TMPro;
 using UnityEngine.UI;
 using Match3.Enums;
 using Match3.Shares;
-using UnityEngine.Serialization;
+using DynamicScrollRect;
+using System.Collections.Generic;
 
 #if !UNITY_WEBGL
 public class UILevelDesignManager : MonoBehaviour
 {
+    public static UILevelDesignManager Instance { get; private set; }
+
     [Header("Main References")] [SerializeField]
     private Canvas canvas;
 
@@ -22,7 +25,6 @@ public class UILevelDesignManager : MonoBehaviour
     private Transform levelDesignParent;
 
     [SerializeField] private UILevelDesign levelDesignPrefab;
-    [SerializeField] private UILevelDesign lockedLevelDesignPrefab;
     [SerializeField] private Button backBtn;
     [SerializeField] private Button playBtn;
     [SerializeField] private Image panel;
@@ -38,7 +40,6 @@ public class UILevelDesignManager : MonoBehaviour
     private Transform warningPanel;
 
     [SerializeField] private TextMeshProUGUI warningText;
-    [SerializeField] private TextMeshProUGUI heartText;
     [SerializeField] private RawImage renderTexture;
 
     [Header("Levels Panel")] [SerializeField]
@@ -47,7 +48,7 @@ public class UILevelDesignManager : MonoBehaviour
     [SerializeField] private Button selectLevelBtn;
     [SerializeField] private Button closeLevelsPanel;
     [SerializeField] private UILevelDesign nextLevel;
-    [Header("Animation Settings")] public LayoutAnimationSettings animationSetting = new();
+    [SerializeField] private ScrollContent _content = null;
 
     private UILevelDesign currentChosenLevel;
     private CharacterID currentCharacterId;
@@ -56,8 +57,6 @@ public class UILevelDesignManager : MonoBehaviour
     private CharacterAppearance appearanceData;
     private const float ANIMATION_DURATION = 0.5f;
     private const string HEART_SPRITE_INDEX = "<sprite index=1/>";
-
-
     private int currentEnergy;
 
 
@@ -65,6 +64,10 @@ public class UILevelDesignManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
         if (canvas == null)
             canvas = GetComponent<Canvas>();
     }
@@ -185,12 +188,9 @@ public class UILevelDesignManager : MonoBehaviour
         AudioManager.Instance.PlayButtonSfx();
         if (UserManager.Instance.HasEnoughEnergy(10)) // move to UILevelInformation  later
         {
-            UserManager.Instance.ConsumeEnergy(10);
             LevelManager.Instance.LoadLevelData(characterData.CharacterID, currentChosenLevel.index);
             UILevelInfomation.Instance.LoadLevelData(LevelManager.Instance.LevelData,
                 LevelManager.Instance.CurrentLevelIndex);
-            Transform vfxTransform = VfxPool.Instance.GetVfxByName("Energy").gameObject.transform;
-            vfxTransform.position = playBtn.transform.position;
             UILevelInfomation.Instance.DisplayCanvas(true);
             UILevelInfomation.Instance.SetQuest(nextLevel.cachedQuest);
         }
@@ -205,7 +205,7 @@ public class UILevelDesignManager : MonoBehaviour
     {
         levelsPanel.gameObject.SetActive(true);
         // StartCoroutine(levelDesignParent.AnimateLayoutItems(animationSetting));
-        StartCoroutine(AnimateLayoutItems(levelDesignParent, animationSetting));
+        // StartCoroutine(AnimateLayoutItems(levelDesignParent, animationSetting));
     }
 
 
@@ -214,8 +214,9 @@ public class UILevelDesignManager : MonoBehaviour
         levelsPanel.gameObject.SetActive(false);
     }
 
-    private void HandleLevelDesignClicked(UILevelDesign levelDesign)
+    public void HandleLevelDesignClicked(UILevelDesign levelDesign)
     {
+        Debug.Log($"Clicked on level design: {levelDesign.index}");
         AudioManager.Instance.PlayButtonSfx();
         if (!levelDesign.Islocked)
         {
@@ -247,6 +248,7 @@ public class UILevelDesignManager : MonoBehaviour
             HideCanvas();
         }
     }
+
 
     private void ShowCanvas()
     {
@@ -335,16 +337,15 @@ public class UILevelDesignManager : MonoBehaviour
             GameDataManager.Instance.characterColor.heartColors[
                 characterDataSO.CurrentSympathyLevel(characterData.TotalHeartPoints())];
         nameText.text = id.ToString();
-        heartText.text = characterData.TotalHeartPoints().ToString();
     }
 
     private void UpdateUI()
     {
-        CleanLevels();
+        // CleanLevels();
         if (appearanceData != null)
         {
             panel.color = appearanceData.panelColor;
-            heart.anchoredPosition = new Vector2(appearanceData.heartPosition.x, appearanceData.heartPosition.y);
+            // heart.anchoredPosition = new Vector2(appearanceData.heartPosition.x, appearanceData.heartPosition.y);
         }
 
         if (UserManager.Instance.GetTotalHeart() >= characterDataSO.TotalHeartToUnlock)
@@ -353,6 +354,7 @@ public class UILevelDesignManager : MonoBehaviour
         }
     }
 
+
     private void InitializeLevels(CharacterID id)
     {
         if (!GameDataManager.Instance.TryGetCharacterLevelDataByID(id, out CharacterLevelDataV2 characterLevelData))
@@ -360,25 +362,19 @@ public class UILevelDesignManager : MonoBehaviour
             Debug.LogWarning($"No level data found for character ID: {id}");
             return;
         }
-
+        List<ScrollItemData> contentDatas = new List<ScrollItemData>();
         int h = characterData.higestLevel;
-        nextLevel.OnClicked += () => HandleLevelDesignClicked(nextLevel);
         currentChosenLevel = nextLevel;
         for (int i = 0; i < characterLevelData.Levels.Count; i++)
         {
-            int levelIndex = i;
             bool islock = i > h;
-            UILevelDesign levelDesign = Instantiate(levelDesignPrefab, levelDesignParent);
-            RectTransform rectTransform = levelDesign.GetComponent<RectTransform>();
-            if (rectTransform == null)
-                continue;
-            levelDesign.InitializeData(levelIndex, islock, characterLevelData.Levels[i].Quests,
-                characterData.Hearts[i]);
-            levelDesign.OnClicked += () => HandleLevelDesignClicked(levelDesign);
+            contentDatas.Add(new ScrollItemData(i, islock, characterLevelData.Levels[i].Quests,
+                characterData.Hearts[i]));
         }
 
         nextLevel.InitializeData(h, false, characterLevelData.Levels[h].Quests,
-            characterData.Hearts[h]); // fix this later , get the next level play of user on character
+            characterData.Hearts[h]);
+        _content.InitScrollContent(contentDatas);
     }
 
     private IEnumerator AnimateLayoutItems(Transform layoutTransform, LayoutAnimationSettings settings)
@@ -409,13 +405,13 @@ public class UILevelDesignManager : MonoBehaviour
         }
     }
 
-    private void CleanLevels()
-    {
-        foreach (Transform child in levelDesignParent)
-        {
-            Destroy(child.gameObject);
-        }
-    }
+    // private void CleanLevels()
+    // {
+    //     foreach (Transform child in levelDesignParent)
+    //     {
+    //         Destroy(child.gameObject);
+    //     }
+    // }
 
     #endregion
 }
