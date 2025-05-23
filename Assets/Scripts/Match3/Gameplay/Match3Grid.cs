@@ -378,18 +378,18 @@ namespace Match3
                 // }
 
 
-                if (_hintHasShown == false && _canPlay)
-                {
-                    if (_selectedTile == null && _swappedTile == null)
-                    {
-                        if (_hintCoroutine != null)
-                        {
-                            StopCoroutine(_hintCoroutine);
-                        }
-
-                        _hintCoroutine = StartCoroutine(HandleHintCoroutine());
-                    }
-                }
+                // if (_hintHasShown == false && _canPlay)
+                // {
+                //     if (_selectedTile == null && _swappedTile == null)
+                //     {
+                //         if (_hintCoroutine != null)
+                //         {
+                //             StopCoroutine(_hintCoroutine);
+                //         }
+                //
+                //         _hintCoroutine = StartCoroutine(HandleHintCoroutine());
+                //     }
+                // }
             }
 
 

@@ -13,5 +13,4 @@
             questIcon.sprite = data.Icon;
             this.quantityText.text = quantity.ToString();
         }
-       
     }

@@ -1510,7 +1510,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -5848,7 +5848,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -6505,7 +6505,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -7038,7 +7038,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -13629,7 +13629,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 12533931}
+  m_AnchoredPosition: {x: 0, y: 12949815}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &777624286
@@ -13827,7 +13827,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -15876,6 +15876,22 @@ PrefabInstance:
       propertyPath: _dynamicScroll
       value: 
       objectReference: {fileID: 641511243}
+    - target: {fileID: 9082425962166507619, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+      propertyPath: questRequirement.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9082425962166507619, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+      propertyPath: 'questRequirement.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1088127612}
+    - target: {fileID: 9082425962166507619, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+      propertyPath: 'questRequirement.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1088127611}
+    - target: {fileID: 9082425962166507619, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+      propertyPath: 'questRequirement.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1088127610}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15895,6 +15911,39 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2dbc6108232e495b91ac0b1a1b467ef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1088127610 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8986935601734999790, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+  m_PrefabInstance: {fileID: 1088127607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009aa828c63e432e98a250ca66634889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1088127611 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6730859267515920654, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+  m_PrefabInstance: {fileID: 1088127607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009aa828c63e432e98a250ca66634889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1088127612 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8115098180612676901, guid: fc519bc75029c492d8d53989edc3362b, type: 3}
+  m_PrefabInstance: {fileID: 1088127607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009aa828c63e432e98a250ca66634889, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1093844543
@@ -18447,7 +18496,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -22952,7 +23001,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -24554,7 +24603,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.98, y: 2.56}
+    oldSize: {x: 0.49, y: 1.28}
     newSize: {x: 0.49, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

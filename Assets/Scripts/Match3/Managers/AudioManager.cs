@@ -80,10 +80,11 @@ namespace Match3
             RuntimeManager.LoadBank("Master", true);
             // DontDestroyOnLoad(this.gameObject);
             _masterBus = RuntimeManager.GetBus("bus:/");
+           
             try
             {
                 _musicBus = RuntimeManager.GetBus("bus:/MUSIC");
-                _soundBus = RuntimeManager.GetBus("bus:/SFX");
+                _soundBus = RuntimeManager.GetBus("bus:/SFX"); 
             }
             catch
             {
@@ -92,11 +93,26 @@ namespace Match3
            
            
         }
+        
+        void TryGetBus(string path)
+        {
+            try
+            {
+                var bus = RuntimeManager.GetBus(path);
+                Debug.Log("Found bus: " + path);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Missing bus: {path} - {e.Message}");
+            }
+        }
 
         private void Start()
         {
+            // Set the volume to the default value
             //PlayMusic(_music);
             PlayMusic(_morningBackgroundMusic);
+            
         }
 
         private void OnDestroy()

@@ -35,7 +35,7 @@ public class SpinWheel : MonoBehaviour
     private float animation_Speed_Deffault = 1;
     private float animation_Max_Speed = 5;
     private TimeSpan timeSinceLastSpin;
-    private const int HOURS_BETWEEN_SPINS = 12;
+    private const int HOURS_BETWEEN_SPINS = 1;
     private bool canSpin = false;
     [SerializeField] private Button _closebtn;
    

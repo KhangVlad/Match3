@@ -413,7 +413,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7523088664369856910}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -524,7 +524,7 @@ MonoBehaviour:
   _button: {fileID: 933654694389678928}
   _icon: {fileID: 7385077986468333175}
   _quantityText: {fileID: 4832387196522814424}
-  _unselectSprite: {fileID: 21300000, guid: 15d401e52e81d4adcac73afb6235075a, type: 3}
+  _unselectSprite: {fileID: 21300000, guid: f5997d4636ee94b33bcf0aaf09adbd23, type: 3}
   _selectSprite: {fileID: 21300000, guid: 2b5437866acef4318859e16d277075d3, type: 3}
   _quantitySelectBG: {fileID: 21300000, guid: 2b5437866acef4318859e16d277075d3, type: 3}
   _quantityUnSelectBG: {fileID: 21300000, guid: 747143615396c4e81be43a01f5bfa0e0, type: 3}

@@ -41,34 +41,6 @@ public class UILevelDesign : ScrollItem<ScrollItemData>
     }
 
 
-    // public void InitializeData(int ind, bool l, int[,] quest, int total) //quest id and quantity
-    // {
-    //     Islocked = l;
-    //     this.index = ind;
-    //     levelText.text = (index + 1).ToString();
-    //     cachedQuest = quest;
-    //     // requirement.text = FormatRequirements(quest);
-    //     requirement.text = "";
-    //     lockTransform.gameObject.SetActive(Islocked);
-    //     totalHeart = total;
-    //         
-    //     
-    //     if (hearts != null && hearts.Length > 0)
-    //     {
-    //         for (int i = 0; i < hearts.Length; i++)
-    //         {
-    //             hearts[i].sprite = Islocked ? whiteHeart : (i < total ? redHeart : whiteHeart);
-    //         }
-    //     }
-    //         for( int i=0;i<quest.Length ;i++)
-    //         {
-    //             QuestID questId = (QuestID)quest[i, 0];
-    //             int quantity = quest[i, 1];
-    //             questRequirement[i].gameObject.SetActive(true);
-    //             questRequirement[i].Initialize(GameDataManager.Instance.GetQuestDataByID(questId), quantity);
-    //         }
-    //     levelText.gameObject.SetActive(!Islocked);
-    // }
     public void InitializeData(int ind, bool l, int[,] quest, int total) //quest id and quantity
     {
         Islocked = l;

@@ -28,11 +28,9 @@ public class LoadingAnimationController : MonoBehaviour
     public void SceneSwitch(Loader.Scene targetScene)
     {
         SetActive(true);
-        StartCoroutine(Loader.LoadSceneAsyncCoroutine(targetScene, LoadSceneMode.Single, 0.5f, () => SetActive(false)));
+        StartCoroutine(Loader.LoadSceneAsyncCoroutine(targetScene, LoadSceneMode.Single, 0, () => SetActive(false)));
     }
 
-
-  
 
     public void SetActive(bool active, Action ondoneAnination = null)
     {

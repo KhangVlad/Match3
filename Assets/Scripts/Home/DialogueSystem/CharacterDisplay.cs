@@ -280,7 +280,7 @@ public class CharacterDisplay : MonoBehaviour
             VideoClipInfo[] greetingVideos = videoClips.FindAll(x => x.videoType == VideoType.Greeting).ToArray();
             VideoClipInfo info = greetingVideos[UnityEngine.Random.Range(0, greetingVideos.Length)];
             InitializeVideoPlayer(info, () => { TransitionToState(CharacterState.Idle); });
-            Utilities.WaitAfter(1f, (() => { LoadingAnimationController.Instance.SetActive(false); }));
+            LoadingAnimationController.Instance.SetActive(false);
         }
 
         else if (s == CharacterState.Angry)
