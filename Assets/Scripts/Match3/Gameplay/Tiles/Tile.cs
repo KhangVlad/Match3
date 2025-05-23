@@ -43,6 +43,7 @@ namespace Match3
         private Tween _scaleTween;
         private Tween _tileScaleTween;
         private Tween _shakeTween;
+        private Sequence _hintTween;
 
 
         #region Properties
@@ -51,7 +52,7 @@ namespace Match3
         public bool IsDisplay { get; private set; } = true;
         public bool HasTriggeredRowBomb { get; set; } = false;
         public bool HasTriggererColumnBomb { get; set; } = false;
-        public bool HasTriggerBlastBomb { get; set; } = false;  
+        public bool HasTriggerBlastBomb { get; set; } = false;
         public bool HasTriggerColorBurst { get; set; } = false;
         public Transform TilePivot { get; private set; }
         public Transform TileTransform { get; private set; }
@@ -397,7 +398,7 @@ namespace Match3
             {
                 StopCoroutine(_emissiveCoroutine);
             }
-            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration,onComplete));
+            _emissiveCoroutine = StartCoroutine(EmissiveCoroutine(startValue, endValue, duration, onComplete));
         }
 
 
@@ -412,7 +413,7 @@ namespace Match3
         }
         public virtual void PlayScaleTile(float endValue, float duration, Ease ease, System.Action omComplete = null)
         {
-            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease).OnComplete(()=>
+            _tileScaleTween = TileTransform.DOScale(endValue, duration).SetEase(ease).OnComplete(() =>
             {
                 omComplete?.Invoke();
             });
@@ -430,6 +431,56 @@ namespace Match3
         public virtual void PlayMatchAnimation()
         {
             _scaleTween = transform.DOScale(0.1f, 0.2f).SetEase(Ease.Linear);
+        }
+
+        // Sequence seq;
+        public virtual void ShowHintAnimation()
+        {
+            if (_moveTween != null && _moveTween.IsActive())
+            {
+                _moveTween.Kill();
+            }
+
+            float moveAmount = 0.15f;
+            float duration = 0.3f;
+            float pause = 0.35f;
+            float longPause = 1.0f;
+
+            Vector3 startPos = transform.position;
+
+            Sequence seq = DOTween.Sequence();
+            seq.Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(pause)
+               .Append(transform.DOMoveY(startPos.y + moveAmount, duration).SetEase(Ease.InBack))
+               .Append(transform.DOMoveY(startPos.y, duration).SetEase(Ease.OutQuad))
+               .AppendInterval(longPause)
+               .SetLoops(-1)
+               .SetId("HintAnimation");
+
+            _moveTween = seq;
+        }
+
+        public virtual void HideHintAnimation()
+        {
+            if (_moveTween != null && _moveTween.IsActive())
+            {
+                _moveTween.Kill();
+            }
+
+            MoveToGridPosition();
         }
 
         public bool IsCorrectPosition(out float distance)
@@ -477,7 +528,7 @@ namespace Match3
             HasTriggererColumnBomb = false;
             HasTriggerBlastBomb = false;
             HasTriggerColorBurst = false;
-    
+
 
             sr.GetPropertyBlock(_propBlock);
             _propBlock.SetFloat("_EmissionStrength", 0);

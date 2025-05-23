@@ -97,6 +97,13 @@ namespace Match3
         private bool _isBlastBombTriggered = false;
 
 
+
+        // Hint
+        private bool _hintHasShown = false;
+        private float _showHintWaitTime = 0.5f;
+        private float _showHintTimer = 0.0f;
+        private List<Tile> _tileHintList;
+
         // High Levels Logic
         public bool HandleReswapIfNotMatch { get; set; } = true;
 
@@ -147,6 +154,7 @@ namespace Match3
             _bfsTiles = new();
             _bfsSteps = new();
             _doubleColorBurstRingPositions = new();
+            _tileHintList = new();
 
 
             _tShapes = new List<int[,]>
@@ -238,6 +246,11 @@ namespace Match3
                     {
                         if (IsValidGridTile(gridPosition.x, gridPosition.y))
                         {
+                            if (_hintCoroutine != null)
+                            {
+                                StopCoroutine(_hintCoroutine);
+                            }
+
                             Tile tile = _tiles[gridPosition.x + gridPosition.y * Width];
                             if (tile != null)
                             {
@@ -284,6 +297,10 @@ namespace Match3
                 {
                     if (_selectedTile != null)
                     {
+                        if (_hintCoroutine != null)
+                        {
+                            StopCoroutine(_hintCoroutine);
+                        }
                         _mouseUpPosition = Input.mousePosition;
 
                         Vector2 dragDir = DetectDragDirection(_mouseDownPosition, _mouseUpPosition, _dragThreshold);
@@ -293,6 +310,7 @@ namespace Match3
                         if (_swappedTile != null)
                         {
                             _canPlay = false;
+                            _hintHasShown = false;
                             // wait animation completed
                             Utilities.WaitAfter(TileAnimationExtensions.TILE_MOVE_TIME, () =>
                             {
@@ -306,6 +324,7 @@ namespace Match3
                                         UseBoosterThisTurn = true;
                                         booster.Use();
                                         GameplayUserManager.Instance.UnselectGameplayBooster();
+
                                         OnAfterPlayerMatchInput?.Invoke();
                                     }
                                     else
@@ -315,10 +334,60 @@ namespace Match3
                                 }
                                 else
                                 {
+                                    for (int i = 0; i < _tileHintList.Count; i++)
+                                    {
+                                        _tileHintList[i].HideHintAnimation();
+                                    }
+
                                     OnAfterPlayerMatchInput?.Invoke();
                                 }
                             });
                         }
+                    }
+                }
+
+
+                // if (_hintHasShown == false)
+                // {
+                //     if (_selectedTile == null && _swappedTile == null)
+                //     {
+                //         _showHintTimer += Time.deltaTime;
+                //         if (_showHintTimer > _showHintWaitTime)
+                //         {
+                //             _showHintTimer = 0f;
+                //             _tileHintList.Clear();
+                //             Debug.Log("Show Hint");
+                //             _hintHasShown = true;
+
+                //             if (HasAvaiableMove(out Tile fTile, out Tile sTile))
+                //             {
+                //                 if (fTile != null)
+                //                 {
+                //                     fTile.ShowHintAnimation();
+                //                     _tileHintList.Add(fTile);
+                //                 }
+
+                //                 if (sTile != null)
+                //                 {
+                //                     sTile.ShowHintAnimation();
+                //                     _tileHintList.Add(sTile);
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+
+
+                if (_hintHasShown == false && _canPlay)
+                {
+                    if (_selectedTile == null && _swappedTile == null)
+                    {
+                        if (_hintCoroutine != null)
+                        {
+                            StopCoroutine(_hintCoroutine);
+                        }
+
+                        _hintCoroutine = StartCoroutine(HandleHintCoroutine());
                     }
                 }
             }
@@ -610,6 +679,60 @@ namespace Match3
 
 
 
+        private Coroutine _hintCoroutine;
+        private IEnumerator HandleHintCoroutine()
+        {
+            // Debug.Log("HandleHintCoroutine");
+            _hintHasShown = true;
+            yield return new WaitForSeconds(_showHintWaitTime);
+            // Debug.Log("Show Hint");
+
+            _tileHintList.Clear();
+            if (HasAvaiableMove(out Tile fTile, out Tile sTile))
+            {
+                if (fTile != null && sTile != null)
+                {
+                    // _selectedTile = fTile;
+                    // _swappedTile = sTile;
+                    SwapPosition(fTile, sTile);
+                    yield return StartCoroutine(HandleMatchCoroutine());
+
+                    for (int i = 0; i < _matchBuffer.Length; i++)
+                    {
+                        if (_matchBuffer[i] != MatchID.None)
+                        {
+                            if (_tiles[i] != null)
+                            {
+                                _tiles[i].ShowHintAnimation();
+                                _tileHintList.Add(_tiles[i]);
+                            }
+
+                            SetMatchBuffer(i, MatchID.None);
+                        }
+                    }
+                    SwapPosition(fTile, sTile);
+                    // _selectedTile = null;
+                    // _swappedTile = null;
+                }
+                else
+                {
+                    if (fTile != null)
+                    {
+                        fTile.ShowHintAnimation();
+                        _tileHintList.Add(fTile);
+                    }
+
+                    if (sTile != null)
+                    {
+                        sTile.ShowHintAnimation();
+                        _tileHintList.Add(sTile);
+                    }
+                }
+            }
+
+
+        }
+
 
         private void OnSelectGameplayBooster_UpdateLogic(Booster booster)
         {
@@ -627,6 +750,12 @@ namespace Match3
 
 
         #region HANDLE GAME LOGIC
+
+        // private List<Tile> GetAvaiableMatchTiles(Tile tileA, Tile tileB)
+        // {   
+
+        // }
+
         private void HandleSwap(Vector2 dragDir)
         {
             if (dragDir == Vector2.zero)
@@ -705,83 +834,74 @@ namespace Match3
                     HandleSwapDirection();
                 }
             }
+        }
 
-
-            void HandleSwapDirection()
+        private void HandleSwapDirection()
+        {
+            if (_selectedTile.SpecialProperties == SpecialTileID.None &&
+                   _swappedTile.SpecialProperties == SpecialTileID.None)
             {
-                if (_selectedTile.SpecialProperties == SpecialTileID.None &&
-                       _swappedTile.SpecialProperties == SpecialTileID.None)
+                SwapPosition(_selectedTile, _swappedTile);
+                _selectedTile.MoveToGridPosition();
+                _swappedTile.MoveToGridPosition();
+            }
+            else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
+                _swappedTile.SpecialProperties != SpecialTileID.None)
+            {
+                if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                    _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
                 {
+                    // Debug.Log($"ColorBurst X ColorBurst");
                     SwapPosition(_selectedTile, _swappedTile);
                     _selectedTile.MoveToGridPosition();
                     _swappedTile.MoveToGridPosition();
                 }
-                else if (_selectedTile.SpecialProperties != SpecialTileID.None &&
-                    _swappedTile.SpecialProperties != SpecialTileID.None)
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                    _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
                 {
-                    if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
-                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
+                    _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
+                {
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
+                   _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                }
+                else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                        _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
                     {
-                        // Debug.Log($"ColorBurst X ColorBurst");
                         SwapPosition(_selectedTile, _swappedTile);
                         _selectedTile.MoveToGridPosition();
                         _swappedTile.MoveToGridPosition();
                     }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                        _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                }
+                else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
+                {
+                    if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
+                        _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
                     {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb &&
-                        _swappedTile.SpecialProperties == SpecialTileID.ColorBurst)
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.ColorBurst &&
-                       _swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
-                    }
-                    else if (_selectedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        if (_swappedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                            _swappedTile.SpecialProperties != SpecialTileID.RowBomb)
-                        {
-                            SwapPosition(_selectedTile, _swappedTile);
-                            _selectedTile.MoveToGridPosition();
-                            _swappedTile.MoveToGridPosition();
-                        }
-                    }
-                    else if (_swappedTile.SpecialProperties == SpecialTileID.BlastBomb)
-                    {
-                        if (_selectedTile.SpecialProperties != SpecialTileID.ColumnBomb ||
-                            _selectedTile.SpecialProperties != SpecialTileID.RowBomb)
-                        {
-                            SwapPosition(_selectedTile, _swappedTile);
-                            _selectedTile.MoveToGridPosition();
-                            _swappedTile.MoveToGridPosition();
-                        }
-                    }
-                    else
-                    {
-                        _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
+                        SwapPosition(_selectedTile, _swappedTile);
+                        _selectedTile.MoveToGridPosition();
+                        _swappedTile.MoveToGridPosition();
                     }
                 }
                 else
                 {
-                    SwapPosition(_selectedTile, _swappedTile);
-                    _selectedTile.MoveToGridPosition();
-                    _swappedTile.MoveToGridPosition();
+                    _selectedTile.MoveToPosition(_swappedTile.GetWorldPosition(), TileAnimationExtensions.TILE_MOVE_TIME, Ease.Linear);
                 }
-                //Debug.Log("VFX HERE");
-                // vfx
-                // if (GameDataManager.Instance.TryGetVfxByID(Enums.VisualEffectID.Slash, out var vfxPrefab))
-                // {
-                //     SlashVfx slashVfx01 = Instantiate((SlashVfx)vfxPrefab, _selectedTile.TileTransform.position, Quaternion.identity, _selectedTile.transform);
-                //     Destroy(slashVfx01.gameObject, 0.5f);
-                // }
             }
-
+            else
+            {
+                SwapPosition(_selectedTile, _swappedTile);
+                _selectedTile.MoveToGridPosition();
+                _swappedTile.MoveToGridPosition();
+            }
         }
 
         private IEnumerator ImplementGameLogicCoroutine(bool triggerEvent)
@@ -793,12 +913,8 @@ namespace Match3
 
             while (true)
             {
-                // int colorBurstCount = 0;
-                //if (attempts != 0)
-                //    yield return new WaitForSeconds(0.1f);
                 bool hasMatched = false;
                 _unlockTileSet.Clear();
-
 
                 yield return StartCoroutine(HandleMatchCoroutine());
                 yield return StartCoroutine(HandleTriggerAllSpecialTilesCoroutine());
@@ -1008,6 +1124,7 @@ namespace Match3
         // ================== Handle match logic ====================
         private IEnumerator HandleMatchCoroutine()
         {
+            Debug.Log("HandleMatchCoroutine");
             HandleFindColorBurst();
             HandleFindBlastBomb();
             yield return StartCoroutine(HandleSpecialMatchCoroutine());
@@ -1045,7 +1162,6 @@ namespace Match3
                         }
                         else break;
                     }
-
                     HandleMatchSameIDInRow(currTile, sameIDCountInRow);
                     HandleMatchSameIDInColumn(currTile, sameIDCountInColumn);
                 }
@@ -3488,7 +3604,7 @@ namespace Match3
             int attempts = 0;
             while (true)
             {
-                if (HasAvaiableMove() == false)
+                if (HasAvaiableMove(out Tile fTile, out Tile sTile) == false)
                 {
                     if (attempts == 0)
                     {
@@ -3515,8 +3631,7 @@ namespace Match3
                 yield return new WaitForSeconds(0.2f);
                 UINoMorePossibleMove.Instance.DisplayNoMorePossibleMove(false);
             }
-
-            Debug.Log($"Swap attempts: {attempts}");
+            // Debug.Log($"Swap attempts: {attempts}");
         }
         #endregion
 
@@ -4724,9 +4839,8 @@ namespace Match3
         }
 
 
-        private bool HasAvaiableMove()
+        private bool HasAvaiableMove(out Tile fTile, out Tile sTile)
         {
-
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -4739,14 +4853,36 @@ namespace Match3
                         tile.SpecialProperties == SpecialTileID.RowBomb ||
                         tile.SpecialProperties == SpecialTileID.BlastBomb)
                     {
+                        fTile = tile;
+                        sTile = null;
                         return true;
                     }
                     else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
                     {
-                        if (IsValidMatchTile(x - 1, y)) return true;
-                        if (IsValidMatchTile(x + 1, y)) return true;
-                        if (IsValidMatchTile(x, y - 1)) return true;
-                        if (IsValidMatchTile(x, y + 1)) return true;
+                        if (IsValidMatchTile(x - 1, y))
+                        {
+                            fTile = tile;
+                            sTile = _tiles[x - 1 + y * Width];
+                            return true;
+                        }
+                        if (IsValidMatchTile(x + 1, y))
+                        {
+                            fTile = tile;
+                            sTile = _tiles[x + 1 + y * Width];
+                            return true;
+                        }
+                        if (IsValidMatchTile(x, y - 1))
+                        {
+                            fTile = tile;
+                            sTile = _tiles[x + (y - 1) * Width];
+                            return true;
+                        }
+                        if (IsValidMatchTile(x, y + 1))
+                        {
+                            fTile = tile;
+                            sTile = _tiles[x + (y + 1) * Width];
+                            return true;
+                        }
                     }
                 }
             }
@@ -4757,14 +4893,26 @@ namespace Match3
                 {
                     // Check right swap
                     if (x < Width - 1 && TrySwapAndCheck(x, y, x + 1, y))
+                    {
+                        fTile = _tiles[x + y * Width];
+                        sTile = _tiles[x + 1 + y * Width];
                         return true;
+                    }
+
 
                     // Check up swap
                     if (y < Height - 1 && TrySwapAndCheck(x, y, x, y + 1))
+                    {
+                        fTile = _tiles[x + y * Width];
+                        sTile = _tiles[x + (y + 1) * Width];
                         return true;
+                    }
+
                 }
             }
             Debug.Log("No move found!");
+            fTile = null;
+            sTile = null;
             return false; // No moves found
 
 
@@ -4839,241 +4987,7 @@ namespace Match3
             }
         }
 
-        // private bool CanMatch()
-        // {
-        //     bool HasEnoughSameNeighborsDown(TileID tileID, int newX, int newY)
-        //     {
-        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-        //         {
-        //             return false;
-        //         }
 
-        //         // down, down of down
-        //         if (IsValidMatchTile(newX, newY - 1))
-        //         {
-        //             if (IsValidMatchTile(newX, newY - 2))
-        //             {
-        //                 Tile downTile = _tiles[newX + (newY - 1) * Width];
-        //                 Tile downOfDownTile = _tiles[newX + (newY - 2) * Width];
-        //                 if (tileID == downTile.ID && tileID == downOfDownTile.ID &&
-        //                     (downTile.CurrentBlock is NoneBlock || downTile.CurrentBlock is Lock) &&
-        //                     (downOfDownTile.CurrentBlock is NoneBlock || downOfDownTile.CurrentBlock is Lock))
-        //                 {
-        //                     // Debug.Log($"D: {newX}  {newY}");
-        //                     return true;
-        //                 }
-        //             }
-        //         }
-        //         return false;
-        //     }
-        //     bool HasEnoughSameNeighborsTop(TileID tileID, int newX, int newY)
-        //     {
-        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-        //         {
-        //             return false;
-        //         }
-
-        //         // top, top of top
-        //         if (IsValidMatchTile(newX, newY + 1))
-        //         {
-        //             if (IsValidMatchTile(newX, newY + 2))
-        //             {
-        //                 Tile topTile = _tiles[newX + (newY + 1) * Width];
-        //                 Tile topOfTopTile = _tiles[newX + (newY + 2) * Width];
-        //                 if (tileID == topTile.ID && tileID == topOfTopTile.ID &&
-        //                     (topTile.CurrentBlock is NoneBlock || topTile.CurrentBlock is Lock) &&
-        //                     (topOfTopTile.CurrentBlock is NoneBlock || topOfTopTile.CurrentBlock is Lock))
-        //                 {
-        //                     // Debug.Log($"C: {newX}  {newY}");
-        //                     return true;
-        //                 }
-        //             }
-        //         }
-        //         return false;
-        //     }
-        //     bool HasEnoughSameNeighborsRight(TileID tileID, int newX, int newY)
-        //     {
-        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-        //         {
-        //             return false;
-        //         }
-
-        //         // right, right of right
-        //         if (IsValidMatchTile(newX + 1, newY))
-        //         {
-        //             if (IsValidMatchTile(newX + 2, newY))
-        //             {
-        //                 Tile rightTile = _tiles[newX + 1 + newY * Width];
-        //                 Tile rightOfRightTile = _tiles[newX + 2 + newY * Width];
-
-        //                 if (tileID == rightTile.ID && tileID == rightOfRightTile.ID &&
-        //                     (rightTile.CurrentBlock is NoneBlock || rightTile.CurrentBlock is Lock) &&
-        //                     (rightOfRightTile.CurrentBlock is NoneBlock || rightOfRightTile.CurrentBlock is Lock))
-        //                 {
-        //                     // Debug.Log($"B: {newX}  {newY} ");
-        //                     return true;
-        //                 }
-        //             }
-        //         }
-        //         return false;
-        //     }
-        //     bool HasEnoughSameNeighborsLeft(TileID tileID, int newX, int newY)
-        //     {
-        //         if (_tiles[newX + newY * Width].CurrentBlock is not NoneBlock)
-        //         {
-        //             return false;
-        //         }
-
-        //         // left, left of left
-        //         if (IsValidMatchTile(newX - 1, newY))
-        //         {
-        //             if (IsValidMatchTile(newX - 2, newY))
-        //             {
-        //                 Tile leftTile = _tiles[newX - 1 + newY * Width];
-        //                 Tile leftOfLeftTile = _tiles[newX - 2 + newY * Width];
-
-        //                 if (tileID == leftTile.ID && tileID == leftOfLeftTile.ID &&
-        //                     (leftTile.CurrentBlock is NoneBlock || leftTile.CurrentBlock is Lock) &&
-        //                     (leftOfLeftTile.CurrentBlock is NoneBlock || leftOfLeftTile.CurrentBlock is Lock))
-        //                 {
-        //                     // Debug.Log($"A: {tileID} {newX} {newY}");
-        //                     return true;
-        //                 }
-        //             }
-        //         }
-        //         return false;
-        //     }
-
-        //     for (int y = 0; y < Height; y++)
-        //     {
-        //         for (int x = 0; x < Width; x++)
-        //         {
-        //             Tile tile = _tiles[x + y * Width];
-        //             if (tile == null) continue;
-        //             if (tile.CurrentBlock is not NoneBlock) continue;
-
-        //             if (tile.SpecialProperties == SpecialTileID.ColumnBomb ||
-        //                 tile.SpecialProperties == SpecialTileID.RowBomb ||
-        //                 tile.SpecialProperties == SpecialTileID.BlastBomb)
-        //             {
-        //                 Debug.Log("Can match A");
-        //                 return true;
-        //             }
-        //             else if (tile.SpecialProperties == SpecialTileID.ColorBurst)
-        //             {
-        //                 Debug.Log("Can match B");
-        //                 if (IsValidMatchTile(x - 1, y)) return true;
-        //                 if (IsValidMatchTile(x + 1, y)) return true;
-        //                 if (IsValidMatchTile(x, y - 1)) return true;
-        //                 if (IsValidMatchTile(x, y + 1)) return true;
-        //             }
-
-        //             if (HasEnoughSameNeighborsLeft(tile.ID, x, y))
-        //             {
-        //                 Debug.Log("AAA");
-        //                 return true;
-        //             }
-        //             if (HasEnoughSameNeighborsRight(tile.ID, x, y))
-        //             {
-        //                 Debug.Log("BBB");
-        //                 return true;
-        //             }
-        //             if (HasEnoughSameNeighborsTop(tile.ID, x, y))
-        //             {
-        //                 Debug.Log("CCC");
-        //                 return true;
-        //             }
-        //             if (HasEnoughSameNeighborsDown(tile.ID, x, y))
-        //             {
-        //                 Debug.Log("DDD");
-        //                 return true;
-        //             }
-
-        //             // left 
-        //             if (IsValidMatchTile(x - 1, y))
-        //             {
-        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x - 1, y))
-        //                 {
-        //                     // Debug.Log($"L 0:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsTop(tile.ID, x - 1, y))
-        //                 {
-        //                     // Debug.Log($"L 1:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsDown(tile.ID, x - 1, y))
-        //                 {
-        //                     // Debug.Log($"L 2:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //             }
-
-        //             // right 
-        //             if (IsValidMatchTile(x + 1, y))
-        //             {
-        //                 if (HasEnoughSameNeighborsRight(tile.ID, x + 1, y))
-        //                 {
-        //                     // Debug.Log($"R 0:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsTop(tile.ID, x + 1, y))
-        //                 {
-        //                     // Debug.Log($"R 1:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsDown(tile.ID, x + 1, y))
-        //                 {
-        //                     // Debug.Log($"R 2:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //             }
-
-        //             // up 
-        //             if (IsValidMatchTile(x, y + 1))
-        //             {
-        //                 if (HasEnoughSameNeighborsTop(tile.ID, x, y + 1))
-        //                 {
-        //                     // Debug.Log($"U 0:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x, y + 1))
-        //                 {
-        //                     // Debug.Log($"U 1:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsRight(tile.ID, x, y + 1))
-        //                 {
-        //                     // Debug.Log($"U 2:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //             }
-
-        //             // down 
-        //             if (IsValidMatchTile(x, y - 1))
-        //             {
-        //                 if (HasEnoughSameNeighborsDown(tile.ID, x, y - 1))
-        //                 {
-        //                     // Debug.Log($"D 0:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsLeft(tile.ID, x, y - 1))
-        //                 {
-        //                     // Debug.Log($"D 2:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //                 if (HasEnoughSameNeighborsRight(tile.ID, x, y - 1))
-        //                 {
-        //                     // Debug.Log($"D 2:  {x}  {y}");
-        //                     return true;
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     Debug.Log("END FALSE");
-        //     return false;
-        // }
 
         private void SwapPosition(Tile tileA, Tile tileB)
         {
