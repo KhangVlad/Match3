@@ -5,7 +5,7 @@ using Match3.Enums;
 
 
 
-[Serializable]
+
 public class RunTimeDialogData
 {
     public CharacterID id;
@@ -14,7 +14,6 @@ public class RunTimeDialogData
     public string[] lowSympathyDialogs;
 }
 
-[Serializable]
 public class LevelDialogueData
 {
     public string[] levelDialogs;

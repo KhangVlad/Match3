@@ -14,7 +14,7 @@ public class UILoadingMenu : MonoBehaviour
 
     [SerializeField] private Slider progressSlider;
     [SerializeField] private Image backgroundImage;
-    [SerializeField] private UIComic comic;
+    // [SerializeField] private UIComic comic;
 
     [Header("Loading Settings")] [SerializeField]
     private float progressSpeed = 1f;
@@ -75,8 +75,7 @@ public class UILoadingMenu : MonoBehaviour
         StartCoroutine(AuthenticationManager.Instance.HandleGuestSignIn(() => {
             if (UserManager.Instance.UserData != null)
             {
-                comic.gameObject.SetActive(true);
-                comic.OnNewUserCreate();
+                StartCoroutine(UpdateProgressRoutine());
             }
             else
             {
@@ -164,17 +163,12 @@ public class UILoadingMenu : MonoBehaviour
         }
     }
 
-    private void HandleNewUser()
-    {
-        comic.gameObject.SetActive(true);
-        comic.OnNewUserCreate();
-    }
-
-    private void HandleOldUser()
-    {
-        progressSlider.gameObject.SetActive(true);
-        StartCoroutine(UpdateProgressRoutine());
-    }
+    
+    // private void HandleOldUser()
+    // {
+    //     progressSlider.gameObject.SetActive(true);
+    //     StartCoroutine(UpdateProgressRoutine());
+    // }
 
     private void SetBackgroundByTimeOfDay()
     {

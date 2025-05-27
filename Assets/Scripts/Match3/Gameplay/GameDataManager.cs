@@ -299,7 +299,7 @@ namespace Match3
             // Skip the header row and iterate through the lines
             for (int i = 1; i < lines.Length; i++)
             {
-                string[] columns = lines[i].Split(',');
+                string[] columns = lines[i].Split(':');
 
                 // Make sure the row has enough columns
                 if (columns.Length >= 5)

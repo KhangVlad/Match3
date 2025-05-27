@@ -44,6 +44,7 @@ namespace Match3
         public LevelDataV2 LoadLevelData(CharacterID characterID, int level)
         {
             _currentLevelIndex = level;
+            Debug.Log($"Loading level data for character {characterID} at level {level}");
             GameDataManager.Instance.TryGetCharacterLevelDataByID(characterID, out var data);
             CharacterLevelData = data;
             LevelData = CharacterLevelData.Levels[level];

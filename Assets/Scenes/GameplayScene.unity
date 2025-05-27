@@ -2586,8 +2586,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -274.9, y: 13}
-  m_SizeDelta: {x: 300, y: 225}
+  m_AnchoredPosition: {x: -289.51, y: 13}
+  m_SizeDelta: {x: 300, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &426126303
 MonoBehaviour:
@@ -5157,7 +5157,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875871030}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 519420031}
@@ -5192,6 +5192,7 @@ MonoBehaviour:
   - {fileID: 5425874156738936808}
   - {fileID: 919787402}
   - {fileID: 18922294}
+  goldReward: {fileID: 2057965567}
 --- !u!1 &913154607
 GameObject:
   m_ObjectHideFlags: 0
@@ -8262,7 +8263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 71aef8dc5f01c42a9aa29b9dd7e96daa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c80ad0f5bc8d143378e1c7bd05fe5fe1, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9273,7 +9274,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 260.61, y: 9.3}
+  m_AnchoredPosition: {x: 288.6, y: 9.3}
   m_SizeDelta: {x: 300, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1771002292
@@ -10434,8 +10435,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 221.155, y: 0}
-  m_SizeDelta: {x: 442.31, y: 0}
+  m_AnchoredPosition: {x: 102.35, y: 0}
+  m_SizeDelta: {x: 204.7, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2057965566
 MonoBehaviour:
@@ -10471,7 +10472,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: + 300000
+  m_text: '+ 30
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9fa5016cb7e534c0aa0c0adb2ecf9124, type: 2}
   m_sharedMaterial: {fileID: 6098576539282327867, guid: 9fa5016cb7e534c0aa0c0adb2ecf9124, type: 2}

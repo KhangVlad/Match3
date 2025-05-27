@@ -14,7 +14,7 @@ namespace Match3
         [SerializeField] private Button _homeBtn;
         [SerializeField] private ParticleSystem _cofettiPS;
         [SerializeField] private UIWinStar[] _uiStars;
-
+        [SerializeField] private TextMeshProUGUI goldReward;
         private void Awake()
         {
             _canvas = GetComponent<Canvas>();
@@ -48,8 +48,15 @@ namespace Match3
 
             if (enable)
             {
+                goldReward.text = CalculateGoldReward().ToString();
                 PlayWinUIAnimationsAndEffects();
             }
+        }
+
+        private int CalculateGoldReward()
+        {
+            int goldReward = ((LevelManager.Instance.CurrentLevelIndex+1) % 5 == 0) ? 60 : 30;
+            return goldReward;
         }
 
 

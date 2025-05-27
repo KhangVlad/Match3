@@ -6,12 +6,13 @@ using System.Collections;
 using Match3;
 using Match3.Enums;
 using Match3.Shares;
+using UnityEngine.Serialization;
 
 #if !UNITY_WEBGL
 public class CharacterDisplay : MonoBehaviour
 {
     public static CharacterDisplay Instance { get; private set; }
-    public RunTimeDialogData characterDialogueSO;
+    public RunTimeDialogData characterDialogue;
     public bool IsActiveCharacter = false;
     [SerializeField] private RenderTexture renderTexture;
 
@@ -21,7 +22,6 @@ public class CharacterDisplay : MonoBehaviour
     public bool IsAngry => AngryPoint > 0;
     private readonly int[] AngryThreshold = { 1, 20, 50, 70 };
     private const float AngryDecayRate = 2f;
-    private const string rejectDialogue = "This quest is too hard for you, I will ask someone else.";
     public float TimeToDecreaseAngryPoint = 10; //after 10s not touch, decrease angry point
     private float lastInteractionTime; // Track last interaction time
     public event Action OnNewAngryState; 
@@ -29,22 +29,21 @@ public class CharacterDisplay : MonoBehaviour
 
     public string GetGreetingDialog()
     {
-        int randomIndex = UnityEngine.Random.Range(0, characterDialogueSO.greetingDialogs.Length);
-        return characterDialogueSO.greetingDialogs[randomIndex];
+        int randomIndex = UnityEngine.Random.Range(0, characterDialogue.greetingDialogs.Length);
+        return characterDialogue.greetingDialogs[randomIndex];
     }
 
     public string GetDialogue(int level, int subLevel)
     {
-        return characterDialogueSO.data[level].levelDialogs[subLevel];
+        return characterDialogue.data[level].levelDialogs[subLevel];
     }
 
     public string GetLowSympathyDialogue()
     {
-        int randomIndex = UnityEngine.Random.Range(0, characterDialogueSO.lowSympathyDialogs.Length);
-        return characterDialogueSO.lowSympathyDialogs[randomIndex];
+        int randomIndex = UnityEngine.Random.Range(0, characterDialogue.lowSympathyDialogs.Length);
+        return characterDialogue.lowSympathyDialogs[randomIndex];
     }
 
-    public string GetRejectDialogue() => rejectDialogue;
 
 
     public event Action<CharacterID> OnLoadVideosComplete;
@@ -64,22 +63,22 @@ public class CharacterDisplay : MonoBehaviour
     private void Start()
     {
         lastInteractionTime = Time.time;
-        ScreenInteraction.Instance.OnCharacterInteracted += LoadCharacterDialogue;
+        ScreenInteraction.Instance.OnCharacterInteracted += InitVideoAndDialogue;
         // ScreenInteraction.Instance.OnCharacterInteracted += InitializeCharacterVideo;
     }
 
     private void OnDestroy()
     {
-        ScreenInteraction.Instance.OnCharacterInteracted -= LoadCharacterDialogue;
+        ScreenInteraction.Instance.OnCharacterInteracted -= InitVideoAndDialogue;
         // ScreenInteraction.Instance.OnCharacterInteracted -= InitializeCharacterVideo;
     }
 
 
     #region State
 
-    private void LoadCharacterDialogue(CharacterID id)
+    private void InitVideoAndDialogue(CharacterID id)
     {
-        characterDialogueSO = GameDataManager.Instance.ReadDialogueData(id, LanguageManager.Instance.currentLanguage);
+        characterDialogue = GameDataManager.Instance.ReadDialogueData(id, LanguageManager.Instance.currentLanguage);
         InitializeCharacterVideo(id);
     }
 

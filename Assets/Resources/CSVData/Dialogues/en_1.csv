@@ -1,26 +1,51 @@
-GroupLevel,subId,name,greetings,LowSymDialogs
-1,1,The festival is approaching Find the most vibrant flowers to decorate You can combine them on the flower tree to collect them more easily, Hello do you feel happy today, I don't think you’re the right person to help me now, but maybe later.
-1,2,Red flowers symbolize luck Clear obstacles to collect these valuable flowers, Hello how is your red flower collection going Are you facing any difficulties, Hmm, you don’t seem too interested right now. I’ll ask again another time.
-1,3,A lot of flowers are needed to complete the beautiful garlands Free blocked flower tiles to collect more, Hello have you gathered enough flowers to make a garland, I was hoping you’d be more excited, but maybe this isn’t the right moment.
-1,4,Purple flowers will make the festival even more colorful Use special items to break barriers and collect them, Hello do you like the new purple flowers you collected, It looks like you're not ready to help. I'll find someone else for now.
-1,5,White flowers symbolize purity Don’t forget to combine different flowers to collect more, Hello have you tried combining flowers to collect more, Maybe this task isn’t for you today. I’ll check back later.
-2,1,First choose the most beautiful ribbons Clear obstacles around to tie them easily, Hello have you found the most beautiful ribbons Are there any obstacles causing trouble, If you're not up for this, I understand. I’ll ask someone else.
-2,2,Red ribbons bring luck and prosperity Use support items to break obstacles and collect them, Hello have you gathered enough red ribbons Do they bring you luck, This requires someone more motivated. I’ll come back when you’re ready.
-2,3,Ribbons will make the wreaths stand out Remove obstacles to tie them beautifully, Hello do you need help removing obstacles and tying the ribbons nicely, I guess you have other things on your mind. I'll look for help elsewhere.
-2,4,Golden ribbons will make your wreath shine more brightly Clear obstacles to collect them, Hello have you gathered enough golden ribbons Are you facing any difficulties, No worries, I can manage without you for now. Maybe later?
-2,5,Make sure the ribbons are tied tightly so they don’t come loose Use special items to clear the area and collect more ribbons, Hello have you secured the ribbons properly Do you need any help, You don’t seem too sure about this. I’ll ask again when you’re ready.
-3,1,Start collecting dry wood to prepare for the bonfire night Combine wood pieces to gather them quickly, Hello have you collected enough wood The bonfire night is coming soon, I don't think you’re the right person to help me now, but maybe later.
-3,2,Large wooden logs are needed to create a strong fire Clear obstacles to get them, Hello have you gathered enough large logs Are obstacles making it difficult, Hmm, you don’t seem too interested right now. I’ll ask again another time.
-3,3,Be careful when picking up wood Don’t let thorns prick your hands Remove sharp obstacles to collect wood safely, Hello do you feel safe while collecting wood Be careful of sharp objects, I was hoping you’d be more excited, but maybe this isn’t the right moment.
-3,4,These wooden logs will help us have a warm bonfire night Combine wood pieces to collect them more efficiently, Hello have you finished preparing wood for the bonfire night, It looks like you're not ready to help. I'll find someone else for now.
-3,5,Don’t forget to bring wood to the fire area You need to clear obstacles to transport them easily, Hello have you brought enough wood to the fire area Do you need any help, Maybe this task isn’t for you today. I’ll check back later.
-4,1,Use red flowers to create lucky wreaths Clear obstacles to craft beautiful wreaths, Hello do you feel excited today, If you're not up for this, I understand. I’ll ask someone else.
-4,2,Wreaths need to be tightly secured Use support items to break obstacles and complete them, Hello did you sleep well, This requires someone more motivated. I’ll come back when you’re ready.
-4,3,Make wreaths carefully to bring good luck to everyone Remove surrounding obstacles to complete the task, Hello do you like the festive atmosphere, I guess you have other things on your mind. I'll look for help elsewhere.
-4,4,You can decorate the wreaths with sparkling ribbons Clear the area to complete the task easily, Hello does today feel special to you, No worries, I can manage without you for now. Maybe later?
-4,5,Each wreath will be given to a resident attending the festival Clear obstacles to complete this task, Hello is there anything you are looking forward to today, You don’t seem too sure about this. I’ll ask again when you’re ready.
-5,1,Use white flowers to create beautiful floating lanterns Remove obstacles to collect them, Hello do you feel relaxed today, I don't think you’re the right person to help me now, but maybe later.
-5,2,The floating lanterns will be released into the river on festival night Collect and arrange them perfectly, Hello do you enjoy watching floating lanterns, Hmm, you don’t seem too interested right now. I’ll ask again another time.
-5,3,Make sure your lanterns don’t sink Clear obstacles to prevent damage, Hello do you feel comfortable today, I was hoping you’d be more excited, but maybe this isn’t the right moment.
-5,4,We will release floating lanterns to wish for a bountiful harvest Remove obstacles to release them properly, Hello would you like to share something joyful, It looks like you're not ready to help. I'll find someone else for now.
-5,5,Don’t forget to place candles in the lanterns so they shine brightly on the river Use special items to break obstacles and complete the lanterns, Hello do you like the sparkling lights, Maybe this task isn’t for you today. I’ll check back later.
+GroupLevel:subId:name:greetings:LowSymDialogs
+1:1:The festival is coming soon. Find the brightest flowers to decorate. You can combine them on the flower tree for easier collection.:Hello! Are you feeling happy today?:I don't think you’re the right person to help me now, but maybe later.
+1:2:Red flowers symbolize luck. Clear obstacles to be able to collect these precious flowers.:Hello! How is collecting red flowers going? Any difficulties?:Hmm, you don't seem interested right now. I'll ask again later.
+1:3:Each flower has its own meaning. Try combining them creatively to make unique bouquets.:Hello, have you tried combining new flower types today?:Not now. I'm busy thinking about flower combinations.
+1:4:Some flowers only appear at night. Pay attention to the time so you don’t miss them!:Oh, you came just in time! I just discovered a special night flower!:Sorry, I need more time to prepare before starting to look for that flower.
+1:5:Decorating the flower tree will attract many people to the festival. Try to finish before the festival starts!:It's great to see your interest in the festival! Everyone will be impressed!:I'm not sure I can finish on time... Maybe you should ask someone else.
+2:1:The festival is coming! Start by tying colorful ribbons to decorate the main area.:Hello! Have you picked your favorite ribbon color yet?:Now is not a good time to talk about ribbons...
+2:2:Each ribbon color represents a wish. Choose colors that express what you hope for.:Hi! You're doing great! Don't forget the meaning behind each color!:I'm confused about the ribbon colors. Talk later please.
+2:3:Some ribbons need to be collected from villagers. Ask them if you can help.:Hello! The villagers might need your help to prepare those ribbons!:I don't see anyone needing help right now... Maybe later.
+2:4:Special ribbons are only found in the western forest. Be careful when searching.:Oh! Have you been to the forest? The ribbons there are beautiful!:I don't think I'm ready to enter the forest today...
+2:5:When all ribbons are tied together, they will create a beautiful sight for the festival.:Welcome! Imagine everyone admiring the ribbons you made, isn't that great?:Honestly, I don't think I can do that...
+3:1:Decorating the village gate is the first important step to welcome the festival. Hang the brightest banners!:Hello! The village gate will look amazing with your help!:I'm not sure I feel like decorating the village gate right now.
+3:2:Choose the right spot for each banner to highlight the festival theme.:Hi! Have you thought of how to hang the banners beautifully?:I'm thinking about that... Maybe I'll come back later.
+3:3:Some banners are damaged and need repair before use. Can you help?:Welcome! Can you find some fabric pieces to replace them?:I'm not good at sewing… Probably should ask someone else.
+3:4:The weather may change suddenly, make sure banners are tied tightly so they don't blow away.:Have you checked the knots carefully? They are very important!:Not now... I'm a bit tired after climbing the gate.
+3:5:When finished, the village gate will become a highlight attracting festival guests.:Wonderful! Everyone will be proud of your effort!:I think someone else is more suitable to finish this...
+4:1:Tonight there will be a campfire! Help collect dry wood so people can gather around.:Hello! It's chilly, a warm fire would be great, right?:I don't see a reason to collect wood now.
+4:2:Some wood can be found near the forest edge. Be careful of slippery terrain!:Hi! Did you bring a flashlight when collecting wood? Don’t get lost!:I don't want to go to the forest... Maybe you should ask someone else.
+4:3:Dry wood burns better and produces less smoke. Choose carefully for an even fire.:Have you found suitable wood yet? I can give you tips on selecting wood!:I'm not ready to collect wood yet. Maybe later.
+4:4:Everyone is contributing to prepare for the campfire night. You can be part of it too!:It's great to have you join! We'll have a memorable night!:Honestly, I don't want to join the campfire tonight...
+4:5:Don’t forget to bring an axe or small knife for cutting branches. Being prepared saves time.:Hello! Have you prepared tools for collecting? Let's go!:I didn't bring anything… Maybe I'll help another day.
+5:1:Making lantern flowers is an old tradition that shows wishes and hopes. Let's make the best ones!:Hello! Do you have any ideas for your lantern flowers?:I haven't thought of any wishes to put on the lanterns yet...
+5:2:You need colored paper, fresh flowers, and small candles to make lantern flowers. Prepare well!:Hi! I have some extra materials if you need help!:I don't know where to start… Maybe I'll try later.
+5:3:Making lantern flowers requires skill. Focus to create a delicate work of art.:You're doing great! Each lantern flower carries its own heartfelt meaning.:I don't think I have enough skill for this…
+5:4:Tonight, when releasing lantern flowers on the river, everyone will pray for a peaceful year.:It's touching to think about that moment, isn't it?:I'm not sure I want to join the lantern releasing…
+5:5:Each lantern flower you make carries someone's wish. Make it with all your heart.:Hello! Someone is waiting for the lantern flower you made!:I'm not in the mood to think about wishes or lantern flowers...
+6:1:To revive the specialty dish, first collect fresh ingredients from around the village.:Hello! Have you found ingredients for the dish yet?:I'm not sure I'm interested in cooking today.
+6:2:Each ingredient plays an important role in creating the dish's distinctive flavor.:Do you know how to choose the best ingredients? I have some tips to share!:I don't know where to start, maybe later.
+6:3:Learn the preparation through traditional recipes kept in the village.:You're doing great! This recipe has been passed down for generations.:I don't think I'm skilled enough to make this dish...
+6:4:The cooking process needs patience and attention to detail for the best flavor.:Are you patient? Good food requires care!:I'm not sure I can do this properly.
+6:5:The finished dish will help revive the village's culinary culture and impress the festival.:Great to see you reviving this dish! Everyone will be happy!:I'm not sure I'm good enough to do this...
+7:1:The town is bustling, help prepare and serve food for festival attendees!:Hello! Are you ready to serve?:I'm not sure I can do well serving today.
+7:2:Check food supplies to make sure no one goes hungry during the festival.:Have you checked the food stock? Is everything enough?:I'm a bit worried about managing the food.
+7:3:Fast and friendly service will make people feel happy and comfortable.:Hello! Can you keep a smile while serving? That's the secret!:I don't feel energetic enough to serve today.
+7:4:Some special customers need more attention, don’t forget them!:Have you met those customers? Listen and help them!:I don't want to face special customers right now.
+7:5:When the festival ends, you will be remembered as the best server.:Thank you! Everyone is very satisfied with your help!:I think I'm not suitable for this job...
+8:1:The power system suddenly malfunctions! Quickly find a way to fix it to bring light back to the night festival.:Hello! Do you know where to fix?:I'm not ready to handle this issue right now.
+8:2:Check electrical panels and wiring to identify the cause of the outage.:Can you carefully check the connections? Everything needs to be safe!:I'm not confident in my repair skills.
+8:3:Prepare necessary tools like flashlight, screwdriver, and wires for easy troubleshooting.:Have you prepared all tools? They are essential!:I didn't bring tools... Maybe next time.
+8:4:Coordinate with others to find the fastest solution to this problem.:Together we will fix it soon! Are you ready?:I don't want to join now...
+8:5:When the power is back, the night festival will be full of light and joy.:Great job helping out! Everyone is thankful!:I don't think I can do this...
+9:1:The fireworks show is about to start! Make sure everything is prepared carefully and safely.:Hello! Have you checked the fireworks equipment?:I'm not sure if I should join this.
+9:2:Check the surroundings to make sure no flammable materials or unrelated people are nearby.:Can you help me check the area?:I don't feel comfortable doing this.
+9:3:Ensure safe distance between fireworks and audience to avoid accidents.:Can you mark the safety zone for everyone?:I'm afraid I'm not suitable for this task.
+9:4:Work closely with the technical team to ensure all procedures are followed.:Have you contacted the technical team? They need your support!:I don't want to bother anyone now.
+9:5:When the fireworks end safely, everyone will have an unforgettable festival night.:Thank you for helping ensure safety! Everyone appreciates your effort!:I don't think I can do this well...
+10:1:The festival is over, now it’s time to keep the village clean and tidy.:Hello! Have you prepared cleaning tools?:I don't feel like cleaning now.
+10:2:Collect trash and sort properly to protect the environment.:Can you help sort the trash? It's very important!:I'm not sure I have the patience for this.
+10:3:Clean public areas like village yards and streets to make people comfortable.:Where have you started cleaning? Keep it up!:I think I should rest instead of cleaning now.
+10:4:A clean village will make everyone proud and comfortable.:Thank you for helping clean the village! Everyone is happy!:I'm not sure I can do this well.
+10:5:When everything is done, you can rest and enjoy the fruits of your labor.:Congratulations! You helped make the village much better!:I just want to finish this job quickly...

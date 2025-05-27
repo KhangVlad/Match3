@@ -87,7 +87,15 @@ public class UserManager : MonoBehaviour
         if (data != null)
         {
             data.SetPassLevel(LevelManager.Instance.CurrentLevelIndex, heart);
+            int currentLevel = LevelManager.Instance.CurrentLevelIndex;
+            bool firstTimeClearing = data.Hearts[currentLevel] == 0;
+            if (firstTimeClearing)
+            {
+                int goldReward = (currentLevel % 5 == 0) ? 60 : 30;
+                AddGold(goldReward);
+            }
         }
+        
     }
 
     private void OnLoseEvent()

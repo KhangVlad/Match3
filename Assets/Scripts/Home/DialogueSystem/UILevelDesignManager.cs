@@ -294,7 +294,7 @@ public class UILevelDesignManager : MonoBehaviour
 
         if (!hasEnoughHearts)
         {
-            warningText.text = $"Just {requiredHearts - totalHeartPoints} more {HEART_SPRITE_INDEX} to unlock";
+            warningText.text = $"Need More {requiredHearts - totalHeartPoints}";
         }
     }
 
@@ -306,15 +306,6 @@ public class UILevelDesignManager : MonoBehaviour
                 typewriterEffect,
                 CharacterDisplay.Instance.GetDialogue(levelDesign.index, 1)
             );
-            // playBtn.gameObject.SetActive(true);
-        }
-        else
-        {
-            DialogueManager.Instance.ShowDialogue(
-                typewriterEffect,
-                CharacterDisplay.Instance.GetRejectDialogue()
-            );
-            // playBtn.gameObject.SetActive(false);
         }
     }
 
